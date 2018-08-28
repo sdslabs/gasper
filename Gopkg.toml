@@ -36,3 +36,7 @@
 [[constraint]]
   name = "github.com/docker/docker"
   version = "1.13.1"
+
+[[constraint]]
+  branch = "master"
+  name = "golang.org/x/net"
