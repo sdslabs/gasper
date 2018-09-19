@@ -1,9 +1,12 @@
 package routes
 
 import (
-	ContainerController "SDS/controllers/ContainerController"
+	containerController "github.com/sdslabs/SDS/controllers/container"
 )
 
 func init() {
-	Routes.POST("/container/create", ContainerController.Create)
+	containerGroup := Router.Group("/container")
+	{
+		containerGroup.GET("/create", containerController.Create)
+	}
 }

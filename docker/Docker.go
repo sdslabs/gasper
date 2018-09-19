@@ -8,6 +8,7 @@ import (
 	"golang.org/x/net/context"
 )
 
+// CreateContainer spawns a new container of the provided docker image
 func CreateContainer(image string) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
