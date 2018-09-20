@@ -5,9 +5,13 @@
 ## Prerequisites
 
 1. [GoLang](https://golang.org/)
+
    [Download](https://golang.org/dl/)
+
 2. [Docker](https://www.docker.com/)
+
    [Download / Get Started](https://www.docker.com/get-started)
+
 3. [Nginx Docker Image](https://hub.docker.com/_/nginx/)
 
    ```shell
