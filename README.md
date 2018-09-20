@@ -6,10 +6,17 @@
 
 - Clone the repository in your `$GOPATH/src/github.com/sdslabs`, hence the final path of package should be - `$GOPATH/src/github.com/sdslabs/SDS`
 
+  ```shell
+  # Create directory if not available
+  $ mkdir -p $GOPATH/src/github.com/sdslabs
+  # Clone the repo there
+  $ git clone https://github.com/sdslabs/SDS  $GOPATH/src/github.com/sdslabs/SDS
+  ```
+
 - Make sure you have `dep` installed, if not, you can find it here: [github.com/golang/dep](https://github.com/golang/dep)
 
-- `cd` into the `SDS` directory and run the following command:
   ```shell
+  $ cd $GOPATH/src/github.com/sdslabs/SDS
   $ dep ensure
   ```
 
