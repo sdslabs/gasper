@@ -15,15 +15,24 @@
 
 ### Development
 
-- While developing we recommend can use a tool like [Fresh](https://github.com/pilu/fresh)
+- While developing we recommend can use a tool like [Fresh](https://github.com/pilu/fresh) or [Gomon](https://github.com/c9s/gomon)
 
   ```shell
+  # Fresh
   $ go get github.com/pilu/fresh
+
+  # Gomon
+  $ go get -u github.com/c9s/gomon
   ```
 
 - Run the following command to start the server
+
   ```shell
+  # Using fresh:
   $ fresh
+
+  # Using gomon:
+  $ gomon src -- go run server.go
   ```
 
 ### Production
