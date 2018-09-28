@@ -25,6 +25,10 @@
 
 4. [Nginx](https://nginx.org/en/download.html) or [Apache](https://httpd.apache.org/download.cgi) on your machine
 
+5. [Dep](https://golang.github.io/dep/) for dependency management
+
+   [Install](https://golang.github.io/dep/docs/installation.html)
+
 ## Setup
 
 - Clone the repository in your `$GOPATH/src/github.com/sdslabs`, hence the final path of package should be - `$GOPATH/src/github.com/sdslabs/SDS`
