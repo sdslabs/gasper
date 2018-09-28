@@ -7,7 +7,7 @@ import (
 
 // Create is a controller for spawning a new container
 func Create(c *gin.Context) {
-	var json createConfig
+	var json dockerConfig
 	c.BindJSON(&json)
 	docker.CreateContainer(json.Image)
 }
