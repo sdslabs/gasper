@@ -1,6 +1,5 @@
 package container
 
-// Config is a struct definition for container controller
-type Config struct {
+type createConfig struct {
 	Image string `form:"image" json:"image" binding:"required"`
 }
