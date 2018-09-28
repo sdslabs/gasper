@@ -1,4 +1,4 @@
-package extras
+package utils
 
 // Error is a type for declaring a response error from server
 type Error struct {
