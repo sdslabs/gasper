@@ -1,12 +1,15 @@
 package routes
 
 import (
-	"github.com/sdslabs/SDS/controllers/app"
+	appController "github.com/sdslabs/SDS/controllers/app"
 )
 
 func init() {
 	appGroup := Router.Group("/app")
 	{
-		appGroup.POST("/create", app.Create)
+		createGroup := appGroup.Group("/create")
+		{
+			createGroup.POST("/static", appController.CreateStaticApp)
+		}
 	}
 }
