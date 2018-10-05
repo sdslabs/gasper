@@ -1,4 +1,4 @@
-package app
+package staticapp
 
 import (
 	"io/ioutil"
@@ -7,8 +7,8 @@ import (
 	"github.com/sdslabs/SDS/utils"
 )
 
-// readAndWriteStaticConf creates new config file for static app
-func readAndWriteStaticConf(name string) utils.Error {
+// readAndWriteConfig creates new config file for the given app
+func (json appConfig) ReadAndWriteConfig() utils.Error {
 	content, err := ioutil.ReadFile("")
 	if err != nil {
 		return utils.Error{
@@ -17,10 +17,10 @@ func readAndWriteStaticConf(name string) utils.Error {
 		}
 	}
 
-	conf := strings.Replace(string(content), "template", name, -1)
+	conf := strings.Replace(string(content), "template", json.Name, -1)
 
 	newContent := []byte(conf)
-	err = ioutil.WriteFile(""+name+".static.sdslabs.co.conf", newContent, 0644)
+	err = ioutil.WriteFile(""+json.Name+".static.sdslabs.co.conf", newContent, 0644)
 	if err != nil {
 		return utils.Error{
 			Code: 500,
