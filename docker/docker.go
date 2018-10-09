@@ -1,10 +1,14 @@
 package docker
 
 import (
+	"bytes"
+	"io/ioutil"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/sdslabs/SDS/utils"
 	"golang.org/x/net/context"
 )
 
@@ -40,5 +44,43 @@ func CreateContainer(image string) {
 
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		panic(err)
+	}
+}
+
+// AddFileToContainer copies the file from source path to the destination path inside the container
+func AddFileToContainer(containerID string, srcPath string, dstPath string) utils.Error {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return utils.Error{
+			Code: 500,
+			Err:  err,
+		}
+	}
+
+	content, err := ioutil.ReadFile(srcPath)
+	if err != nil {
+		return utils.Error{
+			Code: 500,
+			Err:  err,
+		}
+	}
+	reader := bytes.NewReader(content)
+
+	config := types.CopyToContainerOptions{
+		AllowOverwriteDirWithFile: true,
+	}
+
+	err = cli.CopyToContainer(ctx, containerID, dstPath, reader, config)
+	if err != nil {
+		return utils.Error{
+			Code: 500,
+			Err:  err,
+		}
+	}
+
+	return utils.Error{
+		Code: 200,
+		Err:  nil,
 	}
 }
