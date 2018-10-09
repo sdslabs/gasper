@@ -1,5 +1,9 @@
 package staticapp
 
+import (
+	"github.com/sdslabs/SDS/utils"
+)
+
 // appConfig is json binding config for creating new static page
 type appConfig struct {
 	Name      string `json:"name" form:"name" binding:"required"`
@@ -9,5 +13,5 @@ type appConfig struct {
 
 // app is an interface containing methods for static pages
 type app interface {
-	ReadAndWriteConfig() error
+	ReadAndWriteConfig() utils.Error
 }
