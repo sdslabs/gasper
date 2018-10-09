@@ -7,7 +7,6 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"github.com/sdslabs/SDS/utils"
 	"golang.org/x/net/context"
 )
 
@@ -47,14 +46,11 @@ func CreateContainer(image string) {
 }
 
 // AddFileToContainer copies the file from source path to the destination path inside the container
-func AddFileToContainer(containerID string, content []byte, dstPath string) utils.Error {
+func AddFileToContainer(containerID string, content []byte, dstPath string) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		return utils.Error{
-			Code: 500,
-			Err:  err,
-		}
+		return err
 	}
 
 	reader := bytes.NewReader(content)
@@ -64,14 +60,8 @@ func AddFileToContainer(containerID string, content []byte, dstPath string) util
 
 	err = cli.CopyToContainer(ctx, containerID, dstPath, reader, config)
 	if err != nil {
-		return utils.Error{
-			Code: 500,
-			Err:  err,
-		}
+		return err
 	}
 
-	return utils.Error{
-		Code: 200,
-		Err:  nil,
-	}
+	return nil
 }
