@@ -2,7 +2,6 @@ package docker
 
 import (
 	"bytes"
-	"io/ioutil"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -48,7 +47,7 @@ func CreateContainer(image string) {
 }
 
 // AddFileToContainer copies the file from source path to the destination path inside the container
-func AddFileToContainer(containerID string, srcPath string, dstPath string) utils.Error {
+func AddFileToContainer(containerID string, content []byte, dstPath string) utils.Error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -58,15 +57,7 @@ func AddFileToContainer(containerID string, srcPath string, dstPath string) util
 		}
 	}
 
-	content, err := ioutil.ReadFile(srcPath)
-	if err != nil {
-		return utils.Error{
-			Code: 500,
-			Err:  err,
-		}
-	}
 	reader := bytes.NewReader(content)
-
 	config := types.CopyToContainerOptions{
 		AllowOverwriteDirWithFile: true,
 	}
