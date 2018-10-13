@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-1. [GoLang](https://golang.org/)
+1. [GoLang](https://golang.org/) **v1.11**
 
    [Download](https://golang.org/dl/)
 
@@ -25,10 +25,6 @@
 
 4. [Nginx](https://nginx.org/en/download.html) or [Apache](https://httpd.apache.org/download.cgi) on your machine
 
-5. [Dep](https://golang.github.io/dep/) for dependency management
-
-   [Install](https://golang.github.io/dep/docs/installation.html)
-
 ## Setup
 
 - Clone the repository in your `$GOPATH/src/github.com/sdslabs`, hence the final path of package should be - `$GOPATH/src/github.com/sdslabs/SDS`
@@ -42,9 +38,6 @@
 
   # cd into the directory
   $ cd $GOPATH/src/github.com/sdslabs/SDS
-
-  # Install all dependencies using dep
-  $ dep ensure
   ```
 
 ### Development
@@ -64,5 +57,8 @@
 
 - Start server using
   ```shell
-  $ go run server.go
+  # Build the server
+  $ go build -mod=vendor
+  # Start at port :8080
+  $ ./SDS
   ```
