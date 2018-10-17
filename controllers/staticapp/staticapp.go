@@ -8,7 +8,7 @@ import (
 // CreateApp function handles requests for making making new static app
 func CreateApp(c *gin.Context) {
 	var (
-		json appConfig
+		json staticAppConfig
 		err  utils.Error
 	)
 	c.BindJSON(&json)

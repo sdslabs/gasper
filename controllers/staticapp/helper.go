@@ -1,26 +1,20 @@
 package staticapp
 
 import (
-	"io/ioutil"
-	"strings"
-
 	"github.com/sdslabs/SDS/utils"
 )
 
 // readAndWriteConfig creates new config file for the given app
-func (json appConfig) ReadAndWriteConfig() utils.Error {
-	content, err := ioutil.ReadFile("")
-	if err != nil {
-		return utils.Error{
-			Code: 500,
-			Err:  err,
-		}
-	}
+func (json staticAppConfig) ReadAndWriteConfig() utils.Error {
+	// containerID, ok := os.LookupEnv("STATIC_CONTAINER_ID")
+	// if !ok {
+	// 	return utils.Error{
+	// 		Code: 500,
+	// 		Err:  errors.New("STATIC_CONTAINER_ID not found in the environment"),
+	// 	}
+	// }
 
-	conf := strings.Replace(string(content), "template", json.Name, -1)
-
-	newContent := []byte(conf)
-	err = ioutil.WriteFile(""+json.Name+".static.sdslabs.co.conf", newContent, 0644)
+	err := utils.ReadAndWriteConfig(json.Name, "static", "6f36625894e5")
 	if err != nil {
 		return utils.Error{
 			Code: 500,

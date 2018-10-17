@@ -1,7 +1,7 @@
 package docker
 
 import (
-	"bytes"
+	"io"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -46,19 +46,19 @@ func CreateContainer(image string) {
 }
 
 // AddFileToContainer copies the file from source path to the destination path inside the container
-func AddFileToContainer(containerID string, content []byte, dstPath string) error {
+// Reader must be a tar archive
+func AddFileToContainer(containerID, destination string, reader io.Reader) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		return err
 	}
 
-	reader := bytes.NewReader(content)
 	config := types.CopyToContainerOptions{
-		AllowOverwriteDirWithFile: true,
+		AllowOverwriteDirWithFile: false,
 	}
 
-	err = cli.CopyToContainer(ctx, containerID, dstPath, reader, config)
+	err = cli.CopyToContainer(ctx, containerID, destination, reader, config)
 	if err != nil {
 		return err
 	}
