@@ -1,6 +1,8 @@
 package docker
 
 import (
+	"io"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -41,4 +43,23 @@ func CreateContainer(image string) {
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
 		panic(err)
 	}
+}
+
+// AddFileToContainer copies the file from source path to the destination path inside the container
+// Reader must be a tar archive
+func AddFileToContainer(containerID, destination string, reader io.Reader) error {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return err
+	}
+
+	config := types.CopyToContainerOptions{
+		AllowOverwriteDirWithFile: true,
+	}
+	err = cli.CopyToContainer(ctx, containerID, destination, reader, config)
+	if err != nil {
+		return err
+	}
+	return nil
 }
