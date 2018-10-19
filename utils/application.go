@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -19,25 +20,27 @@ func ReadAndWriteConfig(name string, app string, containerID string) error {
 		return errors.New("Environment variable `GOPATH` does not exist")
 	}
 
+	fileName := fmt.Sprintf(
+		"%s/src/github.com/sdslabs/SDS/configs/containerLevel/template.%s.sdslabs.co.conf",
+		gopath, app)
+
 	// Content of the config file at container level
-	content, err := ioutil.ReadFile(
-		gopath + "/src/github.com/sdslabs/SDS/configs/containerLevel/template." + app +
-			".sdslabs.co.conf")
+	file, err := ioutil.ReadFile(fileName)
+
 	if err != nil {
 		return err
 	}
 
 	// Replace `template` by name of the application
-	conf := strings.Replace(string(content), "template", name, -1)
-	content = []byte(conf)
+	conf := strings.Replace(string(file), "template", name, -1)
 
-	reader, err := TarFile(content, name+"."+app+".sdslabs.co.conf", 0644)
-	if err != nil {
-		return err
-	}
+	content := []byte(conf)
+	targetFile := fmt.Sprintf("%s.%s.sdslabs.co.conf", name, app)
+
+	stream, err := TarFile(content, targetFile, 644)
 
 	// Add the config file to the corresponding container
-	err = docker.AddFileToContainer(containerID, "/etc/nginx/conf.d", reader)
+	err = docker.AddFileToContainer(containerID, "/etc/nginx/conf.d/", stream)
 	if err != nil {
 		return err
 	}

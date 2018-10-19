@@ -14,7 +14,7 @@ func (json staticAppConfig) ReadAndWriteConfig() utils.Error {
 	// 	}
 	// }
 
-	err := utils.ReadAndWriteConfig(json.Name, "static", "6f36625894e5")
+	err := utils.ReadAndWriteConfig(json.Name, "static", "3b99fa7534c3")
 	if err != nil {
 		return utils.Error{
 			Code: 500,

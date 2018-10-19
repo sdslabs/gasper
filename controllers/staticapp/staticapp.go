@@ -21,5 +21,7 @@ func CreateApp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{})
+	c.JSON(200, gin.H{
+		"success": true,
+	})
 }

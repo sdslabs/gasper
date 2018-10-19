@@ -55,13 +55,11 @@ func AddFileToContainer(containerID, destination string, reader io.Reader) error
 	}
 
 	config := types.CopyToContainerOptions{
-		AllowOverwriteDirWithFile: false,
+		AllowOverwriteDirWithFile: true,
 	}
-
 	err = cli.CopyToContainer(ctx, containerID, destination, reader, config)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"archive/tar"
+	"bufio"
 	"bytes"
 	"io"
 )
@@ -32,5 +33,5 @@ func TarFile(content []byte, filename string, mode int64) (io.Reader, error) {
 		return nil, err
 	}
 
-	return tar.NewReader(&buf), nil
+	return bufio.NewReader(&buf), nil
 }
