@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/sdslabs/SDS/docker"
+	git "gopkg.in/src-d/go-git.v4"
 )
 
 // ReadAndWriteConfig takes the template config and writes to the corresponding container
@@ -37,10 +38,38 @@ func ReadAndWriteConfig(name string, app string, containerID string) error {
 	content := []byte(conf)
 	targetFile := fmt.Sprintf("%s.%s.sdslabs.co.conf", name, app)
 
-	stream, err := TarFile(content, targetFile, 644)
+	stream, err := TarFile(content, targetFile, 0644)
 
 	// Add the config file to the corresponding container
-	err = docker.AddFileToContainer(containerID, "/etc/nginx/conf.d/", stream)
+	err = docker.AddToContainer(containerID, "/etc/nginx/conf.d/", stream)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// GitCloneApp takes the github url and clones it into the given container
+func GitCloneApp(name, url, containerID string) error {
+	_, err := os.Stat("/tmp/SDS")
+	if os.IsNotExist(err) {
+		os.Mkdir("/tmp/SDS", 0755)
+	}
+
+	// Plain clone the repo in `/tmp/SDS/<name>`
+	dirname := fmt.Sprintf("/tmp/SDS/%s", name)
+
+	_, err = git.PlainClone(dirname, false, &git.CloneOptions{
+		URL: url,
+	})
+	if err != nil {
+		return err
+	}
+
+	// Tar folder and copy to container
+	stream, err := TarDir(dirname)
+
+	err = docker.AddToContainer(containerID, fmt.Sprintf("/SDS/%s", name), stream)
 	if err != nil {
 		return err
 	}

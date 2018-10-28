@@ -20,6 +20,13 @@ func CreateApp(c *gin.Context) {
 		})
 		return
 	}
+	err = json.GitCloneApp()
+	if err.Code != 200 {
+		c.JSON(err.Code, gin.H{
+			"message": err.Reason(),
+		})
+		return
+	}
 
 	c.JSON(200, gin.H{
 		"success": true,

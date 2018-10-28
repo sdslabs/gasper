@@ -14,7 +14,22 @@ func (json staticAppConfig) ReadAndWriteConfig() utils.Error {
 	// 	}
 	// }
 
-	err := utils.ReadAndWriteConfig(json.Name, "static", "3b99fa7534c3")
+	err := utils.ReadAndWriteConfig(json.Name, "static", "6f36625894e5")
+	if err != nil {
+		return utils.Error{
+			Code: 500,
+			Err:  err,
+		}
+	}
+
+	return utils.Error{
+		Code: 200,
+		Err:  nil,
+	}
+}
+
+func (json staticAppConfig) GitCloneApp() utils.Error {
+	err := utils.GitCloneApp(json.Name, json.GithubURL, "6f36625894e5")
 	if err != nil {
 		return utils.Error{
 			Code: 500,

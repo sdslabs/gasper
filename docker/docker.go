@@ -47,7 +47,7 @@ func CreateContainer(image string) {
 
 // AddFileToContainer copies the file from source path to the destination path inside the container
 // Reader must be a tar archive
-func AddFileToContainer(containerID, destination string, reader io.Reader) error {
+func AddToContainer(containerID, destination string, reader io.Reader) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
