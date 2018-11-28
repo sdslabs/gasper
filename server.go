@@ -1,7 +1,7 @@
 package main
 
 import (
-	r "github.com/sdslabs/SDS/routes"
+	r "github.com/sdslabs/SWS/routes"
 )
 
 func main() {

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	containerController "github.com/sdslabs/SDS/controllers/container"
+	containerController "github.com/sdslabs/SWS/controllers/container"
 )
 
 func init() {

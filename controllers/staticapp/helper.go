@@ -1,7 +1,7 @@
 package staticapp
 
 import (
-	"github.com/sdslabs/SDS/utils"
+	"github.com/sdslabs/SWS/utils"
 )
 
 // readAndWriteConfig creates new config file for the given app
