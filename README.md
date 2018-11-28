@@ -1,6 +1,6 @@
-# SDS
+# SWS
 
-> SDS Deployment Services
+> SDS Web Services
 
 ## Prerequisites
 
@@ -31,21 +31,12 @@
 
 ## Setup
 
-- Clone the repository in your `$GOPATH/src/github.com/sdslabs`, hence the final path of package should be - `$GOPATH/src/github.com/sdslabs/SDS`
+- Clone the repository
+- Start hacking
 
-  ```shell
-  # Create directory if not available
-  $ mkdir -p $GOPATH/src/github.com/sdslabs
+**Note:** The vendor is committed, to add another package as dependency, `go get ...` the package in your gopath and then run the command `go mod vendor` to add the dependency in the SWS package.
 
-  # Clone the repo there
-  $ git clone https://github.com/sdslabs/SDS $GOPATH/src/github.com/sdslabs/SDS
-
-  # cd into the directory
-  $ cd $GOPATH/src/github.com/sdslabs/SDS
-
-  # Install all dependencies using dep
-  $ dep ensure
-  ```
+*To use go-modules you must have Golang version 1.11 or later. Also remember to set the environment variable `GO111MODULE=on`. For reference see - [https://github.com/golang/go/wiki/Modules](https://github.com/golang/go/wiki/Modules).*
 
 ### Development
 
