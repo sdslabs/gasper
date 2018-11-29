@@ -1,7 +1,7 @@
 package routes
 
 import (
-	staticAppController "github.com/sdslabs/SDS/controllers/staticapp"
+	staticAppController "github.com/sdslabs/SWS/controllers/staticapp"
 )
 
 func init() {

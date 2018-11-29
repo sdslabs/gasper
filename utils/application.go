@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sdslabs/SDS/docker"
+	"github.com/sdslabs/SWS/docker"
 )
 
 // ReadAndWriteConfig takes the template config and writes to the corresponding container

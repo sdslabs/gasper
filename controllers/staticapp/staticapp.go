@@ -2,7 +2,7 @@ package staticapp
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SDS/utils"
+	"github.com/sdslabs/SWS/utils"
 )
 
 // CreateApp function handles requests for making making new static app

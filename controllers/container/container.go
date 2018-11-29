@@ -2,7 +2,7 @@ package container
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SDS/docker"
+	"github.com/sdslabs/SWS/docker"
 )
 
 // Create is a controller for spawning a new container
