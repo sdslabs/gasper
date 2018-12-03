@@ -37,7 +37,7 @@ func ReadAndWriteConfig(name string, app string, containerID string) error {
 	content := []byte(conf)
 	targetFile := fmt.Sprintf("%s.%s.sdslabs.co.conf", name, app)
 
-	stream, err := TarFile(content, targetFile, 644)
+	stream, err := tarFile(content, targetFile, 644)
 
 	// Add the config file to the corresponding container
 	err = docker.AddFileToContainer(containerID, "/etc/nginx/conf.d/", stream)
