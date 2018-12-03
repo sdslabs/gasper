@@ -32,6 +32,7 @@
 ## Setup
 
 - Clone the repository
+- `cp config.sample.json config.json`
 - Start hacking
 
 **Note:** The vendor is committed, to add another package as dependency, `go get ...` the package in your gopath and then run the command `go mod vendor` to add the dependency in the SWS package.
