@@ -1,0 +1,9 @@
+{
+    "static": {
+        "deploy": true,
+        "port": 8000
+    },
+    "php": {
+        "deploy": false
+    }
+}
