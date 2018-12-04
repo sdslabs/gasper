@@ -13,9 +13,9 @@ import (
 )
 
 type Service struct {
-	Name   string `json:"name"`
-	Deploy bool   `json:"deploy"`
-	Port   string `json:"port"`
+	Name   string   `json:"name"`
+	Deploy bool     `json:"deploy"`
+	Ports  []string `json:"ports"`
 }
 
 type Services struct {
@@ -43,17 +43,19 @@ func main() {
 
 		if service.Deploy == true {
 
-			server := &http.Server{
-				Addr:         service.Port,
-				Handler:      serviceBindings[service.Name],
-				ReadTimeout:  5 * time.Second,
-				WriteTimeout: 10 * time.Second,
+			for _, port := range service.Ports {
+
+				server := &http.Server{
+					Addr:         port,
+					Handler:      serviceBindings[service.Name],
+					ReadTimeout:  5 * time.Second,
+					WriteTimeout: 10 * time.Second,
+				}
+
+				g.Go(func() error {
+					return server.ListenAndServe()
+				})
 			}
-
-			g.Go(func() error {
-				return server.ListenAndServe()
-			})
-
 		}
 	}
 
