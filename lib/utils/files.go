@@ -8,7 +8,7 @@ import (
 )
 
 // TarFile function takes a source file and converts it into a tar archive
-func tarFile(content []byte, filename string, mode int64) (io.Reader, error) {
+func TarFile(content []byte, filename string, mode int64) (io.Reader, error) {
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
 
