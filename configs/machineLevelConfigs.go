@@ -1,15 +1,22 @@
+package configs
+
+import "fmt"
+
+// ApacheMachineConfig is .conf file for apache server
+var ApacheMachineConfig = fmt.Sprintf(`
 <VirtualHost *:80>
     # Set the below ServerAlias
-    # eg: *static.mysite.com for the static container
-    ServerAlias *.static.sdslabs.co
+    # eg: *.mysite.com for the static container
+    ServerAlias *.%s
     # Reverse proxy for the port pointing to container
     ProxyPass / http://localhost:5000/
     ProxyPassReverse / http://localhost:5000/
-    # To set the HOSTNAME received by the container as the ServerName, not `localhost:port`
-    RequestHeader set Host %{HTTP_HOST}
+    # To set the HOSTNAME received by the container as the ServerName, not 'localhost:port'
+    RequestHeader set Host %%{HTTP_HOST}
     ProxyPreserveHost On
     # Error log
     ErrorLog /var/log/apache2/static.error.log
     LogLevel warn
     CustomLog /var/log/apache2/static.access.log combined
 </VirtualHost>
+`, getDomainName())

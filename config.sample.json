@@ -1,4 +1,5 @@
 {
+    "domain": "sdslabs.co",
     "services": [
         {
             "name": "static",
