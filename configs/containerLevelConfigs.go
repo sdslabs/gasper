@@ -2,6 +2,8 @@ package configs
 
 import (
 	"fmt"
+
+	"github.com/sdslabs/SWS/lib/utils/json"
 )
 
 // CreateStaticContainerConfig takes the name of the static application
@@ -25,5 +27,5 @@ func CreateStaticContainerConfig(name string) string {
 			root   /usr/share/nginx/html;
 		}
 	}
-	`, name, domain, name, name, name)
+	`, name, json.Domain, name, name, name)
 }
