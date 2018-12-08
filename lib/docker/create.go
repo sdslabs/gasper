@@ -1,21 +1,19 @@
 package docker
 
 import (
-	"io"
-
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"github.com/sdslabs/docker/api/types"
-	"github.com/sdslabs/docker/api/types/container"
-	"github.com/sdslabs/docker/client"
 	"golang.org/x/net/context"
 )
 
 // CreateContainer spawns a new container of the provided docker image
-func CreateContainer(image string) {
+func CreateContainer(image string) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Map 0.0.0.0:7000 -> 80/tcp
@@ -37,29 +35,12 @@ func CreateContainer(image string) {
 	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "static")
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
-		panic(err)
-	}
-}
-
-// AddFileToContainer copies the file from source path to the destination path inside the container
-// Reader must be a tar archive
-func AddFileToContainer(containerID, destination string, reader io.Reader) error {
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
 		return err
 	}
 
-	config := types.CopyToContainerOptions{
-		AllowOverwriteDirWithFile: true,
-	}
-	err = cli.CopyToContainer(ctx, containerID, destination, reader, config)
-	if err != nil {
-		return err
-	}
 	return nil
 }
