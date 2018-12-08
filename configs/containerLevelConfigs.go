@@ -25,5 +25,5 @@ func CreateStaticContainerConfig(name string) string {
 			root   /usr/share/nginx/html;
 		}
 	}
-	`, name, getDomainName(), name, name, name)
+	`, name, domain, name, name, name)
 }

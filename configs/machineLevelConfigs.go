@@ -1,6 +1,8 @@
 package configs
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // CreateApacheMachineConfig takes the port (string) and assigns returns a conf file for machine
 func CreateApacheMachineConfig(port string) string {
@@ -20,5 +22,5 @@ func CreateApacheMachineConfig(port string) string {
         LogLevel warn
         CustomLog /var/log/apache2/static.access.log combined
     </VirtualHost>
-    `, getDomainName(), port, port)
+    `, domain, port, port)
 }
