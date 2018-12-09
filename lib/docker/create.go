@@ -9,36 +9,38 @@ import (
 )
 
 // CreateContainer spawns a new container of the provided docker image
-func CreateContainer(image string) error {
+// Image can be of the form name:tag
+// Port is the host port to be mapped
+// Name is the name of the container, eqiv to app name
+func CreateContainer(image, port, name string) error {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		return err
 	}
 
-	// Map 0.0.0.0:7000 -> 80/tcp
 	config := &container.Config{
 		Image: image,
 		ExposedPorts: nat.PortSet{
 			"80/tcp": struct{}{},
 		},
 	}
-
 	hostConfig := &container.HostConfig{
 		Binds: []string{
 			"/var/run/docker.sock:/var/run/docker.sock",
 		},
 		PortBindings: nat.PortMap{
-			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: "7000"}},
+			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: port}},
 		},
 	}
-	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, "static")
 
+	resp, err := cli.ContainerCreate(ctx, config, hostConfig, nil, name)
 	if err != nil {
 		return err
 	}
 
-	if err := cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{}); err != nil {
+	err = cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{})
+	if err != nil {
 		return err
 	}
 
