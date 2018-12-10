@@ -10,17 +10,11 @@ import (
 
 // CopyToContainer copies the file from source path to the destination path inside the container
 // Reader must be a tar archive
-func CopyToContainer(containerID, destination string, reader io.Reader) error {
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return err
-	}
-
+func CopyToContainer(ctx context.Context, cli *client.Client, containerID, destination string, reader io.Reader) error {
 	config := types.CopyToContainerOptions{
 		AllowOverwriteDirWithFile: true,
 	}
-	err = cli.CopyToContainer(ctx, containerID, destination, reader, config)
+	err := cli.CopyToContainer(ctx, containerID, destination, reader, config)
 	if err != nil {
 		return err
 	}
