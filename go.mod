@@ -3,6 +3,7 @@ module github.com/sdslabs/SWS
 require (
 	github.com/Microsoft/go-winio v0.4.11 // indirect
 	github.com/docker/distribution v2.6.2+incompatible // indirect
+	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.3.3 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
@@ -16,7 +17,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.8.0 // indirect
-	github.com/sdslabs/docker v1.0.0-sds
 	github.com/ugorji/go v0.0.0-20180813092308-00b869d2f4a5 // indirect
 	golang.org/x/net v0.0.0-20180826012351-8a410e7b638d
 	golang.org/x/sync v0.0.0-20181108010431-42b317875d0f
