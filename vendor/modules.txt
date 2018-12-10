@@ -33,8 +33,12 @@ github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
 github.com/gin-gonic/gin/json
 github.com/gin-gonic/gin/render
+# github.com/go-stack/stack v1.8.0
+github.com/go-stack/stack
 # github.com/golang/protobuf v0.0.0-20180821051752-b27b920f9e71
 github.com/golang/protobuf/proto
+# github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
+github.com/golang/snappy
 # github.com/json-iterator/go v1.1.5
 github.com/json-iterator/go
 # github.com/mattn/go-isatty v0.0.4
@@ -43,18 +47,61 @@ github.com/mattn/go-isatty
 github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
+# github.com/mongodb/mongo-go-driver v0.1.0
+github.com/mongodb/mongo-go-driver/bson
+github.com/mongodb/mongo-go-driver/mongo
+github.com/mongodb/mongo-go-driver/bson/bsoncodec
+github.com/mongodb/mongo-go-driver/bson/bsonrw
+github.com/mongodb/mongo-go-driver/bson/bsontype
+github.com/mongodb/mongo-go-driver/bson/primitive
+github.com/mongodb/mongo-go-driver/x/bsonx
+github.com/mongodb/mongo-go-driver/x/bsonx/bsoncore
+github.com/mongodb/mongo-go-driver/mongo/options
+github.com/mongodb/mongo-go-driver/mongo/readconcern
+github.com/mongodb/mongo-go-driver/mongo/readpref
+github.com/mongodb/mongo-go-driver/mongo/writeconcern
+github.com/mongodb/mongo-go-driver/tag
+github.com/mongodb/mongo-go-driver/x/mongo/driver
+github.com/mongodb/mongo-go-driver/x/mongo/driver/session
+github.com/mongodb/mongo-go-driver/x/mongo/driver/topology
+github.com/mongodb/mongo-go-driver/x/mongo/driver/uuid
+github.com/mongodb/mongo-go-driver/x/network/command
+github.com/mongodb/mongo-go-driver/x/network/connstring
+github.com/mongodb/mongo-go-driver/x/network/description
+github.com/mongodb/mongo-go-driver/x/network/result
+github.com/mongodb/mongo-go-driver/event
+github.com/mongodb/mongo-go-driver/x/network/connection
+github.com/mongodb/mongo-go-driver/x/mongo/driver/auth
+github.com/mongodb/mongo-go-driver/x/network/address
+github.com/mongodb/mongo-go-driver/x/network/compressor
+github.com/mongodb/mongo-go-driver/x/network/wiremessage
+github.com/mongodb/mongo-go-driver/version
+github.com/mongodb/mongo-go-driver/internal
+github.com/mongodb/mongo-go-driver/x/mongo/driver/auth/internal/gssapi
 # github.com/pkg/errors v0.8.0
 github.com/pkg/errors
 # github.com/ugorji/go v0.0.0-20180813092308-00b869d2f4a5
 github.com/ugorji/go/codec
+# github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c
+github.com/xdg/scram
+# github.com/xdg/stringprep v1.0.0
+github.com/xdg/stringprep
+# golang.org/x/crypto v0.0.0-20181203042331-505ab145d0a9
+golang.org/x/crypto/pbkdf2
 # golang.org/x/net v0.0.0-20180826012351-8a410e7b638d
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/proxy
 golang.org/x/net/internal/socks
+# golang.org/x/sync v0.0.0-20181108010431-42b317875d0f
+golang.org/x/sync/errgroup
+golang.org/x/sync/semaphore
 # golang.org/x/sys v0.0.0-20180824143301-4910a1d54f87
 golang.org/x/sys/unix
 golang.org/x/sys/windows
+# golang.org/x/text v0.3.0
+golang.org/x/text/unicode/norm
+golang.org/x/text/transform
 # gopkg.in/go-playground/validator.v8 v8.18.2
 gopkg.in/go-playground/validator.v8
 # gopkg.in/yaml.v2 v2.2.1
