@@ -8,8 +8,4 @@ import (
 var Router = gin.Default()
 
 func init() {
-	appGroup := Router.Group("/static")
-	{
-		appGroup.POST("/create", createApp)
-	}
 }
