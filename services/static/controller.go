@@ -2,6 +2,7 @@ package static
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
@@ -51,6 +52,8 @@ func createApp(c *gin.Context) {
 		})
 		return
 	}
+
+	mongo.RegisterApp(json.Name, json.UserID, json.GithubURL, "static")
 
 	c.JSON(200, gin.H{
 		"success": true,
