@@ -1,8 +1,26 @@
 package static
 
-// staticAppConfig is json binding config for creating new static page
-type staticAppConfig struct {
-	Name      string `json:"name" form:"name" binding:"required"`
-	UserID    int    `json:"user_id" form:"user_id" binding:"required"`
-	GithubURL string `json:"github_url" form:"github_url" binding:"required"`
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/api"
+	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/lib/types"
+)
+
+func create(c *gin.Context) {
+	var json types.StaticAppConfig
+	c.BindJSON(&json)
+
+	appConf := &types.ApplicationConfig{
+		DockerImage:  "nginx:1.15.2",
+		ConfFunction: configs.CreateStaticContainerConfig,
+	}
+	err := api.CreateBasicApplication(json.Name, "7436", appConf)
+	if err != nil {
+		c.JSON(err.Status(), gin.H{
+			"error": err.Reason(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{})
 }
