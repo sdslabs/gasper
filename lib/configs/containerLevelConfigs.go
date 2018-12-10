@@ -27,5 +27,5 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, utils.ConfigDomain, name, name, name)
+	`, name, utils.SWSConfig.Domain, name, name, name)
 }

@@ -5,23 +5,30 @@ import (
 	"io/ioutil"
 )
 
-func parseJSON(location string) (map[string]interface{}, error) {
-	file, err := ioutil.ReadFile(location)
+type service struct {
+	Name   string   `json:"name"`
+	Deploy bool     `json:"deploy"`
+	Ports  []string `json:"ports"`
+}
+
+// JSONConfig is the type of parsed data from config.json
+type JSONConfig struct {
+	Domain   string    `json:"domain"`
+	Services []service `json:"services"`
+}
+
+func parseJSON(path string) (JSONConfig, error) {
+	var conf JSONConfig
+	file, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, err
+		return conf, err
 	}
-	var parsedData map[string]interface{}
-	err = json.Unmarshal(file, &parsedData)
+	err = json.Unmarshal(file, &conf)
 	if err != nil {
-		return nil, err
+		return conf, err
 	}
-	return parsedData, nil
+	return conf, nil
 }
 
 // SWSConfig is parsed data for `config.json`
 var SWSConfig, _ = parseJSON("config.json")
-
-// Shortcuts - start with `Config`
-var (
-	ConfigDomain = SWSConfig["domain"].(string)
-)

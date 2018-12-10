@@ -24,5 +24,5 @@ func CreateApacheMachineConfig(port string) string {
     LogLevel warn
     CustomLog /var/log/apache2/static.access.log combined
 </VirtualHost>
-    `, utils.ConfigDomain, port, port)
+    `, utils.SWSConfig.Domain, port, port)
 }
