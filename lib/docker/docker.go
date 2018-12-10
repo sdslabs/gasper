@@ -3,10 +3,10 @@ package docker
 import (
 	"io"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/sdslabs/docker/api/types"
+	"github.com/sdslabs/docker/api/types/container"
+	"github.com/sdslabs/docker/client"
 	"golang.org/x/net/context"
 )
 
