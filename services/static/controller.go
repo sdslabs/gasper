@@ -53,9 +53,8 @@ func createApp(c *gin.Context) {
 		return
 	}
 
-	mongo.RegisterApp(json.Name, json.UserID, json.GithubURL, "static")
-
 	c.JSON(200, gin.H{
 		"success": true,
+		"id":      mongo.RegisterApp(json.Name, json.UserID, json.GithubURL, "static"),
 	})
 }
