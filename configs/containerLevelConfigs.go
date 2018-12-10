@@ -2,6 +2,8 @@ package configs
 
 import (
 	"fmt"
+
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // CreateStaticContainerConfig takes the name of the static application
@@ -25,5 +27,5 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, getDomain(), name, name, name)
+	`, name, utils.ConfigDomain, name, name, name)
 }

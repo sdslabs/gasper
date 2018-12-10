@@ -2,6 +2,8 @@ package configs
 
 import (
 	"fmt"
+
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // CreateApacheMachineConfig takes the port (string) and assigns returns a conf file for machine
@@ -22,5 +24,5 @@ func CreateApacheMachineConfig(port string) string {
     LogLevel warn
     CustomLog /var/log/apache2/static.access.log combined
 </VirtualHost>
-    `, getDomain(), port, port)
+    `, utils.ConfigDomain, port, port)
 }
