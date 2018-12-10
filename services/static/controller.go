@@ -5,6 +5,7 @@ import (
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/SWS/lib/mongo"
 )
 
 func create(c *gin.Context) {
@@ -22,5 +23,8 @@ func create(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(200, gin.H{})
+	c.JSON(200, gin.H{
+		"success": true,
+		"id":      mongo.RegisterApp(json.Name, json.UserID, json.GithubURL, "static"),
+	})
 }
