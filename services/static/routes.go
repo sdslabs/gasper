@@ -11,5 +11,7 @@ func init() {
 	appGroup := Router.Group("/static")
 	{
 		appGroup.POST("/", createApp)
+
+		appGroup.GET("/", fetchDocs)
 	}
 }
