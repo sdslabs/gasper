@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
-	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/types"
 )
 
 func create(c *gin.Context) {
@@ -16,7 +16,7 @@ func create(c *gin.Context) {
 		DockerImage:  "nginx:1.15.2",
 		ConfFunction: configs.CreateStaticContainerConfig,
 	}
-	err := api.CreateBasicApplication(json.Name, "7436", appConf)
+	err := api.CreateBasicApplication(json.Name, "7436", "7437", appConf)
 	if err != nil {
 		c.JSON(err.Status(), gin.H{
 			"error": err.Reason(),

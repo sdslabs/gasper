@@ -9,12 +9,13 @@ import (
 )
 
 // CreateContainer creates a new container of the given container options, returns id of the container created
-func CreateContainer(ctx context.Context, cli *client.Client, image, port, workDir, name string) (string, error) {
+func CreateContainer(ctx context.Context, cli *client.Client, image, port80, port22, workDir, name string) (string, error) {
 	containerConfig := &container.Config{
 		WorkingDir: workDir,
 		Image:      image,
 		ExposedPorts: nat.PortSet{
 			"80/tcp": struct{}{},
+			"22/tcp": struct{}{},
 		},
 	}
 	hostConfig := &container.HostConfig{
@@ -22,7 +23,8 @@ func CreateContainer(ctx context.Context, cli *client.Client, image, port, workD
 			"/var/run/docker.sock:/var/run/docker.sock",
 		},
 		PortBindings: nat.PortMap{
-			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: port}},
+			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: port80}},
+			nat.Port("22/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: port22}},
 		},
 	}
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, name)

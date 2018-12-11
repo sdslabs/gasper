@@ -6,8 +6,8 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-// CreateApacheMachineConfig takes the port (string) and assigns returns a conf file for machine
-func CreateApacheMachineConfig(port string) string {
+// CreateApacheHostConfig takes the port (string) and assigns returns a conf file for host
+func CreateApacheHostConfig(port string) string {
 	return fmt.Sprintf(`
 <VirtualHost *:80>
     # Set the below ServerAlias

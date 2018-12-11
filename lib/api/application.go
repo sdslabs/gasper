@@ -11,7 +11,7 @@ import (
 )
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, port string, appConf *types.ApplicationConfig) *types.ResponseError {
+func CreateBasicApplication(name, port80, port22 string, appConf *types.ApplicationConfig) *types.ResponseError {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -23,7 +23,7 @@ func CreateBasicApplication(name, port string, appConf *types.ApplicationConfig)
 	)
 
 	// Step 1: create the container
-	containerID, err := docker.CreateContainer(ctx, cli, appConf.DockerImage, port, workDir, name)
+	containerID, err := docker.CreateContainer(ctx, cli, appConf.DockerImage, port80, port22, workDir, name)
 	if err != nil {
 		return types.NewResponseError(500, "failed to create new container [CreateContainer]", err)
 	}
