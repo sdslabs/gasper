@@ -7,17 +7,18 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 )
 
-func RegisterApp(name string, user_id int, github_url string, language string) interface{} {
-	collection := link.Collection("apps")
+// InsertOne inserts a document into a mongoDB collection
+func InsertOne(collectionName string, data bson.M) interface{} {
+	collection := link.Collection(collectionName)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
-	res, err := collection.InsertOne(ctx, bson.M{
-		"name":       name,
-		"user_id":    user_id,
-		"github_url": github_url,
-		"language":   language,
-	})
+	res, err := collection.InsertOne(ctx, data)
 	if err != nil {
 		panic(err)
 	}
 	return res.InsertedID
+}
+
+// RegisterApp is an abstraction over InsertOne which inserts application info into mongoDB
+func RegisterApp(data bson.M) interface{} {
+	return InsertOne("apps", data)
 }
