@@ -13,5 +13,7 @@ func init() {
 		appGroup.POST("/", createApp)
 
 		appGroup.GET("/", fetchDocs)
+
+		appGroup.DELETE("/", deleteApp)
 	}
 }

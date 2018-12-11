@@ -62,14 +62,32 @@ func createApp(c *gin.Context) {
 
 func fetchDocs(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	filter := make(map[string]interface{})
+	filter := queryToFilter(queries)
 
-	for key, value := range queries {
-		filter[key] = value[0]
-	}
 	filter["language"] = "static"
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchAppInfo(filter),
 	})
+}
+
+func deleteApp(c *gin.Context) {
+	queries := c.Request.URL.Query()
+	filter := queryToFilter(queries)
+
+	filter["language"] = "static"
+
+	c.JSON(200, gin.H{
+		"message": mongo.DeleteApp(filter),
+	})
+}
+
+func queryToFilter(queries map[string][]string) map[string]interface{} {
+	filter := make(map[string]interface{})
+
+	for key, value := range queries {
+		filter[key] = value[0]
+	}
+
+	return filter
 }
