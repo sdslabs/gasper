@@ -11,11 +11,8 @@ func init() {
 	appGroup := Router.Group("/static")
 	{
 		appGroup.POST("/", createApp)
-
 		appGroup.GET("/", fetchDocs)
-
 		appGroup.PUT("/", updateApp)
-
 		appGroup.DELETE("/", deleteApp)
 	}
 }
