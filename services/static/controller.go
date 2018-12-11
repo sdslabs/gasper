@@ -40,11 +40,11 @@ func ReadAndWriteConfig(name string) utils.Error {
 // createApp function handles requests for making making new static app
 func createApp(c *gin.Context) {
 	var (
-		json map[string]interface{}
+		data map[string]interface{}
 		// err  utils.Error
 	)
-	c.BindJSON(&json)
-	json["language"] = "static"
+	c.BindJSON(&data)
+	data["language"] = "static"
 
 	// err = ReadAndWriteConfig("random")
 	// if err.Code != 200 {
@@ -56,7 +56,7 @@ func createApp(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"id":      mongo.RegisterApp(json),
+		"id":      mongo.RegisterApp(data),
 	})
 }
 
@@ -79,6 +79,23 @@ func deleteApp(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": mongo.DeleteApp(filter),
+	})
+}
+
+func updateApp(c *gin.Context) {
+	queries := c.Request.URL.Query()
+	filter := queryToFilter(queries)
+
+	filter["language"] = "static"
+
+	var (
+		data map[string]interface{}
+		// err  utils.Error
+	)
+	c.BindJSON(&data)
+
+	c.JSON(200, gin.H{
+		"message": mongo.UpdateApp(filter, data),
 	})
 }
 

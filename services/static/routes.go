@@ -14,6 +14,8 @@ func init() {
 
 		appGroup.GET("/", fetchDocs)
 
+		appGroup.PUT("/", updateApp)
+
 		appGroup.DELETE("/", deleteApp)
 	}
 }
