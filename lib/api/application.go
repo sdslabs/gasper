@@ -21,7 +21,7 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, appConf *types.
 	}
 	var (
 		workDir      = "/SWS"
-		confFileName = fmt.Sprintf("%s.sws.conf", name)
+		confFileName = "app.sws.conf"
 	)
 
 	// Step 1: create the container

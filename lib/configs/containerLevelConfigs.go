@@ -14,11 +14,11 @@ server {
 	listen       80;
 	server_name  %s.%s;
 
-	access_log  /var/log/nginx/%s.access.log  main;
-	error_log   /var/log/nginx/%s.error.log   warn;
+	access_log  /var/log/nginx/app.access.log  main;
+	error_log   /var/log/nginx/app.error.log   warn;
 
 	location / {
-		root   /SWS/%s/;
+		root   /SWS/app/;
 		index  index.html index.htm;
 	}
 
@@ -27,5 +27,5 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, utils.SWSConfig.Domain, name, name, name)
+	`, name, utils.SWSConfig.Domain)
 }
