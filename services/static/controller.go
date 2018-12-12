@@ -2,9 +2,11 @@ package static
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/api"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/types"
 )
-
 
 // createApp function handles requests for making making new static app
 func createApp(c *gin.Context) {
@@ -13,6 +15,12 @@ func createApp(c *gin.Context) {
 	)
 	c.BindJSON(&data)
 	data["language"] = "static"
+
+	conf := &types.ApplicationConfig{
+		DockerImage:  "nginx:1.15.2",
+		ConfFunction: configs.CreateStaticContainerConfig,
+	}
+	_, _ = api.CreateBasicApplication(data["name"].(string), data["github_url"].(string), "7890", "7891", conf)
 
 	c.JSON(200, gin.H{
 		"success": true,
