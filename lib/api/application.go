@@ -2,6 +2,10 @@ package api
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/sdslabs/SWS/lib/git"
 
 	"github.com/docker/docker/client"
 	"github.com/sdslabs/SWS/lib/docker"
@@ -11,23 +15,37 @@ import (
 )
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, httpPort, sshPort string, appConf *types.ApplicationConfig) *types.ResponseError {
+func CreateBasicApplication(name, url, httpPort, sshPort string, appConf *types.ApplicationConfig) *types.ResponseError {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
 		return types.NewResponseError(500, "", err)
 	}
 	var (
-		workDir      = fmt.Sprintf("/SWS/%s", name)
+		storepath, _ = os.Getwd()
 		confFileName = fmt.Sprintf("%s.sws.conf", name)
+		workdir      = fmt.Sprintf("/SWS/%s", name)
+		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
 	)
 
-	// Step 1: create the container
-	containerID, err := docker.CreateContainer(ctx, cli, appConf.DockerImage, httpPort, sshPort, workDir, name)
+	// Step 1: clone the repo in the storage
+	err = os.MkdirAll(storedir, 0755)
+	// TODO: check if does exist -> name of the project changed and other issues
+	// Check if dir available...?
+	if err != nil {
+		return types.NewResponseError(500, "failed to create storage directory [Mkdir]", err)
+	}
+	err = git.Clone(url, storedir)
+	if err != nil {
+		return types.NewResponseError(500, "failed to clone application [Clone]", err)
+	}
+
+	// Step 2: create the container
+	containerID, err := docker.CreateContainer(ctx, cli, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name)
 	if err != nil {
 		return types.NewResponseError(500, "failed to create new container [CreateContainer]", err)
 	}
-	// Step 2: write config to the container
+	// Step 3: write config to the container
 	confFile := []byte(appConf.ConfFunction(name))
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
@@ -37,8 +55,6 @@ func CreateBasicApplication(name, httpPort, sshPort string, appConf *types.Appli
 	if err != nil {
 		return types.NewResponseError(500, "failed to write conf file [CopyToContainer]", err)
 	}
-	// Step 3: clone the repo and add it to the container
-	// TODO: Step 3
 	// Step 4: start the container
 	err = docker.StartContainer(ctx, cli, containerID)
 	if err != nil {

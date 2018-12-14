@@ -1,3 +1,6 @@
-# Temporary build by `fresh`
+# Temp build by fresh
 tmp/
+# Config file
 config.json
+# storage
+storage/
