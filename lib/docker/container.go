@@ -1,6 +1,8 @@
 package docker
 
 import (
+	"fmt"
+
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
@@ -9,18 +11,23 @@ import (
 )
 
 // CreateContainer creates a new container of the given container options, returns id of the container created
-func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, sshPort, workDir, name string) (string, error) {
+func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, sshPort, workdir, storedir, name string) (string, error) {
+	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 	containerConfig := &container.Config{
-		WorkingDir: workDir,
+		WorkingDir: workdir,
 		Image:      image,
 		ExposedPorts: nat.PortSet{
 			"80/tcp": struct{}{},
 			"22/tcp": struct{}{},
 		},
+		Volumes: map[string]struct{}{
+			volume: struct{}{},
+		},
 	}
 	hostConfig := &container.HostConfig{
 		Binds: []string{
 			"/var/run/docker.sock:/var/run/docker.sock",
+			volume,
 		},
 		PortBindings: nat.PortMap{
 			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: httpPort}},

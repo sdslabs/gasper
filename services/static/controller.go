@@ -5,7 +5,6 @@ import (
 	"github.com/sdslabs/SWS/lib/mongo"
 )
 
-
 // createApp function handles requests for making making new static app
 func createApp(c *gin.Context) {
 	var (
