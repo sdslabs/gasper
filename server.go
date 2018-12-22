@@ -17,6 +17,7 @@ func main() {
 	// Bind services to routers here
 	serviceBindings := map[string]*gin.Engine{
 		"static": static.Router,
+		"php":    php.Router,
 	}
 
 	for _, service := range utils.SWSConfig.Services {
