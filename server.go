@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/services/php"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
 )
