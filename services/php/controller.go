@@ -10,8 +10,14 @@ func createApp(c *gin.Context) {
 	var (
 		data map[string]interface{}
 	)
+
 	c.BindJSON(&data)
 	data["language"] = "php"
+
+	// Install composer in the container
+	if data["composer"] == "true" {
+		installPackages(true)
+	}
 
 	c.JSON(200, gin.H{
 		"success": true,
