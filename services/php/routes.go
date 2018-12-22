@@ -10,6 +10,9 @@ var Router = gin.Default()
 func init() {
 	appGroup := Router.Group("/php")
 	{
-		appGroup.POST("/create", createApp)
+		appGroup.POST("/", createApp)
+		appGroup.GET("/", fetchDocs)
+		appGroup.PUT("/", updateApp)
+		appGroup.DELETE("/", deleteApp)
 	}
 }
