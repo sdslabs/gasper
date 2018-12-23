@@ -6,9 +6,9 @@ import (
 )
 
 type service struct {
-	Name   string   `json:"name"`
-	Deploy bool     `json:"deploy"`
-	Ports  []string `json:"ports"`
+	Name   string `json:"name"`
+	Deploy bool   `json:"deploy"`
+	Port   string `json:"port"`
 }
 
 // JSONConfig is the type of parsed data from config.json

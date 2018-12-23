@@ -23,17 +23,15 @@ func main() {
 
 	for _, service := range utils.SWSConfig.Services {
 		if service.Deploy {
-			for _, port := range service.Ports {
-				server := &http.Server{
-					Addr:         port,
-					Handler:      serviceBindings[service.Name],
-					ReadTimeout:  5 * time.Second,
-					WriteTimeout: 10 * time.Second,
-				}
-				g.Go(func() error {
-					return server.ListenAndServe()
-				})
+			server := &http.Server{
+				Addr:         service.Port,
+				Handler:      serviceBindings[service.Name],
+				ReadTimeout:  5 * time.Second,
+				WriteTimeout: 10 * time.Second,
 			}
+			g.Go(func() error {
+				return server.ListenAndServe()
+			})
 		}
 	}
 

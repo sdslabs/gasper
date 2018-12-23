@@ -4,12 +4,12 @@
         {
             "name": "static",
             "deploy": true,
-            "ports": [":8000"]
+            "port": ":8000"
         },
         {
             "name": "php",
             "deploy": false,
-            "ports": [":8001"]
+            "port": ":8001"
         }
     ]
 }
