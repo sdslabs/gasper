@@ -1,5 +1,11 @@
 {
     "domain": "sdslabs.co",
+    "redis": {
+        "host": "localhost",
+        "port": ":6379",
+        "password": "",
+        "DB": 0
+    },
     "services": [
         {
             "name": "static",
