@@ -8,19 +8,18 @@ import (
 	"golang.org/x/net/context"
 )
 
-func installPackages(composer bool) *types.ResponseError {
-	if composer {
-		ctx := context.Background()
-		cli, err := client.NewEnvClient()
-		if err != nil {
-			return types.NewResponseError(500, "", err)
-		}
-		cmd := []string{"bash", "-c", "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer"}
-		execId, err := docker.ExecDetachedProcess(ctx, cli, "c859d83d6ac1", cmd)
-		fmt.Println(execId)
-		if err != nil {
-			return types.NewResponseError(500, "failed to install composer in the container", err)
-		}
+func installPackages(path string) (string, *types.ResponseError) {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		return "", types.NewResponseError(500, "", err)
 	}
-	return nil
+	var composerInstallCmd string = "cd " + path + " && composer install"
+	cmd := []string{"bash", "-c", composerInstallCmd}
+	execId, err := docker.ExecDetachedProcess(ctx, cli, "c859d83d6ac1", cmd)
+	fmt.Println(execId)
+	if err != nil {
+		return "", types.NewResponseError(500, "Failed to perform composer install in the container", err)
+	}
+	return execId, nil
 }

@@ -1,8 +1,10 @@
 package php
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // createApp function handles requests for making making new php app
@@ -14,9 +16,15 @@ func createApp(c *gin.Context) {
 	c.BindJSON(&data)
 	data["language"] = "php"
 
-	// Install composer in the container
+	var indexPath string = data["indexPath"].(string)
+
+	// Perform compeser install in the container
 	if data["composer"] == "true" {
-		installPackages(true)
+		execId, err := installPackages(indexPath)
+
+		// TODO: use execId and err later, for now just printing it out
+		fmt.Println(execId)
+		fmt.Println(err)
 	}
 
 	c.JSON(200, gin.H{
@@ -27,7 +35,7 @@ func createApp(c *gin.Context) {
 
 func fetchDocs(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	filter := queryToFilter(queries)
+	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "php"
 
@@ -38,7 +46,7 @@ func fetchDocs(c *gin.Context) {
 
 func deleteApp(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	filter := queryToFilter(queries)
+	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "php"
 
@@ -49,7 +57,7 @@ func deleteApp(c *gin.Context) {
 
 func updateApp(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	filter := queryToFilter(queries)
+	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "php"
 
@@ -61,14 +69,4 @@ func updateApp(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": mongo.UpdateApp(filter, data),
 	})
-}
-
-func queryToFilter(queries map[string][]string) map[string]interface{} {
-	filter := make(map[string]interface{})
-
-	for key, value := range queries {
-		filter[key] = value[0]
-	}
-
-	return filter
 }
