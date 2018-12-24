@@ -8,6 +8,7 @@ require (
 	github.com/docker/go-units v0.3.3 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v1.3.0
+	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/protobuf v0.0.0-20180821051752-b27b920f9e71 // indirect
