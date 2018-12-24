@@ -3,7 +3,11 @@ package static
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/utils"
 )
+
+type appConf struct {
+}
 
 // createApp function handles requests for making making new static app
 func createApp(c *gin.Context) {
@@ -21,7 +25,7 @@ func createApp(c *gin.Context) {
 
 func fetchDocs(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	filter := queryToFilter(queries)
+	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "static"
 
@@ -32,7 +36,7 @@ func fetchDocs(c *gin.Context) {
 
 func deleteApp(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	filter := queryToFilter(queries)
+	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "static"
 
@@ -43,7 +47,7 @@ func deleteApp(c *gin.Context) {
 
 func updateApp(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	filter := queryToFilter(queries)
+	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "static"
 
@@ -55,14 +59,4 @@ func updateApp(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": mongo.UpdateApp(filter, data),
 	})
-}
-
-func queryToFilter(queries map[string][]string) map[string]interface{} {
-	filter := make(map[string]interface{})
-
-	for key, value := range queries {
-		filter[key] = value[0]
-	}
-
-	return filter
 }
