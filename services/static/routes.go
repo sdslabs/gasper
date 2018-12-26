@@ -8,11 +8,8 @@ import (
 var Router = gin.Default()
 
 func init() {
-	appGroup := Router.Group("/static")
-	{
-		appGroup.POST("/", createApp)
-		appGroup.GET("/", fetchDocs)
-		appGroup.PUT("/", updateApp)
-		appGroup.DELETE("/", deleteApp)
-	}
+	Router.POST("/", createApp)
+	Router.GET("/", fetchDocs)
+	Router.PUT("/", updateApp)
+	Router.DELETE("/", deleteApp)
 }
