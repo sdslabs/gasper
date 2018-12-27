@@ -27,7 +27,7 @@ func main() {
 				Addr:         service.Port,
 				Handler:      serviceBindings[service.Name],
 				ReadTimeout:  5 * time.Second,
-				WriteTimeout: 10 * time.Second,
+				WriteTimeout: 30 * time.Second,
 			}
 			g.Go(func() error {
 				return server.ListenAndServe()
