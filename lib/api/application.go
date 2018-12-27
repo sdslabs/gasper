@@ -49,16 +49,16 @@ func CreateBasicApplication(name, location, url, httpPort, sshPort string, appCo
 	confFile := []byte(appConf.ConfFunction(name, location))
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
-		return "", types.NewResponseError(500, "failed to write conf file [NewTarArchiveFromContent]", err)
+		return containerID, types.NewResponseError(500, "failed to write conf file [NewTarArchiveFromContent]", err)
 	}
 	err = docker.CopyToContainer(ctx, cli, containerID, "/etc/nginx/conf.d/", archive)
 	if err != nil {
-		return "", types.NewResponseError(500, "failed to write conf file [CopyToContainer]", err)
+		return containerID, types.NewResponseError(500, "failed to write conf file [CopyToContainer]", err)
 	}
 	// Step 4: start the container
 	err = docker.StartContainer(ctx, cli, containerID)
 	if err != nil {
-		return "", types.NewResponseError(500, "failed to start container [StartContainer]", err)
+		return containerID, types.NewResponseError(500, "failed to start container [StartContainer]", err)
 	}
 	return containerID, nil
 }
