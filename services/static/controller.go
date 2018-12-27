@@ -6,9 +6,6 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-type appConf struct {
-}
-
 // createApp function handles requests for making making new static app
 func createApp(c *gin.Context) {
 	var (
