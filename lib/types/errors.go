@@ -7,8 +7,9 @@ import (
 
 // ResponseError is a type for declaring a response error from server
 type ResponseError struct {
-	Code int    // status code of the error
-	Msg  string // Default set to Err.Error()
+	Code   int    // status code of the error
+	Msg    string // Default set to Err.Error()
+	Reason string // Reason for the error
 }
 
 // NewResponseError returns a ResponseError type with the given message
@@ -16,13 +17,15 @@ type ResponseError struct {
 func NewResponseError(code int, msg string, err error) *ResponseError {
 	if strings.Trim(msg, " ") != "" {
 		return &ResponseError{
-			Code: code,
-			Msg:  msg,
+			Code:   code,
+			Msg:    msg,
+			Reason: err.Error(),
 		}
 	} else if err != nil {
 		return &ResponseError{
-			Code: code,
-			Msg:  err.Error(),
+			Code:   code,
+			Msg:    err.Error(),
+			Reason: err.Error(),
 		}
 	}
 	return nil
@@ -33,9 +36,14 @@ func (err *ResponseError) Error() string {
 	return fmt.Sprintf("Status %d: %s", err.Code, err.Msg)
 }
 
-// Reason returns the message behind the error
-func (err *ResponseError) Reason() string {
+// Message returns the message accompanying the error
+func (err *ResponseError) Message() string {
 	return err.Msg
+}
+
+// Verbose returns the reason behind the error
+func (err *ResponseError) Verbose() string {
+	return err.Reason
 }
 
 // Status returns server response code for the error
