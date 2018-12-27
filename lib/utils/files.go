@@ -4,7 +4,6 @@ import (
 	"archive/tar"
 	"bufio"
 	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -45,22 +44,22 @@ func NewTarArchiveFromPath(path string) (io.Reader, error) {
 
 	ok := filepath.Walk(path, func(file string, fi os.FileInfo, err error) error {
 		if err != nil {
-			return fmt.Errorf("1. %s", err)
+			return err
 		}
 
 		header, err := tar.FileInfoHeader(fi, fi.Name())
 		if err != nil {
-			return fmt.Errorf("2. %s", err)
+			return err
 		}
 		header.Name = strings.TrimPrefix(strings.Replace(file, path, "", -1), string(filepath.Separator))
 		err = tw.WriteHeader(header)
 		if err != nil {
-			return fmt.Errorf("3. %s", err)
+			return err
 		}
 
 		f, err := os.Open(file)
 		if err != nil {
-			return fmt.Errorf("4. %s", err)
+			return err
 		}
 
 		if fi.IsDir() {
@@ -69,7 +68,7 @@ func NewTarArchiveFromPath(path string) (io.Reader, error) {
 
 		_, err = io.Copy(tw, f)
 		if err != nil {
-			return fmt.Errorf("5. %s", err)
+			return err
 		}
 
 		err = f.Close()
