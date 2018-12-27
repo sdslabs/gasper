@@ -47,8 +47,9 @@ func createApp(c *gin.Context) {
 			DockerImage:  "nginx",
 			ConfFunction: configs.CreateStaticContainerConfig,
 		})
-
-	if err != nil {
+	// A hack for the nil != nil problem ( Comparing interface with a true nil value )
+	var check *types.ResponseError
+	if err != check {
 		c.JSON(200, gin.H{
 			"error": err,
 		})
@@ -59,6 +60,7 @@ func createApp(c *gin.Context) {
 	data["httpPort"] = httpPort
 	data["containerID"] = containerID
 	data["language"] = "static"
+	data["hostIP"] = utils.HostIP
 
 	documentID, err := mongo.RegisterApp(data)
 
