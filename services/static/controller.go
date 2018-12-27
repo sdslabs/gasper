@@ -39,6 +39,7 @@ func createApp(c *gin.Context) {
 
 	containerID, err := api.CreateBasicApplication(
 		data["name"].(string),
+		data["location"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
