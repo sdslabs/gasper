@@ -3,7 +3,7 @@ package types
 // ApplicationConfig defines the config for various service apps
 type ApplicationConfig struct {
 	DockerImage  string
-	ConfFunction func(string) string
+	ConfFunction func(string, string) string
 }
 
 // Request configs...

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/services/php"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
 )
@@ -17,6 +18,7 @@ func main() {
 	// Bind services to routers here
 	serviceBindings := map[string]*gin.Engine{
 		"static": static.Router,
+		"php":    php.Router,
 	}
 
 	for _, service := range utils.SWSConfig.Services {
