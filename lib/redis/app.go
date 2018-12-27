@@ -7,10 +7,10 @@ func RegisterApp(appName, url string) error {
 }
 
 // FetchAppURL returns the URL of the machine where the app in query is deployed
-func FetchAppURL(appName string) string {
+func FetchAppURL(appName string) (string, error) {
 	result, err := client.HGet("Apps", appName).Result()
 	if err != nil {
-		return err.Error()
+		return "", err
 	}
-	return result
+	return result, nil
 }
