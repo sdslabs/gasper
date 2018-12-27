@@ -1,6 +1,6 @@
 package utils
 
-// Filters out queries from the URL parameters
+// QueryToFilter filters out queries from the URL parameters
 func QueryToFilter(queries map[string][]string) map[string]interface{} {
 	filter := make(map[string]interface{})
 
