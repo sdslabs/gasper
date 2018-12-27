@@ -10,7 +10,8 @@ import (
 // DeleteOne deletes a document from a mongoDB collection
 func DeleteOne(collectionName string, filter bson.M) interface{} {
 	collection := link.Collection(collectionName)
-	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	res, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
 		panic(err)

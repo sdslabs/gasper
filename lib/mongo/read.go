@@ -10,7 +10,8 @@ import (
 // FetchDocs is a generic function which takes a collection name and mongoDB filter as input and returns documents
 func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 	collection := link.Collection(collectionName)
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 	var data []map[string]interface{}
 
 	cur, err := collection.Find(ctx, filter)
