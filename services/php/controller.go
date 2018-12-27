@@ -16,11 +16,11 @@ func createApp(c *gin.Context) {
 	c.BindJSON(&data)
 	data["language"] = "php"
 
-	var indexPath string = data["indexPath"].(string)
+	var composerPath string = data["composerPath"].(string)
 
 	// Perform compeser install in the container
 	if data["composer"] == "true" {
-		execId, err := installPackages(indexPath)
+		execId, err := installPackages(composerPath)
 
 		// TODO: use execId and err later, for now just printing it out
 		fmt.Println(execId)
