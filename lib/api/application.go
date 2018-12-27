@@ -15,7 +15,7 @@ import (
 )
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, httpPort, sshPort string, appConf *types.ApplicationConfig) *types.ResponseError {
+func CreateBasicApplication(name, location, url, httpPort, sshPort string, appConf *types.ApplicationConfig) *types.ResponseError {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -46,7 +46,7 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, appConf *types.
 		return types.NewResponseError(500, "failed to create new container [CreateContainer]", err)
 	}
 	// Step 3: write config to the container
-	confFile := []byte(appConf.ConfFunction(name))
+	confFile := []byte(appConf.ConfFunction(name, location))
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
 		return types.NewResponseError(500, "failed to write conf file [NewTarArchiveFromContent]", err)
