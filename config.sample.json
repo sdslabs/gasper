@@ -1,5 +1,6 @@
 {
     "domain": "sdslabs.co",
+    "cleanupInterval": 600,
     "mongo": {
         "url": "mongodb://localhost:27017"
     },

@@ -38,6 +38,9 @@ func main() {
 
 	dominus.ExposeServices()
 
+	cleanupInterval := time.Duration(utils.SWSConfig["cleanupInterval"].(float64))
+	dominus.ScheduleCleanup(cleanupInterval * time.Second)
+
 	if err := g.Wait(); err != nil {
 		panic(err)
 	}
