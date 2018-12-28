@@ -30,7 +30,7 @@ func IncrementServiceLoad(service, url string) error {
 
 // GetLeastLoadedService returns the URL of the host currently having the least number
 // of apps of a particular service deployed
-func GetLeastLoadedService(service string) string {
+func GetLeastLoadedService(service string) (string, error) {
 	data, err := client.ZRangeByScore(
 		service,
 		redis.ZRangeBy{
@@ -40,10 +40,37 @@ func GetLeastLoadedService(service string) string {
 			Count:  1,
 		}).Result()
 	if err != nil {
-		return err.Error()
+		return "", err
 	}
 	if len(data) == 0 {
-		return "Empty Set"
+		return "Empty Set", nil
 	}
-	return data[0]
+	return data[0], nil
+}
+
+// FetchServiceInstances returns all instances of a given service
+func FetchServiceInstances(service string) ([]string, error) {
+	data, err := client.ZRangeByScore(
+		service,
+		redis.ZRangeBy{
+			Min:    "-inf",
+			Max:    "+inf",
+			Offset: 0,
+		}).Result()
+	if err != nil {
+		return []string{}, err
+	}
+	if len(data) == 0 {
+		return []string{}, nil
+	}
+	return data, nil
+}
+
+// RemoveServiceInstance removes an instance of a particular service
+func RemoveServiceInstance(service, member string) error {
+	_, err := client.ZRem(service, member).Result()
+	if err != nil {
+		return err
+	}
+	return nil
 }
