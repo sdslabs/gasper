@@ -1,15 +1,21 @@
 {
     "domain": "sdslabs.co",
+    "redis": {
+        "host": "localhost",
+        "port": ":6379",
+        "password": "",
+        "DB": 0
+    },
     "services": [
         {
             "name": "static",
             "deploy": true,
-            "ports": [":8000"]
+            "port": ":8000"
         },
         {
             "name": "php",
             "deploy": false,
-            "ports": [":8001"]
+            "port": ":8001"
         }
     ]
 }

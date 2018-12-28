@@ -19,6 +19,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	} else {
-		fmt.Println("Database Connection Established")
+		fmt.Println("MongoDB Connection Established")
 	}
 }
