@@ -38,7 +38,7 @@ func createApp(c *gin.Context) {
 	sshPort := ports[0]
 	httpPort := ports[1]
 
-	containerID, err := api.CreateBasicApplication(
+	appEnv, err := api.CreateBasicApplication(
 		data["name"].(string),
 		data["location"].(string),
 		data["url"].(string),
@@ -60,8 +60,8 @@ func createApp(c *gin.Context) {
 	composerPath := data["composerPath"].(string)
 
 	// Perform composer install in the container
-	if data["composer"] == true {
-		execID, err := installPackages(composerPath, containerID)
+	if data["composer"].(bool) == true {
+		execID, err := installPackages(composerPath, appEnv)
 		if err != check {
 			c.JSON(200, gin.H{
 				"error": err,
@@ -73,7 +73,7 @@ func createApp(c *gin.Context) {
 
 	data["sshPort"] = sshPort
 	data["httpPort"] = httpPort
-	data["containerID"] = containerID
+	data["containerID"] = appEnv.ContainerID
 	data["language"] = "php"
 	data["hostIP"] = utils.HostIP
 
