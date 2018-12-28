@@ -14,9 +14,9 @@ func keyNotExists(service, url string) bool {
 
 // RegisterService puts a service URL in its respective sorted set if it doesn't exist
 // for service discovery
-func RegisterService(service, url string) error {
+func RegisterService(service, url string, score float64) error {
 	if keyNotExists(service, url) {
-		_, err := client.ZAdd(service, redis.Z{Score: 0, Member: url}).Result()
+		_, err := client.ZAdd(service, redis.Z{Score: score, Member: url}).Result()
 		return err
 	}
 	return nil
