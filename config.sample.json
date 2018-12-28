@@ -1,21 +1,22 @@
 {
     "domain": "sdslabs.co",
+    "mongo": {
+        "url": "mongodb://localhost:27017"
+    },
     "redis": {
         "host": "localhost",
         "port": ":6379",
         "password": "",
         "DB": 0
     },
-    "services": [
-        {
-            "name": "static",
+    "services": {
+        "static": {
             "deploy": true,
             "port": ":8000"
         },
-        {
-            "name": "php",
-            "deploy": false,
+        "php": {
+            "deploy": true,
             "port": ":8001"
         }
-    ]
+    }
 }

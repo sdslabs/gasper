@@ -8,9 +8,9 @@ import (
 )
 
 var client = redis.NewClient(&redis.Options{
-	Addr:     utils.SWSConfig.Redis.Host + utils.SWSConfig.Redis.Port,
-	Password: utils.SWSConfig.Redis.Password, // no password set
-	DB:       utils.SWSConfig.Redis.DB,       // use default DB
+	Addr:     utils.RedisConfig["host"].(string) + utils.RedisConfig["port"].(string),
+	Password: utils.RedisConfig["password"].(string),
+	DB:       utils.RedisConfig["DB"].(int),
 })
 
 func init() {

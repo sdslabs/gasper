@@ -21,11 +21,12 @@ func main() {
 		"php":    php.Router,
 	}
 
-	for _, service := range utils.SWSConfig.Services {
-		if service.Deploy {
+	for service, config := range utils.ServiceConfig {
+		config := config.(map[string]interface{})
+		if config["deploy"].(bool) {
 			server := &http.Server{
-				Addr:         service.Port,
-				Handler:      serviceBindings[service.Name],
+				Addr:         config["port"].(string),
+				Handler:      serviceBindings[service],
 				ReadTimeout:  5 * time.Second,
 				WriteTimeout: 30 * time.Second,
 			}

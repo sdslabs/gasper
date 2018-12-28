@@ -29,7 +29,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, utils.SWSConfig.Domain, name, name, path)
+	`, name, utils.SWSConfig["domain"].(string), name, name, path)
 }
 
 // CreatePHPContainerConfig takes the name of the PHP application
@@ -67,5 +67,5 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-`, name, utils.SWSConfig.Domain, name, name, path)
+`, name, utils.SWSConfig["domain"].(string), name, name, path)
 }
