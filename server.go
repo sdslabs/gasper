@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/php"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
@@ -36,7 +36,9 @@ func main() {
 		}
 	}
 
+	dominus.ExposeServices()
+
 	if err := g.Wait(); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }
