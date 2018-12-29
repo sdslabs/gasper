@@ -17,8 +17,9 @@ func main() {
 
 	// Bind services to routers here
 	serviceBindings := map[string]*gin.Engine{
-		"static": static.Router,
-		"php":    php.Router,
+		"dominus": dominus.Router,
+		"static":  static.Router,
+		"php":     php.Router,
 	}
 
 	for service, config := range utils.ServiceConfig {
@@ -38,8 +39,10 @@ func main() {
 
 	dominus.ExposeServices()
 
-	cleanupInterval := time.Duration(utils.SWSConfig["cleanupInterval"].(float64))
-	dominus.ScheduleCleanup(cleanupInterval * time.Second)
+	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
+		cleanupInterval := time.Duration(utils.SWSConfig["cleanupInterval"].(float64))
+		dominus.ScheduleCleanup(cleanupInterval * time.Second)
+	}
 
 	if err := g.Wait(); err != nil {
 		panic(err)

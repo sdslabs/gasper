@@ -11,6 +11,10 @@
         "DB": 0
     },
     "services": {
+        "dominus": {
+            "deploy": true,
+            "port": ":3000"
+        },
         "static": {
             "deploy": true,
             "port": ":8000"
