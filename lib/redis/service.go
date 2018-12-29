@@ -28,9 +28,9 @@ func IncrementServiceLoad(service, url string) error {
 	return err
 }
 
-// GetLeastLoadedService returns the URL of the host currently having the least number
+// GetLeastLoadedInstance returns the URL of the host currently having the least number
 // of apps of a particular service deployed
-func GetLeastLoadedService(service string) (string, error) {
+func GetLeastLoadedInstance(service string) (string, error) {
 	data, err := client.ZRangeByScore(
 		service,
 		redis.ZRangeBy{
