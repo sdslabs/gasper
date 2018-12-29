@@ -6,21 +6,31 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-// exposeService exposes a single microservice
+// exposeService exposes a single microservice along with its apps
 func exposeService(service string, config map[string]interface{}) {
 	if config["deploy"].(bool) {
-		count, err := mongo.CountServiceInstances(
-			service,
-			utils.HostIP,
+		apps := mongo.FetchAppInfo(
+			map[string]interface{}{
+				"language": service,
+				"hostIP":   utils.HostIP,
+			},
 		)
-		if err != nil {
-			panic(err)
-		}
-		err = redis.RegisterService(
+		count := len(apps)
+		err := redis.RegisterService(
 			service,
 			utils.HostIP+config["port"].(string),
 			float64(count),
 		)
+		if err != nil {
+			panic(err)
+		}
+
+		payload := make(map[string]interface{})
+
+		for _, app := range apps {
+			payload[app["name"].(string)] = utils.HostIP + config["port"].(string)
+		}
+		err = redis.BulkRegisterApps(payload)
 		if err != nil {
 			panic(err)
 		}
