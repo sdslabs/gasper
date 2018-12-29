@@ -1,4 +1,4 @@
-package static
+package dominus
 
 import (
 	"github.com/gin-gonic/gin"
@@ -9,9 +9,9 @@ import (
 var Router = gin.Default()
 
 func init() {
-	Router.POST("/", createApp)
+	Router.POST("/:service", createApp)
 	Router.GET("/", fetchDocs)
 	Router.GET("/ping", utils.Pong)
-	Router.PUT("/", updateApp)
-	Router.DELETE("/", deleteApp)
+	// Router.PUT("/", updateApp)
+	// Router.DELETE("/", deleteApp)
 }

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/php"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
@@ -17,15 +17,17 @@ func main() {
 
 	// Bind services to routers here
 	serviceBindings := map[string]*gin.Engine{
-		"static": static.Router,
-		"php":    php.Router,
+		"dominus": dominus.Router,
+		"static":  static.Router,
+		"php":     php.Router,
 	}
 
-	for _, service := range utils.SWSConfig.Services {
-		if service.Deploy {
+	for service, config := range utils.ServiceConfig {
+		config := config.(map[string]interface{})
+		if config["deploy"].(bool) {
 			server := &http.Server{
-				Addr:         service.Port,
-				Handler:      serviceBindings[service.Name],
+				Addr:         config["port"].(string),
+				Handler:      serviceBindings[service],
 				ReadTimeout:  5 * time.Second,
 				WriteTimeout: 30 * time.Second,
 			}
@@ -35,7 +37,14 @@ func main() {
 		}
 	}
 
+	dominus.ExposeServices()
+
+	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
+		cleanupInterval := time.Duration(utils.SWSConfig["cleanupInterval"].(float64))
+		dominus.ScheduleCleanup(cleanupInterval * time.Second)
+	}
+
 	if err := g.Wait(); err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 }

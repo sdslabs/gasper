@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
-var client, err = mongo.Connect(ctx, "mongodb://localhost:27017")
+var client, err = mongo.Connect(ctx, utils.MongoConfig["url"].(string))
 var link = client.Database("sws")
 
 func init() {

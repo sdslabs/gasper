@@ -7,6 +7,7 @@ import (
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -78,6 +79,18 @@ func createApp(c *gin.Context) {
 	data["hostIP"] = utils.HostIP
 
 	documentID, err := mongo.RegisterApp(data)
+
+	if err != nil {
+		c.JSON(200, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	err = redis.RegisterApp(
+		data["name"].(string),
+		utils.HostIP+utils.ServiceConfig["php"].(map[string]interface{})["port"].(string),
+	)
 
 	if err != nil {
 		c.JSON(200, gin.H{

@@ -37,3 +37,23 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 func FetchAppInfo(filter bson.M) []map[string]interface{} {
 	return FetchDocs("apps", filter)
 }
+
+// CountDocs returns the number of documents matching a filter
+func CountDocs(collectionName string, filter bson.M) (int64, error) {
+	collection := link.Collection(collectionName)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	count, err := collection.Count(ctx, filter)
+	return count, err
+}
+
+// CountServiceInstances returns the number of applications of a given service deployed
+// in a host machine
+func CountServiceInstances(service, hostIP string) (int64, error) {
+	filter := bson.M{
+		"language": service,
+		"hostIP":   hostIP,
+	}
+	return CountDocs("apps", filter)
+}
