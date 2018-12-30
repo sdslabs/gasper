@@ -45,7 +45,7 @@ func createApp(c *gin.Context) {
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
 		&types.ApplicationConfig{
-			DockerImage:  "nginx:1.15.2",
+			DockerImage:  "nginx",
 			ConfFunction: configs.CreateStaticContainerConfig,
 		})
 	// A hack for the nil != nil problem ( Comparing interface with a true nil value )
@@ -66,7 +66,7 @@ func createApp(c *gin.Context) {
 	documentID, err := mongo.RegisterApp(data)
 
 	if err != nil {
-		c.JSON(200, gin.H{
+		c.JSON(500, gin.H{
 			"error": err,
 		})
 		return
@@ -78,7 +78,19 @@ func createApp(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(200, gin.H{
+		c.JSON(500, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	err = redis.IncrementServiceLoad(
+		"static",
+		utils.HostIP+utils.ServiceConfig["static"].(map[string]interface{})["port"].(string),
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{
 			"error": err,
 		})
 		return

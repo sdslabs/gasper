@@ -52,7 +52,7 @@ func createApp(c *gin.Context) {
 	// A hack for the nil != nil problem ( Comparing interface with a true nil value )
 	var check *types.ResponseError
 	if err != check {
-		c.JSON(200, gin.H{
+		c.JSON(500, gin.H{
 			"error": err,
 		})
 		return
@@ -81,7 +81,7 @@ func createApp(c *gin.Context) {
 	documentID, err := mongo.RegisterApp(data)
 
 	if err != nil {
-		c.JSON(200, gin.H{
+		c.JSON(500, gin.H{
 			"error": err,
 		})
 		return
@@ -93,7 +93,19 @@ func createApp(c *gin.Context) {
 	)
 
 	if err != nil {
-		c.JSON(200, gin.H{
+		c.JSON(500, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	err = redis.IncrementServiceLoad(
+		"php",
+		utils.HostIP+utils.ServiceConfig["php"].(map[string]interface{})["port"].(string),
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{
 			"error": err,
 		})
 		return
