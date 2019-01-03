@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +27,7 @@ func main() {
 	for service, config := range utils.ServiceConfig {
 		config := config.(map[string]interface{})
 		if config["deploy"].(bool) {
+			fmt.Printf("%s Service Active\n", strings.Title(service))
 			server := &http.Server{
 				Addr:         config["port"].(string),
 				Handler:      serviceBindings[service],
