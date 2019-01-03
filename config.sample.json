@@ -1,4 +1,5 @@
 {
+    "debug": true,
     "domain": "sdslabs.co",
     "cleanupInterval": 600,
     "mongo": {
