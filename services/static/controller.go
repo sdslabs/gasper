@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
+	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/types"
@@ -22,14 +23,14 @@ func createApp(c *gin.Context) {
 	ports, err := utils.GetFreePorts(2)
 
 	if err != nil {
-		c.JSON(200, gin.H{
+		c.JSON(500, gin.H{
 			"error": err,
 		})
 		return
 	}
 
 	if len(ports) < 2 {
-		c.JSON(200, gin.H{
+		c.JSON(500, gin.H{
 			"error": "Not Enough Ports",
 		})
 		return
@@ -38,22 +39,19 @@ func createApp(c *gin.Context) {
 	sshPort := ports[0]
 	httpPort := ports[1]
 
-	appEnv, err := api.CreateBasicApplication(
+	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
 		data["location"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
 		&types.ApplicationConfig{
-			DockerImage:  "nginx",
+			DockerImage:  "nginx:1.15.2",
 			ConfFunction: configs.CreateStaticContainerConfig,
 		})
-	// A hack for the nil != nil problem ( Comparing interface with a true nil value )
-	var check *types.ResponseError
-	if err != check {
-		c.JSON(500, gin.H{
-			"error": err,
-		})
+
+	if rer != nil {
+		g.SendResponse(c, rer, gin.H{})
 		return
 	}
 

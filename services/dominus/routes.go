@@ -1,12 +1,12 @@
 package dominus
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // Router is the main routes handler for the current microservice package
-var Router = gin.Default()
+var Router = gin.NewEngine()
 
 func init() {
 	Router.POST("/:service", createApp)
