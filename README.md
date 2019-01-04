@@ -37,6 +37,8 @@
 
 ### Development
 
+- Set `debug` to `true` in `config.json`
+
 - For development purposes we recommend using [Fresh](https://github.com/pilu/fresh)
 
   ```shell
@@ -49,6 +51,8 @@
   ```
 
 ### Production
+
+- Set `debug` to `false` in `config.json`
 
 - Start server using
   ```shell
