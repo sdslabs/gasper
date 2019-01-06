@@ -1,4 +1,4 @@
-package utils
+package gin
 
 import "github.com/gin-gonic/gin"
 
