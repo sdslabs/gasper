@@ -10,7 +10,7 @@ func installPackages(appEnv *types.ApplicationEnv) (string, types.ResponseError)
 	cmd := []string{"npm", "install"}
 	execID, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
 	if err != nil {
-		return "", types.NewResErr(500, "Failed to perform composer install in the container", err)
+		return "", types.NewResErr(500, "Failed to perform npm install in the container", err)
 	}
 	return execID, nil
 }
@@ -20,7 +20,7 @@ func startApp(serverFile string, appEnv *types.ApplicationEnv) (string, types.Re
 	cmd := []string{"pm2", "start", serverFile}
 	execID, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
 	if err != nil {
-		return "", types.NewResErr(500, "Failed to perform composer install in the container", err)
+		return "", types.NewResErr(500, "Failed to perform start app in the container", err)
 	}
 	return execID, nil
 }
