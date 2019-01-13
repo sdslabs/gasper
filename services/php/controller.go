@@ -47,7 +47,7 @@ func createApp(c *gin.Context) {
 		strconv.Itoa(sshPort),
 		data["context"].(map[string]interface{}),
 		&types.ApplicationConfig{
-			DockerImage:  "nginx",
+			DockerImage:  utils.ServiceConfig["php"].(map[string]interface{})["image"].(string),
 			ConfFunction: configs.CreateStaticContainerConfig,
 		})
 
