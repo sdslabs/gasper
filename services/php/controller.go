@@ -40,9 +40,11 @@ func createApp(c *gin.Context) {
 	sshPort := ports[0]
 	httpPort := ports[1]
 
+	context := data["context"].(map[string]interface{})
+
 	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
-		data["location"].(string),
+		context["location"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
@@ -59,7 +61,7 @@ func createApp(c *gin.Context) {
 	composerPath := data["composerPath"].(string)
 
 	// Perform composer install in the container
-	if data["composer"].(bool) == true {
+	if data["composer"].(bool) {
 		execID, rer := installPackages(composerPath, appEnv)
 		if rer != nil {
 			g.SendResponse(c, rer, gin.H{})
