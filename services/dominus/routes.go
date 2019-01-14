@@ -10,6 +10,8 @@ var Router = gin.NewEngine()
 func init() {
 	Router.POST("/:service", createApp)
 	Router.GET("/", fetchDocs)
+	Router.GET("/:app", gin.FetchAppInfo)
+	Router.GET("/:app/:action", execute)
 	// Router.PUT("/", updateApp)
 	// Router.DELETE("/", deleteApp)
 }
