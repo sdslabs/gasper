@@ -39,9 +39,11 @@ func createApp(c *gin.Context) {
 	sshPort := ports[0]
 	httpPort := ports[1]
 
+	context := data["context"].(map[string]interface{})
+
 	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
-		data["location"].(string),
+		context["location"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
