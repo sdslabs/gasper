@@ -41,10 +41,10 @@ func createApp(c *gin.Context) {
 
 	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
-		data["location"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
+		data["context"].(map[string]interface{}),
 		&types.ApplicationConfig{
 			DockerImage:  "sdsws/static:1.0",
 			ConfFunction: configs.CreateStaticContainerConfig,

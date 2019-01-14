@@ -42,10 +42,10 @@ func createApp(c *gin.Context) {
 
 	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
-		data["location"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
+		data["context"].(map[string]interface{}),
 		&types.ApplicationConfig{
 			DockerImage:  "nginx",
 			ConfFunction: configs.CreateStaticContainerConfig,

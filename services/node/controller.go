@@ -44,10 +44,10 @@ func createApp(c *gin.Context) {
 
 	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
-		context["port"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
+		context,
 		&types.ApplicationConfig{
 			DockerImage:  "sdsws/node:1.2",
 			ConfFunction: configs.CreateNodeContainerConfig,
@@ -68,10 +68,10 @@ func createApp(c *gin.Context) {
 		data["execID"] = execID
 	}
 
-	serverFile := data["serverFile"].(string)
+	index := context["index"].(string)
 
 	// Start app using pm2 in the container
-	execID, rer := startApp(serverFile, appEnv)
+	execID, rer := startApp(index, appEnv)
 	if rer != nil {
 		g.SendResponse(c, rer, gin.H{})
 		return
