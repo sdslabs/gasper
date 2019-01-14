@@ -28,6 +28,7 @@
         },
         "node": {
             "deploy": true,
+            "image": "nginx",
             "port": ":8002"
         }
     }
