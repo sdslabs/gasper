@@ -9,8 +9,8 @@ import (
 )
 
 // ReadLogs returns the logs from a docker container
-func ReadLogs(ctx context.Context, cli *client.Client, containerID string, tail string) ([]string, error) {
-	reader, err := cli.ContainerLogs(context.Background(), containerID, types.ContainerLogsOptions{
+func ReadLogs(ctx context.Context, cli *client.Client, containerID, tail string) ([]string, error) {
+	reader, err := cli.ContainerLogs(ctx, containerID, types.ContainerLogsOptions{
 		ShowStderr: true,
 		ShowStdout: true,
 		Timestamps: true,
