@@ -13,7 +13,7 @@ import (
 )
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, location, url, httpPort, sshPort string, appConf *types.ApplicationConfig) (*types.ApplicationEnv, types.ResponseError) {
+func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, types.ResponseError) {
 	appEnv, err := types.NewAppEnv()
 	if err != nil {
 		return nil, types.NewResErr(500, "", err)
@@ -41,8 +41,9 @@ func CreateBasicApplication(name, location, url, httpPort, sshPort string, appCo
 	if err != nil {
 		return nil, types.NewResErr(500, "container not created", err)
 	}
+
 	// Step 3: write config to the container
-	confFile := []byte(appConf.ConfFunction(name, location))
+	confFile := []byte(appConf.ConfFunction(name, appContext))
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
 		return appEnv, types.NewResErr(500, "container conf file not written", err)
@@ -51,6 +52,7 @@ func CreateBasicApplication(name, location, url, httpPort, sshPort string, appCo
 	if err != nil {
 		return appEnv, types.NewResErr(500, "container conf file not written", err)
 	}
+
 	// Step 4: start the container
 	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
 	if err != nil {

@@ -9,8 +9,8 @@ import (
 // CreateStaticContainerConfig takes the name of the static application
 // and generates the container level config for the same
 // Location is the path of index.html or index.htm, leave empty if same
-func CreateStaticContainerConfig(name, location string) string {
-	path := fmt.Sprintf("%s/%s", name, location)
+func CreateStaticContainerConfig(name string, appContext map[string]interface{}) string {
+	path := fmt.Sprintf("%s/%s", name, appContext["index"].(string))
 	return fmt.Sprintf(`
 server {
 	listen       80;
@@ -35,8 +35,8 @@ server {
 // CreatePHPContainerConfig takes the name of the PHP application
 // and generates the container level config for the same
 // Location is the path of index.php, leave empty if same
-func CreatePHPContainerConfig(name, location string) string {
-	path := fmt.Sprintf("%s/%s", name, location)
+func CreatePHPContainerConfig(name string, appContext map[string]interface{}) string {
+	path := fmt.Sprintf("%s/%s", name, appContext["index"].(string))
 	return fmt.Sprintf(`
 server {
 	listen 80;
@@ -68,4 +68,21 @@ server {
 	}
 }
 `, name, utils.SWSConfig["domain"].(string), name, name, path)
+}
+
+// Create NodeContainerConfig takes the name of the node app
+// and port and generated the config for the same
+func CreateNodeContainerConfig(name string, appContext map[string]interface{}) string {
+	return fmt.Sprintf(`
+server {
+    listen 80;
+    server_name %s.%s;
+
+    location / {
+    	proxy_set_header   X-Forwarded-For $remote_addr;
+    	proxy_set_header   Host $http_host;
+    	proxy_pass         http://127.0.0.1:%s;
+	}
+}
+`, name, utils.SWSConfig["domain"].(string), appContext["port"].(string))
 }

@@ -1,4 +1,4 @@
-package php
+package node
 
 import (
 	"strconv"
@@ -13,7 +13,7 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-// createApp function handles requests for making making new php app
+// createApp function handles requests for making making new node app
 func createApp(c *gin.Context) {
 	var (
 		data map[string]interface{}
@@ -40,15 +40,17 @@ func createApp(c *gin.Context) {
 	sshPort := ports[0]
 	httpPort := ports[1]
 
+	context := data["context"].(map[string]interface{})
+
 	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
-		data["context"].(map[string]interface{}),
+		context,
 		&types.ApplicationConfig{
-			DockerImage:  "nginx",
-			ConfFunction: configs.CreateStaticContainerConfig,
+			DockerImage:  "sdsws/node:1.2",
+			ConfFunction: configs.CreateNodeContainerConfig,
 		})
 
 	if rer != nil {
@@ -56,11 +58,9 @@ func createApp(c *gin.Context) {
 		return
 	}
 
-	composerPath := data["composerPath"].(string)
-
-	// Perform composer install in the container
-	if data["composer"].(bool) == true {
-		execID, rer := installPackages(composerPath, appEnv)
+	// Perform npm install in the container
+	if data["npm"].(bool) {
+		execID, rer := installPackages(appEnv)
 		if rer != nil {
 			g.SendResponse(c, rer, gin.H{})
 			return
@@ -68,10 +68,20 @@ func createApp(c *gin.Context) {
 		data["execID"] = execID
 	}
 
+	index := context["index"].(string)
+
+	// Start app using pm2 in the container
+	execID, rer := startApp(index, appEnv)
+	if rer != nil {
+		g.SendResponse(c, rer, gin.H{})
+		return
+	}
+	data["execID"] = execID
+
 	data["sshPort"] = sshPort
 	data["httpPort"] = httpPort
 	data["containerID"] = appEnv.ContainerID
-	data["language"] = "php"
+	data["language"] = "node"
 	data["hostIP"] = utils.HostIP
 
 	documentID, err := mongo.RegisterApp(data)
@@ -85,7 +95,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.RegisterApp(
 		data["name"].(string),
-		utils.HostIP+utils.ServiceConfig["php"].(map[string]interface{})["port"].(string),
+		utils.HostIP+utils.ServiceConfig["node"].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -96,8 +106,8 @@ func createApp(c *gin.Context) {
 	}
 
 	err = redis.IncrementServiceLoad(
-		"php",
-		utils.HostIP+utils.ServiceConfig["php"].(map[string]interface{})["port"].(string),
+		"node",
+		utils.HostIP+utils.ServiceConfig["node"].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -117,7 +127,7 @@ func fetchDocs(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	filter["language"] = "php"
+	filter["language"] = "node"
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchAppInfo(filter),
@@ -128,7 +138,7 @@ func deleteApp(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	filter["language"] = "php"
+	filter["language"] = "node"
 
 	c.JSON(200, gin.H{
 		"message": mongo.DeleteApp(filter),
@@ -139,7 +149,7 @@ func updateApp(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	filter["language"] = "php"
+	filter["language"] = "node"
 
 	var (
 		data map[string]interface{}

@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
+	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
@@ -22,6 +23,7 @@ func main() {
 		"dominus": dominus.Router,
 		"static":  static.Router,
 		"php":     php.Router,
+		"node":    node.Router,
 	}
 
 	for service, config := range utils.ServiceConfig {

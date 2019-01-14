@@ -23,6 +23,10 @@
         "php": {
             "deploy": true,
             "port": ":8001"
+        },
+        "node": {
+            "deploy": true,
+            "port": ":8002"
         }
     }
 }
