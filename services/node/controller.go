@@ -40,14 +40,16 @@ func createApp(c *gin.Context) {
 	sshPort := ports[0]
 	httpPort := ports[1]
 
+	context := data["context"].(map[string]interface{})
+
 	appEnv, rer := api.CreateBasicApplication(
 		data["name"].(string),
-		data["location"].(string),
+		context["port"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
 		&types.ApplicationConfig{
-			DockerImage:  "nginx",
+			DockerImage:  "sdsws/node:1.2",
 			ConfFunction: configs.CreateNodeContainerConfig,
 		})
 
@@ -57,7 +59,7 @@ func createApp(c *gin.Context) {
 	}
 
 	// Perform npm install in the container
-	if data["npm"].(bool) == true {
+	if data["npm"].(bool) {
 		execID, rer := installPackages(appEnv)
 		if rer != nil {
 			g.SendResponse(c, rer, gin.H{})
