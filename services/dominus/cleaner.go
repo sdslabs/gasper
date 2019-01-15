@@ -11,7 +11,7 @@ import (
 // inspectInstance checks whether a given instance is alive or not and deletes that instance
 // if it is dead
 func inspectInstance(service, instance string) {
-	if utils.NotAlive(fmt.Sprintf("http://%s/ping", instance)) {
+	if utils.NotAlive(instance) {
 		err := redis.RemoveServiceInstance(service, instance)
 		if err != nil {
 			fmt.Println(err)

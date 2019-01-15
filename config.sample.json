@@ -18,14 +18,17 @@
         },
         "static": {
             "deploy": true,
+            "image": "nginx",
             "port": ":8000"
         },
         "php": {
             "deploy": true,
+            "image": "nginx",
             "port": ":8001"
         },
         "node": {
             "deploy": true,
+            "image": "nginx",
             "port": ":8002"
         }
     }

@@ -34,3 +34,17 @@ func fetchDocs(c *gin.Context) {
 		"data": mongo.FetchAppInfo(filter),
 	})
 }
+
+func execute(c *gin.Context) {
+	app := c.Param("app")
+	path := c.Request.URL
+	instanceURL, err := redis.FetchAppURL(app)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": fmt.Sprintf("Application %s is not deployed at the moment", app),
+		})
+		return
+	}
+	redirectURL := fmt.Sprintf("http://%s%s", instanceURL, path)
+	c.Redirect(307, redirectURL)
+}

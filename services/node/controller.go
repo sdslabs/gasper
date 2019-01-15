@@ -49,7 +49,7 @@ func createApp(c *gin.Context) {
 		strconv.Itoa(sshPort),
 		context,
 		&types.ApplicationConfig{
-			DockerImage:  "sdsws/node:1.2",
+			DockerImage:  utils.ServiceConfig["node"].(map[string]interface{})["image"].(string),
 			ConfFunction: configs.CreateNodeContainerConfig,
 		})
 

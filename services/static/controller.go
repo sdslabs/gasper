@@ -46,7 +46,7 @@ func createApp(c *gin.Context) {
 		strconv.Itoa(sshPort),
 		data["context"].(map[string]interface{}),
 		&types.ApplicationConfig{
-			DockerImage:  "sdsws/static:1.0",
+			DockerImage:  utils.ServiceConfig["static"].(map[string]interface{})["image"].(string),
 			ConfFunction: configs.CreateStaticContainerConfig,
 		})
 
