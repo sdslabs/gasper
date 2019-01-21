@@ -50,9 +50,11 @@ func createApp(c *gin.Context) {
 			ConfFunction: configs.CreateStaticContainerConfig,
 		})
 
-	if rer != nil {
-		g.SendResponse(c, rer, gin.H{})
-		return
+	for _, i := range rer {
+		if i != nil {
+			g.SendResponse(c, i, gin.H{})
+			return
+		}
 	}
 
 	data["sshPort"] = sshPort

@@ -42,7 +42,7 @@ func createApp(c *gin.Context) {
 
 	context := data["context"].(map[string]interface{})
 
-	appEnv, rer := api.CreateBasicApplication(
+	appEnv, errArray := api.CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
@@ -53,9 +53,11 @@ func createApp(c *gin.Context) {
 			ConfFunction: configs.CreateNodeContainerConfig,
 		})
 
-	if rer != nil {
-		g.SendResponse(c, rer, gin.H{})
-		return
+	for _, i := range errArray {
+		if i != nil {
+			g.SendResponse(c, i, gin.H{})
+			return
+		}
 	}
 
 	// Perform npm install in the container
