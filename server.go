@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
+	"github.com/sdslabs/SWS/services/python"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
 )
@@ -24,6 +25,7 @@ func main() {
 		"static":  static.Router,
 		"php":     php.Router,
 		"node":    node.Router,
+		"python":  python.Router,
 	}
 
 	for service, config := range utils.ServiceConfig {

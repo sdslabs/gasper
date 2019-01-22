@@ -70,9 +70,26 @@ server {
 `, name, utils.SWSConfig["domain"].(string), name, name, path)
 }
 
-// Create NodeContainerConfig takes the name of the node app
+// CreateNodeContainerConfig takes the name of the node app
 // and port and generated the config for the same
 func CreateNodeContainerConfig(name string, appContext map[string]interface{}) string {
+	return fmt.Sprintf(`
+server {
+    listen 80;
+    server_name %s.%s;
+
+    location / {
+    	proxy_set_header   X-Forwarded-For $remote_addr;
+    	proxy_set_header   Host $http_host;
+    	proxy_pass         http://127.0.0.1:%s;
+	}
+}
+`, name, utils.SWSConfig["domain"].(string), appContext["port"].(string))
+}
+
+// CreatePythonContainerConfig takes the name of the Python app
+// and port and generated the config for the same
+func CreatePythonContainerConfig(name string, appContext map[string]interface{}) string {
 	return fmt.Sprintf(`
 server {
     listen 80;
