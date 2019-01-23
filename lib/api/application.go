@@ -12,6 +12,65 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
+func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) {
+	err := os.MkdirAll(storedir, 0755)
+	if err != nil {
+		mutex["clone"] <- types.NewResErr(500, "storage directory not created", err)
+		return
+	}
+	err = git.Clone(url, storedir)
+	if err != nil {
+		mutex["clone"] <- types.NewResErr(500, "repo not cloned", err)
+		return
+	}
+	mutex["clone"] <- nil
+}
+
+func setupContainer(
+	appEnv *types.ApplicationEnv,
+	storePath,
+	confFileName,
+	workdir,
+	storedir,
+	name,
+	url,
+	httpPort,
+	sshPort string,
+	appContext map[string]interface{},
+	appConf *types.ApplicationConfig,
+	mutex map[string]chan types.ResponseError) {
+
+	var err error
+	// create the container
+	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name)
+	if err != nil {
+		// return nil, types.NewResErr(500, "container not created", err)
+		mutex["setup"] <- types.NewResErr(500, "container not created", err)
+		return
+	}
+
+	// write config to the container
+	confFile := []byte(appConf.ConfFunction(name, appContext))
+	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
+	if err != nil {
+		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+		return
+	}
+	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
+	if err != nil {
+		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+		return
+	}
+
+	// start the container
+	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
+	if err != nil {
+		mutex["setup"] <- types.NewResErr(500, "container not started", err)
+		return
+	}
+	mutex["setup"] <- nil
+}
+
 // CreateBasicApplication spawns a new container with the application of a particular service
 func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
 	appEnv, err := types.NewAppEnv()
@@ -35,65 +94,19 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[
 	go cloneRepo(url, storedir, mutex)
 
 	// Step 2: setup the container
-	go setupContainer(appEnv, storepath, confFileName, workdir, storedir, name, url, httpPort, sshPort, appContext, appConf, mutex)
+	go setupContainer(
+		appEnv,
+		storepath,
+		confFileName,
+		workdir,
+		storedir,
+		name,
+		url,
+		httpPort,
+		sshPort,
+		appContext,
+		appConf,
+		mutex)
 
-	// select {
-	// case errFromClone := <-errCloneChannel:
-	// 	return appEnv, errFromClone
-	// case errFromSetup := <-errorSetupChannel:
-	// 	return appEnv, errorFromSetup
-	// }
 	return appEnv, []types.ResponseError{<-mutex["setup"], <-mutex["clone"]}
-}
-
-func cloneRepo(url, storedir string, errCloneChannel map[string]chan types.ResponseError) {
-	err := os.MkdirAll(storedir, 0755)
-	if err != nil {
-		// return types.NewResErr(500, "storage directory not created", err)
-		errCloneChannel["clone"] <- types.NewResErr(500, "storage directory not created", err)
-		return
-	}
-	err = git.Clone(url, storedir)
-	if err != nil {
-		// return types.NewResErr(500, "repo not cloned", err)
-		errCloneChannel["clone"] <- types.NewResErr(500, "repo not cloned", err)
-		return
-	}
-}
-
-func setupContainer(appEnv *types.ApplicationEnv, storePath, confFileName, workdir, storedir, name, url, httpPort, sshPort string, appContext map[string]interface{}, appConf *types.ApplicationConfig, mutex map[string]chan types.ResponseError) {
-
-	var err error
-	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name)
-	if err != nil {
-		// return nil, types.NewResErr(500, "container not created", err)
-		mutex["setup"] <- types.NewResErr(500, "container not created", err)
-		return
-	}
-
-	// write config to the container
-	confFile := []byte(appConf.ConfFunction(name, appContext))
-	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
-	if err != nil {
-		// return appEnv, types.NewResErr(500, "container conf file not written", err)
-		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		return
-	}
-	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
-	if err != nil {
-		// return appEnv, types.NewResErr(500, "container conf file not written", err)
-		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		return
-	}
-
-	// start the container
-	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
-	if err != nil {
-		// return appEnv, types.NewResErr(500, "container not started", err)
-		mutex["setup"] <- types.NewResErr(500, "container not started", err)
-		return
-	}
-	// return appEnv, nil
-	mutex["setup"] <- nil
 }
