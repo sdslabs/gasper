@@ -40,42 +40,42 @@ func createApp(c *gin.Context) {
 	httpPort := ports[1]
 
 	context := data["context"].(map[string]interface{})
+	var image string
+	if data["python_version"].(string) == "python3" {
+		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
+	} else {
+		image = utils.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
+	}
 
-	appEnv, rer := api.CreateBasicApplication(
+	appEnv, errorList := api.CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
 		context,
 		&types.ApplicationConfig{
-			DockerImage:  utils.ServiceConfig["python"].(map[string]interface{})["image"].(string),
+			DockerImage:  image,
 			ConfFunction: configs.CreatePythonContainerConfig,
 		})
 
-	if rer != nil {
-		g.SendResponse(c, rer, gin.H{})
-		return
-	}
-
-	// Create virtual env for mentioned python
-	_, rer = createVenv(appEnv, data["python_version"].(string))
-	if rer != nil {
-		g.SendResponse(c, rer, gin.H{})
-		return
+	for _, e := range errorList {
+		if e != nil {
+			g.SendResponse(c, e, gin.H{})
+			return
+		}
 	}
 
 	// Path of `requirements.txt` or any-other file containing requirements
 	requirements := data["requirements"]
 	if requirements != nil {
-		_, rer = installRequirements(requirements.(string), appEnv)
+		_, rer := installRequirements(requirements.(string), appEnv)
 		if rer != nil {
 			g.SendResponse(c, rer, gin.H{})
 			return
 		}
 	}
 
-	// strore server process ID to kill it later on...
-	execID, rer := startServer(data["run_command"].(string), appEnv)
+	execID, rer := startServer(context["index"].(string), appEnv)
 	if rer != nil {
 		g.SendResponse(c, rer, gin.H{})
 		return
