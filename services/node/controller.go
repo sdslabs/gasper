@@ -42,7 +42,7 @@ func createApp(c *gin.Context) {
 
 	context := data["context"].(map[string]interface{})
 
-	appEnv, errArray := api.CreateBasicApplication(
+	appEnv, errorList := api.CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
@@ -53,9 +53,9 @@ func createApp(c *gin.Context) {
 			ConfFunction: configs.CreateNodeContainerConfig,
 		})
 
-	for _, i := range errArray {
-		if i != nil {
-			g.SendResponse(c, i, gin.H{})
+	for _, e := range errorList {
+		if e != nil {
+			g.SendResponse(c, e, gin.H{})
 			return
 		}
 	}
