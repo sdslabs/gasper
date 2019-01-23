@@ -39,7 +39,7 @@ func createApp(c *gin.Context) {
 	sshPort := ports[0]
 	httpPort := ports[1]
 
-	appEnv, rer := api.CreateBasicApplication(
+	appEnv, errorList := api.CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
@@ -50,9 +50,11 @@ func createApp(c *gin.Context) {
 			ConfFunction: configs.CreateStaticContainerConfig,
 		})
 
-	if rer != nil {
-		g.SendResponse(c, rer, gin.H{})
-		return
+	for _, e := range errorList {
+		if e != nil {
+			g.SendResponse(c, e, gin.H{})
+			return
+		}
 	}
 
 	data["sshPort"] = sshPort
