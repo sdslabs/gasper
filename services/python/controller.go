@@ -41,7 +41,7 @@ func createApp(c *gin.Context) {
 
 	context := data["context"].(map[string]interface{})
 	var image string
-	if data["python_version"].(string) == "python3" {
+	if data["python_version"].(string) == "3" {
 		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
 	} else {
 		image = utils.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
@@ -75,7 +75,17 @@ func createApp(c *gin.Context) {
 		}
 	}
 
-	execID, rer := startServer(context["index"].(string), appEnv)
+	var rer types.ResponseError
+	if data["django"].(bool) {
+		_, rer = startServer("manage.py", []string{"runserver"}, appEnv)
+	} else {
+		args := context["args"].([]interface{})
+		var arguments []string
+		for _, arg := range args {
+			arguments = append(arguments, arg.(string))
+		}
+		_, rer = startServer(context["index"].(string), arguments, appEnv)
+	}
 	if rer != nil {
 		g.SendResponse(c, rer, gin.H{})
 		return
@@ -86,7 +96,6 @@ func createApp(c *gin.Context) {
 	data["containerID"] = appEnv.ContainerID
 	data["language"] = "python"
 	data["hostIP"] = utils.HostIP
-	data["execID"] = execID
 
 	documentID, err := mongo.RegisterApp(data)
 
