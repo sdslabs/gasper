@@ -76,8 +76,10 @@ func createApp(c *gin.Context) {
 	}
 
 	var rer types.ResponseError
-	if data["django"].(bool) {
-		_, rer = startServer("manage.py", []string{"runserver"}, appEnv)
+	if data["django"] != nil {
+		if data["django"].(bool) {
+			_, rer = startServer("manage.py", []string{"runserver"}, appEnv)
+		}
 	} else {
 		args := context["args"].([]interface{})
 		var arguments []string
