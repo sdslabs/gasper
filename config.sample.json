@@ -30,6 +30,12 @@
             "deploy": true,
             "image": "nginx",
             "port": ":8002"
+        },
+        "python": {
+            "deploy": true,
+            "python2_image": "6b9228af2a0a",
+            "python3_image": "nginx",
+            "port": ":8003"
         }
     }
 }
