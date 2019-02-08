@@ -21,6 +21,9 @@ func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) 
 	err = git.Clone(url, storedir)
 	if err != nil {
 		mutex["clone"] <- types.NewResErr(500, "repo not cloned", err)
+		if err.Error() != "repository already exists" {
+			utils.StorageCleanup(storedir)
+		}
 		return
 	}
 	mutex["clone"] <- nil
@@ -54,11 +57,13 @@ func setupContainer(
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+		utils.FullCleanup(name)
 		return
 	}
 	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+		utils.FullCleanup(name)
 		return
 	}
 
@@ -66,6 +71,7 @@ func setupContainer(
 	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not started", err)
+		utils.FullCleanup(name)
 		return
 	}
 	mutex["setup"] <- nil
