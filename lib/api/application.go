@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/sdslabs/SWS/lib/git"
+	"strings"
 
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/git"
 	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
+	gogit "gopkg.in/src-d/go-git.v4"
 )
 
 func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) {
@@ -20,7 +21,12 @@ func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) 
 	}
 	err = git.Clone(url, storedir)
 	if err != nil {
-		mutex["clone"] <- types.NewResErr(500, "repo not cloned", err)
+		mutex["clone"] <- types.NewResErr(500, "repository not cloned", err)
+		if err != gogit.ErrRepositoryAlreadyExists {
+			slice := strings.Split(storedir, "/")
+			appName := slice[len(slice)-1]
+			utils.FullCleanup(appName)
+		}
 		return
 	}
 	mutex["clone"] <- nil
@@ -54,11 +60,13 @@ func setupContainer(
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+		utils.FullCleanup(name)
 		return
 	}
 	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+		utils.FullCleanup(name)
 		return
 	}
 
@@ -66,6 +74,7 @@ func setupContainer(
 	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not started", err)
+		utils.FullCleanup(name)
 		return
 	}
 	mutex["setup"] <- nil

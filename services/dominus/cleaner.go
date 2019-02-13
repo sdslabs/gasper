@@ -33,8 +33,7 @@ func removeDeadServiceInstances(service string) {
 // removeDeadInstances removes all inactive instances in every service
 func removeDeadInstances() {
 	time.Sleep(5 * time.Second)
-	var services = []string{"php", "static"}
-	for _, service := range services {
+	for service := range utils.ServiceConfig {
 		go removeDeadServiceInstances(service)
 	}
 }
