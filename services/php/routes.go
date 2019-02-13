@@ -5,7 +5,7 @@ import (
 )
 
 // Router is the main routes handler for the current microservice package
-var Router = gin.NewEngine()
+var Router = gin.NewServiceEngine()
 
 func init() {
 	Router.POST("/", createApp)

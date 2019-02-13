@@ -14,3 +14,10 @@ func NewEngine() *gin.Engine {
 	}
 	return gin.Default()
 }
+
+// NewServiceEngine returns a router setting up required configs for micro-services
+func NewServiceEngine() *gin.Engine {
+	engine := NewEngine()
+	engine.Use(AuthorizeService())
+	return engine
+}
