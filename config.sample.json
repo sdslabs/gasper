@@ -1,6 +1,7 @@
 {
     "debug": true,
     "domain": "sdslabs.co",
+    "secret": "YOUR_SECRET_KEY",
     "cleanupInterval": 600,
     "mongo": {
         "url": "mongodb://localhost:27017"
