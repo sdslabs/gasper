@@ -45,3 +45,8 @@ func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, s
 func StartContainer(ctx context.Context, cli *client.Client, containerID string) error {
 	return cli.ContainerStart(ctx, containerID, types.ContainerStartOptions{})
 }
+
+// StopContainer stops the container corresponding to given containerID
+func StopContainer(ctx context.Context, cli *client.Client, containerID string) error {
+	return cli.ContainerStop(ctx, containerID, nil)
+}
