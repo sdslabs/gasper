@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
-	"github.com/sdslabs/SWS/lib/git"
+	"strings"
 
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/git"
 	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
+	gogit "gopkg.in/src-d/go-git.v4"
 )
 
 func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) {
@@ -20,9 +21,11 @@ func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) 
 	}
 	err = git.Clone(url, storedir)
 	if err != nil {
-		mutex["clone"] <- types.NewResErr(500, "repo not cloned", err)
-		if err.Error() != "repository already exists" {
-			utils.StorageCleanup(storedir)
+		mutex["clone"] <- types.NewResErr(500, "repository not cloned", err)
+		if err != gogit.ErrRepositoryAlreadyExists {
+			slice := strings.Split(storedir, "/")
+			appName := slice[len(slice)-1]
+			utils.FullCleanup(appName)
 		}
 		return
 	}
