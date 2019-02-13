@@ -10,7 +10,10 @@ import (
 
 // StorageCleanup removes the application's local storage directory
 func StorageCleanup(path string) {
-	os.RemoveAll(path)
+	err := os.RemoveAll(path)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 // ContainerCleanup removes the application's container
