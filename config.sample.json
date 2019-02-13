@@ -18,18 +18,24 @@
         },
         "static": {
             "deploy": true,
-            "image": "nginx",
+            "image": "nginx:latest",
             "port": ":8000"
         },
         "php": {
             "deploy": true,
-            "image": "nginx",
+            "image": "nginx:latest",
             "port": ":8001"
         },
         "node": {
             "deploy": true,
-            "image": "nginx",
+            "image": "nginx:latest",
             "port": ":8002"
+        },
+        "python": {
+            "deploy": true,
+            "python2_image": "6b9228af2a0a",
+            "python3_image": "nginx:latest",
+            "port": ":8003"
         }
     }
 }

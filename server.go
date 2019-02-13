@@ -7,10 +7,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
+	"github.com/sdslabs/SWS/services/python"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
 )
@@ -24,11 +26,21 @@ func main() {
 		"static":  static.Router,
 		"php":     php.Router,
 		"node":    node.Router,
+		"python":  python.Router,
 	}
+
+	images := docker.ListImages()
 
 	for service, config := range utils.ServiceConfig {
 		config := config.(map[string]interface{})
 		if config["deploy"].(bool) {
+			if image, check := config["image"]; check {
+				image := image.(string)
+				if !utils.Contains(images, image) {
+					fmt.Printf("Image %s not present locally, pulling from DockerHUB\n", image)
+					docker.Pull(image)
+				}
+			}
 			fmt.Printf("%s Service Active\n", strings.Title(service))
 			server := &http.Server{
 				Addr:         config["port"].(string),

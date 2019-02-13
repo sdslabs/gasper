@@ -12,16 +12,9 @@
 
    [Download / Get Started](https://www.docker.com/get-started)
 
-3. [Nginx Docker Image](https://hub.docker.com/_/nginx/)
+3. [MongoDB](https://www.mongodb.com/)
 
-   ```shell
-   # Install using
-   $ docker pull nginx
-
-   # For installation on MAC, the latest image might not be pulled successfully
-   # Use a specific version tag instead, like so
-   $ docker pull nginx:1.15.3
-   ```
+   [Download](https://www.mongodb.com/download-center/community)
 
 4. [Nginx](https://nginx.org/en/download.html) or [Apache](https://httpd.apache.org/download.cgi) on your machine
 
