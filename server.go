@@ -13,6 +13,7 @@ import (
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
 	"github.com/sdslabs/SWS/services/python"
+	"github.com/sdslabs/SWS/services/ssh"
 	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
 )
@@ -41,16 +42,29 @@ func main() {
 					docker.Pull(image)
 				}
 			}
-			fmt.Printf("%s Service Active\n", strings.Title(service))
-			server := &http.Server{
-				Addr:         config["port"].(string),
-				Handler:      serviceBindings[service],
-				ReadTimeout:  5 * time.Second,
-				WriteTimeout: 30 * time.Second,
+			if service != "ssh" {
+				server := &http.Server{
+					Addr:         config["port"].(string),
+					Handler:      serviceBindings[service],
+					ReadTimeout:  5 * time.Second,
+					WriteTimeout: 30 * time.Second,
+				}
+				fmt.Printf("%s Service Active\n", strings.Title(service))
+				g.Go(func() error {
+					return server.ListenAndServe()
+				})
+			} else {
+				server, err := ssh.BuildSSHServer()
+				if err != nil {
+					fmt.Println("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.")
+					fmt.Printf("ERROR:: %s\n", err.Error())
+				} else {
+					fmt.Printf("%s Service Active\n", strings.Title(service))
+					g.Go(func() error {
+						return server.ListenAndServe()
+					})
+				}
 			}
-			g.Go(func() error {
-				return server.ListenAndServe()
-			})
 		}
 	}
 
