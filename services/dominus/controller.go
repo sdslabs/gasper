@@ -24,7 +24,7 @@ func createApp(c *gin.Context) {
 		})
 		return
 	}
-	c.Redirect(307, "http://"+instanceURL)
+	reverseProxy(c, instanceURL)
 }
 
 func fetchDocs(c *gin.Context) {
@@ -37,7 +37,6 @@ func fetchDocs(c *gin.Context) {
 
 func execute(c *gin.Context) {
 	app := c.Param("app")
-	path := c.Request.URL
 	instanceURL, err := redis.FetchAppURL(app)
 	if err != nil {
 		c.JSON(400, gin.H{
@@ -45,6 +44,5 @@ func execute(c *gin.Context) {
 		})
 		return
 	}
-	redirectURL := fmt.Sprintf("http://%s%s", instanceURL, path)
-	c.Redirect(307, redirectURL)
+	reverseProxy(c, instanceURL)
 }
