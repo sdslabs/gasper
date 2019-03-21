@@ -10,8 +10,8 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-// Handler handles the ssh session.
-func Handler(s ssh.Session) {
+// handler handles the ssh session.
+func handler(s ssh.Session) {
 	ptyReq, winCh, isPty := s.Pty()
 	if !isPty {
 		fmt.Fprintln(s, "PTY not requested")
@@ -42,13 +42,13 @@ func Handler(s ssh.Session) {
 	io.Copy(s, ptmx) // STDOUT
 }
 
-// PublicKeyHandler handles the public key authentication
-func PublicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
+// publicKeyHandler handles the public key authentication
+func publicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
 	return true
 }
 
-// PasswordHandler handles the password authentication
-func PasswordHandler(ctx ssh.Context, password string) bool {
+// passwordHandler handles the password authentication
+func passwordHandler(ctx ssh.Context, password string) bool {
 	return true
 }
 
@@ -64,8 +64,8 @@ func BuildSSHServer() (*ssh.Server, error) {
 		Addr:        sshConfig["port"].(string),
 		HostSigners: hostSigners,
 
-		Handler:          Handler,
-		PasswordHandler:  PasswordHandler,
-		PublicKeyHandler: PublicKeyHandler,
+		Handler:          handler,
+		PasswordHandler:  passwordHandler,
+		PublicKeyHandler: publicKeyHandler,
 	}, nil
 }
