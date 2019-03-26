@@ -2,6 +2,7 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
@@ -18,6 +19,7 @@ func NewEngine() *gin.Engine {
 // NewServiceEngine returns a router setting up required configs for micro-services
 func NewServiceEngine() *gin.Engine {
 	engine := NewEngine()
-	engine.Use(AuthorizeService())
+	engine.Use(middlewares.AuthorizeService())
+	engine.Use(middlewares.FalconGuard())
 	return engine
 }
