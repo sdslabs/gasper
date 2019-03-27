@@ -15,8 +15,12 @@
 3. [MongoDB](https://www.mongodb.com/)
 
    [Download](https://www.mongodb.com/download-center/community)
+   
+4. [Redis](https://redis.io/)
 
-4. [Nginx](https://nginx.org/en/download.html) or [Apache](https://httpd.apache.org/download.cgi) on your machine
+   [Download](https://redis.io/download)
+
+5. [Nginx](https://nginx.org/en/download.html) or [Apache](https://httpd.apache.org/download.cgi) on your machine
 
 ## Setup
 
