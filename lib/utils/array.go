@@ -9,3 +9,12 @@ func Contains(s []string, e string) bool {
 	}
 	return false
 }
+
+// ToStringSlice converts interface{} to []string
+func ToStringSlice(v interface{}) []string {
+	var strSlice []string
+	for _, val := range v.([]interface{}) {
+		strSlice = append(strSlice, val.(string))
+	}
+	return strSlice
+}

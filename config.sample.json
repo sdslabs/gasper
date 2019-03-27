@@ -17,6 +17,11 @@
             "deploy": true,
             "port": ":3000"
         },
+        "ssh": {
+            "deploy": true,
+            "port": ":2222",
+            "host_signers": ["/home/username/.ssh/id_rsa"] 
+        },
         "static": {
             "deploy": true,
             "image": "nginx:latest",
