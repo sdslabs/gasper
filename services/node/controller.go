@@ -47,6 +47,7 @@ func createApp(c *gin.Context) {
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
+		data["env"].(map[string]interface{}),
 		context,
 		&types.ApplicationConfig{
 			DockerImage:  utils.ServiceConfig["node"].(map[string]interface{})["image"].(string),

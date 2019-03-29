@@ -42,13 +42,14 @@ func setupContainer(
 	url,
 	httpPort,
 	sshPort string,
+	env map[string]interface{},
 	appContext map[string]interface{},
 	appConf *types.ApplicationConfig,
 	mutex map[string]chan types.ResponseError) {
 
 	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name)
+	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name, env)
 	if err != nil {
 		// return nil, types.NewResErr(500, "container not created", err)
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
@@ -81,7 +82,7 @@ func setupContainer(
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
+func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]interface{}, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
 	appEnv, err := types.NewAppEnv()
 	if err != nil {
 		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
@@ -113,6 +114,7 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[
 		url,
 		httpPort,
 		sshPort,
+		env,
 		appContext,
 		appConf,
 		mutex)
