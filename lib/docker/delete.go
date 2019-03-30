@@ -7,9 +7,20 @@ import (
 )
 
 // DeleteContainer deletes a docker container
-func DeleteContainer(containerID string) {
+func DeleteContainer(containerID string) error {
 	ctx := context.Background()
 	cli, _ := client.NewEnvClient()
-	StopContainer(ctx, cli, containerID)
-	cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true})
+	err := StopContainer(ctx, cli, containerID)
+	
+	if err != nil {
+		return err
+	}
+	
+	err = cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
