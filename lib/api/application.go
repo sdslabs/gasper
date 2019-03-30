@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/git"
@@ -21,11 +20,10 @@ func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) 
 	}
 	err = git.Clone(url, storedir)
 	if err != nil {
-		mutex["clone"] <- types.NewResErr(500, "repository not cloned", err)
-		if err != gogit.ErrRepositoryAlreadyExists {
-			slice := strings.Split(storedir, "/")
-			appName := slice[len(slice)-1]
-			utils.FullCleanup(appName)
+		if err == gogit.ErrRepositoryAlreadyExists {
+			mutex["clone"] <- types.NewResErr(500, "repository already exists", err)
+		} else {
+			mutex["clone"] <- types.NewResErr(500, "repository not cloned", err)
 		}
 		return
 	}
@@ -60,13 +58,11 @@ func setupContainer(
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		utils.FullCleanup(name)
 		return
 	}
 	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		utils.FullCleanup(name)
 		return
 	}
 
@@ -74,7 +70,6 @@ func setupContainer(
 	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not started", err)
-		utils.FullCleanup(name)
 		return
 	}
 	mutex["setup"] <- nil
@@ -117,5 +112,16 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[
 		appConf,
 		mutex)
 
-	return appEnv, []types.ResponseError{<-mutex["setup"], <-mutex["clone"]}
+	setupErr := <-mutex["setup"]
+	cloneErr := <-mutex["clone"]
+
+	if cloneErr != nil || setupErr != nil {
+		if cloneErr != nil {
+			if cloneErr.Message() != "repository already exists" {
+				utils.FullCleanup(name)
+			}
+		}
+	}
+
+	return appEnv, []types.ResponseError{setupErr, cloneErr}
 }
