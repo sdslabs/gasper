@@ -117,12 +117,23 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	setupErr := <-mutex["setup"]
 	cloneErr := <-mutex["clone"]
 
-	if cloneErr != nil || setupErr != nil {
-		if cloneErr != nil {
-			if cloneErr.Message() != "repository already exists" {
-				utils.FullCleanup(name)
-			}
+	setupFlag := false
+	cloneFlag := false
+
+	if cloneErr != nil {
+		if cloneErr.Message() != "repository already exists" {
+			cloneFlag = true
 		}
+	}
+
+	if setupErr != nil {
+		if setupErr.Message() != "container not created" {
+			setupFlag = true
+		}
+	}
+
+	if setupFlag || cloneFlag {
+		utils.FullCleanup(name)
 	}
 
 	return appEnv, []types.ResponseError{setupErr, cloneErr}
