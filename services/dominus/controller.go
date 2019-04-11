@@ -3,11 +3,9 @@ package dominus
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
-	"net/http"
 )
 
 func createApp(c *gin.Context) {
