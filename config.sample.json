@@ -20,7 +20,9 @@
         "ssh": {
             "deploy": true,
             "port": ":2222",
-            "host_signers": ["/home/username/.ssh/id_rsa"] 
+            "host_signers": ["/home/username/.ssh/id_rsa"],
+            "using_passphrase": false,
+            "passphrase": ""
         },
         "static": {
             "deploy": true,
