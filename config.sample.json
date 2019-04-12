@@ -13,8 +13,8 @@
         "DB": 0
     },
     "falcon": {
-        "falconClientId": "howl-MKUlTqXmtQHPEtPN",
-        "falconClientSecret": "0b3d4a96a621bf4c1d08ceddc49241482c96aa1b7e69c3e81f5f4190c80c0d8b",
+        "falconClientId": "",
+        "falconClientSecret": "",
         "falconUrlAccessToken": "http://falcon.sdslabs.local/access_token",
         "falconUrlResourceOwnerDetails": "http://falcon.sdslabs.local/users/",
         "falconAccountsUrl": "http://arceus.sdslabs.local/",
