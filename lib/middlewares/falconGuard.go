@@ -1,19 +1,26 @@
 package middlewares
 
 import (
-	"fmt"
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/utils"
 	falconApi "github.com/supra08/falcon-client-golang"
 	"strings"
 )
 
 func user(cookie string) (string, error) {
-	config := falconApi.New("howl-MKUlTqXmtQHPEtPN", "0b3d4a96a621bf4c1d08ceddc49241482c96aa1b7e69c3e81f5f4190c80c0d8b", "http://falcon.sdslabs.local/access_token", "http://falcon.sdslabs.local/users/", "http://arceus.sdslabs.local/")
+
+	clientId := utils.FalconConfig["falconClientId"].(string)
+	clientSecret := utils.FalconConfig["falconClientSecret"].(string)
+	falconUrlAccessToken := utils.FalconConfig["falconUrlAccessToken"].(string)
+	falconUrlResourceOwner := utils.FalconConfig["falconUrlResourceOwnerDetails"].(string)
+	falconAccountsUrl := utils.FalconConfig["falconAccountsUrl"].(string)
+
+	config := falconApi.New(clientId, clientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl)
 	hash := strings.Split(cookie, "=")[1]
-	fmt.Println(hash)
 	user, err := falconApi.GetLoggedInUser(config, hash)
 	if err != nil {
-		return "", fmt.Errorf("error in falcon client")
+		return "", errors.New("error in falcon client")
 	}
 	return user, nil
 }
