@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/git"
@@ -21,11 +20,10 @@ func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) 
 	}
 	err = git.Clone(url, storedir)
 	if err != nil {
-		mutex["clone"] <- types.NewResErr(500, "repository not cloned", err)
-		if err != gogit.ErrRepositoryAlreadyExists {
-			slice := strings.Split(storedir, "/")
-			appName := slice[len(slice)-1]
-			utils.FullCleanup(appName)
+		if err == gogit.ErrRepositoryAlreadyExists {
+			mutex["clone"] <- types.NewResErr(500, "repository already exists", err)
+		} else {
+			mutex["clone"] <- types.NewResErr(500, "repository not cloned", err)
 		}
 		return
 	}
@@ -42,13 +40,14 @@ func setupContainer(
 	url,
 	httpPort,
 	sshPort string,
+	env map[string]interface{},
 	appContext map[string]interface{},
 	appConf *types.ApplicationConfig,
 	mutex map[string]chan types.ResponseError) {
 
 	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name)
+	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name, env)
 	if err != nil {
 		// return nil, types.NewResErr(500, "container not created", err)
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
@@ -60,13 +59,11 @@ func setupContainer(
 	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		utils.FullCleanup(name)
 		return
 	}
 	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		utils.FullCleanup(name)
 		return
 	}
 
@@ -74,14 +71,13 @@ func setupContainer(
 	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not started", err)
-		utils.FullCleanup(name)
 		return
 	}
 	mutex["setup"] <- nil
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
+func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]interface{}, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
 	appEnv, err := types.NewAppEnv()
 	if err != nil {
 		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
@@ -113,9 +109,32 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, appContext map[
 		url,
 		httpPort,
 		sshPort,
+		env,
 		appContext,
 		appConf,
 		mutex)
 
-	return appEnv, []types.ResponseError{<-mutex["setup"], <-mutex["clone"]}
+	setupErr := <-mutex["setup"]
+	cloneErr := <-mutex["clone"]
+
+	setupFlag := false
+	cloneFlag := false
+
+	if cloneErr != nil {
+		if cloneErr.Message() != "repository already exists" {
+			cloneFlag = true
+		}
+	}
+
+	if setupErr != nil {
+		if setupErr.Message() != "container not created" {
+			setupFlag = true
+		}
+	}
+
+	if setupFlag || cloneFlag {
+		utils.FullCleanup(name)
+	}
+
+	return appEnv, []types.ResponseError{setupErr, cloneErr}
 }

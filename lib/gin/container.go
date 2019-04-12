@@ -39,3 +39,28 @@ func FetchLogs(c *gin.Context) {
 		"data": data,
 	})
 }
+
+// ReloadServer reloads the nginx server
+func ReloadServer(c *gin.Context) {
+	app := c.Param("app")
+	appEnv, err := types.NewAppEnv()
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	cmd := []string{"nginx", "-s", "reload"}
+	_, err = docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, app, cmd)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+	})
+}
