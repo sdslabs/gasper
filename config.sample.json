@@ -24,6 +24,13 @@
             "using_passphrase": false,
             "passphrase": ""
         },
+        "ssh_proxy": {
+            "deploy": true,
+            "port": ":3222",
+            "host_signers": ["/home/username/.ssh/id_rsa"],
+            "using_passphrase": false,
+            "passphrase": ""
+        },
         "static": {
             "deploy": true,
             "image": "nginx:latest",
