@@ -29,3 +29,6 @@ var RedisConfig = SWSConfig["redis"].(map[string]interface{})
 
 // ServiceConfig is the configuration for all services
 var ServiceConfig = SWSConfig["services"].(map[string]interface{})
+
+// FalconConfig is the configuration for all the falcon client services
+var FalconConfig = SWSConfig["falcon"].(map[string]interface{})
