@@ -13,6 +13,6 @@ func init() {
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)
 	Router.GET("/:app/restart", gin.ReloadServer)
-	Router.PUT("/", updateApp)
+	Router.PUT("/", updateAppInfo)
 	Router.DELETE("/", deleteApp)
 }

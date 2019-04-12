@@ -138,7 +138,7 @@ func deleteApp(c *gin.Context) {
 	})
 }
 
-func updateApp(c *gin.Context) {
+func updateAppInfo(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
