@@ -2,6 +2,7 @@ package utils
 
 import (
 	"net"
+	"strconv"
 )
 
 // GetFreePort asks the kernel for a free open port that is ready to use.
@@ -36,4 +37,25 @@ func GetFreePorts(count int) ([]int, error) {
 		ports = append(ports, l.Addr().(*net.TCPAddr).Port)
 	}
 	return ports, nil
+}
+
+// IsValidPort checks if the port is valid and free to use.
+// Port of the format ":8888"
+func IsValidPort(port string) bool {
+	_, err := strconv.ParseUint(port[1:], 10, 16)
+	if err != nil {
+		return false
+	}
+
+	ln, err := net.Listen("tcp", port)
+	if err != nil {
+		return false
+	}
+
+	err = ln.Close()
+	if err != nil {
+		return false
+	}
+
+	return true
 }
