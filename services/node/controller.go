@@ -1,8 +1,6 @@
 package node
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
@@ -16,56 +14,30 @@ import (
 // createApp function handles requests for making making new node app
 func createApp(c *gin.Context) {
 	var (
-		data map[string]interface{}
+		data   map[string]interface{}
+		execID string
 	)
-
 	c.BindJSON(&data)
 
-	ports, err := utils.GetFreePorts(2)
-
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err,
-		})
-		return
-	}
-
-	if len(ports) < 2 {
-		c.JSON(500, gin.H{
-			"error": "Not Enough Ports",
-		})
-		return
-	}
-
-	sshPort := ports[0]
-	httpPort := ports[1]
+	data["language"] = "node"
 
 	context := data["context"].(map[string]interface{})
+	appConf := &types.ApplicationConfig{
+		DockerImage:  utils.ServiceConfig["node"].(map[string]interface{})["image"].(string),
+		ConfFunction: configs.CreateNodeContainerConfig,
+	}
 
-	appEnv, errorList := api.CreateBasicApplication(
-		data["name"].(string),
-		data["url"].(string),
-		strconv.Itoa(httpPort),
-		strconv.Itoa(sshPort),
-		data["env"].(map[string]interface{}),
-		context,
-		&types.ApplicationConfig{
-			DockerImage:  utils.ServiceConfig["node"].(map[string]interface{})["image"].(string),
-			ConfFunction: configs.CreateNodeContainerConfig,
-		})
-
-	for _, e := range errorList {
-		if e != nil {
-			g.SendResponse(c, e, gin.H{})
-			return
-		}
+	appEnv, resErr := api.SetupApplication(appConf, data)
+	if resErr != nil {
+		g.SendResponse(c, resErr, gin.H{})
+		return
 	}
 
 	// Perform npm install in the container
 	if data["npm"].(bool) {
-		execID, rer := installPackages(appEnv)
-		if rer != nil {
-			g.SendResponse(c, rer, gin.H{})
+		execID, resErr = installPackages(appEnv)
+		if resErr != nil {
+			g.SendResponse(c, resErr, gin.H{})
 			return
 		}
 		data["execID"] = execID
@@ -74,18 +46,12 @@ func createApp(c *gin.Context) {
 	index := context["index"].(string)
 
 	// Start app using pm2 in the container
-	execID, rer := startApp(index, appEnv)
-	if rer != nil {
-		g.SendResponse(c, rer, gin.H{})
+	execID, resErr = startApp(index, appEnv)
+	if resErr != nil {
+		g.SendResponse(c, resErr, gin.H{})
 		return
 	}
 	data["execID"] = execID
-
-	data["sshPort"] = sshPort
-	data["httpPort"] = httpPort
-	data["containerID"] = appEnv.ContainerID
-	data["language"] = "node"
-	data["hostIP"] = utils.HostIP
 
 	documentID, err := mongo.RegisterApp(data)
 
