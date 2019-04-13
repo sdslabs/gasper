@@ -2,12 +2,9 @@ package python
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/api"
-	"github.com/sdslabs/SWS/lib/configs"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
@@ -16,50 +13,9 @@ func createApp(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	context := data["context"].(map[string]interface{})
-
-	var image string
-	if data["python_version"].(string) == "3" {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
-	} else {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
-	}
-
 	data["language"] = "python"
 
-	appConf := &types.ApplicationConfig{
-		DockerImage:  image,
-		ConfFunction: configs.CreatePythonContainerConfig,
-	}
-
-	appEnv, resErr := api.SetupApplication(appConf, data)
-	if resErr != nil {
-		g.SendResponse(c, resErr, gin.H{})
-		return
-	}
-
-	// Path of `requirements.txt` or any-other file containing requirements
-	requirements := data["requirements"]
-	if requirements != nil {
-		_, resErr = installRequirements(requirements.(string), appEnv)
-		if resErr != nil {
-			g.SendResponse(c, resErr, gin.H{})
-			return
-		}
-	}
-
-	if data["django"] != nil {
-		if data["django"].(bool) {
-			_, resErr = startServer("manage.py", []string{"runserver"}, appEnv)
-		}
-	} else {
-		args := context["args"].([]interface{})
-		var arguments []string
-		for _, arg := range args {
-			arguments = append(arguments, arg.(string))
-		}
-		_, resErr = startServer(context["index"].(string), arguments, appEnv)
-	}
+	resErr := pipeline(data)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})
 		return
