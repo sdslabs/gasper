@@ -97,3 +97,23 @@ func updateAppInfo(c *gin.Context) {
 		"message": mongo.UpdateApp(filter, data),
 	})
 }
+
+func rebuildApp(c *gin.Context) {
+	appName := c.Param("app")
+	filter := map[string]interface{}{
+		"name":     appName,
+		"language": "static",
+	}
+	data := mongo.FetchAppInfo(filter)[0]
+	utils.FullCleanup(appName)
+
+	resErr := pipeline(data)
+	if resErr != nil {
+		g.SendResponse(c, resErr, gin.H{})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": mongo.UpdateApp(filter, data),
+	})
+}
