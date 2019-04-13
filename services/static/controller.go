@@ -2,12 +2,9 @@ package static
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/api"
-	"github.com/sdslabs/SWS/lib/configs"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
@@ -18,12 +15,7 @@ func createApp(c *gin.Context) {
 
 	data["language"] = "static"
 
-	appConf := &types.ApplicationConfig{
-		ConfFunction: configs.CreateStaticContainerConfig,
-		DockerImage:  utils.ServiceConfig["static"].(map[string]interface{})["image"].(string),
-	}
-
-	_, resErr := api.SetupApplication(appConf, data)
+	resErr := pipeline(data)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})
 		return
