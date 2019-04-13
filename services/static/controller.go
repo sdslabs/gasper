@@ -1,8 +1,6 @@
 package static
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
@@ -15,54 +13,21 @@ import (
 
 // createApp function handles requests for making making new static app
 func createApp(c *gin.Context) {
-	var (
-		data map[string]interface{}
-	)
+	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	ports, err := utils.GetFreePorts(2)
-
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err,
-		})
-		return
-	}
-
-	if len(ports) < 2 {
-		c.JSON(500, gin.H{
-			"error": "Not Enough Ports",
-		})
-		return
-	}
-
-	sshPort := ports[0]
-	httpPort := ports[1]
-
-	appEnv, errorList := api.CreateBasicApplication(
-		data["name"].(string),
-		data["url"].(string),
-		strconv.Itoa(httpPort),
-		strconv.Itoa(sshPort),
-		data["env"].(map[string]interface{}),
-		data["context"].(map[string]interface{}),
-		&types.ApplicationConfig{
-			DockerImage:  utils.ServiceConfig["static"].(map[string]interface{})["image"].(string),
-			ConfFunction: configs.CreateStaticContainerConfig,
-		})
-
-	for _, e := range errorList {
-		if e != nil {
-			g.SendResponse(c, e, gin.H{})
-			return
-		}
-	}
-
-	data["sshPort"] = sshPort
-	data["httpPort"] = httpPort
-	data["containerID"] = appEnv.ContainerID
 	data["language"] = "static"
-	data["hostIP"] = utils.HostIP
+
+	appConf := &types.ApplicationConfig{
+		ConfFunction: configs.CreateStaticContainerConfig,
+		DockerImage:  utils.ServiceConfig["static"].(map[string]interface{})["image"].(string),
+	}
+
+	_, resErr := api.SetupApplication(appConf, data)
+	if resErr != nil {
+		g.SendResponse(c, resErr, gin.H{})
+		return
+	}
 
 	documentID, err := mongo.RegisterApp(data)
 
