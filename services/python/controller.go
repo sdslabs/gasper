@@ -1,8 +1,6 @@
 package python
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
@@ -15,31 +13,11 @@ import (
 
 // createApp function handles requests for making making new static app
 func createApp(c *gin.Context) {
-	var (
-		data map[string]interface{}
-	)
+	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	ports, err := utils.GetFreePorts(2)
-
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err,
-		})
-		return
-	}
-
-	if len(ports) < 2 {
-		c.JSON(500, gin.H{
-			"error": "Not Enough Ports",
-		})
-		return
-	}
-
-	sshPort := ports[0]
-	httpPort := ports[1]
-
 	context := data["context"].(map[string]interface{})
+
 	var image string
 	if data["python_version"].(string) == "3" {
 		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
@@ -47,39 +25,32 @@ func createApp(c *gin.Context) {
 		image = utils.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
 	}
 
-	appEnv, errorList := api.CreateBasicApplication(
-		data["name"].(string),
-		data["url"].(string),
-		strconv.Itoa(httpPort),
-		strconv.Itoa(sshPort),
-		data["env"].(map[string]interface{}),
-		context,
-		&types.ApplicationConfig{
-			DockerImage:  image,
-			ConfFunction: configs.CreatePythonContainerConfig,
-		})
+	data["language"] = "python"
 
-	for _, e := range errorList {
-		if e != nil {
-			g.SendResponse(c, e, gin.H{})
-			return
-		}
+	appConf := &types.ApplicationConfig{
+		DockerImage:  image,
+		ConfFunction: configs.CreatePythonContainerConfig,
+	}
+
+	appEnv, resErr := api.SetupApplication(appConf, data)
+	if resErr != nil {
+		g.SendResponse(c, resErr, gin.H{})
+		return
 	}
 
 	// Path of `requirements.txt` or any-other file containing requirements
 	requirements := data["requirements"]
 	if requirements != nil {
-		_, rer := installRequirements(requirements.(string), appEnv)
-		if rer != nil {
-			g.SendResponse(c, rer, gin.H{})
+		_, resErr = installRequirements(requirements.(string), appEnv)
+		if resErr != nil {
+			g.SendResponse(c, resErr, gin.H{})
 			return
 		}
 	}
 
-	var rer types.ResponseError
 	if data["django"] != nil {
 		if data["django"].(bool) {
-			_, rer = startServer("manage.py", []string{"runserver"}, appEnv)
+			_, resErr = startServer("manage.py", []string{"runserver"}, appEnv)
 		}
 	} else {
 		args := context["args"].([]interface{})
@@ -87,18 +58,12 @@ func createApp(c *gin.Context) {
 		for _, arg := range args {
 			arguments = append(arguments, arg.(string))
 		}
-		_, rer = startServer(context["index"].(string), arguments, appEnv)
+		_, resErr = startServer(context["index"].(string), arguments, appEnv)
 	}
-	if rer != nil {
-		g.SendResponse(c, rer, gin.H{})
+	if resErr != nil {
+		g.SendResponse(c, resErr, gin.H{})
 		return
 	}
-
-	data["sshPort"] = sshPort
-	data["httpPort"] = httpPort
-	data["containerID"] = appEnv.ContainerID
-	data["language"] = "python"
-	data["hostIP"] = utils.HostIP
 
 	documentID, err := mongo.RegisterApp(data)
 
