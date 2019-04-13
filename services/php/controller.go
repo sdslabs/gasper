@@ -2,12 +2,9 @@ package php
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/api"
-	"github.com/sdslabs/SWS/lib/configs"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
@@ -18,26 +15,10 @@ func createApp(c *gin.Context) {
 
 	data["language"] = "php"
 
-	appConf := &types.ApplicationConfig{
-		DockerImage:  utils.ServiceConfig["php"].(map[string]interface{})["image"].(string),
-		ConfFunction: configs.CreateStaticContainerConfig,
-	}
-
-	appEnv, resErr := api.SetupApplication(appConf, data)
+	resErr := pipeline(data)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})
-	}
-
-	composerPath := data["composerPath"].(string)
-
-	// Perform composer install in the container
-	if data["composer"].(bool) {
-		execID, resErr := installPackages(composerPath, appEnv)
-		if resErr != nil {
-			g.SendResponse(c, resErr, gin.H{})
-			return
-		}
-		data["execID"] = execID
+		return
 	}
 
 	documentID, err := mongo.RegisterApp(data)
