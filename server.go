@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/node"
@@ -78,4 +79,7 @@ func main() {
 	if err := g.Wait(); err != nil {
 		panic(err)
 	}
+
+	// Initialize the Falcon Config at startup
+	middlewares.InitializeFalconConfig()
 }
