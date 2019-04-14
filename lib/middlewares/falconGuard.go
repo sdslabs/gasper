@@ -8,17 +8,20 @@ import (
 	"strings"
 )
 
-func user(cookie string) (string, error) {
+var falconConf falconApi.FalconClientGolang
 
+func InitializeFalconConfig() {
 	clientId := utils.FalconConfig["falconClientId"].(string)
 	clientSecret := utils.FalconConfig["falconClientSecret"].(string)
 	falconUrlAccessToken := utils.FalconConfig["falconUrlAccessToken"].(string)
 	falconUrlResourceOwner := utils.FalconConfig["falconUrlResourceOwnerDetails"].(string)
 	falconAccountsUrl := utils.FalconConfig["falconAccountsUrl"].(string)
+	falconConf = falconApi.New(clientId, clientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl)
+}
 
-	config := falconApi.New(clientId, clientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl)
+func user(cookie string) (string, error) {
 	hash := strings.Split(cookie, "=")[1]
-	user, err := falconApi.GetLoggedInUser(config, hash)
+	user, err := falconApi.GetLoggedInUser(falconConf, hash)
 	if err != nil {
 		return "", errors.New("error in falcon client")
 	}

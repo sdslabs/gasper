@@ -22,6 +22,6 @@ func AuthorizeService() gin.HandlerFunc {
 			})
 			return
 		}
-		c.Next()
+		// c.Next()
 	}
 }
