@@ -13,6 +13,7 @@
         "DB": 0
     },
     "falcon": {
+        "plugIn": true,
         "falconClientId": "",
         "falconClientSecret": "",
         "falconUrlAccessToken": "http://falcon.sdslabs.local/access_token",
