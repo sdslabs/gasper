@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/git"
@@ -137,4 +138,38 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	}
 
 	return appEnv, []types.ResponseError{setupErr, cloneErr}
+}
+
+// SetupApplication sets up a basic container for the application with all the prerequisites
+func SetupApplication(appConf *types.ApplicationConfig, data map[string]interface{}) (*types.ApplicationEnv, types.ResponseError) {
+	ports, err := utils.GetFreePorts(2)
+	if err != nil {
+		return nil, types.NewResErr(500, "free ports unavailable", err)
+	}
+	if len(ports) < 2 {
+		return nil, types.NewResErr(500, "not enough free ports available", nil)
+	}
+	sshPort, httpPort := ports[0], ports[1]
+
+	appEnv, errList := CreateBasicApplication(
+		data["name"].(string),
+		data["url"].(string),
+		strconv.Itoa(httpPort),
+		strconv.Itoa(sshPort),
+		data["env"].(map[string]interface{}),
+		data["context"].(map[string]interface{}),
+		appConf)
+
+	for _, e := range errList {
+		if e != nil {
+			return nil, types.NewResErr(500, "", e)
+		}
+	}
+
+	data["sshPort"] = sshPort
+	data["httpPort"] = httpPort
+	data["containerID"] = appEnv.ContainerID
+	data["hostIP"] = utils.HostIP
+
+	return appEnv, nil
 }

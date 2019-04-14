@@ -1,8 +1,11 @@
 package node
 
 import (
+	"github.com/sdslabs/SWS/lib/api"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // installPackages function installs the dependancies for the app
@@ -23,4 +26,38 @@ func startApp(index string, appEnv *types.ApplicationEnv) (string, types.Respons
 		return "", types.NewResErr(500, "Failed to perform start app in the container", err)
 	}
 	return execID, nil
+}
+
+func pipeline(data map[string]interface{}) types.ResponseError {
+	context := data["context"].(map[string]interface{})
+	appConf := &types.ApplicationConfig{
+		DockerImage:  utils.ServiceConfig["node"].(map[string]interface{})["image"].(string),
+		ConfFunction: configs.CreateNodeContainerConfig,
+	}
+
+	appEnv, resErr := api.SetupApplication(appConf, data)
+	if resErr != nil {
+		return resErr
+	}
+
+	var execID string
+	// Perform npm install in the container
+	if data["npm"].(bool) {
+		execID, resErr = installPackages(appEnv)
+		if resErr != nil {
+			return resErr
+		}
+		data["execID"] = execID
+	}
+
+	index := context["index"].(string)
+
+	// Start app using pm2 in the container
+	execID, resErr = startApp(index, appEnv)
+	if resErr != nil {
+		return resErr
+	}
+	data["execID"] = execID
+
+	return nil
 }
