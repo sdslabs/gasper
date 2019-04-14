@@ -20,6 +20,5 @@ func NewEngine() *gin.Engine {
 func NewServiceEngine() *gin.Engine {
 	engine := NewEngine()
 	engine.Use(middlewares.AuthorizeService())
-	engine.Use(middlewares.FalconGuard())
 	return engine
 }
