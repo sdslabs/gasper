@@ -12,8 +12,8 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-// handler returns a function which manages the ssh session.
-func handler(service string) func(s ssh.Session) {
+// newHandler returns a handler function which manages the ssh session.
+func newHandler(service string) func(s ssh.Session) {
 	var proxy bool
 	if service == "ssh_proxy" {
 		proxy = true
@@ -87,7 +87,7 @@ func BuildSSHServer(service string) (*ssh.Server, error) {
 		Addr:        sshConfig["port"].(string),
 		HostSigners: hostSigners,
 
-		Handler:          handler(service),
+		Handler:          newHandler(service),
 		PasswordHandler:  passwordHandler,
 		PublicKeyHandler: publicKeyHandler,
 	}, nil
