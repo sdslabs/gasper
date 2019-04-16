@@ -3,6 +3,7 @@ package middlewares
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	g "github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/utils"
 	falconApi "github.com/supra08/falcon-client-golang"
 	"strings"
@@ -19,7 +20,7 @@ func InitializeFalconConfig() {
 	falconConf = falconApi.New(clientId, clientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl)
 }
 
-func user(cookie string) (string, error) {
+func getUser(cookie string) (string, error) {
 	hash := strings.Split(cookie, "=")[1]
 	user, err := falconApi.GetLoggedInUser(falconConf, hash)
 	if err != nil {
@@ -29,16 +30,21 @@ func user(cookie string) (string, error) {
 }
 
 func FalconGuard() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		cookie := c.GetHeader("Cookie")
-		user, err := user(cookie)
-		if user == "" {
-			c.JSON(403, gin.H{
-				"error": err,
-			})
-			c.Abort()
-			return
+	if utils.FalconConfig["plugIn"].(bool) {
+		return func(c *gin.Context) {
+			cookie := c.GetHeader("Cookie")
+			user, err := getUser(cookie)
+			if user == "" {
+				c.JSON(403, gin.H{
+					"error": err,
+				})
+				c.Abort()
+				return
+			}
+			c.Next()
 		}
+	}
+	return func(c *g.Context) {
 		c.Next()
 	}
 }
