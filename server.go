@@ -80,9 +80,7 @@ func main() {
 		panic(err)
 	}
 
-	falconPlugIn := utils.FalconConfig["plugIn"].(bool)
-
-	if falconPlugIn {
+	if utils.FalconConfig["plugIn"].(bool) {
 		// Initialize the Falcon Config at startup
 		middlewares.InitializeFalconConfig()
 	}
