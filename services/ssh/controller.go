@@ -25,6 +25,7 @@ func newHandler(service string) func(s ssh.Session) {
 		if !isPty {
 			fmt.Fprintln(s, "PTY not requested")
 			s.Exit(1)
+			return
 		}
 
 		var cmd *exec.Cmd
@@ -32,12 +33,23 @@ func newHandler(service string) func(s ssh.Session) {
 		if proxy {
 			instanceURL, err := redis.FetchAppURL(s.User())
 			if err != nil {
-				fmt.Fprintln(s, "Application "+s.User()+" is not deployed at the moment")
+				fmt.Fprintln(s, fmt.Sprintf("Application %s is not deployed at the moment", s.User()))
 				s.Exit(1)
 				return
 			}
 			instanceURL = strings.Split(instanceURL, ":")[0]
-			cmd = exec.Command("ssh", "-p", "2222", fmt.Sprintf("%s@%s", s.User(), instanceURL))
+			port, err := redis.GetSSHPort(instanceURL)
+			if err != nil {
+				fmt.Fprintln(s, "Sorry, we are experiencing some technical difficulties at the moment")
+				s.Exit(1)
+				return
+			}
+			if port == "" {
+				fmt.Fprintln(s, fmt.Sprintf("Instance %s doesn't have the SSH service deployed", instanceURL))
+				s.Exit(1)
+				return
+			}
+			cmd = exec.Command("ssh", "-p", port, fmt.Sprintf("%s@%s", s.User(), instanceURL))
 		} else {
 			cmd = exec.Command("docker", "exec", "-it", s.User(), "/bin/bash")
 		}
@@ -49,6 +61,7 @@ func newHandler(service string) func(s ssh.Session) {
 		if err != nil {
 			fmt.Fprintf(s, "ERROR: %s", err.Error())
 			s.Exit(1)
+			return
 		}
 		defer ptmx.Close()
 
