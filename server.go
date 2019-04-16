@@ -67,6 +67,8 @@ func main() {
 						return server.ListenAndServe()
 					})
 				}
+			} else {
+				panic(fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:]))
 			}
 		}
 	}
