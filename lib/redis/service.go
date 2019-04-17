@@ -1,6 +1,8 @@
 package redis
 
 import (
+	"strings"
+
 	"github.com/go-redis/redis"
 )
 
@@ -73,4 +75,16 @@ func RemoveServiceInstance(service, member string) error {
 		return err
 	}
 	return nil
+}
+
+// GetSSHPort returns the port of an instance where its ssh service is deployed
+func GetSSHPort(url string) (string, error) {
+	data, _, err := client.ZScan("ssh", 0, url+":*", 1).Result()
+	if err != nil {
+		return "", err
+	}
+	if len(data) == 0 {
+		return "", nil
+	}
+	return strings.Split(data[0], ":")[1], nil
 }

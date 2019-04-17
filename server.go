@@ -44,20 +44,8 @@ func main() {
 			}
 			port := config["port"].(string)
 			if utils.IsValidPort(port) {
-				if service != "ssh" {
-					server := &http.Server{
-						Addr:         port,
-						Handler:      serviceBindings[service],
-						ReadTimeout:  5 * time.Second,
-						WriteTimeout: 30 * time.Second,
-					}
-					fmt.Printf("%s Service Active\n", strings.Title(service))
-					g.Go(func() error {
-						return server.ListenAndServe()
-					})
-
-				} else {
-					server, err := ssh.BuildSSHServer()
+				if strings.HasPrefix(service, "ssh") {
+					server, err := ssh.BuildSSHServer(service)
 					if err != nil {
 						fmt.Println("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.")
 						fmt.Printf("ERROR:: %s\n", err.Error())
@@ -67,9 +55,20 @@ func main() {
 							return server.ListenAndServe()
 						})
 					}
+				} else {
+					server := &http.Server{
+						Addr:         config["port"].(string),
+						Handler:      serviceBindings[service],
+						ReadTimeout:  5 * time.Second,
+						WriteTimeout: 30 * time.Second,
+					}
+					fmt.Printf("%s Service Active\n", strings.Title(service))
+					g.Go(func() error {
+						return server.ListenAndServe()
+					})
 				}
 			} else {
-				fmt.Printf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port)
+				panic(fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:]))
 			}
 		}
 	}
