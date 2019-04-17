@@ -12,6 +12,15 @@
         "password": "",
         "DB": 0
     },
+    "falcon": {
+        "plugIn": true,
+        "falconClientId": "",
+        "falconClientSecret": "",
+        "falconUrlAccessToken": "http://falcon.sdslabs.local/access_token",
+        "falconUrlResourceOwnerDetails": "http://falcon.sdslabs.local/users/",
+        "falconAccountsUrl": "http://arceus.sdslabs.local/",
+        "redirectUri": ""
+    },
     "services": {
         "dominus": {
             "deploy": true,
