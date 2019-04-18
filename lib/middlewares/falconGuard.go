@@ -2,22 +2,24 @@ package middlewares
 
 import (
 	"errors"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	g "github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/utils"
 	falconApi "github.com/supra08/falcon-client-golang"
-	"strings"
 )
 
 var falconConf falconApi.FalconClientGolang
 
+// InitializeFalconConfig initializes the Falcon API with the application's credentials
 func InitializeFalconConfig() {
-	clientId := utils.FalconConfig["falconClientId"].(string)
+	clientID := utils.FalconConfig["falconClientId"].(string)
 	clientSecret := utils.FalconConfig["falconClientSecret"].(string)
-	falconUrlAccessToken := utils.FalconConfig["falconUrlAccessToken"].(string)
-	falconUrlResourceOwner := utils.FalconConfig["falconUrlResourceOwnerDetails"].(string)
-	falconAccountsUrl := utils.FalconConfig["falconAccountsUrl"].(string)
-	falconConf = falconApi.New(clientId, clientSecret, falconUrlAccessToken, falconUrlResourceOwner, falconAccountsUrl)
+	falconURLAccessToken := utils.FalconConfig["falconUrlAccessToken"].(string)
+	falconURLResourceOwner := utils.FalconConfig["falconUrlResourceOwnerDetails"].(string)
+	falconAccountsURL := utils.FalconConfig["falconAccountsUrl"].(string)
+	falconConf = falconApi.New(clientID, clientSecret, falconURLAccessToken, falconURLResourceOwner, falconAccountsURL)
 }
 
 func getUser(cookie string) (string, error) {
@@ -29,6 +31,7 @@ func getUser(cookie string) (string, error) {
 	return user, nil
 }
 
+// FalconGuard returns an authorization middleware based on the plugin
 func FalconGuard() gin.HandlerFunc {
 	if utils.FalconConfig["plugIn"].(bool) {
 		return func(c *gin.Context) {
