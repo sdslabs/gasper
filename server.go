@@ -81,12 +81,12 @@ func main() {
 		dominus.ScheduleCleanup(cleanupInterval * time.Second)
 	}
 
-	if err := g.Wait(); err != nil {
-		panic(err)
-	}
-
 	if utils.FalconConfig["plugIn"].(bool) {
 		// Initialize the Falcon Config at startup
 		middlewares.InitializeFalconConfig()
+	}
+
+	if err := g.Wait(); err != nil {
+		panic(err)
 	}
 }
