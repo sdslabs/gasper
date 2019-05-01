@@ -46,7 +46,7 @@ server {
 	access_log  /var/log/nginx/%s.access.log  main;
 	error_log   /var/log/nginx/%s.error.log   warn;
 
-	root /SDS/%s;
+	root /SWS/%s;
 	index index.php;
 
 	location / {
