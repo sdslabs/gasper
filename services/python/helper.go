@@ -1,15 +1,57 @@
 package python
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"strings"
 
+	validator "github.com/asaskevich/govalidator"
+	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
+
+type context struct {
+	Index string   `json:"index" valid:"required"`
+	Port  string   `json:"port" valid:"required,port"`
+	Args  []string `json:"args"`
+}
+
+type pythonRequestBody struct {
+	Name          string                 `json:"name" valid:"required,alphanum,stringlength(3|40)"`
+	URL           string                 `json:"url" valid:"required,url"`
+	Context       context                `json:"context" valid:"required"`
+	PythonVersion string                 `json:"python_version" valid:"required"`
+	Requirements  string                 `json:"requirements" valid:"required"`
+	Django        bool                   `json:"django"`
+	Env           map[string]interface{} `json:"env"`
+}
+
+func validateRequest(c *gin.Context) {
+
+	var bodyBytes []byte
+	if c.Request.Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+	}
+	// Restore the io.ReadCloser to its original state
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	var req pythonRequestBody
+
+	json.Unmarshal(bodyBytes, &req)
+
+	if result, err := validator.ValidateStruct(req); !result {
+		c.AbortWithStatusJSON(400, gin.H{
+			"error": err,
+		})
+	} else {
+		c.Next()
+	}
+}
 
 func startServer(index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {
 	arguments := strings.Join(args, " ")

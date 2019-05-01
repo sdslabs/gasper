@@ -7,11 +7,8 @@ import (
 // Router is the main routes handler for the current microservice package
 var Router = gin.NewServiceEngine()
 
-// The parameters required for the creation of an application
-var requiredParams = []string{"name", "url", "context", "python_version", "requirements"}
-
 func init() {
-	Router.POST("/", gin.ValidateParams(requiredParams), createApp)
+	Router.POST("/", validateRequest, createApp)
 	Router.GET("/", fetchDocs)
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)
