@@ -102,12 +102,17 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 		}
 	}
 
-	if data["django"] != nil {
-		if data["django"].(bool) {
-			_, resErr = startServer("manage.py", []string{"runserver"}, appEnv)
-		}
+	if data["django"] == nil {
+		data["django"] = false
+	}
+
+	if data["django"].(bool) {
+		_, resErr = startServer("manage.py", []string{"runserver"}, appEnv)
 	} else {
-		args := context["args"].([]interface{})
+		var args []interface{}
+		if context["args"] != nil {
+			args = context["args"].([]interface{})
+		}
 		var arguments []string
 		for _, arg := range args {
 			arguments = append(arguments, arg.(string))
