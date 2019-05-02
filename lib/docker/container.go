@@ -13,11 +13,11 @@ import (
 // CreateContainer creates a new container of the given container options, returns id of the container created
 func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, sshPort, workdir, storedir, name string, env map[string]interface{}) (string, error) {
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
-	
+
 	// convert map to list of strings
 	envArr := []string{}
 	for key, value := range env {
-	    envArr = append(envArr, key+"="+value.(string))
+		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
 	}
 
 	containerConfig := &container.Config{

@@ -151,12 +151,18 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	}
 	sshPort, httpPort := ports[0], ports[1]
 
+	var env map[string]interface{}
+
+	if data["env"] != nil {
+		env = data["env"].(map[string]interface{})
+	}
+
 	appEnv, errList := CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
-		data["env"].(map[string]interface{}),
+		env,
 		data["context"].(map[string]interface{}),
 		appConf)
 
