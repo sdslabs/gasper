@@ -50,7 +50,6 @@ func setupContainer(
 	// create the container
 	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name, env)
 	if err != nil {
-		// return nil, types.NewResErr(500, "container not created", err)
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
 	}
@@ -162,7 +161,7 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 
 	for _, e := range errList {
 		if e != nil {
-			return nil, types.NewResErr(500, "", e)
+			return nil, e
 		}
 	}
 
