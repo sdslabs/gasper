@@ -34,7 +34,13 @@ func validateRequest(c *gin.Context) {
 	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 	var req staticRequestBody
 
-	json.Unmarshal(bodyBytes, &req)
+	err := json.Unmarshal(bodyBytes, &req)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"error": "Invalid JSON",
+		})
+		return
+	}
 
 	if result, err := validator.ValidateStruct(req); !result {
 		c.AbortWithStatusJSON(400, gin.H{
