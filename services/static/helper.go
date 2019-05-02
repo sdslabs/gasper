@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 
 	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
@@ -14,13 +15,13 @@ import (
 )
 
 type context struct {
-	Index string `json:"index" valid:"required"`
+	Index string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
 }
 
 type staticRequestBody struct {
-	Name    string                 `json:"name" valid:"required,alphanum,stringlength(3|40)"`
-	URL     string                 `json:"url" valid:"required,url"`
-	Context context                `json:"context" valid:"required"`
+	Name    string                 `json:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters"`
+	URL     string                 `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
+	Context context                `json:"context"`
 	Env     map[string]interface{} `json:"env"`
 }
 
@@ -44,7 +45,7 @@ func validateRequest(c *gin.Context) {
 
 	if result, err := validator.ValidateStruct(req); !result {
 		c.AbortWithStatusJSON(400, gin.H{
-			"error": err,
+			"error": strings.Split(err.Error(), ";"),
 		})
 	} else {
 		c.Next()

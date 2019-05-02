@@ -17,17 +17,17 @@ import (
 )
 
 type context struct {
-	Index string   `json:"index" valid:"required"`
-	Port  string   `json:"port" valid:"required,port"`
+	Index string   `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	Port  string   `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
 	Args  []string `json:"args"`
 }
 
 type pythonRequestBody struct {
-	Name          string                 `json:"name" valid:"required,alphanum,stringlength(3|40)"`
-	URL           string                 `json:"url" valid:"required,url"`
-	Context       context                `json:"context" valid:"required"`
-	PythonVersion string                 `json:"python_version" valid:"required"`
-	Requirements  string                 `json:"requirements" valid:"required"`
+	Name          string                 `json:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters"`
+	URL           string                 `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
+	Context       context                `json:"context"`
+	PythonVersion string                 `json:"python_version" valid:"required~Field 'python_version' is required but was not provided"`
+	Requirements  string                 `json:"requirements" valid:"required~Field 'requirements' is required but was not provided"`
 	Django        bool                   `json:"django"`
 	Env           map[string]interface{} `json:"env"`
 }
@@ -52,7 +52,7 @@ func validateRequest(c *gin.Context) {
 
 	if result, err := validator.ValidateStruct(req); !result {
 		c.AbortWithStatusJSON(400, gin.H{
-			"error": err,
+			"error": strings.Split(err.Error(), ";"),
 		})
 	} else {
 		c.Next()
