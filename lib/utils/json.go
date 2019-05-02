@@ -5,21 +5,21 @@ import (
 	"io/ioutil"
 )
 
-func parseJSON(path string) (map[string]interface{}, error) {
+func parseJSON(path string) map[string]interface{} {
 	var config map[string]interface{}
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
-		return config, err
+		panic("File config.json does not exist")
 	}
 	err = json.Unmarshal(file, &config)
 	if err != nil {
-		return config, err
+		panic("Invalid config.json file")
 	}
-	return config, nil
+	return config
 }
 
 // SWSConfig is parsed data for `config.json`
-var SWSConfig, _ = parseJSON("config.json")
+var SWSConfig = parseJSON("config.json")
 
 // MongoConfig is the configuration for MongoDB
 var MongoConfig = SWSConfig["mongo"].(map[string]interface{})
