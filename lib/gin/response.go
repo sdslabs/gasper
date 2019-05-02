@@ -16,9 +16,15 @@ func SendResponse(c *gin.Context, r types.ResponseError, response gin.H) {
 	}
 	utils.LogResErr(r)
 	if r.Status() == 500 {
-		c.JSON(500, gin.H{
-			"error": "INTERNAL_SERVER_ERROR",
-		})
+		if utils.SWSConfig["debug"].(bool) {
+			c.JSON(500, gin.H{
+				"error": r.Verbose(),
+			})
+		} else {
+			c.JSON(500, gin.H{
+				"error": "INTERNAL_SERVER_ERROR",
+			})
+		}
 		return
 	}
 	c.JSON(r.Status(), gin.H{
