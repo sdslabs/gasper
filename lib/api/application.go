@@ -135,7 +135,7 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	}
 
 	if setupFlag || cloneFlag {
-		utils.FullCleanup(name)
+		go utils.FullCleanup(name)
 	}
 
 	return appEnv, []types.ResponseError{setupErr, cloneErr}

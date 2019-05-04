@@ -24,8 +24,8 @@ func createApp(c *gin.Context) {
 	documentID, err := mongo.RegisterApp(data)
 
 	if err != nil {
-		utils.FullCleanup(data["name"].(string))
-		utils.StateCleanup(data["name"].(string))
+		go utils.FullCleanup(data["name"].(string))
+		go utils.StateCleanup(data["name"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -38,8 +38,8 @@ func createApp(c *gin.Context) {
 	)
 
 	if err != nil {
-		utils.FullCleanup(data["name"].(string))
-		utils.StateCleanup(data["name"].(string))
+		go utils.FullCleanup(data["name"].(string))
+		go utils.StateCleanup(data["name"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -52,8 +52,8 @@ func createApp(c *gin.Context) {
 	)
 
 	if err != nil {
-		utils.FullCleanup(data["name"].(string))
-		utils.StateCleanup(data["name"].(string))
+		go utils.FullCleanup(data["name"].(string))
+		go utils.StateCleanup(data["name"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
