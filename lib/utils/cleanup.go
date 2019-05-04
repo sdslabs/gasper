@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/redis"
 )
 
 // StorageCleanup removes the application's local storage directory
@@ -15,7 +17,7 @@ func StorageCleanup(path string) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -39,4 +41,13 @@ func FullCleanup(appName string) {
 	if err != nil {
 		LogError(err)
 	}
+}
+
+// StateCleanup removes the application data from MongoDB and Redis
+func StateCleanup(appName string) {
+	mongo.DeleteApp(map[string]interface{}{
+		"name": appName,
+	})
+
+	redis.RemoveApp(appName)
 }
