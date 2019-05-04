@@ -18,7 +18,7 @@ server {
 	error_log   /var/log/nginx/%s.error.log   warn;
 
 	location / {
-		root   /SWS/%s;
+		root   %s/%s;
 		index  index.html index.htm;
 	}
 
@@ -27,7 +27,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, SWSConfig["domain"].(string), name, name, path)
+	`, name, SWSConfig["domain"].(string), name, name, SWSConfig["projectRoot"].(string), path)
 }
 
 // CreatePHPContainerConfig takes the name of the PHP application
@@ -44,7 +44,7 @@ server {
 	access_log  /var/log/nginx/%s.access.log  main;
 	error_log   /var/log/nginx/%s.error.log   warn;
 
-	root /SWS/%s;
+	root %s/%s;
 	index index.php;
 
 	location / {
@@ -65,7 +65,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-`, name, SWSConfig["domain"].(string), name, name, path)
+`, name, SWSConfig["domain"].(string), name, name, SWSConfig["projectRoot"].(string), path)
 }
 
 // CreateNodeContainerConfig takes the name of the node app
