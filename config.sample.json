@@ -2,6 +2,7 @@
     "debug": true,
     "domain": "sdslabs.co",
     "secret": "YOUR_SECRET_KEY",
+    "projectRoot": "/SWS",
     "cleanupInterval": 600,
     "mongo": {
         "url": "mongodb://localhost:27017"

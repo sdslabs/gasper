@@ -8,7 +8,7 @@ import (
 var Router = gin.NewServiceEngine()
 
 func init() {
-	Router.POST("/", createApp)
+	Router.POST("/", validateRequest, createApp)
 	Router.GET("/", fetchDocs)
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)

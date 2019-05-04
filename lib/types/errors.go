@@ -1,9 +1,8 @@
 package types
 
 import (
-	"fmt"
-	"strings"
 	"errors"
+	"fmt"
 )
 
 var ConstErr = errors.New("Error response from daemon: No such container: ")
@@ -27,10 +26,13 @@ type rerror struct {
 // Alternatively, you can provinde an error interface that can replace the Msg
 // Both msg and error cannot be nil (empty)
 func NewResErr(code int, msg string, err error) ResponseError {
+	if err == nil {
+		err = errors.New("")
+	}
 	var message string
-	if strings.Trim(msg, " ") != "" {
+	if msg != "" {
 		message = msg
-	} else { // Assuming if msg is empty, err is not nil
+	} else {
 		message = err.Error()
 	}
 	return &rerror{

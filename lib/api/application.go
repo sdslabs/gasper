@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/git"
 	"github.com/sdslabs/SWS/lib/types"
@@ -87,7 +88,7 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	var (
 		storepath, _ = os.Getwd()
 		confFileName = fmt.Sprintf("%s.sws.conf", name)
-		workdir      = fmt.Sprintf("/SWS/%s", name)
+		workdir      = fmt.Sprintf("%s/%s", configs.SWSConfig["projectRoot"].(string), name)
 		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
 	)
 
@@ -151,12 +152,18 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	}
 	sshPort, httpPort := ports[0], ports[1]
 
+	var env map[string]interface{}
+
+	if data["env"] != nil {
+		env = data["env"].(map[string]interface{})
+	}
+
 	appEnv, errList := CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
 		strconv.Itoa(sshPort),
-		data["env"].(map[string]interface{}),
+		env,
 		data["context"].(map[string]interface{}),
 		appConf)
 

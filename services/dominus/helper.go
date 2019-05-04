@@ -5,7 +5,7 @@ import (
 	"net/http/httputil"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 )
 
 func reverseProxy(c *gin.Context, target string) {
@@ -13,7 +13,7 @@ func reverseProxy(c *gin.Context, target string) {
 		req.URL.Scheme = "http"
 		req.URL.Host = target
 		req.Host = target
-		req.Header["dominus-secret"] = []string{utils.SWSConfig["secret"].(string)}
+		req.Header["dominus-secret"] = []string{configs.SWSConfig["secret"].(string)}
 		if req.Method == "POST" {
 			req.URL.Path = ""
 		}
