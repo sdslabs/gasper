@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	g "github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 	falconApi "github.com/supra08/falcon-client-golang"
 )
 
@@ -14,11 +14,11 @@ var falconConf falconApi.FalconClientGolang
 
 // InitializeFalconConfig intializes the falcon API
 func InitializeFalconConfig() {
-	clientID := utils.FalconConfig["falconClientId"].(string)
-	clientSecret := utils.FalconConfig["falconClientSecret"].(string)
-	falconURLAccessToken := utils.FalconConfig["falconUrlAccessToken"].(string)
-	falconURLResourceOwner := utils.FalconConfig["falconUrlResourceOwnerDetails"].(string)
-	falconAccountsURL := utils.FalconConfig["falconAccountsUrl"].(string)
+	clientID := configs.FalconConfig["falconClientId"].(string)
+	clientSecret := configs.FalconConfig["falconClientSecret"].(string)
+	falconURLAccessToken := configs.FalconConfig["falconUrlAccessToken"].(string)
+	falconURLResourceOwner := configs.FalconConfig["falconUrlResourceOwnerDetails"].(string)
+	falconAccountsURL := configs.FalconConfig["falconAccountsUrl"].(string)
 	falconConf = falconApi.New(clientID, clientSecret, falconURLAccessToken, falconURLResourceOwner, falconAccountsURL)
 }
 
@@ -36,7 +36,7 @@ func getUser(cookie string) (string, error) {
 
 // FalconGuard is a middleware for checking whether the user is logged into accounts or not
 func FalconGuard() gin.HandlerFunc {
-	if utils.FalconConfig["plugIn"].(bool) {
+	if configs.FalconConfig["plugIn"].(bool) {
 		return func(c *gin.Context) {
 			cookie := c.GetHeader("Cookie")
 			user, err := getUser(cookie)

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/utils"
@@ -77,7 +78,7 @@ func main() {
 	dominus.ExposeServices()
 
 	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
-		cleanupInterval := time.Duration(utils.SWSConfig["cleanupInterval"].(float64))
+		cleanupInterval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))
 		dominus.ScheduleCleanup(cleanupInterval * time.Second)
 	}
 
