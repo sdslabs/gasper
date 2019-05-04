@@ -23,3 +23,12 @@ func FetchAppURL(appName string) (string, error) {
 	}
 	return result, nil
 }
+
+// RemoveApp removes the application's entry from Redis
+func RemoveApp(appName string) error {
+	_, err := client.HDel("apps", appName).Result()
+	if err != nil {
+		return err
+	}
+	return nil
+}
