@@ -11,7 +11,7 @@ import (
 )
 
 // CreateContainer creates a new container of the given container options, returns id of the container created
-func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, sshPort, workdir, storedir, name string, env map[string]interface{}) (string, error) {
+func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, workdir, storedir, name string, env map[string]interface{}) (string, error) {
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	// convert map to list of strings

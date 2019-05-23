@@ -78,7 +78,7 @@ func setupContainer(
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, httpPort, env map[string]interface{}, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
+func CreateBasicApplication(name, url, httpPort string, env, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
 	appEnv, err := types.NewAppEnv()
 	if err != nil {
 		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
@@ -141,7 +141,7 @@ func CreateBasicApplication(name, url, httpPort, env map[string]interface{}, app
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
 func SetupApplication(appConf *types.ApplicationConfig, data map[string]interface{}) (*types.ApplicationEnv, types.ResponseError) {
-	ports, err := utils.GetFreePorts(2)
+	ports, err := utils.GetFreePorts(1)
 	if err != nil {
 		return nil, types.NewResErr(500, "free ports unavailable", err)
 	}
