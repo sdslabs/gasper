@@ -25,7 +25,6 @@ func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, s
 		Image:      image,
 		ExposedPorts: nat.PortSet{
 			"80/tcp": struct{}{},
-			"22/tcp": struct{}{},
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
@@ -39,7 +38,6 @@ func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, s
 		},
 		PortBindings: nat.PortMap{
 			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: httpPort}},
-			nat.Port("22/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: sshPort}},
 		},
 	}
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, name)
