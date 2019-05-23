@@ -40,8 +40,7 @@ func setupContainer(
 	storedir,
 	name,
 	url,
-	httpPort,
-	sshPort string,
+	httpPort string,
 	env map[string]interface{},
 	appContext map[string]interface{},
 	appConf *types.ApplicationConfig,
@@ -49,7 +48,7 @@ func setupContainer(
 
 	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name, env)
+	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, workdir, storedir, name, env)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
@@ -78,7 +77,7 @@ func setupContainer(
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]interface{}, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
+func CreateBasicApplication(name, url, httpPort string, env, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
 	appEnv, err := types.NewAppEnv()
 	if err != nil {
 		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
@@ -109,7 +108,6 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 		name,
 		url,
 		httpPort,
-		sshPort,
 		env,
 		appContext,
 		appConf,
@@ -142,14 +140,14 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
 func SetupApplication(appConf *types.ApplicationConfig, data map[string]interface{}) (*types.ApplicationEnv, types.ResponseError) {
-	ports, err := utils.GetFreePorts(2)
+	ports, err := utils.GetFreePorts(1)
 	if err != nil {
 		return nil, types.NewResErr(500, "free ports unavailable", err)
 	}
-	if len(ports) < 2 {
+	if len(ports) < 1 {
 		return nil, types.NewResErr(500, "not enough free ports available", nil)
 	}
-	sshPort, httpPort := ports[0], ports[1]
+	httpPort := ports[0]
 
 	var env map[string]interface{}
 
@@ -161,7 +159,6 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 		data["name"].(string),
 		data["url"].(string),
 		strconv.Itoa(httpPort),
-		strconv.Itoa(sshPort),
 		env,
 		data["context"].(map[string]interface{}),
 		appConf)
@@ -172,7 +169,6 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 		}
 	}
 
-	data["sshPort"] = sshPort
 	data["httpPort"] = httpPort
 	data["containerID"] = appEnv.ContainerID
 	data["hostIP"] = utils.HostIP
