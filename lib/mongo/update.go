@@ -38,15 +38,3 @@ func UpdateMany(collectionName string, filter bson.M, data bson.M) interface{} {
 func UpdateApps(filter bson.M, data bson.M) interface{} {
 	return UpdateMany("apps", filter, data)
 }
-
-// UpdateHostIP updates the application's host IP address
-func UpdateHostIP(oldIP, newIP string) interface{} {
-	return UpdateApps(
-		map[string]interface{}{
-			"hostIP": oldIP,
-		},
-		map[string]interface{}{
-			"hostIP": newIP,
-		},
-	)
-}

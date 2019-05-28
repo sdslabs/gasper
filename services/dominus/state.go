@@ -8,6 +8,18 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
+// updateHostIP updates the application's host IP address
+func updateHostIP(oldIP, newIP string) interface{} {
+	return mongo.UpdateApps(
+		map[string]interface{}{
+			"hostIP": oldIP,
+		},
+		map[string]interface{}{
+			"hostIP": newIP,
+		},
+	)
+}
+
 // updateState updates the IP address of the machine in the application's context
 // and re-registers all the microservices and applications deployed
 func updateState() {
@@ -18,7 +30,7 @@ func updateState() {
 		utils.HostIP,
 		newHostIP)
 
-	mongo.UpdateHostIP(utils.HostIP, newHostIP)
+	updateHostIP(utils.HostIP, newHostIP)
 
 	utils.HostIP = newHostIP
 	ExposeServices()
