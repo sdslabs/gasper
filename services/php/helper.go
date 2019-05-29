@@ -87,6 +87,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 			}
 			execID, resErr := installPackages(composerPath, appEnv)
 			if resErr != nil {
+				go utils.FullCleanup(data["name"].(string))
 				return resErr
 			}
 			data["execID"] = execID
