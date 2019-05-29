@@ -4,6 +4,8 @@
     "secret": "YOUR_SECRET_KEY",
     "projectRoot": "/SWS",
     "cleanupInterval": 600,
+    "stateCheckInterval": 10,
+    "offlineMode": false,
     "mongo": {
         "url": "mongodb://localhost:27017"
     },
