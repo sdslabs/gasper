@@ -16,8 +16,9 @@ import (
 )
 
 type context struct {
-	Index string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	Port  string `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
+	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	Port   string `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
+	RcFile bool   `json:"rcFile"`
 }
 
 type nodeRequestBody struct {
@@ -76,7 +77,6 @@ func startApp(index string, appEnv *types.ApplicationEnv) (string, types.Respons
 }
 
 func pipeline(data map[string]interface{}) types.ResponseError {
-	context := data["context"].(map[string]interface{})
 	appConf := &types.ApplicationConfig{
 		DockerImage:  utils.ServiceConfig["node"].(map[string]interface{})["image"].(string),
 		ConfFunction: configs.CreateNodeContainerConfig,
@@ -85,6 +85,12 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 	appEnv, resErr := api.SetupApplication(appConf, data)
 	if resErr != nil {
 		return resErr
+	}
+
+	context := data["context"].(map[string]interface{})
+
+	if context["rcFile"].(bool) {
+		return nil
 	}
 
 	var execID string

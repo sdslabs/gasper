@@ -17,9 +17,10 @@ import (
 )
 
 type context struct {
-	Index string   `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	Port  string   `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
-	Args  []string `json:"args"`
+	Index  string   `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	Port   string   `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
+	Args   []string `json:"args"`
+	RcFile bool     `json:"rcFile"`
 }
 
 type pythonRequestBody struct {
@@ -80,8 +81,6 @@ func installRequirements(path string, env *types.ApplicationEnv) (string, types.
 }
 
 func pipeline(data map[string]interface{}) types.ResponseError {
-	context := data["context"].(map[string]interface{})
-
 	var image string
 	if data["python_version"].(string) == "3" {
 		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
@@ -97,6 +96,12 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 	appEnv, resErr := api.SetupApplication(appConf, data)
 	if resErr != nil {
 		return resErr
+	}
+
+	context := data["context"].(map[string]interface{})
+
+	if context["rcFile"].(bool) {
+		return nil
 	}
 
 	// Path of `requirements.txt` or any-other file containing requirements
