@@ -1,13 +1,13 @@
-package gin
+package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 )
 
 // AuthorizeService creates a gin middleware to authorize dominus requests
 func AuthorizeService() gin.HandlerFunc {
-	secret := utils.SWSConfig["secret"].(string)
+	secret := configs.SWSConfig["secret"].(string)
 	return func(c *gin.Context) {
 		dominusSecret := c.GetHeader("dominus-secret")
 		if dominusSecret == "" {

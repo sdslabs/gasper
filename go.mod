@@ -2,6 +2,7 @@ module github.com/sdslabs/SWS
 
 require (
 	github.com/Microsoft/go-winio v0.4.11 // indirect
+	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a // indirect
 	github.com/docker/distribution v2.6.2+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0

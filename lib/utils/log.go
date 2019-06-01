@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/types"
 )
 
@@ -13,7 +14,7 @@ const (
 )
 
 func out(s string) {
-	if SWSConfig["debug"].(bool) {
+	if configs.SWSConfig["debug"].(bool) {
 		fmt.Println(red + ">>> " + reset + green + s + reset)
 	}
 }

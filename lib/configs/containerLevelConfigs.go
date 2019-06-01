@@ -2,8 +2,6 @@ package configs
 
 import (
 	"fmt"
-
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // CreateStaticContainerConfig takes the name of the static application
@@ -20,7 +18,7 @@ server {
 	error_log   /var/log/nginx/%s.error.log   warn;
 
 	location / {
-		root   /SWS/%s;
+		root   %s/%s;
 		index  index.html index.htm;
 	}
 
@@ -29,7 +27,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, utils.SWSConfig["domain"].(string), name, name, path)
+	`, name, SWSConfig["domain"].(string), name, name, SWSConfig["projectRoot"].(string), path)
 }
 
 // CreatePHPContainerConfig takes the name of the PHP application
@@ -46,7 +44,7 @@ server {
 	access_log  /var/log/nginx/%s.access.log  main;
 	error_log   /var/log/nginx/%s.error.log   warn;
 
-	root /SDS/%s;
+	root %s/%s;
 	index index.php;
 
 	location / {
@@ -67,7 +65,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-`, name, utils.SWSConfig["domain"].(string), name, name, path)
+`, name, SWSConfig["domain"].(string), name, name, SWSConfig["projectRoot"].(string), path)
 }
 
 // CreateNodeContainerConfig takes the name of the node app
@@ -84,7 +82,7 @@ server {
     	proxy_pass         http://127.0.0.1:%s;
 	}
 }
-`, name, utils.SWSConfig["domain"].(string), appContext["port"].(string))
+`, name, SWSConfig["domain"].(string), appContext["port"].(string))
 }
 
 // CreatePythonContainerConfig takes the name of the Python app
@@ -101,5 +99,5 @@ server {
     	proxy_pass         http://127.0.0.1:%s;
 	}
 }
-`, name, utils.SWSConfig["domain"].(string), appContext["port"].(string))
+`, name, SWSConfig["domain"].(string), appContext["port"].(string))
 }

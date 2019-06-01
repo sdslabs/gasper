@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/node"
@@ -44,20 +46,8 @@ func main() {
 			}
 			port := config["port"].(string)
 			if utils.IsValidPort(port) {
-				if service != "ssh" {
-					server := &http.Server{
-						Addr:         port,
-						Handler:      serviceBindings[service],
-						ReadTimeout:  5 * time.Second,
-						WriteTimeout: 30 * time.Second,
-					}
-					fmt.Printf("%s Service Active\n", strings.Title(service))
-					g.Go(func() error {
-						return server.ListenAndServe()
-					})
-
-				} else {
-					server, err := ssh.BuildSSHServer()
+				if strings.HasPrefix(service, "ssh") {
+					server, err := ssh.BuildSSHServer(service)
 					if err != nil {
 						fmt.Println("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.")
 						fmt.Printf("ERROR:: %s\n", err.Error())
@@ -67,9 +57,20 @@ func main() {
 							return server.ListenAndServe()
 						})
 					}
+				} else {
+					server := &http.Server{
+						Addr:         config["port"].(string),
+						Handler:      serviceBindings[service],
+						ReadTimeout:  5 * time.Second,
+						WriteTimeout: 30 * time.Second,
+					}
+					fmt.Printf("%s Service Active\n", strings.Title(service))
+					g.Go(func() error {
+						return server.ListenAndServe()
+					})
 				}
 			} else {
-				fmt.Printf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port)
+				panic(fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:]))
 			}
 		}
 	}
@@ -77,8 +78,13 @@ func main() {
 	dominus.ExposeServices()
 
 	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
-		cleanupInterval := time.Duration(utils.SWSConfig["cleanupInterval"].(float64))
+		cleanupInterval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))
 		dominus.ScheduleCleanup(cleanupInterval * time.Second)
+	}
+
+	if utils.FalconConfig["plugIn"].(bool) {
+		// Initialize the Falcon Config at startup
+		middlewares.InitializeFalconConfig()
 	}
 
 	if err := g.Wait(); err != nil {

@@ -2,6 +2,7 @@
     "debug": true,
     "domain": "sdslabs.co",
     "secret": "YOUR_SECRET_KEY",
+    "projectRoot": "/SWS",
     "cleanupInterval": 600,
     "mongo": {
         "url": "mongodb://localhost:27017"
@@ -12,6 +13,15 @@
         "password": "",
         "DB": 0
     },
+    "falcon": {
+        "plugIn": true,
+        "falconClientId": "",
+        "falconClientSecret": "",
+        "falconUrlAccessToken": "http://falcon.sdslabs.local/access_token",
+        "falconUrlResourceOwnerDetails": "http://falcon.sdslabs.local/users/",
+        "falconAccountsUrl": "http://arceus.sdslabs.local/",
+        "redirectUri": ""
+    },
     "services": {
         "dominus": {
             "deploy": true,
@@ -20,7 +30,16 @@
         "ssh": {
             "deploy": true,
             "port": ":2222",
-            "host_signers": ["/home/username/.ssh/id_rsa"] 
+            "host_signers": ["/home/username/.ssh/id_rsa"],
+            "using_passphrase": false,
+            "passphrase": ""
+        },
+        "ssh_proxy": {
+            "deploy": true,
+            "port": ":3222",
+            "host_signers": ["/home/username/.ssh/id_rsa"],
+            "using_passphrase": false,
+            "passphrase": ""
         },
         "static": {
             "deploy": true,

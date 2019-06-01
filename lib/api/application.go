@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/git"
 	"github.com/sdslabs/SWS/lib/types"
@@ -49,7 +51,6 @@ func setupContainer(
 	// create the container
 	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name, env)
 	if err != nil {
-		// return nil, types.NewResErr(500, "container not created", err)
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
 	}
@@ -86,7 +87,7 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	var (
 		storepath, _ = os.Getwd()
 		confFileName = fmt.Sprintf("%s.sws.conf", name)
-		workdir      = fmt.Sprintf("/SWS/%s", name)
+		workdir      = fmt.Sprintf("%s/%s", configs.SWSConfig["projectRoot"].(string), name)
 		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
 	)
 
@@ -133,8 +134,48 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	}
 
 	if setupFlag || cloneFlag {
-		utils.FullCleanup(name)
+		go utils.FullCleanup(name)
 	}
 
 	return appEnv, []types.ResponseError{setupErr, cloneErr}
+}
+
+// SetupApplication sets up a basic container for the application with all the prerequisites
+func SetupApplication(appConf *types.ApplicationConfig, data map[string]interface{}) (*types.ApplicationEnv, types.ResponseError) {
+	ports, err := utils.GetFreePorts(2)
+	if err != nil {
+		return nil, types.NewResErr(500, "free ports unavailable", err)
+	}
+	if len(ports) < 2 {
+		return nil, types.NewResErr(500, "not enough free ports available", nil)
+	}
+	sshPort, httpPort := ports[0], ports[1]
+
+	var env map[string]interface{}
+
+	if data["env"] != nil {
+		env = data["env"].(map[string]interface{})
+	}
+
+	appEnv, errList := CreateBasicApplication(
+		data["name"].(string),
+		data["url"].(string),
+		strconv.Itoa(httpPort),
+		strconv.Itoa(sshPort),
+		env,
+		data["context"].(map[string]interface{}),
+		appConf)
+
+	for _, e := range errList {
+		if e != nil {
+			return nil, e
+		}
+	}
+
+	data["sshPort"] = sshPort
+	data["httpPort"] = httpPort
+	data["containerID"] = appEnv.ContainerID
+	data["hostIP"] = utils.HostIP
+
+	return appEnv, nil
 }

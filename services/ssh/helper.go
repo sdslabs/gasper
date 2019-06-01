@@ -8,18 +8,31 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/utils"
 	gossh "golang.org/x/crypto/ssh"
 )
 
 // getPrivateKey returns a Signer interface for the private key
 // specified from the filepath
-func getPrivateKey(filepath string) (ssh.Signer, error) {
+func getPrivateKey(service, filepath string) (ssh.Signer, error) {
+
+	var err error
 	key, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}
 
-	signer, err := gossh.ParsePrivateKey(key)
+	var signer gossh.Signer
+
+	if utils.ServiceConfig[service].(map[string]interface{})["using_passphrase"].(bool) {
+		signer, err = gossh.ParsePrivateKeyWithPassphrase(
+			key,
+			[]byte(utils.ServiceConfig[service].(map[string]interface{})["passphrase"].(string)),
+		)
+	} else {
+		signer, err = gossh.ParsePrivateKey(key)
+	}
+
 	if err != nil {
 		return nil, err
 	}
@@ -29,10 +42,10 @@ func getPrivateKey(filepath string) (ssh.Signer, error) {
 
 // getHostSigners returns a slice of Signer interface for the
 // specified filepaths of the private keys
-func getHostSigners(filepaths []string) ([]ssh.Signer, error) {
+func getHostSigners(service string, filepaths []string) ([]ssh.Signer, error) {
 	var signers []ssh.Signer
 	for _, filepath := range filepaths {
-		signer, err := getPrivateKey(filepath)
+		signer, err := getPrivateKey(service, filepath)
 		if err != nil {
 			return nil, err
 		}
