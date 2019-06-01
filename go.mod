@@ -12,6 +12,7 @@ require (
 	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
+	github.com/golang/example v0.0.0-20170904185048-46695d81d1fa // indirect
 	github.com/golang/protobuf v0.0.0-20180821051752-b27b920f9e71 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/json-iterator/go v1.1.5 // indirect
@@ -22,6 +23,7 @@ require (
 	github.com/mongodb/mongo-go-driver v0.1.0
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/supra08/falcon-client-golang v0.0.0-20190414092728-f26fc22bd399 // indirect
 	github.com/ugorji/go v0.0.0-20180813092308-00b869d2f4a5 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
