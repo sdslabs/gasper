@@ -15,7 +15,8 @@ import (
 )
 
 type context struct {
-	Index string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	RcFile bool   `json:"rcFile"`
 }
 
 type staticRequestBody struct {

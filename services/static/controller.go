@@ -1,6 +1,8 @@
 package static
 
 import (
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+
 	"github.com/gin-gonic/gin"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
@@ -111,6 +113,8 @@ func rebuildApp(c *gin.Context) {
 		"language": "static",
 	}
 	data := mongo.FetchAppInfo(filter)[0]
+	data["context"] = map[string]interface{}(data["context"].(primitive.D).Map())
+
 	utils.FullCleanup(appName)
 
 	resErr := pipeline(data)

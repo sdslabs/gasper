@@ -16,7 +16,8 @@ import (
 )
 
 type context struct {
-	Index string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	RcFile bool   `json:"rcFile"`
 }
 
 type phpRequestBody struct {
@@ -76,6 +77,12 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 		return resErr
 	}
 
+	context := data["context"].(map[string]interface{})
+
+	if context["rcFile"].(bool) {
+		return nil
+	}
+
 	// Perform composer install in the container
 	if data["composer"] != nil {
 		if data["composer"].(bool) {
@@ -87,6 +94,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 			}
 			execID, resErr := installPackages(composerPath, appEnv)
 			if resErr != nil {
+				go utils.FullCleanup(data["name"].(string))
 				return resErr
 			}
 			data["execID"] = execID
