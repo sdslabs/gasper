@@ -23,3 +23,7 @@ func InsertOne(collectionName string, data bson.M) (interface{}, error) {
 func RegisterApp(data bson.M) (interface{}, error) {
 	return InsertOne("apps", data)
 }
+
+func RegisterDB(data bson.M) (interface{}, error) {
+	return InsertOne("dbs", data)
+}
