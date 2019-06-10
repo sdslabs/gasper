@@ -8,10 +8,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
+	"github.com/sdslabs/SWS/services/mysql"
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
 	"github.com/sdslabs/SWS/services/python"
@@ -30,9 +32,11 @@ func main() {
 		"php":     php.Router,
 		"node":    node.Router,
 		"python":  python.Router,
+		"mysql":   mysql.Router,
 	}
 
 	images := docker.ListImages()
+	containers := docker.ListContainers()
 
 	for service, config := range utils.ServiceConfig {
 		config := config.(map[string]interface{})
@@ -57,6 +61,27 @@ func main() {
 							return server.ListenAndServe()
 						})
 					}
+				} else if strings.HasPrefix(service, "mysql") {
+					if !utils.Contains(containers, "/mysql") {
+						fmt.Printf("No Mysql instance found in host. Building the instance.")
+						containerID, err := database.SetupDBInstance()
+						if err != nil {
+							fmt.Println("There was a problem deploying MySql service.")
+							fmt.Printf("ERROR:: %s\n", err.Error())
+						} else {
+							fmt.Printf("Container has been deployed with ID:\t%s \n", containerID)
+						}
+					}
+					server := &http.Server{
+						Addr:         config["port"].(string),
+						Handler:      serviceBindings[service],
+						ReadTimeout:  5 * time.Second,
+						WriteTimeout: 30 * time.Second,
+					}
+					fmt.Printf("%s Service Active\n", strings.Title(service))
+					g.Go(func() error {
+						return server.ListenAndServe()
+					})
 				} else {
 					server := &http.Server{
 						Addr:         config["port"].(string),
@@ -88,6 +113,11 @@ func main() {
 		// Initialize the Falcon Config at startup
 		middlewares.InitializeFalconConfig()
 	}
+
+	// err := database.CreateDB("testdb", "supra", "test")
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	if err := g.Wait(); err != nil {
 		panic(err)
