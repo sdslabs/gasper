@@ -23,3 +23,7 @@ func DeleteOne(collectionName string, filter bson.M) interface{} {
 func DeleteApp(filter bson.M) interface{} {
 	return DeleteOne("apps", filter)
 }
+
+func DeleteDB(filter bson.M) interface{} {
+	return DeleteOne("dbs", filter)
+}

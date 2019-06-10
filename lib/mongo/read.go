@@ -38,6 +38,14 @@ func FetchAppInfo(filter bson.M) []map[string]interface{} {
 	return FetchDocs("apps", filter)
 }
 
+func FetchDBInfo(filter bson.M) []map[string]interface{} {
+	return FetchDocs("dbs", filter)
+}
+
+func FetchDBs(filter bson.M) []map[string]interface{} {
+	return FetchDocs("dbs", filter)
+}
+
 // CountDocs returns the number of documents matching a filter
 func CountDocs(collectionName string, filter bson.M) (int64, error) {
 	collection := link.Collection(collectionName)
