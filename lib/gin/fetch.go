@@ -17,3 +17,16 @@ func FetchAppInfo(c *gin.Context) {
 		"data": mongo.FetchAppInfo(filter),
 	})
 }
+
+// FetchDBInfo returns the information about a particular db
+func FetchDBInfo(c *gin.Context) {
+	db := c.Param("db")
+
+	filter := make(map[string]interface{})
+
+	filter["name"] = db
+
+	c.JSON(200, gin.H{
+		"data": mongo.FetchDBInfo(filter),
+	})
+}
