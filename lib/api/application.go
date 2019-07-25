@@ -30,7 +30,6 @@ func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) 
 		return
 	}
 	mutex["clone"] <- nil
-	fmt.Println("clone end")
 }
 
 func setupContainer(
