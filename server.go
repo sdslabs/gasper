@@ -76,6 +76,8 @@ func main() {
 	}
 
 	dominus.ExposeServices()
+	dominus.ScheduleStateCheckup(
+		time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second)
 
 	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
 		cleanupInterval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))

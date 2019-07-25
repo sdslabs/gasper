@@ -170,6 +170,29 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 		}
 	}
 
+	runCommands := false
+	rcFile := data["context"].(map[string]interface{})["rcFile"]
+	if rcFile != nil {
+		runCommands = rcFile.(bool)
+	}
+	data["context"].(map[string]interface{})["rcFile"] = runCommands
+
+	if runCommands {
+		_, err = docker.ExecDetachedProcess(
+			appEnv.Context,
+			appEnv.Client,
+			appEnv.ContainerID,
+			[]string{"/bin/bash", configs.SWSConfig["rcFile"].(string)})
+		if err != nil {
+			// this error cannot be ignored; the chances of error here are very less
+			// but if an error arises, this means there's some issue with "execing"
+			// any process in the container => there's a problem with the container
+			// hence we also run the cleanup here so that nothing else goes wrong
+			go utils.FullCleanup(data["name"].(string))
+			return nil, types.NewResErr(500, "cannot exec rc file", err)
+		}
+	}
+
 	data["httpPort"] = httpPort
 	data["containerID"] = appEnv.ContainerID
 	data["hostIP"] = utils.HostIP

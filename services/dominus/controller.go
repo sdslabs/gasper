@@ -2,6 +2,7 @@ package dominus
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"

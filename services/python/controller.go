@@ -2,6 +2,7 @@ package python
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
@@ -111,6 +112,8 @@ func rebuildApp(c *gin.Context) {
 		"language": "python",
 	}
 	data := mongo.FetchAppInfo(filter)[0]
+	data["context"] = map[string]interface{}(data["context"].(primitive.D).Map())
+
 	utils.FullCleanup(appName)
 
 	resErr := pipeline(data)

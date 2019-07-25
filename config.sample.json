@@ -3,7 +3,10 @@
     "domain": "sdslabs.co",
     "secret": "YOUR_SECRET_KEY",
     "projectRoot": "/SWS",
+    "rcFile": ".swsrc",
     "cleanupInterval": 600,
+    "stateCheckInterval": 10,
+    "offlineMode": false,
     "mongo": {
         "url": "mongodb://localhost:27017"
     },
