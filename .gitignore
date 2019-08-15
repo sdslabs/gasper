@@ -4,3 +4,4 @@ tmp/
 config.json
 # storage
 storage/
+__debug_bin
