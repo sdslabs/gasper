@@ -16,6 +16,7 @@ func createApp(c *gin.Context) {
 	c.BindJSON(&data)
 
 	data["language"] = "static"
+	data["instanceType"] = "app"
 
 	resErr := pipeline(data)
 	if resErr != nil {
@@ -23,7 +24,7 @@ func createApp(c *gin.Context) {
 		return
 	}
 
-	documentID, err := mongo.RegisterApp(data)
+	documentID, err := mongo.RegisterInstance(data)
 
 	if err != nil {
 		go utils.FullCleanup(data["name"].(string))

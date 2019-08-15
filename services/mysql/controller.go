@@ -12,6 +12,7 @@ func createDB(c *gin.Context) {
 	c.BindJSON(&data)
 
 	data["language"] = "mysql"
+	data["instanceType"] = "db"
 
 	err := database.CreateDB(data["dbname"].(string), data["dbuser"].(string), data["dbpass"].(string))
 	if err != nil {
@@ -20,7 +21,7 @@ func createDB(c *gin.Context) {
 		})
 	}
 
-	databaseID, err := mongo.RegisterDB(data)
+	databaseID, err := mongo.RegisterInstance(data)
 
 	if err != nil {
 		c.JSON(500, gin.H{
