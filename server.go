@@ -2,41 +2,24 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/configs"
-	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/middlewares"
+	"github.com/sdslabs/SWS/lib/server"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
-	"github.com/sdslabs/SWS/services/mysql"
-	"github.com/sdslabs/SWS/services/node"
-	"github.com/sdslabs/SWS/services/php"
-	"github.com/sdslabs/SWS/services/python"
-	"github.com/sdslabs/SWS/services/ssh"
-	"github.com/sdslabs/SWS/services/static"
 	"golang.org/x/sync/errgroup"
 )
+
+var g errgroup.Group
 
 func main() {
 	var g errgroup.Group
 
-	// Bind services to routers here
-	serviceBindings := map[string]*gin.Engine{
-		"dominus": dominus.Router,
-		"static":  static.Router,
-		"php":     php.Router,
-		"node":    node.Router,
-		"python":  python.Router,
-		"mysql":   mysql.Router,
-	}
-
 	images := docker.ListImages()
-	containers := docker.ListContainers()
 
 	for service, config := range utils.ServiceConfig {
 		config := config.(map[string]interface{})
@@ -50,48 +33,18 @@ func main() {
 			}
 			port := config["port"].(string)
 			if utils.IsValidPort(port) {
-				if strings.HasPrefix(service, "ssh") {
-					server, err := ssh.BuildSSHServer(service)
-					if err != nil {
-						fmt.Println("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.")
-						fmt.Printf("ERROR:: %s\n", err.Error())
-					} else {
-						fmt.Printf("%s Service Active\n", strings.Title(service))
-						g.Go(func() error {
-							return server.ListenAndServe()
-						})
-					}
-				} else if strings.HasPrefix(service, "mysql") {
-					if !utils.Contains(containers, "/mysql") {
-						fmt.Printf("No Mysql instance found in host. Building the instance.")
-						containerID, err := database.SetupDBInstance()
-						if err != nil {
-							fmt.Println("There was a problem deploying MySql service.")
-							fmt.Printf("ERROR:: %s\n", err.Error())
-						} else {
-							fmt.Printf("Container has been deployed with ID:\t%s \n", containerID)
-						}
-					}
-					server := &http.Server{
-						Addr:         config["port"].(string),
-						Handler:      serviceBindings[service],
-						ReadTimeout:  5 * time.Second,
-						WriteTimeout: 30 * time.Second,
-					}
+				customServer := server.Launcher(service, port)
+				if customServer.HTTPServer != nil {
+					serviceServer := customServer.HTTPServer
 					fmt.Printf("%s Service Active\n", strings.Title(service))
 					g.Go(func() error {
-						return server.ListenAndServe()
+						return serviceServer.ListenAndServe()
 					})
-				} else {
-					server := &http.Server{
-						Addr:         config["port"].(string),
-						Handler:      serviceBindings[service],
-						ReadTimeout:  5 * time.Second,
-						WriteTimeout: 30 * time.Second,
-					}
+				} else if customServer.SSHServer != nil {
+					serviceServer := customServer.SSHServer
 					fmt.Printf("%s Service Active\n", strings.Title(service))
 					g.Go(func() error {
-						return server.ListenAndServe()
+						return serviceServer.ListenAndServe()
 					})
 				}
 			} else {
@@ -113,11 +66,6 @@ func main() {
 		// Initialize the Falcon Config at startup
 		middlewares.InitializeFalconConfig()
 	}
-
-	// err := database.CreateDB("testdb", "supra", "test")
-	// if err != nil {
-	// 	panic(err)
-	// }
 
 	if err := g.Wait(); err != nil {
 		panic(err)
