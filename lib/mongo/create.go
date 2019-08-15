@@ -20,10 +20,6 @@ func InsertOne(collectionName string, data bson.M) (interface{}, error) {
 }
 
 // RegisterApp is an abstraction over InsertOne which inserts application info into mongoDB
-func RegisterApp(data bson.M) (interface{}, error) {
-	return InsertOne("apps", data)
-}
-
-func RegisterDB(data bson.M) (interface{}, error) {
-	return InsertOne("dbs", data)
+func RegisterInstance(data bson.M) (interface{}, error) {
+	return InsertOne("instances", data)
 }
