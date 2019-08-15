@@ -98,8 +98,6 @@ func ReloadServer(c *gin.Context) {
 		"success": true,
 	})
 }
-<<<<<<< HEAD
-=======
 
 // ReloadMysqlService reloads the Mysql service in the container
 func ReloadMysqlService(c *gin.Context) {
@@ -124,4 +122,3 @@ func ReloadMysqlService(c *gin.Context) {
 		"success": true,
 	})
 }
->>>>>>> 8a8aab23c24f1c6d49b074483c305b6b92b5b44d
