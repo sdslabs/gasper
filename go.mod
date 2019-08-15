@@ -13,6 +13,7 @@ require (
 	github.com/go-redis/redis v6.14.2+incompatible
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
+	github.com/golang/example v0.0.0-20170904185048-46695d81d1fa // indirect
 	github.com/golang/protobuf v0.0.0-20180821051752-b27b920f9e71 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/howeyc/fsnotify v0.9.0 // indirect

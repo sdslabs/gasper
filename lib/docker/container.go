@@ -47,6 +47,37 @@ func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, w
 	return createdConf.ID, nil
 }
 
+func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlPort string, env map[string]interface{}) (string, error) {
+	envArr := []string{}
+	for key, value := range env {
+		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
+	}
+
+	containerConfig := &container.Config{
+		Image: image,
+		ExposedPorts: nat.PortSet{
+			"3306/tcp": struct{}{},
+		},
+		Env: envArr,
+	}
+
+	hostConfig := &container.HostConfig{
+		Binds: []string{
+			"/var/run/docker.sock:/var/run/docker.sock",
+		},
+		PortBindings: nat.PortMap{
+			nat.Port("3306/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: mysqlPort}},
+		},
+	}
+
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mysql")
+	if err != nil {
+		return "", err
+	}
+
+	return createdConf.ID, nil
+}
+
 // StartContainer starts the container corresponding to given containerID
 func StartContainer(ctx context.Context, cli *client.Client, containerID string) error {
 	return cli.ContainerStart(ctx, containerID, types.ContainerStartOptions{})
@@ -55,4 +86,25 @@ func StartContainer(ctx context.Context, cli *client.Client, containerID string)
 // StopContainer stops the container corresponding to given containerID
 func StopContainer(ctx context.Context, cli *client.Client, containerID string) error {
 	return cli.ContainerStop(ctx, containerID, nil)
+}
+
+func ListContainers() []string {
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		panic(err)
+	}
+
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	if err != nil {
+		panic(err)
+	}
+
+	list := make([]string, 1)
+
+	for _, container := range containers {
+		if len(container.Names) > 0 {
+			list = append(list, container.Names[0])
+		}
+	}
+	return list
 }
