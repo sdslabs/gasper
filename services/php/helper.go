@@ -21,12 +21,13 @@ type context struct {
 }
 
 type phpRequestBody struct {
-	Name         string                 `json:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters"`
-	URL          string                 `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
-	Context      context                `json:"context"`
-	Composer     bool                   `json:"composer"`
-	ComposerPath string                 `json:"composerPath"`
-	Env          map[string]interface{} `json:"env"`
+	Name           string                 `json:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters"`
+	URL            string                 `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
+	Context        context                `json:"context"`
+	Composer       bool                   `json:"composer"`
+	ComposerPath   string                 `json:"composerPath"`
+	Env            map[string]interface{} `json:"env"`
+	GitAccessToken string                 `json:"git_access_token"`
 }
 
 func validateRequest(c *gin.Context) {
