@@ -4,3 +4,5 @@ tmp/
 config.json
 # storage
 storage/
+# mysql-storage
+mysql-storage/
