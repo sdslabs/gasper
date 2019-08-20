@@ -47,7 +47,10 @@ func CreateContainer(ctx context.Context, cli *client.Client, image, httpPort, w
 	return createdConf.ID, nil
 }
 
-func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlPort string, env map[string]interface{}) (string, error) {
+// CreateMysqlContainer function sets up a mysql instance for managing databases
+func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlPort, workdir, storedir string, env map[string]interface{}) (string, error) {
+	volume := fmt.Sprintf("%s:%s", storedir, workdir)
+
 	envArr := []string{}
 	for key, value := range env {
 		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
@@ -59,11 +62,15 @@ func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlP
 			"3306/tcp": struct{}{},
 		},
 		Env: envArr,
+		Volumes: map[string]struct{}{
+			volume: struct{}{},
+		},
 	}
 
 	hostConfig := &container.HostConfig{
 		Binds: []string{
 			"/var/run/docker.sock:/var/run/docker.sock",
+			volume,
 		},
 		PortBindings: nat.PortMap{
 			nat.Port("3306/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: mysqlPort}},

@@ -19,12 +19,16 @@ func SetupDBInstance() (string, types.ResponseError) {
 	dockerImage := utils.ServiceConfig["mysql"].(map[string]interface{})["image"].(string)
 	port := utils.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 	env := utils.ServiceConfig["mysql"].(map[string]interface{})["env"].(map[string]interface{})
+	workdir := "/var/lib/mysql"
+	storedir := "mysql-storage"
 
 	containerID, err := docker.CreateMysqlContainer(
 		ctx,
 		cli,
 		dockerImage,
 		port,
+		workdir,
+		storedir,
 		env)
 
 	err = docker.StartContainer(ctx, cli, containerID)
