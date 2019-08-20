@@ -29,13 +29,19 @@ func CreateDB(database, username, password string) error {
 
 	_, err = db.Exec("CREATE DATABASE " + database)
 	if err != nil {
-		return fmt.Errorf("Error while creating the database : %s", err)
+		errs := sanitaryActions(database, username, password, db, 1)
+		if errs != nil {
+			return fmt.Errorf("Error while creating the database : %s", err)
+		}
 	}
 
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, dbHost, password)
 	_, err = db.Exec(query)
 	if err != nil {
-		return fmt.Errorf("Error while creating the database : %s", err)
+		errs := sanitaryActions(database, username, password, db, 2)
+		if errs != nil {
+			return fmt.Errorf("Error while creating the database : %s", err)
+		}
 	}
 
 	query = fmt.Sprintf("GRANT ALL ON %s.* TO '%s'@'%s'", database, username, dbHost)
@@ -65,7 +71,7 @@ func DeleteDB(database, username string) error {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("DELETE DATABASE " + database)
+	_, err = db.Exec("DROP DATABASE " + database)
 	if err != nil {
 		return fmt.Errorf("Error while deleting the database : %s", err)
 	}
@@ -74,5 +80,38 @@ func DeleteDB(database, username string) error {
 	if err != nil {
 		return fmt.Errorf("Error while deleting the user : %s", err)
 	}
+	return nil
+}
+
+func sanitaryActions(database, username, password string, db *sql.DB, stage int) error {
+	switch stage {
+	case 1:
+		{
+			_, errf := db.Exec("DROP DATABASE " + database)
+			if errf != nil {
+				return fmt.Errorf("Error while deleting the database : %s", errf)
+			}
+
+			_, errc := db.Exec("CREATE DATABASE " + database)
+			if errc != nil {
+				return fmt.Errorf("Error while creating the database : %s", errc)
+			}
+		}
+
+	case 2:
+		{
+			_, errf := db.Exec(fmt.Sprintf("DROP USER '%s'@'%s'", username, dbHost))
+			if errf != nil {
+				return fmt.Errorf("Error while deleting the user : %s", errf)
+			}
+
+			query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, dbHost, password)
+			_, errc := db.Exec(query)
+			if errc != nil {
+				return fmt.Errorf("Error while creating the database : %s", errc)
+			}
+		}
+	}
+
 	return nil
 }
