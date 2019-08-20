@@ -44,13 +44,6 @@ var serviceBindings = map[string]*gin.Engine{
 	"mysql":   mysql.Router,
 }
 
-func initDefaultServer() UnivServer {
-	var customServer UnivServer
-	customServer.HTTPServer = nil
-	customServer.SSHServer = nil
-	return customServer
-}
-
 func initHTTPServer(service, port string) UnivServer {
 	server := &http.Server{
 		Addr:         port,
@@ -59,10 +52,10 @@ func initHTTPServer(service, port string) UnivServer {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	var customServer UnivServer
-	customServer.SSHServer = nil
-	customServer.HTTPServer = server
-	return customServer
+	return UnivServer{
+		SSHServer:  nil,
+		HTTPServer: server,
+	}
 }
 
 func startMySQLService(service, port string) UnivServer {
@@ -82,17 +75,19 @@ func startMySQLService(service, port string) UnivServer {
 }
 
 func startSSHService(service, port string) UnivServer {
-	var customServer UnivServer
 	server, err := ssh.BuildSSHServer(service)
 	if err != nil {
 		fmt.Println("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.")
 		fmt.Printf("ERROR:: %s\n", err.Error())
-		defaultServer := initDefaultServer()
-		return defaultServer
+		return UnivServer{
+			SSHServer:  nil,
+			HTTPServer: nil,
+		}
 	}
-	customServer.HTTPServer = nil
-	customServer.SSHServer = server
-	return customServer
+	return UnivServer{
+		SSHServer:  server,
+		HTTPServer: nil,
+	}
 }
 
 func startAppService(service, port string) UnivServer {
@@ -110,6 +105,8 @@ func Launcher(service, port string) UnivServer {
 		return launcherBindings["app"](service, port)
 	}
 
-	defaultServer := initDefaultServer()
-	return defaultServer
+	return UnivServer{
+		SSHServer:  nil,
+		HTTPServer: nil,
+	}
 }
