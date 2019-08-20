@@ -110,7 +110,7 @@ func ReloadMysqlService(c *gin.Context) {
 		return
 	}
 
-	cmd := []string{"nginx", "-s", "reload"}
+	cmd := []string{"service", "mysql", "start"}
 	_, err = docker.ExecDetachedProcess(ctx, cli, "mysql", cmd)
 	if err != nil {
 		c.JSON(500, gin.H{
