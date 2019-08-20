@@ -3,12 +3,27 @@ package git
 import (
 	gogit "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
+	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
 // Clone clones the repo from the url into the destination
 func Clone(url, destination string) error {
 	_, err := gogit.PlainClone(destination, false, &gogit.CloneOptions{
 		URL: url,
+	})
+	return err
+}
+
+// CloneWithToken clones the repo from the url using access token
+// which is an alternative for auth to clone private repositories
+func CloneWithToken(url, destination, token string) error {
+	_, err := gogit.PlainClone(destination, false, &gogit.CloneOptions{
+		URL: url,
+		Auth: &http.BasicAuth{
+			// Since cloning through token username can be anything but not an empty string
+			Username: "random_string",
+			Password: token,
+		},
 	})
 	return err
 }
