@@ -116,6 +116,12 @@ func GetUserByEmail(email string, config FalconClientGolang) (string, error) {
 }
 
 func GetLoggedInUser(config FalconClientGolang, hash string) (string, error) {
+	// hash := cookies[COOKIE_NAME]
+	// hash, _ := r.Cookie(COOKIE_NAME)
+	// fmt.Fprint(w, cookie)
+	// fmt.Println(hash)
+	// var hash string = strings.Split(cookie, "=")[1].(string)
+	// fmt.Println(hash)
 	if hash == "" {
 		return "", fmt.Errorf("cookie not found")
 	}
