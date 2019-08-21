@@ -1,6 +1,7 @@
 package gin
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/middlewares"
@@ -13,12 +14,14 @@ func NewEngine() *gin.Engine {
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	return gin.Default()
+	engine := gin.Default()
+	engine.Use(cors.Default())
+	return engine
 }
 
 // NewServiceEngine returns a router setting up required configs for micro-services
 func NewServiceEngine() *gin.Engine {
-	engine := NewEngine()
-	engine.Use(middlewares.AuthorizeService())
-	return engine
+	serviceEngine := NewEngine()
+	serviceEngine.Use(middlewares.AuthorizeService())
+	return serviceEngine
 }

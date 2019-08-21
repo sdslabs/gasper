@@ -14,13 +14,19 @@ import (
 	gogit "gopkg.in/src-d/go-git.v4"
 )
 
-func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) {
+func cloneRepo(url, storedir, accessToken string, mutex map[string]chan types.ResponseError) {
 	err := os.MkdirAll(storedir, 0755)
 	if err != nil {
 		mutex["clone"] <- types.NewResErr(500, "storage directory not created", err)
 		return
 	}
-	err = git.Clone(url, storedir)
+
+	if accessToken == "" {
+		err = git.Clone(url, storedir)
+	} else {
+		err = git.CloneWithToken(url, storedir, accessToken)
+	}
+
 	if err != nil {
 		if err == gogit.ErrRepositoryAlreadyExists {
 			mutex["clone"] <- types.NewResErr(500, "repository already exists", err)
@@ -77,7 +83,7 @@ func setupContainer(
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, httpPort string, env, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
+func CreateBasicApplication(name, url, accessToken, httpPort string, env, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
 	appEnv, err := types.NewAppEnv()
 	if err != nil {
 		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
@@ -96,7 +102,7 @@ func CreateBasicApplication(name, url, httpPort string, env, appContext map[stri
 	}
 
 	// Step 1: clone the repo in the storage
-	go cloneRepo(url, storedir, mutex)
+	go cloneRepo(url, storedir, accessToken, mutex)
 
 	// Step 2: setup the container
 	go setupContainer(
@@ -155,9 +161,16 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 		env = data["env"].(map[string]interface{})
 	}
 
+	accessToken := ""
+
+	if data["git_access_token"] != nil {
+		accessToken = data["git_access_token"].(string)
+	}
+
 	appEnv, errList := CreateBasicApplication(
 		data["name"].(string),
 		data["url"].(string),
+		accessToken,
 		strconv.Itoa(httpPort),
 		env,
 		data["context"].(map[string]interface{}),
