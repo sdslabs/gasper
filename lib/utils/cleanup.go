@@ -44,10 +44,10 @@ func FullCleanup(appName string) {
 }
 
 // StateCleanup removes the application data from MongoDB and Redis
-func StateCleanup(appName string) {
-	mongo.DeleteApp(map[string]interface{}{
-		"name": appName,
+func StateCleanup(instanceName string) {
+	mongo.DeleteInstance(map[string]interface{}{
+		"name": instanceName,
 	})
 
-	redis.RemoveApp(appName)
+	redis.RemoveApp(instanceName)
 }
