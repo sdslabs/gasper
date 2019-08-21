@@ -1,6 +1,9 @@
 package database
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/docker/docker/client"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
@@ -19,8 +22,10 @@ func SetupDBInstance() (string, types.ResponseError) {
 	dockerImage := utils.ServiceConfig["mysql"].(map[string]interface{})["image"].(string)
 	port := utils.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 	env := utils.ServiceConfig["mysql"].(map[string]interface{})["env"].(map[string]interface{})
+
+	storepath, _ := os.Getwd()
 	workdir := "/var/lib/mysql"
-	storedir := "mysql-storage"
+	storedir := filepath.Join(storepath, "mysql-storage")
 
 	containerID, err := docker.CreateMysqlContainer(
 		ctx,
