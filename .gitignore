@@ -6,3 +6,4 @@ config.json
 storage/
 # mysql-storage
 mysql-storage/
+__debug_bin
