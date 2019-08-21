@@ -10,7 +10,7 @@ import (
 
 // updateHostIP updates the application's host IP address
 func updateHostIP(oldIP, newIP string) interface{} {
-	return mongo.UpdateApps(
+	return mongo.UpdateInstances(
 		map[string]interface{}{
 			"hostIP": oldIP,
 		},

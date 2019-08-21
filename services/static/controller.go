@@ -74,6 +74,7 @@ func fetchDocs(c *gin.Context) {
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "static"
+	filter["instanceType"] = mongo.AppInstance
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchAppInfo(filter),
@@ -85,9 +86,10 @@ func deleteApp(c *gin.Context) {
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "static"
+	filter["instanceType"] = mongo.AppInstance
 
 	c.JSON(200, gin.H{
-		"message": mongo.DeleteApp(filter),
+		"message": mongo.DeleteInstance(filter),
 	})
 }
 
@@ -96,6 +98,7 @@ func updateAppInfo(c *gin.Context) {
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "static"
+	filter["instanceType"] = mongo.AppInstance
 
 	var (
 		data map[string]interface{}
@@ -103,15 +106,16 @@ func updateAppInfo(c *gin.Context) {
 	c.BindJSON(&data)
 
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateApp(filter, data),
+		"message": mongo.UpdateInstance(filter, data),
 	})
 }
 
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
 	filter := map[string]interface{}{
-		"name":     appName,
-		"language": "static",
+		"name":         appName,
+		"language":     "static",
+		"instanceType": mongo.AppInstance,
 	}
 	data := mongo.FetchAppInfo(filter)[0]
 	data["context"] = map[string]interface{}(data["context"].(primitive.D).Map())
@@ -125,6 +129,6 @@ func rebuildApp(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateApp(filter, data),
+		"message": mongo.UpdateInstance(filter, data),
 	})
 }

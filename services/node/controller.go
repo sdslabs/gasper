@@ -15,7 +15,7 @@ func createApp(c *gin.Context) {
 	c.BindJSON(&data)
 
 	data["language"] = "node"
-	data["instanceType"] = "app"
+	data["instanceType"] = mongo.AppInstance
 
 	resErr := pipeline(data)
 	if resErr != nil {
@@ -86,7 +86,7 @@ func deleteApp(c *gin.Context) {
 	filter["language"] = "node"
 
 	c.JSON(200, gin.H{
-		"message": mongo.DeleteApp(filter),
+		"message": mongo.DeleteInstance(filter),
 	})
 }
 
@@ -95,6 +95,7 @@ func updateAppInfo(c *gin.Context) {
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "node"
+	filter["instanceType"] = mongo.AppInstance
 
 	var (
 		data map[string]interface{}
@@ -102,7 +103,7 @@ func updateAppInfo(c *gin.Context) {
 	c.BindJSON(&data)
 
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateApp(filter, data),
+		"message": mongo.UpdateInstance(filter, data),
 	})
 }
 
@@ -124,6 +125,6 @@ func rebuildApp(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateApp(filter, data),
+		"message": mongo.UpdateInstance(filter, data),
 	})
 }

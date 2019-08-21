@@ -13,6 +13,5 @@ func init() {
 	Router.GET("/logs", gin.FetchMysqlContainerLogs)
 	Router.GET("/restart", gin.ReloadMysqlService)
 	Router.GET("/db/:db", gin.FetchDBInfo)
-	Router.PUT("/", updateDB)
 	Router.DELETE("/", deleteDB)
 }

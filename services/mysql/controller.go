@@ -12,7 +12,7 @@ func createDB(c *gin.Context) {
 	c.BindJSON(&data)
 
 	data["language"] = "mysql"
-	data["instanceType"] = "db"
+	data["instanceType"] = mongo.DBInstance
 
 	err := database.CreateDB(data["dbname"].(string), data["dbuser"].(string), data["dbpass"].(string))
 	if err != nil {
@@ -41,14 +41,11 @@ func fetchDBs(c *gin.Context) {
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "mysql"
+	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBs(filter),
 	})
-}
-
-func updateDB(c *gin.Context) {
-	// function to update a database by importing the schema
 }
 
 func deleteDB(c *gin.Context) {
@@ -63,8 +60,9 @@ func deleteDB(c *gin.Context) {
 	}
 
 	filter["language"] = "mysql"
+	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
-		"message": mongo.DeleteDB(filter),
+		"message": mongo.DeleteInstance(filter),
 	})
 }
