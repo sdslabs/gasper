@@ -17,9 +17,9 @@ func UpdateOne(collectionName string, filter bson.M, data bson.M) interface{} {
 	return res
 }
 
-// UpdateApp is an abstraction over UpdateOne which updates an application in mongoDB
-func UpdateApp(filter bson.M, data bson.M) interface{} {
-	return UpdateOne("apps", filter, data)
+// UpdateInstance is an abstraction over UpdateOne which updates an application in mongoDB
+func UpdateInstance(filter bson.M, data bson.M) interface{} {
+	return UpdateOne(InstanceCollection, filter, data)
 }
 
 // UpdateMany updates multiple documents in the mongoDB collection
@@ -34,7 +34,7 @@ func UpdateMany(collectionName string, filter bson.M, data bson.M) interface{} {
 	return res
 }
 
-// UpdateApps is an abstraction over UpdateMany which updates multiple applications in mongoDB
-func UpdateApps(filter bson.M, data bson.M) interface{} {
-	return UpdateMany("apps", filter, data)
+// UpdateInstances is an abstraction over UpdateMany which updates multiple applications in mongoDB
+func UpdateInstances(filter bson.M, data bson.M) interface{} {
+	return UpdateMany(InstanceCollection, filter, data)
 }

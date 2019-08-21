@@ -19,11 +19,7 @@ func DeleteOne(collectionName string, filter bson.M) interface{} {
 	return res
 }
 
-// DeleteApp is an abstraction over DeleteOne which deletes an application from mongoDB
-func DeleteApp(filter bson.M) interface{} {
-	return DeleteOne("apps", filter)
-}
-
-func DeleteDB(filter bson.M) interface{} {
-	return DeleteOne("dbs", filter)
+// DeleteInstance is an abstraction over DeleteOne which deletes an application from mongoDB
+func DeleteInstance(filter bson.M) interface{} {
+	return DeleteOne(InstanceCollection, filter)
 }

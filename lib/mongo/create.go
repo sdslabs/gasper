@@ -19,7 +19,7 @@ func InsertOne(collectionName string, data bson.M) (interface{}, error) {
 	return res.InsertedID, nil
 }
 
-// RegisterApp is an abstraction over InsertOne which inserts application info into mongoDB
+// RegisterInstance is an abstraction over InsertOne which inserts application info into mongoDB
 func RegisterInstance(data bson.M) (interface{}, error) {
-	return InsertOne("instances", data)
+	return InsertOne(InstanceCollection, data)
 }

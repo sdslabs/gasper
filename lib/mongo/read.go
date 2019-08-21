@@ -35,15 +35,17 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 
 // FetchAppInfo is an abstraction over FetchDocs for retrieving application related documents
 func FetchAppInfo(filter bson.M) []map[string]interface{} {
-	return FetchDocs("apps", filter)
+	return FetchDocs(InstanceCollection, filter)
 }
 
+// FetchDBInfo is an abstraction over FetchDocs for retrieving database related documents
 func FetchDBInfo(filter bson.M) []map[string]interface{} {
-	return FetchDocs("dbs", filter)
+	return FetchDocs(InstanceCollection, filter)
 }
 
+// FetchDBs is an abstraction over FetchDocs for retrieving details of all the databases
 func FetchDBs(filter bson.M) []map[string]interface{} {
-	return FetchDocs("dbs", filter)
+	return FetchDocs(InstanceCollection, filter)
 }
 
 // CountDocs returns the number of documents matching a filter
@@ -63,5 +65,5 @@ func CountServiceInstances(service, hostIP string) (int64, error) {
 		"language": service,
 		"hostIP":   hostIP,
 	}
-	return CountDocs("apps", filter)
+	return CountDocs(InstanceCollection, filter)
 }
