@@ -11,6 +11,7 @@ require (
 	github.com/gin-gonic/gin v1.4.0
 	github.com/gliderlabs/ssh v0.1.1
 	github.com/go-redis/redis v6.14.2+incompatible
+	github.com/go-sql-driver/mysql v1.4.1 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/example v0.0.0-20170904185048-46695d81d1fa // indirect
