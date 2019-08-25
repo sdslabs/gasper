@@ -1,9 +1,12 @@
 package mysql
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
@@ -14,7 +17,9 @@ func createDB(c *gin.Context) {
 	data["language"] = "mysql"
 	data["instanceType"] = mongo.DBInstance
 
-	err := database.CreateDB(data["dbname"].(string), data["dbuser"].(string), data["dbpass"].(string))
+	var dbKey = fmt.Sprintf(`%s:%s`, data["name"].(string), data["user"].(string))
+
+	err := database.CreateDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
@@ -22,6 +27,30 @@ func createDB(c *gin.Context) {
 	}
 
 	databaseID, err := mongo.RegisterInstance(data)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	err = redis.RegisterDB(
+		dbKey,
+		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+	)
+
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	err = redis.IncrementServiceLoad(
+		"mysql",
+		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+	)
 
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -52,7 +81,7 @@ func deleteDB(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	err := database.DeleteDB(filter["dbname"].(string), filter["dbuser"].(string))
+	err := database.DeleteDB(filter["name"].(string), filter["user"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
