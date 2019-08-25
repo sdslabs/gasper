@@ -9,6 +9,7 @@ import (
 	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
@@ -100,7 +101,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 		if data["npm"].(bool) {
 			execID, resErr = installPackages(appEnv)
 			if resErr != nil {
-				go utils.FullCleanup(data["name"].(string))
+				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
 				return resErr
 			}
 			data["execID"] = execID
@@ -112,7 +113,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 	// Start app using pm2 in the container
 	execID, resErr = startApp(index, appEnv)
 	if resErr != nil {
-		go utils.FullCleanup(data["name"].(string))
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
 		return resErr
 	}
 	data["execID"] = execID
