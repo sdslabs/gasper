@@ -8,7 +8,7 @@ import (
 var Router = gin.NewServiceEngine()
 
 func init() {
-	Router.POST("/", createDB)
+	Router.POST("/", validateRequest, createDB)
 	Router.GET("/", fetchDBs)
 	Router.GET("/logs", gin.FetchMysqlContainerLogs)
 	Router.GET("/restart", gin.ReloadMysqlService)
