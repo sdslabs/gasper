@@ -170,7 +170,7 @@
   "go.useCodeSnippetsOnFunctionSuggestWithoutType": false,
 
   // Experimental: Not available in Windows. Use Go language server from Sourcegraph for Hover, Definition, Find All References, Signature Help, File Outline and Workspace Symbol features instead of tools like guru, godef, go-outline and go-symbol
-  "go.useLanguageServer": false,
+  "go.useLanguageServer": true,
 
   // Flags to pass to `go tool vet` (e.g. ['-all', '-shadow'])
   "go.vetFlags": [],
