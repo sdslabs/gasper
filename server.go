@@ -8,7 +8,6 @@ import (
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/middlewares"
-	"github.com/sdslabs/SWS/lib/server"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
 	"golang.org/x/sync/errgroup"
@@ -33,7 +32,7 @@ func main() {
 			}
 			port := config["port"].(string)
 			if utils.IsValidPort(port) {
-				customServer := server.Launcher(service, port)
+				customServer := Launcher(service, port)
 				if customServer.HTTPServer != nil {
 					serviceServer := customServer.HTTPServer
 					fmt.Printf("%s Service Active\n", strings.Title(service))
@@ -54,8 +53,7 @@ func main() {
 	}
 
 	dominus.ExposeServices()
-	dominus.ScheduleStateCheckup(
-		time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second)
+	dominus.ScheduleStateCheckup(time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second)
 
 	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
 		cleanupInterval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))
