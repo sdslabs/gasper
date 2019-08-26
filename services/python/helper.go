@@ -10,6 +10,7 @@ import (
 	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
@@ -110,7 +111,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 	if requirements != nil {
 		_, resErr = installRequirements(requirements.(string), appEnv)
 		if resErr != nil {
-			go utils.FullCleanup(data["name"].(string))
+			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
 			return resErr
 		}
 	}
@@ -133,7 +134,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 		_, resErr = startServer(context["index"].(string), arguments, appEnv)
 	}
 	if resErr != nil {
-		go utils.FullCleanup(data["name"].(string))
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
 		return resErr
 	}
 

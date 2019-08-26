@@ -17,7 +17,7 @@
         "DB": 0
     },
     "falcon": {
-        "plugIn": true,
+        "plugIn": false,
         "falconClientId": "",
         "falconClientSecret": "",
         "falconUrlAccessToken": "http://falcon.sdslabs.local/access_token",
@@ -33,14 +33,14 @@
         "ssh": {
             "deploy": true,
             "port": ":2222",
-            "host_signers": ["/home/username/.ssh/id_rsa"],
+            "host_signers": ["/home/user/.ssh/id_rsa"],
             "using_passphrase": false,
             "passphrase": ""
         },
         "ssh_proxy": {
             "deploy": true,
             "port": ":3222",
-            "host_signers": ["/home/username/.ssh/id_rsa"],
+            "host_signers": ["/home/user/.ssh/id_rsa"],
             "using_passphrase": false,
             "passphrase": ""
         },
@@ -64,6 +64,16 @@
             "python2_image": "6b9228af2a0a",
             "python3_image": "nginx:latest",
             "port": ":8003"
+        },
+        "mysql": {
+            "deploy": true,
+            "image": "mysql:5.7",
+            "port": ":9000",
+            "container_port": "33060",
+            "env": {
+                "MYSQL_USER": "root",
+                "MYSQL_ALLOW_EMPTY_PASSWORD": "yes"
+            }
         }
     }
 }

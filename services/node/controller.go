@@ -3,6 +3,7 @@ package node
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/sdslabs/SWS/lib/commons"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
@@ -15,6 +16,7 @@ func createApp(c *gin.Context) {
 	c.BindJSON(&data)
 
 	data["language"] = "node"
+	data["instanceType"] = mongo.AppInstance
 
 	resErr := pipeline(data)
 	if resErr != nil {
@@ -22,11 +24,11 @@ func createApp(c *gin.Context) {
 		return
 	}
 
-	documentID, err := mongo.RegisterApp(data)
+	documentID, err := mongo.RegisterInstance(data)
 
 	if err != nil {
-		go utils.FullCleanup(data["name"].(string))
-		go utils.StateCleanup(data["name"].(string))
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -39,8 +41,8 @@ func createApp(c *gin.Context) {
 	)
 
 	if err != nil {
-		go utils.FullCleanup(data["name"].(string))
-		go utils.StateCleanup(data["name"].(string))
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -53,8 +55,8 @@ func createApp(c *gin.Context) {
 	)
 
 	if err != nil {
-		go utils.FullCleanup(data["name"].(string))
-		go utils.StateCleanup(data["name"].(string))
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -85,7 +87,7 @@ func deleteApp(c *gin.Context) {
 	filter["language"] = "node"
 
 	c.JSON(200, gin.H{
-		"message": mongo.DeleteApp(filter),
+		"message": mongo.DeleteInstance(filter),
 	})
 }
 
@@ -94,6 +96,7 @@ func updateAppInfo(c *gin.Context) {
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "node"
+	filter["instanceType"] = mongo.AppInstance
 
 	var (
 		data map[string]interface{}
@@ -101,20 +104,21 @@ func updateAppInfo(c *gin.Context) {
 	c.BindJSON(&data)
 
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateApp(filter, data),
+		"message": mongo.UpdateInstance(filter, data),
 	})
 }
 
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
 	filter := map[string]interface{}{
-		"name":     appName,
-		"language": "node",
+		"name":         appName,
+		"language":     "node",
+		"instanceType": "app",
 	}
 	data := mongo.FetchAppInfo(filter)[0]
 	data["context"] = map[string]interface{}(data["context"].(primitive.D).Map())
 
-	utils.FullCleanup(appName)
+	commons.FullCleanup(appName, mongo.AppInstance)
 
 	resErr := pipeline(data)
 	if resErr != nil {
@@ -123,6 +127,6 @@ func rebuildApp(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateApp(filter, data),
+		"message": mongo.UpdateInstance(filter, data),
 	})
 }

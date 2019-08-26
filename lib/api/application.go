@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/git"
@@ -138,7 +139,7 @@ func CreateBasicApplication(name, url, accessToken, httpPort string, env, appCon
 	}
 
 	if setupFlag || cloneFlag {
-		go utils.FullCleanup(name)
+		go commons.FullCleanup(name, "app")
 	}
 
 	return appEnv, []types.ResponseError{setupErr, cloneErr}
@@ -200,7 +201,7 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 			// but if an error arises, this means there's some issue with "execing"
 			// any process in the container => there's a problem with the container
 			// hence we also run the cleanup here so that nothing else goes wrong
-			go utils.FullCleanup(data["name"].(string))
+			go commons.FullCleanup(data["name"].(string), "app")
 			return nil, types.NewResErr(500, "cannot exec rc file", err)
 		}
 	}

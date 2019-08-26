@@ -4,4 +4,6 @@ tmp/
 config.json
 # storage
 storage/
+# mysql-storage
+mysql-storage/
 __debug_bin
