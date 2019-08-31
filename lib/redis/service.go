@@ -79,7 +79,7 @@ func RemoveServiceInstance(service, member string) error {
 
 // GetSSHPort returns the port of an instance where its ssh service is deployed
 func GetSSHPort(url string) (string, error) {
-	data, _, err := client.ZScan("ssh", 0, url+":*", 1).Result()
+	data, _, err := client.ZScan(SSHKey, 0, url+":*", 1).Result()
 	if err != nil {
 		return "", err
 	}
