@@ -14,7 +14,7 @@ func createDB(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	data["language"] = "mysql"
+	data["language"] = ServiceName
 	data["instanceType"] = mongo.DBInstance
 
 	var dbKey = fmt.Sprintf(`%s:%s`, data["name"].(string), data["user"].(string))
@@ -37,7 +37,7 @@ func createDB(c *gin.Context) {
 
 	err = redis.RegisterDB(
 		dbKey,
-		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -48,8 +48,8 @@ func createDB(c *gin.Context) {
 	}
 
 	err = redis.IncrementServiceLoad(
-		"mysql",
-		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+		ServiceName,
+		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -69,7 +69,7 @@ func fetchDBs(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	filter["language"] = "mysql"
+	filter["language"] = ServiceName
 	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
@@ -88,7 +88,7 @@ func deleteDB(c *gin.Context) {
 		})
 	}
 
-	filter["language"] = "mysql"
+	filter["language"] = ServiceName
 	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{

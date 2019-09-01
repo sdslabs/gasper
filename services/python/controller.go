@@ -15,7 +15,7 @@ func createApp(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	data["language"] = "python"
+	data["language"] = ServiceName
 	data["instanceType"] = mongo.AppInstance
 
 	resErr := pipeline(data)
@@ -37,7 +37,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.RegisterApp(
 		data["name"].(string),
-		utils.HostIP+utils.ServiceConfig["python"].(map[string]interface{})["port"].(string),
+		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -50,8 +50,8 @@ func createApp(c *gin.Context) {
 	}
 
 	err = redis.IncrementServiceLoad(
-		"python",
-		utils.HostIP+utils.ServiceConfig["python"].(map[string]interface{})["port"].(string),
+		ServiceName,
+		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -69,52 +69,11 @@ func createApp(c *gin.Context) {
 	})
 }
 
-func fetchDocs(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "python"
-	filter["instanceType"] = mongo.AppInstance
-
-	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
-	})
-}
-
-func deleteApp(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "python"
-	filter["instanceType"] = mongo.AppInstance
-
-	c.JSON(200, gin.H{
-		"message": mongo.DeleteInstance(filter),
-	})
-}
-
-func updateAppInfo(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "python"
-	filter["instanceType"] = mongo.AppInstance
-
-	var (
-		data map[string]interface{}
-	)
-	c.BindJSON(&data)
-
-	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
-	})
-}
-
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         appName,
-		"language":     "python",
+		"language":     ServiceName,
 		"instanceType": mongo.AppInstance,
 	}
 	data := mongo.FetchAppInfo(filter)[0]

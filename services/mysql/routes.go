@@ -7,6 +7,9 @@ import (
 // Router is the main routes handler for the current microservice package
 var Router = gin.NewServiceEngine()
 
+// ServiceName is the name of the current microservice
+var ServiceName = "mysql"
+
 func init() {
 	Router.POST("/", validateRequest, createDB)
 	Router.GET("/", fetchDBs)
