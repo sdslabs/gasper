@@ -24,7 +24,7 @@ func createDB(c *gin.Context) {
 
 	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
 
-	err := database.CreateDB(data["name"].(string), data["user"].(string), data["password"].(string))
+	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
@@ -97,7 +97,7 @@ func deleteDB(c *gin.Context) {
 	db := c.Param("db")
 	dbKey := fmt.Sprintf(`%s:%s`, user, db)
 
-	err := database.DeleteDB(db, user)
+	err := database.DeleteMysqlDB(db, user)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
