@@ -8,6 +8,7 @@ import (
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 )
 
 // createApp function handles requests for making making new static app
@@ -37,7 +38,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.RegisterApp(
 		data["name"].(string),
-		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -51,7 +52,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.IncrementServiceLoad(
 		ServiceName,
-		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {

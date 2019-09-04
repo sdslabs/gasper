@@ -7,7 +7,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 	"golang.org/x/net/context"
 )
 
@@ -19,9 +19,9 @@ func SetupDBInstance() (string, types.ResponseError) {
 		return "", types.NewResErr(500, "cannot setup client", err)
 	}
 
-	dockerImage := utils.ServiceConfig["mysql"].(map[string]interface{})["image"].(string)
-	port := utils.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
-	env := utils.ServiceConfig["mysql"].(map[string]interface{})["env"].(map[string]interface{})
+	dockerImage := configs.ServiceConfig["mysql"].(map[string]interface{})["image"].(string)
+	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
+	env := configs.ServiceConfig["mysql"].(map[string]interface{})["env"].(map[string]interface{})
 
 	storepath, _ := os.Getwd()
 	workdir := "/var/lib/mysql"

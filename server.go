@@ -20,7 +20,7 @@ func main() {
 
 	images := docker.ListImages()
 
-	for service, config := range utils.ServiceConfig {
+	for service, config := range configs.ServiceConfig {
 		config := config.(map[string]interface{})
 		if config["deploy"].(bool) {
 			if image, check := config["image"]; check {
@@ -55,12 +55,12 @@ func main() {
 	dominus.ExposeServices()
 	dominus.ScheduleStateCheckup(time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second)
 
-	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
+	if configs.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
 		cleanupInterval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))
 		dominus.ScheduleCleanup(cleanupInterval * time.Second)
 	}
 
-	if utils.FalconConfig["plugIn"].(bool) {
+	if configs.FalconConfig["plugIn"].(bool) {
 		// Initialize the Falcon Config at startup
 		middlewares.InitializeFalconConfig()
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -33,7 +34,7 @@ func removeDeadServiceInstances(service string) {
 // removeDeadInstances removes all inactive instances in every service
 func removeDeadInstances() {
 	time.Sleep(5 * time.Second)
-	for service := range utils.ServiceConfig {
+	for service := range configs.ServiceConfig {
 		go removeDeadServiceInstances(service)
 	}
 }

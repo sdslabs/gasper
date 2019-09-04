@@ -17,16 +17,14 @@ func init() {
 	Router.GET("/", gin.FetchDocs(ServiceName))
 	Router.PUT("/", gin.UpdateAppInfo(ServiceName))
 	Router.DELETE("/", gin.DeleteApp(ServiceName))
-
 	app := Router.Group("/app")
 	{
 		app.GET("/:app", gin.FetchAppInfo)
 		app.GET("/:app/:action", trimURLPath, execute)
-		// app.PUT("/", updateApp)
-		// app.DELETE("/", deleteApp)
 	}
-	// db := Router.Group("/db")
-	// {
-	// 	db.
-	// }
+	db := Router.Group("/db")
+	{
+		db.GET("/:db", gin.FetchDBInfo)
+
+	}
 }

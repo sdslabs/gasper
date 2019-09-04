@@ -11,7 +11,6 @@ import (
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 type context struct {
@@ -57,7 +56,7 @@ func validateRequest(c *gin.Context) {
 func pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		ConfFunction: configs.CreateStaticContainerConfig,
-		DockerImage:  utils.ServiceConfig["static"].(map[string]interface{})["image"].(string),
+		DockerImage:  configs.ServiceConfig["static"].(map[string]interface{})["image"].(string),
 	}
 
 	_, resErr := api.SetupApplication(appConf, data)

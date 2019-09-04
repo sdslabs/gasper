@@ -14,7 +14,6 @@ import (
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 type context struct {
@@ -85,9 +84,9 @@ func installRequirements(path string, env *types.ApplicationEnv) (string, types.
 func pipeline(data map[string]interface{}) types.ResponseError {
 	var image string
 	if data["python_version"].(string) == "3" {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
+		image = configs.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
 	} else {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
+		image = configs.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
 	}
 
 	appConf := &types.ApplicationConfig{

@@ -8,8 +8,8 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/utils"
 	gossh "golang.org/x/crypto/ssh"
+	"github.com/sdslabs/SWS/lib/configs"
 )
 
 // getPrivateKey returns a Signer interface for the private key
@@ -24,10 +24,10 @@ func getPrivateKey(service, filepath string) (ssh.Signer, error) {
 
 	var signer gossh.Signer
 
-	if utils.ServiceConfig[service].(map[string]interface{})["using_passphrase"].(bool) {
+	if configs.ServiceConfig[service].(map[string]interface{})["using_passphrase"].(bool) {
 		signer, err = gossh.ParsePrivateKeyWithPassphrase(
 			key,
-			[]byte(utils.ServiceConfig[service].(map[string]interface{})["passphrase"].(string)),
+			[]byte(configs.ServiceConfig[service].(map[string]interface{})["passphrase"].(string)),
 		)
 	} else {
 		signer, err = gossh.ParsePrivateKey(key)

@@ -164,13 +164,13 @@
   "go.toolsGopath": "",
 
   // Complete functions with their parameter signature, including the variable types
-  "go.useCodeSnippetsOnFunctionSuggest": false,
+  "go.useCodeSnippetsOnFunctionSuggest": true,
 
   // Complete functions with their parameter signature, excluding the variable types
-  "go.useCodeSnippetsOnFunctionSuggestWithoutType": false,
+  "go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
 
   // Experimental: Not available in Windows. Use Go language server from Sourcegraph for Hover, Definition, Find All References, Signature Help, File Outline and Workspace Symbol features instead of tools like guru, godef, go-outline and go-symbol
-  "go.useLanguageServer": true,
+  "go.useLanguageServer": false,
 
   // Flags to pass to `go tool vet` (e.g. ['-all', '-shadow'])
   "go.vetFlags": [],

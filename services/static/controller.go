@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/commons"
+	"github.com/sdslabs/SWS/lib/configs"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
@@ -38,7 +39,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.RegisterApp(
 		data["name"].(string),
-		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -52,7 +53,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.IncrementServiceLoad(
 		ServiceName,
-		utils.HostIP+utils.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {

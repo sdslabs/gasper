@@ -1,6 +1,7 @@
 package dominus
 
 import (
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
@@ -39,7 +40,7 @@ func exposeService(service string, config map[string]interface{}) {
 
 // ExposeServices exposes the microservices running on a host machine for discovery
 func ExposeServices() {
-	for service, config := range utils.ServiceConfig {
+	for service, config := range configs.ServiceConfig {
 		go exposeService(
 			service,
 			config.(map[string]interface{}),

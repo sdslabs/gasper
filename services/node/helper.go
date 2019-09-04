@@ -13,7 +13,6 @@ import (
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 type context struct {
@@ -80,7 +79,7 @@ func startApp(index string, appEnv *types.ApplicationEnv) (string, types.Respons
 
 func pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
-		DockerImage:  utils.ServiceConfig["node"].(map[string]interface{})["image"].(string),
+		DockerImage:  configs.ServiceConfig["node"].(map[string]interface{})["image"].(string),
 		ConfFunction: configs.CreateNodeContainerConfig,
 	}
 

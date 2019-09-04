@@ -10,6 +10,7 @@ import (
 	"github.com/kr/pty"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 )
 
 // newHandler returns a handler function which manages the ssh session.
@@ -90,7 +91,7 @@ func passwordHandler(ctx ssh.Context, password string) bool {
 
 // BuildSSHServer creates a server for the given parameters
 func BuildSSHServer(service string) (*ssh.Server, error) {
-	sshConfig := utils.ServiceConfig[service].(map[string]interface{})
+	sshConfig := configs.ServiceConfig[service].(map[string]interface{})
 	filepaths := utils.ToStringSlice(sshConfig["host_signers"])
 	hostSigners, err := getHostSigners(service, filepaths)
 	if err != nil {

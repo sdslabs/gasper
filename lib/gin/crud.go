@@ -9,11 +9,9 @@ import (
 // FetchAppInfo returns the information about a particular app
 func FetchAppInfo(c *gin.Context) {
 	app := c.Param("app")
-
 	filter := make(map[string]interface{})
-
 	filter["name"] = app
-
+	filter["instanceType"] = mongo.AppInstance
 	c.JSON(200, gin.H{
 		"data": mongo.FetchAppInfo(filter),
 	})
@@ -22,11 +20,9 @@ func FetchAppInfo(c *gin.Context) {
 // FetchDBInfo returns the information about a particular db
 func FetchDBInfo(c *gin.Context) {
 	db := c.Param("db")
-
 	filter := make(map[string]interface{})
-
 	filter["name"] = db
-
+	filter["instanceType"] = mongo.DBInstance
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBInfo(filter),
 	})
