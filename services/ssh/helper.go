@@ -7,9 +7,9 @@ import (
 	"unsafe"
 
 	"github.com/gliderlabs/ssh"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	gossh "golang.org/x/crypto/ssh"
-	"github.com/sdslabs/SWS/lib/configs"
 )
 
 // getPrivateKey returns a Signer interface for the private key

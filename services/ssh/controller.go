@@ -8,9 +8,9 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/kr/pty"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
-	"github.com/sdslabs/SWS/lib/configs"
 )
 
 // newHandler returns a handler function which manages the ssh session.

@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/client"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/configs"
 	"golang.org/x/net/context"
 )
 
