@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
+	"github.com/sdslabs/SWS/services/mongoDb"
 	"github.com/sdslabs/SWS/services/mysql"
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
@@ -29,9 +30,10 @@ type UnivServer struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]func(string, string) UnivServer{
-	"ssh":   startSSHService,
-	"mysql": startMySQLService,
-	"app":   startAppService,
+	"ssh":     startSSHService,
+	"mysql":   startMySQLService,
+	"mongoDb": startMongoDBService,
+	"app":     startAppService,
 }
 
 // Bind services to routers here
@@ -42,6 +44,7 @@ var serviceBindings = map[string]*gin.Engine{
 	"node":    node.Router,
 	"python":  python.Router,
 	"mysql":   mysql.Router,
+	"mongoDb": mongoDb.Router,
 }
 
 func initHTTPServer(service, port string) UnivServer {
@@ -62,9 +65,25 @@ func startMySQLService(service, port string) UnivServer {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mysql") {
 		fmt.Printf("No Mysql instance found in host. Building the instance.")
-		containerID, err := database.SetupDBInstance()
+		containerID, err := database.SetupDBInstance("mysql")
 		if err != nil {
 			fmt.Println("There was a problem deploying MySql service.")
+			fmt.Printf("ERROR:: %s\n", err.Error())
+		} else {
+			fmt.Printf("Container has been deployed with ID:\t%s \n", containerID)
+		}
+	}
+	server := initHTTPServer(service, port)
+	return server
+}
+
+func startMongoDBService(service, port string) UnivServer {
+	containers := docker.ListContainers()
+	if !utils.Contains(containers, "/mysql") {
+		fmt.Printf("No Mysql instance found in host. Building the instance.")
+		containerID, err := database.SetupDBInstance("mongoDb")
+		if err != nil {
+			fmt.Println("There was a problem deploying mongoDb service.")
 			fmt.Printf("ERROR:: %s\n", err.Error())
 		} else {
 			fmt.Printf("Container has been deployed with ID:\t%s \n", containerID)
@@ -101,6 +120,8 @@ func Launcher(service, port string) UnivServer {
 		return launcherBindings["ssh"](service, port)
 	} else if strings.HasPrefix(service, "mysql") {
 		return launcherBindings["mysql"](service, port)
+	} else if strings.HasPrefix(service, "mongoDb") {
+		return launcherBindings["mongoDb"](service, port)
 	} else if service != "" {
 		return launcherBindings["app"](service, port)
 	}

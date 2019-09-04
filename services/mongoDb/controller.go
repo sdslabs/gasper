@@ -1,4 +1,4 @@
-package mysql
+package mongoDb
 
 import (
 	"fmt"
@@ -14,12 +14,12 @@ func createDB(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	data["language"] = "mysql"
+	data["language"] = "mongoDb"
 	data["instanceType"] = mongo.DBInstance
 
 	var dbKey = fmt.Sprintf(`%s:%s`, data["name"].(string), data["user"].(string))
 
-	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
+	err := database.CreateMongoDB(data["dbname"].(string), data["dbuser"].(string), data["dbpass"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
@@ -37,7 +37,7 @@ func createDB(c *gin.Context) {
 
 	err = redis.RegisterDB(
 		dbKey,
-		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+		utils.HostIP+utils.ServiceConfig["mongoDb"].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -48,8 +48,8 @@ func createDB(c *gin.Context) {
 	}
 
 	err = redis.IncrementServiceLoad(
-		"mysql",
-		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+		"mongoDb",
+		utils.HostIP+utils.ServiceConfig["mongoDb"].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -69,7 +69,7 @@ func fetchDBs(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	filter["language"] = "mysql"
+	filter["language"] = "mongoDb"
 	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
@@ -81,14 +81,33 @@ func deleteDB(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	err := database.DeleteMysqlDB(filter["name"].(string), filter["user"].(string))
+	err := database.DeleteDB(filter["dbname"].(string), filter["dbuser"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
 		})
 	}
 
-	filter["language"] = "mysql"
+	filter["language"] = "mongoDb"
+	filter["instanceType"] = mongo.DBInstance
+
+	c.JSON(200, gin.H{
+		"message": mongo.DeleteInstance(filter),
+	})
+}
+
+func deleteMongoDB(c *gin.Context) {
+	queries := c.Request.URL.Query()
+	filter := utils.QueryToFilter(queries)
+
+	err := database.DeleteMongoDB(filter["dbname"].(string), filter["dbuser"].(string), filter["dbpass"].(string))
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err,
+		})
+	}
+
+	filter["language"] = "mongoDb"
 	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
