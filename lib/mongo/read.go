@@ -58,6 +58,11 @@ func CountDocs(collectionName string, filter bson.M) (int64, error) {
 	return count, err
 }
 
+// CountInstances returns the number of instances matching a filter
+func CountInstances(filter bson.M) (int64, error) {
+	return CountDocs(InstanceCollection, filter)
+}
+
 // CountServiceInstances returns the number of applications of a given service deployed
 // in a host machine
 func CountServiceInstances(service, hostIP string) (int64, error) {

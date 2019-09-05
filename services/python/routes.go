@@ -2,6 +2,7 @@ package python
 
 import (
 	"github.com/sdslabs/SWS/lib/gin"
+	"github.com/sdslabs/SWS/lib/middlewares"
 )
 
 // Router is the main routes handler for the current microservice package
@@ -11,7 +12,7 @@ var Router = gin.NewServiceEngine()
 var ServiceName = "python"
 
 func init() {
-	Router.POST("/", validateRequest, createApp)
+	Router.POST("/", validateRequest, middlewares.IsUniqueApp(), createApp)
 	Router.GET("/", gin.FetchDocs(ServiceName))
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)

@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"github.com/sdslabs/SWS/lib/gin"
+	"github.com/sdslabs/SWS/lib/middlewares"
 )
 
 // Router is the main routes handler for the current microservice package
@@ -11,7 +12,7 @@ var Router = gin.NewServiceEngine()
 var ServiceName = "mysql"
 
 func init() {
-	Router.POST("/", validateRequest, createDB)
+	Router.POST("/", validateRequest, middlewares.IsUniqueDB(), createDB)
 	Router.GET("/", fetchDBs)
 	Router.GET("/logs", gin.FetchMysqlContainerLogs)
 	Router.GET("/restart", gin.ReloadMysqlService)
