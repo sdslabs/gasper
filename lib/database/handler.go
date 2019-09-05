@@ -32,18 +32,29 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 	workdir := "/var/lib/mysql"
 	storedir := filepath.Join(storepath, "mysql-storage")
 
-	if dbtype == "mongodb" {
+	if dbtype == "mongoDb" {
 		workdir = "/var/lib/mongodb"
 		storedir = filepath.Join(storepath, "mongodb-storage")
 	}
-	containerID, err = docker.CreateMysqlContainer(
-		dbctx,
-		cli,
-		dockerImage,
-		port,
-		workdir,
-		storedir,
-		env)
+	if dbtype == "mysql" {
+		containerID, err = docker.CreateMysqlContainer(
+			dbctx,
+			cli,
+			dockerImage,
+			port,
+			workdir,
+			storedir,
+			env)
+	} else {
+		containerID, err = docker.CreateMongoDBContainer(
+			dbctx,
+			cli,
+			dockerImage,
+			port,
+			workdir,
+			storedir,
+			env)
+	}
 
 	err = docker.StartContainer(containerID)
 	if err != nil {

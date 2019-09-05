@@ -10,8 +10,8 @@ var Router = gin.NewServiceEngine()
 func init() {
 	Router.POST("/", validateRequest, createDB)
 	Router.GET("/", fetchDBs)
-	Router.GET("/logs", gin.FetchMysqlContainerLogs)
-	Router.GET("/restart", gin.ReloadMysqlService)
+	Router.GET("/logs", gin.FetchMongoDBContainerLogs)
+	Router.GET("/restart", gin.ReloadMongoDBService)
 	Router.GET("/db/:db", gin.FetchDBInfo)
 	Router.DELETE("/", deleteDB)
 }
