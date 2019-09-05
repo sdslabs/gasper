@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"net"
 
 	"github.com/sdslabs/SWS/lib/configs"
@@ -13,7 +14,9 @@ func GetOutboundIP() string {
 	}
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		panic("The machine is not connected to any network")
+		fmt.Println("The machine is not connected to any network")
+		fmt.Println("Falling back to offline mode")
+		return "0.0.0.0"
 	}
 	defer conn.Close()
 
