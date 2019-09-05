@@ -86,15 +86,7 @@ func deleteDB(c *gin.Context) {
 	db := c.Param("db")
 	dbKey := fmt.Sprintf(`%s:%s`, user, db)
 
-	_, err := redis.FetchDBURL(dbKey)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": "No such database exists",
-		})
-		return
-	}
-
-	err = database.DeleteDB(db, user)
+	err := database.DeleteDB(db, user)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,

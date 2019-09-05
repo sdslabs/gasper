@@ -25,6 +25,6 @@ func init() {
 	db := Router.Group("/db")
 	{
 		db.GET("/:db", gin.FetchDBInfo)
-
+		db.DELETE("/:user/:db", trimURLPath, deleteDB)
 	}
 }

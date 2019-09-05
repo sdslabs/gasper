@@ -37,3 +37,17 @@ func execute(c *gin.Context) {
 	}
 	reverseProxy(c, instanceURL)
 }
+
+func deleteDB(c *gin.Context) {
+	user := c.Param("user")
+	db := c.Param("db")
+	dbKey := fmt.Sprintf(`%s:%s`, user, db)
+	instanceURL, err := redis.FetchDBURL(dbKey)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "No such database exists",
+		})
+		return
+	}
+	reverseProxy(c, instanceURL)
+}
