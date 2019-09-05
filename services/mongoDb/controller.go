@@ -81,25 +81,6 @@ func deleteDB(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	err := database.DeleteDB(filter["dbname"].(string), filter["dbuser"].(string))
-	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err,
-		})
-	}
-
-	filter["language"] = "mongoDb"
-	filter["instanceType"] = mongo.DBInstance
-
-	c.JSON(200, gin.H{
-		"message": mongo.DeleteInstance(filter),
-	})
-}
-
-func deleteMongoDB(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
 	err := database.DeleteMongoDB(filter["dbname"].(string), filter["dbuser"].(string), filter["dbpass"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{

@@ -74,6 +74,38 @@ func FetchMysqlContainerLogs(c *gin.Context) {
 	})
 }
 
+// FetchMongoDBContainerLogs returns the mongodb container logs in a JSON format
+func FetchMongoDBContainerLogs(c *gin.Context) {
+	queries := c.Request.URL.Query()
+	filter := utils.QueryToFilter(queries)
+
+	if filter["tail"] == nil {
+		filter["tail"] = "-1"
+	}
+
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	data, err := docker.ReadLogs(ctx, cli, "mongoDb", filter["tail"].(string))
+
+	if err != nil && err.Error() != "EOF" {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"data": data,
+	})
+}
+
 // ReloadServer reloads the nginx server
 func ReloadServer(c *gin.Context) {
 	app := c.Param("app")
@@ -112,6 +144,30 @@ func ReloadMysqlService(c *gin.Context) {
 
 	cmd := []string{"service", "mysql", "start"}
 	_, err = docker.ExecDetachedProcess(ctx, cli, "mysql", cmd)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+	})
+}
+
+// ReloadMongoDBService reloads the Mysql service in the container
+func ReloadMongoDBService(c *gin.Context) {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	cmd := []string{"service", "monogdb", "restart"}
+	_, err = docker.ExecDetachedProcess(ctx, cli, "mongodb", cmd)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),
