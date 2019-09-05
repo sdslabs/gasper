@@ -15,17 +15,17 @@ func createDB(c *gin.Context) {
 	c.BindJSON(&data)
 
 	data["language"] = "mysql"
-	data["instanceType"] = mongo.DBInstance
+	data["instanceType"] = mongo.MysqlDBInstance
 
 	var dbKey = fmt.Sprintf(`%s:%s`, data["name"].(string), data["user"].(string))
-
+	fmt.Println("check1")
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
 		})
 	}
-
+	fmt.Println("check2")
 	databaseID, err := mongo.RegisterInstance(data)
 
 	if err != nil {
@@ -39,7 +39,7 @@ func createDB(c *gin.Context) {
 		dbKey,
 		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
 	)
-
+	fmt.Println("check3")
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
@@ -51,7 +51,7 @@ func createDB(c *gin.Context) {
 		"mysql",
 		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
 	)
-
+	fmt.Println("check4")
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
@@ -63,6 +63,7 @@ func createDB(c *gin.Context) {
 		"success": true,
 		"id":      databaseID,
 	})
+	fmt.Println("check5")
 }
 
 func fetchDBs(c *gin.Context) {
@@ -70,7 +71,7 @@ func fetchDBs(c *gin.Context) {
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = "mysql"
-	filter["instanceType"] = mongo.DBInstance
+	filter["instanceType"] = mongo.MysqlDBInstance
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBs(filter),
@@ -89,7 +90,7 @@ func deleteDB(c *gin.Context) {
 	}
 
 	filter["language"] = "mysql"
-	filter["instanceType"] = mongo.DBInstance
+	filter["instanceType"] = mongo.MysqlDBInstance
 
 	c.JSON(200, gin.H{
 		"message": mongo.DeleteInstance(filter),

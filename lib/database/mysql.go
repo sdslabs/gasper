@@ -27,6 +27,8 @@ func CreateMysqlDB(database, username, password string) error {
 
 	db, err := sql.Open("mysql", connection)
 
+	fmt.Println("check6")
+
 	if err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
 	}
@@ -34,11 +36,15 @@ func CreateMysqlDB(database, username, password string) error {
 
 	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS" + database)
 	if err != nil {
+		fmt.Println(err)
 		errs := sanitaryActions(database, username, password, db, 1)
+		fmt.Println(errs)
 		if errs != nil {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
+
+	fmt.Println("check7")
 
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, dbHost, password)
 	_, err = db.Exec(query)
@@ -48,6 +54,8 @@ func CreateMysqlDB(database, username, password string) error {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
+
+	fmt.Println("check8")
 
 	query = fmt.Sprintf("GRANT ALL ON %s.* TO '%s'@'%s'", database, username, dbHost)
 	_, err = db.Exec(query)
@@ -59,6 +67,8 @@ func CreateMysqlDB(database, username, password string) error {
 	if err != nil {
 		return fmt.Errorf("Error while flushing user priviliges : %s", err)
 	}
+
+	fmt.Println("check9")
 
 	return nil
 }
