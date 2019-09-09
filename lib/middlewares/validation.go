@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 
+	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 )
@@ -53,4 +55,31 @@ func IsUniqueApp() gin.HandlerFunc {
 // IsUniqueDB checks whether the database name is unique or not
 func IsUniqueDB() gin.HandlerFunc {
 	return isUniqueInstance(mongo.DBInstance, "Database with that name already exists")
+}
+
+// ValidateRequestBody validates the JSON body in a request based on the meta-data
+// in the struct used to bind
+func ValidateRequestBody(body interface{}) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var bodyBytes []byte
+		if c.Request.Body != nil {
+			bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+		}
+		// Restore the io.ReadCloser to its original state
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		err := json.Unmarshal(bodyBytes, body)
+		if err != nil {
+			c.AbortWithStatusJSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		if result, err := validator.ValidateStruct(body); !result {
+			c.AbortWithStatusJSON(400, gin.H{
+				"error": strings.Split(err.Error(), ";"),
+			})
+		} else {
+			c.Next()
+		}
+	}
 }

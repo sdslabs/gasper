@@ -1,13 +1,6 @@
 package node
 
 import (
-	"bytes"
-	"encoding/json"
-	"io/ioutil"
-	"strings"
-
-	validator "github.com/asaskevich/govalidator"
-	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
@@ -28,33 +21,6 @@ type nodeRequestBody struct {
 	NPM            bool                   `json:"npm"`
 	Env            map[string]interface{} `json:"env"`
 	GitAccessToken string                 `json:"git_access_token"`
-}
-
-func validateRequest(c *gin.Context) {
-
-	var bodyBytes []byte
-	if c.Request.Body != nil {
-		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-	}
-	// Restore the io.ReadCloser to its original state
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-	var req nodeRequestBody
-
-	err := json.Unmarshal(bodyBytes, &req)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": "Invalid JSON",
-		})
-		return
-	}
-
-	if result, err := validator.ValidateStruct(req); !result {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": strings.Split(err.Error(), ";"),
-		})
-	} else {
-		c.Next()
-	}
 }
 
 // installPackages function installs the dependancies for the app
