@@ -11,19 +11,23 @@ import (
 	"github.com/sdslabs/SWS/lib/mongo"
 )
 
+func getBodyFromContext(c *gin.Context) []byte {
+	var bodyBytes []byte
+	if c.Request.Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+	}
+	// Restore the io.ReadCloser to its original state
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	return bodyBytes
+}
+
 func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var bodyBytes []byte
-		if c.Request.Body != nil {
-			bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-		}
-		// Restore the io.ReadCloser to its original state
-		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		var data map[string]interface{}
-		err := json.Unmarshal(bodyBytes, &data)
+		err := json.Unmarshal(getBodyFromContext(c), &data)
 		if err != nil {
 			c.AbortWithStatusJSON(400, gin.H{
-				"error": "Invalid JSON",
+				"error": err.Error(),
 			})
 			return
 		}
@@ -33,7 +37,7 @@ func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 		})
 		if err != nil {
 			c.AbortWithStatusJSON(400, gin.H{
-				"error": err,
+				"error": err.Error(),
 			})
 			return
 		}
@@ -60,13 +64,7 @@ func IsUniqueDB() gin.HandlerFunc {
 // ValidateRequestBody validates the JSON body in a request based on the meta-data
 // in the struct used to bind
 func ValidateRequestBody(c *gin.Context, validationBody interface{}) {
-	var bodyBytes []byte
-	if c.Request.Body != nil {
-		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-	}
-	// Restore the io.ReadCloser to its original state
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-	err := json.Unmarshal(bodyBytes, validationBody)
+	err := json.Unmarshal(getBodyFromContext(c), validationBody)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
 			"error": err.Error(),
