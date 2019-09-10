@@ -12,7 +12,7 @@ var Router = gin.NewServiceEngine()
 var ServiceName = "php"
 
 func init() {
-	Router.POST("/", middlewares.ValidateRequestBody(&phpRequestBody{}), middlewares.IsUniqueApp(), createApp)
+	Router.POST("/", validateRequestBody, middlewares.IsUniqueApp(), createApp)
 	Router.GET("/", gin.FetchDocs(ServiceName))
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)

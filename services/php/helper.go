@@ -1,10 +1,12 @@
 package php
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
 )
 
@@ -21,6 +23,11 @@ type phpRequestBody struct {
 	ComposerPath   string                 `json:"composerPath"`
 	Env            map[string]interface{} `json:"env"`
 	GitAccessToken string                 `json:"git_access_token"`
+}
+
+// validateRequestBody validates the request body for the current microservice
+func validateRequestBody(c *gin.Context) {
+	middlewares.ValidateRequestBody(c, &phpRequestBody{})
 }
 
 // installPackages installs dependancies for the specific microservice

@@ -12,7 +12,7 @@ var Router = gin.NewServiceEngine()
 var ServiceName = "mysql"
 
 func init() {
-	Router.POST("/", middlewares.ValidateRequestBody(&mysqlRequestBody{}), middlewares.IsUniqueDB(), createDB)
+	Router.POST("/", validateRequestBody, middlewares.IsUniqueDB(), createDB)
 	Router.GET("/", fetchDBs)
 	Router.GET("/logs", gin.FetchMysqlContainerLogs)
 	Router.GET("/restart", gin.ReloadMysqlService)

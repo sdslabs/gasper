@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
 )
 
@@ -27,6 +29,11 @@ type pythonRequestBody struct {
 	Django         bool                   `json:"django"`
 	Env            map[string]interface{} `json:"env"`
 	GitAccessToken string                 `json:"git_access_token"`
+}
+
+// validateRequestBody validates the request body for the current microservice
+func validateRequestBody(c *gin.Context) {
+	middlewares.ValidateRequestBody(c, &pythonRequestBody{})
 }
 
 func startServer(index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {

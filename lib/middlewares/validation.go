@@ -59,27 +59,25 @@ func IsUniqueDB() gin.HandlerFunc {
 
 // ValidateRequestBody validates the JSON body in a request based on the meta-data
 // in the struct used to bind
-func ValidateRequestBody(body interface{}) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var bodyBytes []byte
-		if c.Request.Body != nil {
-			bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-		}
-		// Restore the io.ReadCloser to its original state
-		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-		err := json.Unmarshal(bodyBytes, body)
-		if err != nil {
-			c.AbortWithStatusJSON(400, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		if result, err := validator.ValidateStruct(body); !result {
-			c.AbortWithStatusJSON(400, gin.H{
-				"error": strings.Split(err.Error(), ";"),
-			})
-		} else {
-			c.Next()
-		}
+func ValidateRequestBody(c *gin.Context, validationBody interface{}) {
+	var bodyBytes []byte
+	if c.Request.Body != nil {
+		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
+	}
+	// Restore the io.ReadCloser to its original state
+	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	err := json.Unmarshal(bodyBytes, validationBody)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	if result, err := validator.ValidateStruct(validationBody); !result {
+		c.AbortWithStatusJSON(400, gin.H{
+			"error": strings.Split(err.Error(), ";"),
+		})
+	} else {
+		c.Next()
 	}
 }
