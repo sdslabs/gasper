@@ -14,15 +14,15 @@ default: help
 
 ## install: Install missing dependencies.
 install:
-	@echo "  >  Installing project dependencies to vendor..."
+	@echo "*** Installing project dependencies to vendor ***"
 	@GOBIN=$(GOBIN) go get ./...
 	@go mod vendor
 
 ## build: Build the project binary.
 build:
-	@echo "  >  Building binary..."
+	@echo "*** Building binary ***"
 	@go build -o $(GOBIN)/$(PROJECTNAME) $(GOFILES)
-	@echo "  >  Path of the generated binary is $(GOBIN)/$(PROJECTNAME)"
+	@echo "*** Path of the generated binary is $(GOBIN)/$(PROJECTNAME) ***"
 
 ## tools: Install development tools.
 tools:
@@ -34,18 +34,19 @@ start: tools
 
 ## clean: Clean build files.
 clean:
-	@echo "  >  Deleting project binary"
+	@echo "*** Deleting project binary ***"
 	@-rm $(GOBIN)/$(PROJECTNAME) 2> /dev/null
-	@echo "  >  Cleaning build cache"
-	@go clean
+	@echo "*** Cleaning build cache ***"
+	@go clean $(PACKAGES)
 
-# lint: Lint code using gofmt and govet.
+## lint: Lint entire codebase.
 lint:
-	@echo "  >  Formatting..."
+	@echo "*** Formatting ***"
 	@go fmt $(PACKAGES)
-	@echo "  >  Vetting..."
+	@echo "*** Vetting ***"
 	@go vet $(PACKAGES)
 
+## help: Display this help.
 help: Makefile
 	@echo
 	@echo " Choose a command to run in "$(PROJECTNAME)":"
