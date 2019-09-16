@@ -6,6 +6,7 @@
     "rcFile": ".swsrc",
     "cleanupInterval": 600,
     "stateCheckInterval": 10,
+    "exposureInterval": 30,
     "offlineMode": false,
     "mongo": {
         "url": "mongodb://localhost:27017"

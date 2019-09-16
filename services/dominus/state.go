@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -33,7 +34,7 @@ func updateState() {
 	updateHostIP(utils.HostIP, newHostIP)
 
 	utils.HostIP = newHostIP
-	ExposeServices()
+	exposeServices()
 }
 
 // checkState checks whether the IP address of the machine has changed or not
@@ -44,11 +45,8 @@ func checkState() {
 }
 
 // ScheduleStateCheckup runs checkState on given intervals of time
-func ScheduleStateCheckup(interval time.Duration) {
-	ticker := time.NewTicker(interval)
-	go func() {
-		for range ticker.C {
-			checkState()
-		}
-	}()
+func ScheduleStateCheckup() {
+	interval := time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second
+	scheduler := utils.NewScheduler(interval, checkState)
+	scheduler.RunAsync()
 }

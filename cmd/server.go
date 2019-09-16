@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
@@ -52,12 +51,11 @@ func main() {
 		}
 	}
 
-	dominus.ExposeServices()
-	dominus.ScheduleStateCheckup(time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second)
+	dominus.ScheduleServiceExposure()
+	dominus.ScheduleStateCheckup()
 
 	if configs.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
-		cleanupInterval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))
-		dominus.ScheduleCleanup(cleanupInterval * time.Second)
+		dominus.ScheduleCleanup()
 	}
 
 	if configs.FalconConfig["plugIn"].(bool) {
