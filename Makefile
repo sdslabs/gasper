@@ -6,6 +6,11 @@ GOPATH := $(shell pwd)
 GOBIN := $(GOPATH)/bin
 GOFILES := $(GOPATH)/cmd/*.go
 
+# Shell script related variables.
+UTILDIR := $(GOPATH)/scripts/utils
+SPINNER := $(UTILDIR)/spinner.sh
+BUILDIR := $(GOPATH)/scripts/build
+
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
@@ -14,19 +19,18 @@ default: help
 
 ## install: Install missing dependencies.
 install:
-	@echo "*** Installing project dependencies to vendor ***"
-	@GOBIN=$(GOBIN) go get ./...
-	@go mod vendor
+	@$(SPINNER) "Installing project dependencies to vendor" "GOBIN=$(GOBIN) go get ./... && go mod vendor"
+	@printf "\n👍 Done\n"
 
 ## build: Build the project binary.
 build:
-	@echo "*** Building binary ***"
-	@go build -o $(GOBIN)/$(PROJECTNAME) $(GOFILES)
-	@echo "*** Path of the generated binary is $(GOBIN)/$(PROJECTNAME) ***"
+	@$(SPINNER) "Building binary $(GOBIN)/$(PROJECTNAME)" "go build -o $(GOBIN)/$(PROJECTNAME) $(GOFILES)"
+	@printf "\n👍 Done\n"
 
 ## tools: Install development tools.
 tools:
-	@./scripts/install_fresh.sh
+	@$(SPINNER) "Installing fresh" $(BUILDIR)/install_fresh.sh
+	@printf "\n👍 Done\n"
 
 ## start: Start in development mode. Auto-reloads when code changes.
 start: tools
@@ -34,22 +38,19 @@ start: tools
 
 ## clean: Clean build files.
 clean:
-	@echo "*** Deleting project binary ***"
-	@-rm $(GOBIN)/$(PROJECTNAME) 2> /dev/null
-	@echo "*** Cleaning build cache ***"
-	@go clean $(PACKAGES)
+	@$(SPINNER) "Cleaning build cache" "go clean $(PACKAGES)"
+	@printf "\n👍 Done\n"
+	@-rm $(GOBIN)/$(PROJECTNAME) 2>/dev/null
 
 ## lint: Lint entire codebase.
 lint:
-	@echo "*** Formatting ***"
-	@go fmt $(PACKAGES)
-	@echo "*** Vetting ***"
-	@go vet $(PACKAGES)
+	@$(SPINNER) "Formatting" "go fmt $(PACKAGES)"
+	@printf "\n👍 Done\n"
+	@$(SPINNER) "Vetting" "go vet $(PACKAGES)"
+	@printf "\n👍 Done\n"
 
 ## help: Display this help.
 help: Makefile
-	@echo
-	@echo " Choose a command to run in "$(PROJECTNAME)":"
-	@echo
+	@printf "\n Choose a command to run in "$(PROJECTNAME)":\n\n"
 	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
-	@echo
+	@printf "\n"
