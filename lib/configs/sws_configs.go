@@ -20,7 +20,7 @@ func parseJSON(path string) map[string]interface{} {
 }
 
 // configFile is the main configuration file for the API
-var configFile = "config.json"
+const configFile = "config.json"
 
 // SWSConfig is parsed data for `configFile`
 var SWSConfig = parseJSON(configFile)
@@ -36,3 +36,6 @@ var ServiceConfig = SWSConfig["services"].(map[string]interface{})
 
 // FalconConfig is the configuration for all the falcon client services
 var FalconConfig = SWSConfig["falcon"].(map[string]interface{})
+
+// CronConfig is the configuration for all the daemons managed by SWS
+var CronConfig = SWSConfig["cron"].(map[string]interface{})

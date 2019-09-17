@@ -52,7 +52,6 @@ func main() {
 	}
 
 	dominus.ScheduleServiceExposure()
-	dominus.ScheduleStateCheckup()
 
 	if configs.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
 		dominus.ScheduleCleanup()

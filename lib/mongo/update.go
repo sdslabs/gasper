@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/bson"
@@ -30,18 +29,18 @@ func UpsertInstance(filter bson.M, data bson.M) interface{} {
 }
 
 // UpdateMany updates multiple documents in the mongoDB collection
-func UpdateMany(collectionName string, filter bson.M, data bson.M) interface{} {
+func UpdateMany(collectionName string, filter bson.M, data bson.M) (interface{}, error) {
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	res, err := collection.UpdateMany(ctx, filter, bson.M{"$set": data}, nil)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
-	return res
+	return res, nil
 }
 
 // UpdateInstances is an abstraction over UpdateMany which updates multiple applications in mongoDB
-func UpdateInstances(filter bson.M, data bson.M) interface{} {
+func UpdateInstances(filter bson.M, data bson.M) (interface{}, error) {
 	return UpdateMany(InstanceCollection, filter, data)
 }

@@ -1,52 +1,41 @@
 package dominus
 
 import (
-	"fmt"
-	"time"
-
-	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // updateHostIP updates the application's host IP address
-func updateHostIP(oldIP, newIP string) interface{} {
+func updateHostIP(oldIP, currentIP string) (interface{}, error) {
 	return mongo.UpdateInstances(
 		map[string]interface{}{
 			"hostIP": oldIP,
 		},
 		map[string]interface{}{
-			"hostIP": newIP,
+			"hostIP": currentIP,
 		},
 	)
 }
 
 // updateState updates the IP address of the machine in the application's context
 // and re-registers all the microservices and applications deployed
-func updateState() {
-	newHostIP := utils.GetOutboundIP()
-
-	fmt.Printf(
+func updateState(currentIP string) {
+	utils.Logf(
 		"IP address of the machine changed from %s to %s\n",
 		utils.HostIP,
-		newHostIP)
+		currentIP)
 
-	updateHostIP(utils.HostIP, newHostIP)
-
-	utils.HostIP = newHostIP
-	exposeServices()
-}
-
-// checkState checks whether the IP address of the machine has changed or not
-func checkState() {
-	if utils.HostIP != utils.GetOutboundIP() {
-		updateState()
+	_, err := updateHostIP(utils.HostIP, currentIP)
+	if err != nil {
+		utils.LogError(err)
+		return
 	}
+	utils.HostIP = currentIP
 }
 
-// ScheduleStateCheckup runs checkState on given intervals of time
-func ScheduleStateCheckup() {
-	interval := time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second
-	scheduler := utils.NewScheduler(interval, checkState)
-	scheduler.RunAsync()
+// checkAndUpdateState checks whether the IP address of the machine has changed or not
+func checkAndUpdateState(currentIP string) {
+	if utils.HostIP != currentIP {
+		updateState(currentIP)
+	}
 }

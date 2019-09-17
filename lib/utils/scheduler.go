@@ -4,9 +4,10 @@ import "time"
 
 // Scheduler deals with running and managing various tasks at defined intervals
 type Scheduler struct {
-	interval time.Duration
-	task     func()
-	mutex    bool
+	interval    time.Duration
+	task        func()
+	stopTrigger chan bool
+	running     bool
 }
 
 // NewScheduler returns a pointer to a Scheduler object
@@ -19,15 +20,17 @@ func NewScheduler(interval time.Duration, task func()) *Scheduler {
 
 // Run starts scheduling the given task
 func (s *Scheduler) Run() {
-	if s.mutex {
+	if s.running {
 		return
 	}
-	s.mutex = true
+	s.running = true
 	ticker := time.NewTicker(s.interval)
-	for range ticker.C {
-		if s.mutex {
-			go s.task()
-		} else {
+	for {
+		select {
+		case <-ticker.C:
+			s.task()
+		case <-s.stopTrigger:
+			ticker.Stop()
 			return
 		}
 	}
@@ -40,5 +43,6 @@ func (s *Scheduler) RunAsync() {
 
 // Terminate stops the scheduler
 func (s *Scheduler) Terminate() {
-	s.mutex = false
+	s.running = false
+	s.stopTrigger <- true
 }

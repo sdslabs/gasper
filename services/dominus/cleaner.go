@@ -41,7 +41,7 @@ func removeDeadInstances() {
 
 // ScheduleCleanup runs removeDeadInstances on given intervals of time
 func ScheduleCleanup() {
-	interval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))
+	interval := time.Duration(configs.CronConfig["cleanupInterval"].(float64)) * time.Second
 	scheduler := utils.NewScheduler(interval, removeDeadInstances)
 	scheduler.RunAsync()
 }
