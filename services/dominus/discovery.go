@@ -10,21 +10,18 @@ import (
 )
 
 // exposeService exposes a single microservice along with its apps
-func exposeService(service string, config map[string]interface{}) {
-	currIP := utils.GetOutboundIP()
-	checkAndUpdateState(currIP)
-
+func exposeService(service, currentIP string, config map[string]interface{}) {
 	if config["deploy"].(bool) {
 		apps := mongo.FetchAppInfo(
 			map[string]interface{}{
 				"language": service,
-				"hostIP":   currIP,
+				"hostIP":   currentIP,
 			},
 		)
 		count := len(apps)
 		err := redis.RegisterService(
 			service,
-			currIP+config["port"].(string),
+			currentIP+config["port"].(string),
 			float64(count),
 		)
 		if err != nil {
@@ -34,7 +31,7 @@ func exposeService(service string, config map[string]interface{}) {
 		payload := make(map[string]interface{})
 
 		for _, app := range apps {
-			payload[app["name"].(string)] = currIP + config["port"].(string)
+			payload[app["name"].(string)] = currentIP + config["port"].(string)
 		}
 		err = redis.BulkRegisterApps(payload)
 		if err != nil {
@@ -45,9 +42,15 @@ func exposeService(service string, config map[string]interface{}) {
 
 // exposeServices exposes the microservices running on a host machine for discovery
 func exposeServices() {
+	currIP, err := utils.GetOutboundIP()
+	if err != nil {
+		return
+	}
+	checkAndUpdateState(currIP)
 	for service, config := range configs.ServiceConfig {
 		go exposeService(
 			service,
+			currIP,
 			config.(map[string]interface{}),
 		)
 	}

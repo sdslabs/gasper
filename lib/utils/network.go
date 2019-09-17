@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"net"
 	"strconv"
 	"time"
@@ -10,24 +9,23 @@ import (
 )
 
 // HostIP variable stores the IPv4 address of the host machine
-var HostIP = GetOutboundIP()
+var HostIP, _ = GetOutboundIP()
 
 // GetOutboundIP returns the preferred outbound IP of this machine
-func GetOutboundIP() string {
+func GetOutboundIP() (string, error) {
 	if configs.SWSConfig["offlineMode"].(bool) {
-		return "0.0.0.0"
+		return "0.0.0.0", nil
 	}
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		fmt.Println("The machine is not connected to any network")
-		fmt.Println("Falling back to offline mode")
-		return "0.0.0.0"
+		Log("The machine is not connected to any network")
+		return "", err
 	}
 	defer conn.Close()
 
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
-	return localAddr.IP.String()
+	return localAddr.IP.String(), nil
 }
 
 // NotAlive checks if a given instance is alive or not
@@ -35,7 +33,7 @@ func NotAlive(url string) bool {
 	d := net.Dialer{Timeout: 5 * time.Second}
 	conn, err := d.Dial("tcp", url)
 	if err != nil {
-		fmt.Println(err)
+		LogError(err)
 		return true
 	}
 	conn.Close()
