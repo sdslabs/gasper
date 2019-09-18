@@ -15,6 +15,13 @@ import (
 func DeployRPC(app map[string]interface{}, hostURL, service string) {
 	if app["rebuild"].(bool) {
 		utils.LogInfo("Re-deploying %s instance in %s\n", strings.Title(service), hostURL)
+
+		newContext := make(map[string]interface{})
+		for _, ctx := range app["context"].([]map[string]interface{}) {
+			newContext[ctx["Key"].(string)] = ctx["Value"]
+		}
+		app["context"] = newContext
+
 		reqBody, err := json.Marshal(app)
 		if err != nil {
 			utils.LogError(err)
@@ -31,6 +38,7 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 		req.Header.Set("Content-Type", "application/json")
 		client := &http.Client{}
 		resp, err := client.Do(req)
+
 		if err != nil {
 			utils.LogError(err)
 			return
