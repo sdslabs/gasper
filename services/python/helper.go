@@ -13,6 +13,12 @@ import (
 	"github.com/sdslabs/SWS/lib/types"
 )
 
+const (
+	pythonVersionTag = "python_version"
+	python3Tag       = "3"
+	python2Tag       = "2"
+)
+
 type context struct {
 	Index  string   `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
 	Port   string   `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
@@ -58,9 +64,9 @@ func installRequirements(path string, env *types.ApplicationEnv) (string, types.
 
 func pipeline(data map[string]interface{}) types.ResponseError {
 	var image string
-	if data["python_version"].(string) == "3" {
+	if data[pythonVersionTag].(string) == python3Tag {
 		image = configs.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
-	} else {
+	} else if data[pythonVersionTag].(string) == python2Tag {
 		image = configs.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
 	}
 
