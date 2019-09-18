@@ -1,7 +1,7 @@
 package dominus
 
 import (
-	"fmt"
+	"strings"
 	"time"
 
 	"github.com/sdslabs/SWS/lib/commons"
@@ -16,9 +16,9 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 	for _, app := range apps {
 		instanceURLs, err := redis.GetLeastLoadedInstances(service, 1)
 		if err != nil {
-			fmt.Println(err)
+			utils.LogError(err)
 		}
-		app["hostIP"] = instanceURLs[0]
+		app["rebuild"] = true
 		commons.Deployer(app, instanceURLs[0], service)
 	}
 }
@@ -27,10 +27,12 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 // if it is dead
 func inspectInstance(service, instance string) {
 	if utils.NotAlive(instance) {
+		instanceIP := strings.Split(instance, ":")
+
 		apps := mongo.FetchAppInfo(
 			map[string]interface{}{
 				"language": service,
-				"hostIP":   utils.HostIP,
+				"hostIP":   instanceIP[0],
 			},
 		)
 		err := redis.RemoveServiceInstance(service, instance)
