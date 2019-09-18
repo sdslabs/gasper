@@ -9,7 +9,8 @@ import (
 
 func createApp(c *gin.Context) {
 	service := c.Param("service")
-	instanceURL, err := redis.GetLeastLoadedInstance(service)
+	instanceURLs, err := redis.GetLeastLoadedInstances(service, 1)
+	var instanceURL string = instanceURLs[0]
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": err,
