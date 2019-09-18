@@ -86,6 +86,7 @@ func publicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
 
 // passwordHandler handles the password authentication
 func passwordHandler(ctx ssh.Context, password string) bool {
+	// utils.
 	return true
 }
 
