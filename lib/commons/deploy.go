@@ -20,7 +20,7 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 			return
 		}
 
-		req, err := http.NewRequest("POST", hostURL, bytes.NewBuffer(reqBody))
+		req, err := http.NewRequest("POST", "http://"+hostURL, bytes.NewBuffer(reqBody))
 		if err != nil {
 			utils.LogError(err)
 			return
@@ -30,13 +30,14 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 		req.Header.Set("Content-Type", "application/json")
 		client := &http.Client{}
 		resp, err := client.Do(req)
+
+		defer resp.Body.Close()
+
 		if err != nil {
 			utils.LogError(err)
 			return
 		}
 
 		utils.LogDebug("instance has been deployed: %s", resp)
-
-		defer resp.Body.Close()
 	}
 }
