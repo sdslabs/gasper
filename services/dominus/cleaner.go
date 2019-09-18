@@ -21,7 +21,6 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 		if err != nil {
 			utils.LogError(err)
 		}
-		app["rebuild"] = true
 		if instanceURL != redis.ErrEmptySet {
 			commons.DeployRPC(app, instanceURL, service)
 		}
