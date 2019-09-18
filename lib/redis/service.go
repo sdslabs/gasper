@@ -50,6 +50,15 @@ func GetLeastLoadedInstances(service string, count int64) ([]string, error) {
 	return data, nil
 }
 
+// GetLeastLoadedInstance returns a single instance having least number of apps of a particular service deployed
+func GetLeastLoadedInstance(service string) (string, error) {
+	instance, err := GetLeastLoadedInstances(service, 1)
+	if err != nil {
+		return ErrEmptySet, err
+	}
+	return instance[0], nil
+}
+
 // FetchServiceInstances returns all instances of a given service
 func FetchServiceInstances(service string) ([]string, error) {
 	data, err := client.ZRangeByScore(
