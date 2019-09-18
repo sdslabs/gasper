@@ -30,24 +30,24 @@ func IncrementServiceLoad(service, url string) error {
 	return err
 }
 
-// GetLeastLoadedInstance returns the URL of the host currently having the least number
+// GetLeastLoadedInstances returns the URL of the host currently having the least number
 // of apps of a particular service deployed
-func GetLeastLoadedInstance(service string) (string, error) {
+func GetLeastLoadedInstances(service string, count int64) ([]string, error) {
 	data, err := client.ZRangeByScore(
 		service,
 		redis.ZRangeBy{
 			Min:    "-inf",
 			Max:    "+inf",
 			Offset: 0,
-			Count:  1,
+			Count:  count,
 		}).Result()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if len(data) == 0 {
-		return ErrEmptySet, nil
+		return []string{"Empty Set"}, nil
 	}
-	return data[0], nil
+	return data, nil
 }
 
 // FetchServiceInstances returns all instances of a given service
