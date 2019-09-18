@@ -19,7 +19,7 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 			utils.LogError(err)
 		}
 		app["rebuild"] = true
-		commons.Deployer(app, instanceURLs[0], service)
+		commons.DeployRPC(app, instanceURLs[0], service)
 	}
 }
 
@@ -28,13 +28,14 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 func inspectInstance(service, instance string) {
 	if utils.NotAlive(instance) {
 		instanceIP := strings.Split(instance, ":")
-
+		utils.LogInfo("test %s", instanceIP)
 		apps := mongo.FetchAppInfo(
 			map[string]interface{}{
 				"language": service,
 				"hostIP":   instanceIP[0],
 			},
 		)
+		utils.LogInfo("apps, %s", apps)
 		err := redis.RemoveServiceInstance(service, instance)
 		if err != nil {
 			utils.LogError(err)
@@ -45,6 +46,7 @@ func inspectInstance(service, instance string) {
 
 // removeDeadServiceInstances removes all inactive instances in a given service
 func removeDeadServiceInstances(service string) {
+	utils.LogInfo("here in removing dead instances 1")
 	instances, err := redis.FetchServiceInstances(service)
 	if err != nil {
 		utils.LogError(err)
@@ -56,6 +58,7 @@ func removeDeadServiceInstances(service string) {
 
 // removeDeadInstances removes all inactive instances in every service
 func removeDeadInstances() {
+	utils.LogInfo("here in removing dead instances")
 	time.Sleep(5 * time.Second)
 	for service := range configs.ServiceConfig {
 		go removeDeadServiceInstances(service)
