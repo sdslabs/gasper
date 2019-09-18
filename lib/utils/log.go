@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/types"
 )
 
@@ -28,19 +27,17 @@ const (
 )
 
 func out(s, TAG string) {
-	if configs.SWSConfig["debug"].(bool) {
-		currentTime := time.Now()
-		timeLog := fmt.Sprintf(
-			"%d-%d-%d %d:%d:%d",
-			currentTime.Day(),
-			currentTime.Month(),
-			currentTime.Year(),
-			currentTime.Hour(),
-			currentTime.Minute(),
-			currentTime.Second(),
-		)
-		fmt.Println(TAG + reset + " " + yellow + timeLog + reset + lightRed + " >>> " + reset + green + s + reset)
-	}
+	currentTime := time.Now()
+	timeLog := fmt.Sprintf(
+		"%d-%d-%d %d:%d:%d",
+		currentTime.Day(),
+		currentTime.Month(),
+		currentTime.Year(),
+		currentTime.Hour(),
+		currentTime.Minute(),
+		currentTime.Second(),
+	)
+	fmt.Println(TAG + reset + " " + yellow + timeLog + reset + lightRed + " >>> " + reset + green + s + reset)
 }
 
 // Log logs to the console with your custom TAG

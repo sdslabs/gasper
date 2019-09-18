@@ -4,7 +4,7 @@ PACKAGES := $(shell go list ./... | grep -v vendor)
 # Go related variables.
 GOPATH := $(shell pwd)
 GOBIN := $(GOPATH)/bin
-GOFILES := $(GOPATH)/cmd/*.go
+GOFILES := $(GOPATH)/*.go
 
 # Shell script related variables.
 UTILDIR := $(GOPATH)/scripts/utils
