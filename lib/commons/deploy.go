@@ -7,21 +7,17 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-// Deployer redeploys applications on different hosts
+// DeployRPC re-deploys applications on different hosts
 func DeployRPC(app map[string]interface{}, hostURL, service string) {
 	if app["rebuild"].(bool) {
-		utils.LogInfo("Re-deploying %s instance in %s\n", strings.Title(service), hostURL)
+		utils.LogInfo("Re-deploying application %s with type %s to %s\n", app["name"], strings.Title(service), hostURL)
 
-		newContext := make(map[string]interface{})
-		for _, ctx := range app["context"].([]map[string]interface{}) {
-			newContext[ctx["Key"].(string)] = ctx["Value"]
-		}
-		app["context"] = newContext
-
+		app["context"] = app["context"].(primitive.D).Map()
 		reqBody, err := json.Marshal(app)
 		if err != nil {
 			utils.LogError(err)
@@ -48,6 +44,7 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		bodyString := string(bodyBytes)
-		utils.LogDebug("instance has been deployed: %s", bodyString)
+		utils.LogDebug("Application %s with type %s has been succesfully re-deployed to %s", app["name"], strings.Title(service), hostURL)
+		utils.LogDebug("Response: %s", bodyString)
 	}
 }
