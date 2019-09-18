@@ -31,6 +31,10 @@ func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 			})
 			return
 		}
+		if data["rebuild"] != nil && data["rebuild"].(bool) {
+			c.Next()
+			return
+		}
 		count, err := mongo.CountInstances(map[string]interface{}{
 			"name":         data["name"].(string),
 			"instanceType": instanceType,
