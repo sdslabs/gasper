@@ -9,6 +9,7 @@ import (
 	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 func getBodyFromContext(c *gin.Context) []byte {
@@ -68,6 +69,7 @@ func IsUniqueDB() gin.HandlerFunc {
 // ValidateRequestBody validates the JSON body in a request based on the meta-data
 // in the struct used to bind
 func ValidateRequestBody(c *gin.Context, validationBody interface{}) {
+	utils.LogDebug("Request body: %s", string(getBodyFromContext(c)))
 	err := json.Unmarshal(getBodyFromContext(c), validationBody)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{

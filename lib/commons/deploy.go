@@ -3,6 +3,7 @@ package commons
 import (
 	"bytes"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -30,14 +31,15 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 		req.Header.Set("Content-Type", "application/json")
 		client := &http.Client{}
 		resp, err := client.Do(req)
-
-		defer resp.Body.Close()
-
 		if err != nil {
 			utils.LogError(err)
 			return
 		}
 
-		utils.LogDebug("instance has been deployed: %s", resp)
+		defer resp.Body.Close()
+
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyString := string(bodyBytes)
+		utils.LogDebug("instance has been deployed: %s", bodyString)
 	}
 }
