@@ -1,7 +1,6 @@
 package dominus
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/sdslabs/SWS/lib/configs"
@@ -15,7 +14,7 @@ func inspectInstance(service, instance string) {
 	if utils.NotAlive(instance) {
 		err := redis.RemoveServiceInstance(service, instance)
 		if err != nil {
-			fmt.Println(err)
+			utils.LogError(err)
 		}
 	}
 }
@@ -24,7 +23,7 @@ func inspectInstance(service, instance string) {
 func removeDeadServiceInstances(service string) {
 	instances, err := redis.FetchServiceInstances(service)
 	if err != nil {
-		fmt.Println(err)
+		utils.LogError(err)
 	}
 	for _, instance := range instances {
 		go inspectInstance(service, instance)

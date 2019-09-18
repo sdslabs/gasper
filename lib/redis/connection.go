@@ -1,10 +1,9 @@
 package redis
 
 import (
-	"fmt"
-
 	"github.com/go-redis/redis"
 	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 var client = redis.NewClient(&redis.Options{
@@ -18,6 +17,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	} else {
-		fmt.Println("Redis Connection Established")
+		utils.Log("Redis Connection Established")
 	}
 }
