@@ -1,21 +1,49 @@
 package dominus
 
 import (
+	"strings"
 	"time"
 
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
+
+// rescheduleInstance redeploys down instances on least loaded servers
+func rescheduleInstance(apps []map[string]interface{}, service string) {
+	if len(apps) == 0 {
+		return
+	}
+	for _, app := range apps {
+		instanceURL, err := redis.GetLeastLoadedInstance(service)
+		if err != nil {
+			utils.LogError(err)
+		}
+		app["rebuild"] = true
+		if instanceURL != redis.ErrEmptySet {
+			commons.DeployRPC(app, instanceURL, service)
+		}
+	}
+}
 
 // inspectInstance checks whether a given instance is alive or not and deletes that instance
 // if it is dead
 func inspectInstance(service, instance string) {
 	if utils.NotAlive(instance) {
+		instanceIP := strings.Split(instance, ":")
+		apps := mongo.FetchAppInfo(
+			map[string]interface{}{
+				"language": service,
+				"hostIP":   instanceIP[0],
+			},
+		)
 		err := redis.RemoveServiceInstance(service, instance)
 		if err != nil {
 			utils.LogError(err)
 		}
+		go rescheduleInstance(apps, service)
 	}
 }
 
