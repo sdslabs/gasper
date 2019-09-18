@@ -2,14 +2,14 @@ PROJECTNAME := $(shell basename "$(PWD)")
 PACKAGES := $(shell go list ./... | grep -v vendor)
 
 # Go related variables.
-GOPATH := $(shell pwd)
-GOBIN := $(GOPATH)/bin
-GOFILES := $(GOPATH)/*.go
+PROJECTROOT := $(shell pwd)
+GOBIN := $(PROJECTROOT)/bin
+GOFILES := $(PROJECTROOT)/*.go
 
 # Shell script related variables.
-UTILDIR := $(GOPATH)/scripts/utils
+UTILDIR := $(PROJECTROOT)/scripts/utils
 SPINNER := $(UTILDIR)/spinner.sh
-BUILDIR := $(GOPATH)/scripts/build
+BUILDIR := $(PROJECTROOT)/scripts/build
 
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
@@ -34,7 +34,7 @@ tools:
 
 ## start: Start in development mode. Auto-reloads when code changes.
 start: tools
-	@$(GOPATH)/bin/fresh
+	@$(PROJECTROOT)/bin/fresh
 
 ## clean: Clean build files.
 clean:
