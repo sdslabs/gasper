@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 )
 
 var dbHost = `%`
@@ -20,7 +20,7 @@ var sanitaryActionBindings = map[int]func(string, string, string, *sql.DB) error
 
 // CreateDB creates a database in the Mysql instance with the given database name, user and password
 func CreateDB(database, username, password string) error {
-	port := utils.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
+	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 	connection := fmt.Sprintf("%s@%s/", dbUser, agentAddress)
@@ -65,7 +65,7 @@ func CreateDB(database, username, password string) error {
 
 // DeleteDB deletes the database given by the database name and username
 func DeleteDB(database, username string) error {
-	port := utils.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
+	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 	connection := fmt.Sprintf("%s@%s/", dbUser, agentAddress)

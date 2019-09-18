@@ -1,19 +1,13 @@
 package php
 
 import (
-	"bytes"
-	"encoding/json"
-	"io/ioutil"
-	"strings"
-
-	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 type context struct {
@@ -31,31 +25,9 @@ type phpRequestBody struct {
 	GitAccessToken string                 `json:"git_access_token"`
 }
 
-func validateRequest(c *gin.Context) {
-
-	var bodyBytes []byte
-	if c.Request.Body != nil {
-		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-	}
-	// Restore the io.ReadCloser to its original state
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-	var req phpRequestBody
-
-	err := json.Unmarshal(bodyBytes, &req)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": "Invalid JSON",
-		})
-		return
-	}
-
-	if result, err := validator.ValidateStruct(req); !result {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": strings.Split(err.Error(), ";"),
-		})
-	} else {
-		c.Next()
-	}
+// validateRequestBody validates the request body for the current microservice
+func validateRequestBody(c *gin.Context) {
+	middlewares.ValidateRequestBody(c, &phpRequestBody{})
 }
 
 // installPackages installs dependancies for the specific microservice
@@ -70,7 +42,7 @@ func installPackages(path string, appEnv *types.ApplicationEnv) (string, types.R
 
 func pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
-		DockerImage:  utils.ServiceConfig["php"].(map[string]interface{})["image"].(string),
+		DockerImage:  configs.ServiceConfig["php"].(map[string]interface{})["image"].(string),
 		ConfFunction: configs.CreatePHPContainerConfig,
 	}
 

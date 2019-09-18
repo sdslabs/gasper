@@ -8,6 +8,7 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/kr/pty"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -90,7 +91,7 @@ func passwordHandler(ctx ssh.Context, password string) bool {
 
 // BuildSSHServer creates a server for the given parameters
 func BuildSSHServer(service string) (*ssh.Server, error) {
-	sshConfig := utils.ServiceConfig[service].(map[string]interface{})
+	sshConfig := configs.ServiceConfig[service].(map[string]interface{})
 	filepaths := utils.ToStringSlice(sshConfig["host_signers"])
 	hostSigners, err := getHostSigners(service, filepaths)
 	if err != nil {

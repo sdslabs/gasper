@@ -2,7 +2,7 @@ package mongo
 
 import (
 	"context"
-	"fmt"
+	"github.com/sdslabs/SWS/lib/utils"
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/mongo"
@@ -18,8 +18,9 @@ func init() {
 	defer cancel()
 	err = client.Ping(ctx, nil)
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	} else {
-		fmt.Println("MongoDB Connection Established")
+		utils.LogInfo("MongoDB Connection Established")
 	}
 }

@@ -1,48 +1,66 @@
 package dominus
 
 import (
+	"time"
+
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // exposeService exposes a single microservice along with its apps
-func exposeService(service string, config map[string]interface{}) {
+func exposeService(service, currentIP string, config map[string]interface{}) {
 	if config["deploy"].(bool) {
 		apps := mongo.FetchAppInfo(
 			map[string]interface{}{
 				"language": service,
-				"hostIP":   utils.HostIP,
+				"hostIP":   currentIP,
 			},
 		)
 		count := len(apps)
 		err := redis.RegisterService(
 			service,
-			utils.HostIP+config["port"].(string),
+			currentIP+config["port"].(string),
 			float64(count),
 		)
 		if err != nil {
+			utils.LogError(err)
 			panic(err)
 		}
 
 		payload := make(map[string]interface{})
 
 		for _, app := range apps {
-			payload[app["name"].(string)] = utils.HostIP + config["port"].(string)
+			payload[app["name"].(string)] = currentIP + config["port"].(string)
 		}
 		err = redis.BulkRegisterApps(payload)
 		if err != nil {
+			utils.LogError(err)
 			panic(err)
 		}
 	}
 }
 
-// ExposeServices exposes the microservices running on a host machine for discovery
-func ExposeServices() {
-	for service, config := range utils.ServiceConfig {
+// exposeServices exposes the microservices running on a host machine for discovery
+func exposeServices() {
+	currIP, err := utils.GetOutboundIP()
+	if err != nil {
+		return
+	}
+	checkAndUpdateState(currIP)
+	for service, config := range configs.ServiceConfig {
 		go exposeService(
 			service,
+			currIP,
 			config.(map[string]interface{}),
 		)
 	}
+}
+
+// ScheduleServiceExposure exposes the application services at regular intervals
+func ScheduleServiceExposure() {
+	interval := time.Duration(configs.CronConfig["exposureInterval"].(float64)) * time.Second
+	scheduler := utils.NewScheduler(interval, exposeServices)
+	scheduler.RunAsync()
 }

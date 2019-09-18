@@ -1,9 +1,9 @@
 package dominus
 
 import (
-	"fmt"
 	"time"
 
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -14,7 +14,7 @@ func inspectInstance(service, instance string) {
 	if utils.NotAlive(instance) {
 		err := redis.RemoveServiceInstance(service, instance)
 		if err != nil {
-			fmt.Println(err)
+			utils.LogError(err)
 		}
 	}
 }
@@ -23,7 +23,7 @@ func inspectInstance(service, instance string) {
 func removeDeadServiceInstances(service string) {
 	instances, err := redis.FetchServiceInstances(service)
 	if err != nil {
-		fmt.Println(err)
+		utils.LogError(err)
 	}
 	for _, instance := range instances {
 		go inspectInstance(service, instance)
@@ -33,17 +33,14 @@ func removeDeadServiceInstances(service string) {
 // removeDeadInstances removes all inactive instances in every service
 func removeDeadInstances() {
 	time.Sleep(5 * time.Second)
-	for service := range utils.ServiceConfig {
+	for service := range configs.ServiceConfig {
 		go removeDeadServiceInstances(service)
 	}
 }
 
 // ScheduleCleanup runs removeDeadInstances on given intervals of time
-func ScheduleCleanup(interval time.Duration) {
-	ticker := time.NewTicker(interval)
-	go func() {
-		for range ticker.C {
-			removeDeadInstances()
-		}
-	}()
+func ScheduleCleanup() {
+	interval := time.Duration(configs.CronConfig["cleanupInterval"].(float64)) * time.Second
+	scheduler := utils.NewScheduler(interval, removeDeadInstances)
+	scheduler.RunAsync()
 }

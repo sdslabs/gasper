@@ -1,20 +1,22 @@
 package python
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"strings"
 
-	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
+)
+
+const (
+	pythonVersionTag = "python_version"
+	python3Tag       = "3"
+	python2Tag       = "2"
 )
 
 type context struct {
@@ -35,31 +37,9 @@ type pythonRequestBody struct {
 	GitAccessToken string                 `json:"git_access_token"`
 }
 
-func validateRequest(c *gin.Context) {
-
-	var bodyBytes []byte
-	if c.Request.Body != nil {
-		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-	}
-	// Restore the io.ReadCloser to its original state
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-	var req pythonRequestBody
-
-	err := json.Unmarshal(bodyBytes, &req)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": "Invalid JSON",
-		})
-		return
-	}
-
-	if result, err := validator.ValidateStruct(req); !result {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": strings.Split(err.Error(), ";"),
-		})
-	} else {
-		c.Next()
-	}
+// validateRequestBody validates the request body for the current microservice
+func validateRequestBody(c *gin.Context) {
+	middlewares.ValidateRequestBody(c, &pythonRequestBody{})
 }
 
 func startServer(index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {
@@ -84,10 +64,10 @@ func installRequirements(path string, env *types.ApplicationEnv) (string, types.
 
 func pipeline(data map[string]interface{}) types.ResponseError {
 	var image string
-	if data["python_version"].(string) == "3" {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
-	} else {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
+	if data[pythonVersionTag].(string) == python3Tag {
+		image = configs.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
+	} else if data[pythonVersionTag].(string) == python2Tag {
+		image = configs.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
 	}
 
 	appConf := &types.ApplicationConfig{

@@ -2,6 +2,7 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -16,7 +17,7 @@ func SendResponse(c *gin.Context, r types.ResponseError, response gin.H) {
 	}
 	utils.LogResErr(r)
 	if r.Status() == 500 {
-		if utils.SWSConfig["debug"].(bool) {
+		if configs.SWSConfig["debug"].(bool) {
 			c.JSON(500, gin.H{
 				"error": r.Verbose(),
 			})

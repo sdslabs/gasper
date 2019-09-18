@@ -3,10 +3,12 @@
     "domain": "sdslabs.co",
     "secret": "YOUR_SECRET_KEY",
     "projectRoot": "/SWS",
-    "rcFile": ".swsrc",
-    "cleanupInterval": 600,
-    "stateCheckInterval": 10,
+    "rcFile": "Gasperfile",
     "offlineMode": false,
+    "cron": {
+        "cleanupInterval": 600,
+        "exposureInterval": 30
+    },
     "mongo": {
         "url": "mongodb://localhost:27017"
     },

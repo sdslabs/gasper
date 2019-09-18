@@ -45,7 +45,7 @@ func GetLeastLoadedInstance(service string) (string, error) {
 		return "", err
 	}
 	if len(data) == 0 {
-		return "Empty Set", nil
+		return ErrEmptySet, nil
 	}
 	return data[0], nil
 }

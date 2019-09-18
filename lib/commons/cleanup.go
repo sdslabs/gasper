@@ -31,8 +31,8 @@ func ContainerCleanup(appName string) error {
 
 // DatabaseCleanup cleans the database's space in the container
 func DatabaseCleanup(dbKey string) error {
-	dbName := strings.Split(dbKey, ":")[0]
-	dbUser := strings.Split(dbKey, ":")[1]
+	dbUser := strings.Split(dbKey, ":")[0]
+	dbName := strings.Split(dbKey, ":")[1]
 	return database.DeleteDB(dbName, dbUser)
 }
 

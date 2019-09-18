@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/commons"
+	"github.com/sdslabs/SWS/lib/configs"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
@@ -16,7 +17,7 @@ func createApp(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	data["language"] = "static"
+	data["language"] = ServiceName
 	data["instanceType"] = "app"
 
 	resErr := pipeline(data)
@@ -38,7 +39,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.RegisterApp(
 		data["name"].(string),
-		utils.HostIP+utils.ServiceConfig["static"].(map[string]interface{})["port"].(string),
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -51,8 +52,8 @@ func createApp(c *gin.Context) {
 	}
 
 	err = redis.IncrementServiceLoad(
-		"static",
-		utils.HostIP+utils.ServiceConfig["static"].(map[string]interface{})["port"].(string),
+		ServiceName,
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -70,52 +71,11 @@ func createApp(c *gin.Context) {
 	})
 }
 
-func fetchDocs(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "static"
-	filter["instanceType"] = mongo.AppInstance
-
-	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
-	})
-}
-
-func deleteApp(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "static"
-	filter["instanceType"] = mongo.AppInstance
-
-	c.JSON(200, gin.H{
-		"message": mongo.DeleteInstance(filter),
-	})
-}
-
-func updateAppInfo(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "static"
-	filter["instanceType"] = mongo.AppInstance
-
-	var (
-		data map[string]interface{}
-	)
-	c.BindJSON(&data)
-
-	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
-	})
-}
-
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         appName,
-		"language":     "static",
+		"language":     ServiceName,
 		"instanceType": mongo.AppInstance,
 	}
 	data := mongo.FetchAppInfo(filter)[0]

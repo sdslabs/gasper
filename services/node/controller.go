@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/sdslabs/SWS/lib/commons"
+	"github.com/sdslabs/SWS/lib/configs"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
@@ -15,7 +16,7 @@ func createApp(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	data["language"] = "node"
+	data["language"] = ServiceName
 	data["instanceType"] = mongo.AppInstance
 
 	resErr := pipeline(data)
@@ -37,7 +38,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.RegisterApp(
 		data["name"].(string),
-		utils.HostIP+utils.ServiceConfig["node"].(map[string]interface{})["port"].(string),
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -50,8 +51,8 @@ func createApp(c *gin.Context) {
 	}
 
 	err = redis.IncrementServiceLoad(
-		"node",
-		utils.HostIP+utils.ServiceConfig["node"].(map[string]interface{})["port"].(string),
+		ServiceName,
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
@@ -69,50 +70,11 @@ func createApp(c *gin.Context) {
 	})
 }
 
-func fetchDocs(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "node"
-
-	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
-	})
-}
-
-func deleteApp(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "node"
-
-	c.JSON(200, gin.H{
-		"message": mongo.DeleteInstance(filter),
-	})
-}
-
-func updateAppInfo(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	filter["language"] = "node"
-	filter["instanceType"] = mongo.AppInstance
-
-	var (
-		data map[string]interface{}
-	)
-	c.BindJSON(&data)
-
-	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
-	})
-}
-
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         appName,
-		"language":     "node",
+		"language":     ServiceName,
 		"instanceType": "app",
 	}
 	data := mongo.FetchAppInfo(filter)[0]

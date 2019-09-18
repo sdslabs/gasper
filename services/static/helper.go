@@ -1,17 +1,11 @@
 package static
 
 import (
-	"bytes"
-	"encoding/json"
-	"io/ioutil"
-	"strings"
-
-	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 type context struct {
@@ -27,37 +21,15 @@ type staticRequestBody struct {
 	GitAccessToken string                 `json:"git_access_token"`
 }
 
-func validateRequest(c *gin.Context) {
-
-	var bodyBytes []byte
-	if c.Request.Body != nil {
-		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-	}
-	// Restore the io.ReadCloser to its original state
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-	var req staticRequestBody
-
-	err := json.Unmarshal(bodyBytes, &req)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": "Invalid JSON",
-		})
-		return
-	}
-
-	if result, err := validator.ValidateStruct(req); !result {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": strings.Split(err.Error(), ";"),
-		})
-	} else {
-		c.Next()
-	}
+// validateRequestBody validates the request body for the current microservice
+func validateRequestBody(c *gin.Context) {
+	middlewares.ValidateRequestBody(c, &staticRequestBody{})
 }
 
 func pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		ConfFunction: configs.CreateStaticContainerConfig,
-		DockerImage:  utils.ServiceConfig["static"].(map[string]interface{})["image"].(string),
+		DockerImage:  configs.ServiceConfig["static"].(map[string]interface{})["image"].(string),
 	}
 
 	_, resErr := api.SetupApplication(appConf, data)
