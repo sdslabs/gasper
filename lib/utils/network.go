@@ -18,7 +18,7 @@ func GetOutboundIP() (string, error) {
 	}
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		Log("The machine is not connected to any network")
+		LogInfo("The machine is not connected to any network")
 		return "", err
 	}
 	defer conn.Close()

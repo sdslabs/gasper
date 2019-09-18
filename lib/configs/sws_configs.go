@@ -10,11 +10,11 @@ func parseJSON(path string) map[string]interface{} {
 	var config map[string]interface{}
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
-		panic(fmt.Errorf("File %s does not exist", path))
+		panic(fmt.Sprintf("File %s does not exist", path))
 	}
 	err = json.Unmarshal(file, &config)
 	if err != nil {
-		panic(fmt.Errorf("Invalid %s file", path))
+		panic(fmt.Sprintf("Invalid %s file", path))
 	}
 	return config
 }

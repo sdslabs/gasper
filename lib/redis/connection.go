@@ -15,8 +15,9 @@ var client = redis.NewClient(&redis.Options{
 func init() {
 	_, err := client.Ping().Result()
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	} else {
-		utils.Log("Redis Connection Established")
+		utils.LogInfo("Redis Connection Established")
 	}
 }

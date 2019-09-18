@@ -60,13 +60,13 @@ func initHTTPServer(service, port string) UnivServer {
 func startMySQLService(service, port string) UnivServer {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mysql") {
-		utils.Logf("No Mysql instance found in host. Building the instance.")
+		utils.LogInfo("No Mysql instance found in host. Building the instance.")
 		containerID, err := database.SetupDBInstance()
 		if err != nil {
-			utils.Log("There was a problem deploying MySql service.")
-			utils.Logf("ERROR:: %s\n", err.Error())
+			utils.Log("There was a problem deploying MySql service.", utils.ErrorTAG)
+			utils.LogError(err)
 		} else {
-			utils.Logf("Container has been deployed with ID:\t%s \n", containerID)
+			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
 		}
 	}
 	server := initHTTPServer(service, port)
@@ -76,8 +76,8 @@ func startMySQLService(service, port string) UnivServer {
 func startSSHService(service, port string) UnivServer {
 	server, err := ssh.BuildSSHServer(service)
 	if err != nil {
-		utils.Log("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.")
-		utils.Logf("ERROR:: %s\n", err.Error())
+		utils.Log("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.", utils.ErrorTAG)
+		utils.LogError(err)
 		return UnivServer{
 			SSHServer:  nil,
 			HTTPServer: nil,

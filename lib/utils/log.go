@@ -27,7 +27,7 @@ const (
 	DebugTAG = magenta + "[" + reset + cyan + "DEBUG" + reset + magenta + "]"
 )
 
-func out(s, tag string) {
+func out(s, TAG string) {
 	if configs.SWSConfig["debug"].(bool) {
 		currentTime := time.Now()
 		timeLog := fmt.Sprintf(
@@ -39,19 +39,25 @@ func out(s, tag string) {
 			currentTime.Minute(),
 			currentTime.Second(),
 		)
-		fmt.Println(tag + reset + " " + yellow + timeLog + reset + lightRed + " >>> " + reset + green + s + reset)
+		fmt.Println(TAG + reset + " " + yellow + timeLog + reset + lightRed + " >>> " + reset + green + s + reset)
 	}
 }
 
-// Log string to the console
-func Log(s string) {
+// Log logs to the console with your custom TAG
+func Log(s, TAG string) {
+	out(s, TAG)
+}
+
+// LogInfo logs information to the console
+func LogInfo(f string, v ...interface{}) {
+	s := fmt.Sprintf(f, v...)
 	out(s, InfoTAG)
 }
 
-// Logf is Log with format string
-func Logf(f string, v ...interface{}) {
+// LogDebug logs debug messages to console
+func LogDebug(f string, v ...interface{}) {
 	s := fmt.Sprintf(f, v...)
-	out(s, InfoTAG)
+	out(s, DebugTAG)
 }
 
 // LogError logs type error to console

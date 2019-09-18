@@ -25,6 +25,7 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 			float64(count),
 		)
 		if err != nil {
+			utils.LogError(err)
 			panic(err)
 		}
 
@@ -35,6 +36,7 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 		}
 		err = redis.BulkRegisterApps(payload)
 		if err != nil {
+			utils.LogError(err)
 			panic(err)
 		}
 	}

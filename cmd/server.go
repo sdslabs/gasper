@@ -25,7 +25,7 @@ func main() {
 			if image, check := config["image"]; check {
 				image := image.(string)
 				if !utils.Contains(images, image) {
-					utils.Logf("Image %s not present locally, pulling from DockerHUB\n", image)
+					utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
 					docker.Pull(image)
 				}
 			}
@@ -34,19 +34,21 @@ func main() {
 				customServer := Launcher(service, port)
 				if customServer.HTTPServer != nil {
 					serviceServer := customServer.HTTPServer
-					utils.Logf("%s Service Active\n", strings.Title(service))
+					utils.LogInfo("%s Service Active\n", strings.Title(service))
 					g.Go(func() error {
 						return serviceServer.ListenAndServe()
 					})
 				} else if customServer.SSHServer != nil {
 					serviceServer := customServer.SSHServer
-					utils.Logf("%s Service Active\n", strings.Title(service))
+					utils.LogInfo("%s Service Active\n", strings.Title(service))
 					g.Go(func() error {
 						return serviceServer.ListenAndServe()
 					})
 				}
 			} else {
-				panic(fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:]))
+				msg := fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:])
+				utils.Log(msg, utils.ErrorTAG)
+				panic(msg)
 			}
 		}
 	}
@@ -63,6 +65,7 @@ func main() {
 	}
 
 	if err := g.Wait(); err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 }

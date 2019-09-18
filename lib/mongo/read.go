@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // FetchDocs is a generic function which takes a collection name and mongoDB filter as input and returns documents
@@ -16,6 +17,7 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 
 	cur, err := collection.Find(ctx, filter)
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 	defer cur.Close(ctx)
@@ -24,10 +26,12 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 		err := cur.Decode(&result)
 		data = append(data, result)
 		if err != nil {
+			utils.LogError(err)
 			panic(err)
 		}
 	}
 	if err := cur.Err(); err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 	return data

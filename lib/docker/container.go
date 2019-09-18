@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/sdslabs/SWS/lib/utils"
 	"golang.org/x/net/context"
 )
 
@@ -98,11 +99,13 @@ func StopContainer(ctx context.Context, cli *client.Client, containerID string) 
 func ListContainers() []string {
 	cli, err := client.NewEnvClient()
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 
 	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 

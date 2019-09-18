@@ -8,14 +8,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/configs"
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 func trimURLPath(c *gin.Context) {
 	urlPathSlice := strings.Split(c.Request.URL.Path, "/")
 	if len(urlPathSlice) >= 2 {
 		c.Request.URL.Path = fmt.Sprintf("/%s", strings.Join(urlPathSlice[2:], "/"))
-		utils.Log(c.Request.URL.Path)
 		c.Next()
 	} else {
 		c.JSON(404, gin.H{

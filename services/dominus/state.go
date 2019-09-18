@@ -20,7 +20,7 @@ func updateHostIP(oldIP, currentIP string) (interface{}, error) {
 // updateState updates the IP address of the machine in the application's context
 // and re-registers all the microservices and applications deployed
 func updateState(currentIP string) {
-	utils.Logf(
+	utils.LogInfo(
 		"IP address of the machine changed from %s to %s\n",
 		utils.HostIP,
 		currentIP)
