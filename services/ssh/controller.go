@@ -9,6 +9,7 @@ import (
 	"github.com/gliderlabs/ssh"
 	"github.com/kr/pty"
 	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -81,12 +82,27 @@ func newHandler(service string) func(s ssh.Session) {
 
 // publicKeyHandler handles the public key authentication
 func publicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
-	return true
+	return false
 }
 
 // passwordHandler handles the password authentication
 func passwordHandler(ctx ssh.Context, password string) bool {
-	return true
+	eventLog := "SSH login attempt `%s` on application container %s deployed at %s from IP %s"
+	count, err := mongo.CountInstances(map[string]interface{}{
+		"name":     ctx.User(),
+		"password": password,
+	})
+	if err != nil {
+		utils.LogInfo("SSH login attempt failed due to unavailability of mongoDB service on host %s from IP %s", ctx.LocalAddr(), ctx.RemoteAddr())
+		utils.LogError(err)
+		return false
+	}
+	if count == 1 {
+		utils.LogInfo(eventLog, "successful", ctx.User(), ctx.LocalAddr(), ctx.RemoteAddr())
+		return true
+	}
+	utils.LogInfo(eventLog, "failed", ctx.User(), ctx.LocalAddr(), ctx.RemoteAddr())
+	return false
 }
 
 // BuildSSHServer creates a server for the given parameters
