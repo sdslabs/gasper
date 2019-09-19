@@ -25,3 +25,8 @@ func DeleteOne(collectionName string, filter bson.M) interface{} {
 func DeleteInstance(filter bson.M) interface{} {
 	return DeleteOne(InstanceCollection, filter)
 }
+
+// DeleteUser is an abstraction over DeleteOne which deletes a user from mongoDB
+func DeleteUser(filter bson.M) interface{} {
+	return DeleteOne(UserCollection, filter)
+}

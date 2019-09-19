@@ -28,6 +28,17 @@ func UpsertInstance(filter bson.M, data bson.M) error {
 	return UpdateOne(InstanceCollection, filter, data, options.FindOneAndUpdate().SetUpsert(true))
 }
 
+// UpdateUser is an abstraction over UpdateOne which updates an application in mongoDB
+func UpdateUser(filter bson.M, data bson.M) interface{} {
+	return UpdateOne(UserCollection, filter, data, nil)
+}
+
+// UpsertUser is an abstraction over UpdateOne which updates an application in mongoDB
+// or inserts it if the corresponding document doesn't exist
+func UpsertUser(filter bson.M, data bson.M) interface{} {
+	return UpdateOne(UserCollection, filter, data, options.FindOneAndUpdate().SetUpsert(true))
+}
+
 // UpdateMany updates multiple documents in the mongoDB collection
 func UpdateMany(collectionName string, filter bson.M, data bson.M) (interface{}, error) {
 	collection := link.Collection(collectionName)

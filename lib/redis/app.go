@@ -32,3 +32,8 @@ func RemoveApp(appName string) error {
 	}
 	return nil
 }
+
+// FetchAllApps gets all the apps with their URL (IP of the node and port)
+func FetchAllApps() (map[string]string, error) {
+	return client.HGetAll(AppKey).Result()
+}

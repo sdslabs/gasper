@@ -23,3 +23,8 @@ func RemoveDB(db string) error {
 	}
 	return nil
 }
+
+// FetchAllDatabases gets all the apps with their URL (IP of the node and port)
+func FetchAllDatabases() (map[string]string, error) {
+	return client.HGetAll(DatabaseKey).Result()
+}

@@ -16,7 +16,7 @@ func trimURLPath(c *gin.Context) {
 		c.Request.URL.Path = fmt.Sprintf("/%s", strings.Join(urlPathSlice[2:], "/"))
 		c.Next()
 	} else {
-		c.JSON(404, gin.H{
+		c.AbortWithStatusJSON(404, gin.H{
 			"message": "Page not found",
 		})
 	}
