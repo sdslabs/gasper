@@ -2,10 +2,12 @@ package api
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"strconv"
 
+	"github.com/docker/docker/api/types/container"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
@@ -41,21 +43,15 @@ func cloneRepo(url, storedir, accessToken string, mutex map[string]chan types.Re
 
 func setupContainer(
 	appEnv *types.ApplicationEnv,
-	storePath,
-	confFileName,
-	workdir,
-	storedir,
-	name,
-	url,
-	httpPort string,
-	env map[string]interface{},
-	appContext map[string]interface{},
+	storePath, confFileName, workdir, storedir, name, url, httpPort string,
+	env, appContext map[string]interface{},
 	appConf *types.ApplicationConfig,
+	resources container.Resources,
 	mutex map[string]chan types.ResponseError) {
 
 	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, workdir, storedir, name, env)
+	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, workdir, storedir, name, resources, env)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
@@ -84,7 +80,12 @@ func setupContainer(
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, accessToken, httpPort string, env, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
+func CreateBasicApplication(
+	name, url, accessToken, httpPort string,
+	env, appContext map[string]interface{},
+	appConf *types.ApplicationConfig,
+	resources container.Resources) (*types.ApplicationEnv, []types.ResponseError) {
+
 	appEnv, err := types.NewAppEnv()
 	if err != nil {
 		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
@@ -118,6 +119,7 @@ func CreateBasicApplication(name, url, accessToken, httpPort string, env, appCon
 		env,
 		appContext,
 		appConf,
+		resources,
 		mutex)
 
 	setupErr := <-mutex["setup"]
@@ -162,6 +164,22 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 		env = data["env"].(map[string]interface{})
 	}
 
+	var resources container.Resources
+
+	if data["resources"] == nil {
+		data["resources"] = map[string]interface{}{
+			"memory": docker.DefaultMemory,
+			"cpu":    docker.DefaultCPUs,
+		}
+	}
+
+	if data["resources"].(map[string]interface{})["memory"] != nil {
+		resources.Memory = int64(data["resources"].(map[string]interface{})["memory"].(float64) * math.Pow(1024, 3))
+	}
+	if data["resources"].(map[string]interface{})["cpu"] != nil {
+		resources.NanoCPUs = int64(data["resources"].(map[string]interface{})["cpu"].(float64) * math.Pow(10, 9))
+	}
+
 	accessToken := ""
 
 	if data["git_access_token"] != nil {
@@ -175,7 +193,8 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 		strconv.Itoa(httpPort),
 		env,
 		data["context"].(map[string]interface{}),
-		appConf)
+		appConf,
+		resources)
 
 	for _, e := range errList {
 		if e != nil {
