@@ -39,7 +39,7 @@ func DatabaseCleanup(dbKey string) error {
 // FullCleanup cleans the specified application's container and local storage
 func FullCleanup(instanceName, instanceType string) {
 	switch instanceType {
-	case "app":
+	case mongo.AppInstance:
 		{
 			var (
 				path, _ = os.Getwd()
@@ -55,7 +55,7 @@ func FullCleanup(instanceName, instanceType string) {
 				utils.LogError(err)
 			}
 		}
-	case "db":
+	case mongo.DBInstance:
 		{
 			err := DatabaseCleanup(instanceName)
 			if err != nil {
@@ -73,9 +73,9 @@ func StateCleanup(instanceName, instanceType string) {
 	})
 
 	switch instanceType {
-	case "app":
+	case mongo.AppInstance:
 		redis.RemoveApp(instanceName)
-	case "db":
+	case mongo.DBInstance:
 		redis.RemoveDB(instanceName)
 	}
 }
