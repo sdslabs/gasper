@@ -168,8 +168,8 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 
 	if data["resources"] == nil {
 		data["resources"] = map[string]interface{}{
-			"memory": 0.5,
-			"cpu":    0.25,
+			"memory": docker.DefaultMemory,
+			"cpu":    docker.DefaultCPUs,
 		}
 	}
 
