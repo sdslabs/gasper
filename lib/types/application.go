@@ -18,6 +18,15 @@ type ApplicationEnv struct {
 	ContainerID string
 }
 
+// ApplicationResources defines the resources requested by an app
+type ApplicationResources struct {
+	// Memory limits in GB
+	Memory float64 `json:"memory" valid:"float~Field 'memory' inside field 'resources' should be of type float"`
+
+	// CPU quota in units of CPUs
+	CPU float64 `json:"cpu" valid:"float~Field 'cpu' inside field 'resources' should be of type float"`
+}
+
 // NewAppEnv returns a new ApplicationEnv
 func NewAppEnv() (*ApplicationEnv, error) {
 	ctx := context.Background()
@@ -29,11 +38,4 @@ func NewAppEnv() (*ApplicationEnv, error) {
 		Context: ctx,
 		Client:  cli,
 	}, nil
-}
-
-// StaticAppConfig defined the request structure for creating new static app
-type StaticAppConfig struct {
-	Name      string `json:"name" form:"name" binding:"required"`
-	UserID    int    `json:"user_id" form:"user_id" binding:"required"`
-	GithubURL string `json:"github_url" form:"github_url" binding:"required"`
 }

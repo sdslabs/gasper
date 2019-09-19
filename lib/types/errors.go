@@ -5,7 +5,8 @@ import (
 	"fmt"
 )
 
-var ConstErr = errors.New("Error response from daemon: No such container: ")
+// ErrNoContainer is the error message when a container lookup fails
+var ErrNoContainer = errors.New("Error response from daemon: No such container: ")
 
 // ResponseError is a type for declaring response error from server
 type ResponseError interface {

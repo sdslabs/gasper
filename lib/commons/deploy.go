@@ -18,6 +18,7 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 
 	app["rebuild"] = true
 	app["context"] = app["context"].(primitive.D).Map()
+	app["resources"] = app["resources"].(primitive.D).Map()
 	reqBody, err := json.Marshal(app)
 	if err != nil {
 		utils.LogError(err)
