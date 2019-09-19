@@ -68,6 +68,29 @@ func startMySQLService(service, port string) UnivServer {
 		} else {
 			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
 		}
+	} else {
+		contStatus, err := docker.InspectContainerState("/mysql")
+		if err != nil {
+			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
+			utils.LogError(err)
+			err := docker.DeleteContainer("/mysql")
+			if err != nil {
+				utils.LogError(err)
+			}
+			containerID, err := database.SetupDBInstance()
+			if err != nil {
+				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
+				utils.LogError(err)
+			} else {
+				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+			}
+		}
+		if contStatus["Status"].(string) == "exited" {
+			err := docker.StartContainer("mysql")
+			if err != nil {
+				utils.LogError(err)
+			}
+		}
 	}
 	server := initHTTPServer(service, port)
 	return server
