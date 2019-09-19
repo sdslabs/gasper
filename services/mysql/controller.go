@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/mongo"
@@ -33,6 +34,8 @@ func createDB(c *gin.Context) {
 	databaseID, err := mongo.RegisterInstance(data)
 
 	if err != nil {
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -45,6 +48,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -57,6 +62,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
+		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 		c.JSON(500, gin.H{
 			"error": err,
 		})
