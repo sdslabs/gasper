@@ -14,17 +14,17 @@ func InspectContainerState(containerID string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	contStatus, err := cli.ContainerInspect(ctx, containerID)
+	containerStatus, err := cli.ContainerInspect(ctx, containerID)
 	if err != nil {
 		return nil, err
 	}
 
-	var contStatusInterface map[string]interface{}
-	marshalledInterface, err := json.Marshal(contStatus.ContainerJSONBase.State)
+	var containerStatusInterface map[string]interface{}
+	marshalledInterface, err := json.Marshal(containerStatus.ContainerJSONBase.State)
 	if err != nil {
 		return nil, err
 	}
-	json.Unmarshal(marshalledInterface, &contStatusInterface)
+	json.Unmarshal(marshalledInterface, &containerStatusInterface)
 
-	return contStatusInterface, nil
+	return containerStatusInterface, nil
 }
