@@ -75,7 +75,7 @@ func setupContainer(
 	}
 
 	// start the container
-	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
+	err = docker.StartContainer(appEnv.ContainerID)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not started", err)
 		return

@@ -36,7 +36,7 @@ func SetupDBInstance() (string, types.ResponseError) {
 		storedir,
 		env)
 
-	err = docker.StartContainer(ctx, cli, containerID)
+	err = docker.StartContainer(containerID)
 	if err != nil {
 		return "", types.NewResErr(500, "container not started", err)
 	}

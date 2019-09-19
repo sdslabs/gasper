@@ -10,7 +10,7 @@ import (
 func DeleteContainer(containerID string) error {
 	ctx := context.Background()
 	cli, _ := client.NewEnvClient()
-	err := StopContainer(ctx, cli, containerID)
+	err := StopContainer(containerID)
 
 	if err != nil {
 		return err

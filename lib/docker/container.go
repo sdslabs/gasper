@@ -87,15 +87,28 @@ func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlP
 }
 
 // StartContainer starts the container corresponding to given containerID
-func StartContainer(ctx context.Context, cli *client.Client, containerID string) error {
+func StartContainer(containerID string) error {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		utils.LogError(err)
+		return err
+	}
 	return cli.ContainerStart(ctx, containerID, types.ContainerStartOptions{})
 }
 
 // StopContainer stops the container corresponding to given containerID
-func StopContainer(ctx context.Context, cli *client.Client, containerID string) error {
+func StopContainer(containerID string) error {
+	ctx := context.Background()
+	cli, err := client.NewEnvClient()
+	if err != nil {
+		utils.LogError(err)
+		return err
+	}
 	return cli.ContainerStop(ctx, containerID, nil)
 }
 
+// ListContainers lists all containers
 func ListContainers() []string {
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -103,7 +116,7 @@ func ListContainers() []string {
 		panic(err)
 	}
 
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{})
+	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
 	if err != nil {
 		utils.LogError(err)
 		panic(err)
