@@ -12,7 +12,7 @@ var Router = gin.NewServiceEngine()
 var ServiceName = "node"
 
 func init() {
-	Router.POST("/", validateRequestBody, middlewares.IsUniqueApp(), createApp)
+	Router.POST("/", validateRequestBody, middlewares.IsUniqueApp(), gin.CreateApp(ServiceName, pipeline))
 	Router.GET("/", gin.FetchDocs(ServiceName))
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)

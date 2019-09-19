@@ -2,9 +2,78 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/commons"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/SWS/lib/redis"
+	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
+
+// CreateApp creates an application for a service
+func CreateApp(service string, pipeline func(data map[string]interface{}) types.ResponseError) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var data map[string]interface{}
+		c.BindJSON(&data)
+
+		delete(data, "rebuild")
+		data["language"] = service
+		data["instanceType"] = mongo.AppInstance
+
+		resErr := pipeline(data)
+		if resErr != nil {
+			SendResponse(c, resErr, gin.H{})
+			return
+		}
+
+		err := mongo.UpsertInstance(
+			map[string]interface{}{
+				"name":         data["name"],
+				"instanceType": data["instanceType"],
+			}, data)
+
+		if err != nil {
+			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+			c.JSON(500, gin.H{
+				"error": err,
+			})
+			return
+		}
+
+		err = redis.RegisterApp(
+			data["name"].(string),
+			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
+		)
+
+		if err != nil {
+			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+			c.JSON(500, gin.H{
+				"error": err,
+			})
+			return
+		}
+
+		err = redis.IncrementServiceLoad(
+			service,
+			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
+		)
+
+		if err != nil {
+			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+			c.JSON(500, gin.H{
+				"error": err,
+			})
+			return
+		}
+
+		c.JSON(200, gin.H{
+			"success": true,
+		})
+	}
+}
 
 // FetchAppInfo returns the information about a particular app
 func FetchAppInfo(c *gin.Context) {

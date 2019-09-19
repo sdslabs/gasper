@@ -16,6 +16,7 @@ func createDB(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
+	delete(data, "rebuild")
 	data["language"] = ServiceName
 	data["instanceType"] = mongo.DBInstance
 	data["hostIP"] = utils.HostIP
@@ -31,7 +32,11 @@ func createDB(c *gin.Context) {
 		return
 	}
 
-	databaseID, err := mongo.RegisterInstance(data)
+	err = mongo.UpsertInstance(
+		map[string]interface{}{
+			"name":         data["name"],
+			"instanceType": data["instanceType"],
+		}, data)
 
 	if err != nil {
 		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
@@ -72,7 +77,6 @@ func createDB(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"id":      databaseID,
 	})
 }
 
