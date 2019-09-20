@@ -86,6 +86,7 @@ func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlP
 	}
 
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mysql")
+
 	if err != nil {
 		return "", err
 	}
@@ -123,7 +124,7 @@ func CreateMongoDBContainer(ctx context.Context, cli *client.Client, image, mong
 		},
 	}
 
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mongoDb")
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mongodb")
 	if err != nil {
 		return "", err
 	}

@@ -86,7 +86,7 @@ func deleteDB(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	err := database.DeleteMongoDB(filter["dbname"].(string), filter["dbuser"].(string), filter["password"].(string))
+	err := database.DeleteMongoDB(filter["name"].(string), filter["user"].(string), filter["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
