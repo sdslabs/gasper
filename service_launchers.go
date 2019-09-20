@@ -79,7 +79,7 @@ func startMySQLService(service, port string) UnivServer {
 
 func startMongoDBService(service, port string) UnivServer {
 	containers := docker.ListContainers()
-	if !utils.Contains(containers, "/mongoDb") {
+	if !utils.Contains(containers, "/mongodb") {
 		fmt.Printf("No MongoDB instance found in host. Building the instance.")
 		containerID, err := database.SetupDBInstance("mongoDb")
 		if err != nil {
