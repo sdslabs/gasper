@@ -103,11 +103,6 @@ func GetNodesByName(ctx *gogin.Context) {
 	ctx.JSON(200, res)
 }
 
-// DeleteApplication deletes the app
-func DeleteApplication(ctx *gogin.Context) {
-	gin.DeleteAppByName(ctx)
-}
-
 // DeleteUser deletes the user from DB
 func DeleteUser(ctx *gogin.Context) {
 	gin.DeleteUser(ctx)

@@ -30,6 +30,12 @@ func IncrementServiceLoad(service, url string) error {
 	return err
 }
 
+// DecrementServiceLoad decrements the number of apps deployed on a service host by 1
+func DecrementServiceLoad(service, url string) error {
+	_, err := client.ZIncrBy(service, -1, url).Result()
+	return err
+}
+
 // GetLeastLoadedInstances returns the URL of the host currently having the least number
 // of apps of a particular service deployed
 func GetLeastLoadedInstances(service string, count int64) ([]string, error) {

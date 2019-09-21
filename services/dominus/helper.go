@@ -10,15 +10,17 @@ import (
 	"github.com/sdslabs/SWS/lib/configs"
 )
 
-func trimURLPath(c *gin.Context) {
-	urlPathSlice := strings.Split(c.Request.URL.Path, "/")
-	if len(urlPathSlice) >= 2 {
-		c.Request.URL.Path = fmt.Sprintf("/%s", strings.Join(urlPathSlice[2:], "/"))
-		c.Next()
-	} else {
-		c.AbortWithStatusJSON(404, gin.H{
-			"message": "Page not found",
-		})
+func trimURLPath(length int) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		urlPathSlice := strings.Split(c.Request.URL.Path, "/")
+		if len(urlPathSlice) >= length {
+			c.Request.URL.Path = fmt.Sprintf("/%s", strings.Join(urlPathSlice[length:], "/"))
+			c.Next()
+		} else {
+			c.AbortWithStatusJSON(404, gin.H{
+				"message": "Page not found",
+			})
+		}
 	}
 }
 
