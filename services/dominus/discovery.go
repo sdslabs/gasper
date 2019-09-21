@@ -2,7 +2,6 @@ package dominus
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/sdslabs/SWS/lib/configs"
@@ -35,17 +34,10 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 		payload := make(map[string]interface{})
 
 		for _, app := range apps {
-			appInfo := mongo.FetchAppInfo(
-				map[string]interface{}{
-					"name": app["name"],
-				},
-			)[0]
 
-			httpPort := fmt.Sprint(appInfo["httpPort"])
-
-			appBind := &types.AppBinding{
-				Node:   currentIP + ":" + httpPort,
-				Server: currentIP + config["port"].(string),
+			appBind := &types.AppBindings{
+				Node:   currentIP + config["port"].(string),
+				Server: currentIP + ":" + app["httpPort"].(string),
 			}
 
 			appBindingJSON, err := json.Marshal(appBind)

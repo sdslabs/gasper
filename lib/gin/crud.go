@@ -1,8 +1,6 @@
 package gin
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
@@ -43,18 +41,10 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 			return
 		}
 
-		appInfo := mongo.FetchAppInfo(
-			map[string]interface{}{
-				"name": data["name"],
-			},
-		)[0]
-
-		httpPort := fmt.Sprint(appInfo["httpPort"])
-
 		err = redis.RegisterApp(
 			data["name"].(string),
-			utils.HostIP+httpPort,
 			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
+			utils.HostIP+":"+data["httpPort"].(string),
 		)
 
 		if err != nil {
@@ -204,7 +194,7 @@ func DeleteApp(service string) gin.HandlerFunc {
 		update := map[string]interface{}{
 			"deleted": true,
 		}
-		appURL, _ := redis.FetchAppNodeURL(app)
+		appURL, _ := redis.FetchAppNode(app)
 		redis.DecrementServiceLoad(service, appURL)
 		redis.RemoveApp(app)
 		go commons.FullCleanup(app, mongo.AppInstance)
