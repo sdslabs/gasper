@@ -5,6 +5,10 @@
     "projectRoot": "/SWS",
     "rcFile": "Gasperfile",
     "offlineMode": false,
+    "cloudflare": {
+        "available": true,
+        "token": ""
+    },
     "cron": {
         "cleanupInterval": 600,
         "exposureInterval": 30
