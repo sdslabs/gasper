@@ -5,6 +5,12 @@ import (
 	"golang.org/x/net/context"
 )
 
+// AppBinding defines the struct for storing both the server and node urls
+type AppBinding struct {
+	Node   string `json:"node"`
+	Server string `json:"server"`
+}
+
 // ApplicationConfig defines the config for various service apps
 type ApplicationConfig struct {
 	DockerImage  string
