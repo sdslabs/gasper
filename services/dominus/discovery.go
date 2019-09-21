@@ -1,11 +1,14 @@
 package dominus
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
+	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
@@ -32,7 +35,26 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 		payload := make(map[string]interface{})
 
 		for _, app := range apps {
-			payload[app["name"].(string)] = currentIP + config["port"].(string)
+			appInfo := mongo.FetchAppInfo(
+				map[string]interface{}{
+					"name": app["name"],
+				},
+			)[0]
+
+			httpPort := fmt.Sprint(appInfo["httpPort"])
+
+			appBind := &types.AppBinding{
+				Node:   currentIP + ":" + httpPort,
+				Server: currentIP + config["port"].(string),
+			}
+
+			appBindingJSON, err := json.Marshal(appBind)
+
+			if err != nil {
+				utils.LogError(err)
+				panic(err)
+			}
+			payload[app["name"].(string)] = appBindingJSON
 		}
 		err = redis.BulkRegisterApps(payload)
 		if err != nil {
