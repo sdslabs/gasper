@@ -1,6 +1,8 @@
 package gin
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
@@ -44,7 +46,7 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		err = redis.RegisterApp(
 			data["name"].(string),
 			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
-			utils.HostIP+":"+string(data["httpPort"].(int)),
+			utils.HostIP+":"+strconv.Itoa(data["httpPort"].(int)),
 		)
 
 		if err != nil {

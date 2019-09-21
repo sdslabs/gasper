@@ -2,6 +2,7 @@ package dominus
 
 import (
 	"encoding/json"
+	"strconv"
 	"time"
 
 	"github.com/sdslabs/SWS/lib/configs"
@@ -37,7 +38,7 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 
 			appBind := &types.AppBindings{
 				Node:   currentIP + config["port"].(string),
-				Server: currentIP + ":" + string(app["httpPort"].(int64)),
+				Server: currentIP + ":" + strconv.FormatInt(app["httpPort"].(int64), 10),
 			}
 
 			appBindingJSON, err := json.Marshal(appBind)
