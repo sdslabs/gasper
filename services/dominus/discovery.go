@@ -37,7 +37,7 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 
 			appBind := &types.AppBindings{
 				Node:   currentIP + config["port"].(string),
-				Server: currentIP + ":" + app["httpPort"].(string),
+				Server: currentIP + ":" + string(app["httpPort"].(int64)),
 			}
 
 			appBindingJSON, err := json.Marshal(appBind)

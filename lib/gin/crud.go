@@ -44,7 +44,7 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		err = redis.RegisterApp(
 			data["name"].(string),
 			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
-			utils.HostIP+":"+data["httpPort"].(string),
+			utils.HostIP+":"+string(data["httpPort"].(int)),
 		)
 
 		if err != nil {
