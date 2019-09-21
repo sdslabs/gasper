@@ -10,6 +10,7 @@ import (
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
+	"github.com/sdslabs/SWS/services/enrai"
 	"github.com/sdslabs/SWS/services/mysql"
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
@@ -31,6 +32,7 @@ var launcherBindings = map[string]func(string, string) UnivServer{
 	"ssh":   startSSHService,
 	"mysql": startMySQLService,
 	"app":   startAppService,
+	"enrai": startEnraiService,
 }
 
 // Bind services to routers here
@@ -117,10 +119,20 @@ func startAppService(service, port string) UnivServer {
 	return server
 }
 
+func startEnraiService(service, port string) UnivServer {
+	server := enrai.BuildEnraiServer(service)
+	return UnivServer{
+		SSHServer:  nil,
+		HTTPServer: server,
+	}
+}
+
 // Launcher invokes the respective launcher functions for the services
 func Launcher(service, port string) UnivServer {
 	if strings.HasPrefix(service, "ssh") {
 		return launcherBindings["ssh"](service, port)
+	} else if strings.HasPrefix(service, "enrai") {
+		return launcherBindings["enrai"](service, port)
 	} else if strings.HasPrefix(service, "mysql") {
 		return launcherBindings["mysql"](service, port)
 	} else if service != "" {
