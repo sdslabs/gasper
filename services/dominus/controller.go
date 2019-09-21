@@ -28,7 +28,7 @@ func createApp(c *gin.Context) {
 
 func execute(c *gin.Context) {
 	app := c.Param("app")
-	instanceURL, err := redis.FetchAppURL(app)
+	instanceURL, err := redis.FetchAppNode(app)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": fmt.Sprintf("Application %s is not deployed at the moment", app),

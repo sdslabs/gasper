@@ -1,6 +1,8 @@
 package gin
 
 import (
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
@@ -44,6 +46,7 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		err = redis.RegisterApp(
 			data["name"].(string),
 			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
+			utils.HostIP+":"+strconv.Itoa(data["httpPort"].(int)),
 		)
 
 		if err != nil {
@@ -193,7 +196,7 @@ func DeleteApp(service string) gin.HandlerFunc {
 		update := map[string]interface{}{
 			"deleted": true,
 		}
-		appURL, _ := redis.FetchAppURL(app)
+		appURL, _ := redis.FetchAppNode(app)
 		redis.DecrementServiceLoad(service, appURL)
 		redis.RemoveApp(app)
 		go commons.FullCleanup(app, mongo.AppInstance)
