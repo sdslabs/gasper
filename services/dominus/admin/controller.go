@@ -61,7 +61,7 @@ func GetNodesByName(ctx *gogin.Context) {
 	node := ctx.Param("node")
 	res := gogin.H{}
 	switch node {
-	case "workers":
+	case WorkerNode:
 		services := configs.ServiceConfig
 		for service := range services {
 			if service == "dominus" {
@@ -77,7 +77,7 @@ func GetNodesByName(ctx *gogin.Context) {
 		}
 		ctx.JSON(200, res)
 		return
-	case "master":
+	case MasterNode:
 		node = "dominus"
 	default:
 		services := configs.ServiceConfig
