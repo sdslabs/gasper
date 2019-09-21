@@ -33,7 +33,7 @@ func newHandler(service string) func(s ssh.Session) {
 		var cmd *exec.Cmd
 
 		if proxy {
-			instanceURL, err := redis.FetchAppNodeURL(s.User())
+			instanceURL, err := redis.FetchAppNode(s.User())
 			if err != nil {
 				fmt.Fprintln(s, fmt.Sprintf("Application %s is not deployed at the moment", s.User()))
 				s.Exit(1)

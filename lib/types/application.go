@@ -5,8 +5,8 @@ import (
 	"golang.org/x/net/context"
 )
 
-// AppBinding defines the struct for storing both the server and node urls
-type AppBinding struct {
+// AppBindings defines the struct for storing both the server and node urls
+type AppBindings struct {
 	Node   string `json:"node"`
 	Server string `json:"server"`
 }

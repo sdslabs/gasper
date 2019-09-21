@@ -8,7 +8,7 @@ import (
 
 // RegisterApp registers the app in the apps HashMap with its url
 func RegisterApp(appName, nodeURL, serverURL string) error {
-	appBind := &types.AppBinding{
+	appBind := &types.AppBindings{
 		Node:   nodeURL,
 		Server: serverURL,
 	}
@@ -30,21 +30,21 @@ func BulkRegisterApps(data map[string]interface{}) error {
 }
 
 // FetchAppURL returns a struct containing both the server and node URL
-func FetchAppURL(appName string) (*types.AppBinding, error) {
+func FetchAppURL(appName string) (*types.AppBindings, error) {
 	result, err := client.HGet(AppKey, appName).Result()
 	if err != nil {
 		return nil, err
 	}
 
-	var appInfoStruct *types.AppBinding
+	var appInfoStruct *types.AppBindings
 	resultByte := []byte(result)
 	json.Unmarshal(resultByte, appInfoStruct)
 
 	return appInfoStruct, nil
 }
 
-// FetchAppServerURL returns the URL of deployed application bound to the container
-func FetchAppServerURL(appName string) (string, error) {
+// FetchAppServer returns the URL of deployed application bound to the container
+func FetchAppServer(appName string) (string, error) {
 	url, err := FetchAppURL(appName)
 	if err != nil {
 		return "", err
@@ -52,8 +52,8 @@ func FetchAppServerURL(appName string) (string, error) {
 	return url.Server, nil
 }
 
-// FetchAppNodeURL returns the URL of the machine where the app in query is deployed
-func FetchAppNodeURL(appName string) (string, error) {
+// FetchAppNode returns the URL of the machine where the app in query is deployed
+func FetchAppNode(appName string) (string, error) {
 	url, err := FetchAppURL(appName)
 	if err != nil {
 		return "", err
