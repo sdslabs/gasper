@@ -23,3 +23,8 @@ func InsertOne(collectionName string, data bson.M) (interface{}, error) {
 func RegisterInstance(data bson.M) (interface{}, error) {
 	return InsertOne(InstanceCollection, data)
 }
+
+// RegisterUser is an abstraction over InsertOne which inserts user into the mongoDB
+func RegisterUser(data bson.M) (interface{}, error) {
+	return InsertOne(UserCollection, data)
+}

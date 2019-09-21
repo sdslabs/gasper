@@ -52,6 +52,16 @@ func FetchDBs(filter bson.M) []map[string]interface{} {
 	return FetchDocs(InstanceCollection, filter)
 }
 
+// FetchUserInfo is an abstraction over FetchDocs for retrieving user details
+func FetchUserInfo(filter bson.M) []map[string]interface{} {
+	return FetchDocs(UserCollection, filter)
+}
+
+// FetchUsers is an abstraction over FetchDocs for retreiving users
+func FetchUsers(filter bson.M) []map[string]interface{} {
+	return FetchDocs(UserCollection, filter)
+}
+
 // CountDocs returns the number of documents matching a filter
 func CountDocs(collectionName string, filter bson.M) (int64, error) {
 	collection := link.Collection(collectionName)
