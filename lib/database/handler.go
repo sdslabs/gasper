@@ -34,8 +34,8 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 	workdir := "/var/lib/mysql"
 	storedir := filepath.Join(storepath, "mysql-storage")
 
-	if strings.Compare(dbtype,"mongoDb") == 0 {
-		workdir = "/var/lib/mongodb"
+	if strings.Compare(dbtype,"mongodb") == 0 {
+		workdir = "/data/db"
 		storedir = filepath.Join(storepath, "mongodb-storage")
 	}
 	if strings.Compare(dbtype,"mysql") == 0 {
@@ -59,7 +59,7 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 	}
 
 	err = docker.StartContainer(containerID)
-	
+
 	if err != nil {
 		return "", types.NewResErr(500, "container not started", err)
 	}

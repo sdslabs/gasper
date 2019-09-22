@@ -1,4 +1,4 @@
-package mongoDb
+package mongodb
 
 import (
 	"fmt"
@@ -15,13 +15,16 @@ func createDB(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	data["language"] = "mongoDb"
-	data["instanceType"] = mongo.MongoDBInstance
+	delete(data, "rebuild")
+	data["language"] = ServiceName
+	data["instanceType"] = mongo.DBInstance
+	data["hostIP"] = utils.HostIP
+	data["containerPort"] = configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 
-	dbKey := fmt.Sprintf(`%s:%s:%s`, data["name"].(string), data["user"].(string), data["password"].(string))
-	fmt.Println("check1")
+	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
+
 	err := database.CreateMongoDB(data["name"].(string), data["user"].(string), data["password"].(string))
-	fmt.Println("check2")
+
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,

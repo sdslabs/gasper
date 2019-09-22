@@ -7,6 +7,9 @@ const (
 	// AppInstance is app instance type name in the instances collection
 	AppInstance = "app"
 
+	// MongoDB is db instance type name in the instances collection
+    MongoDB = "mongodb"
+
 	// InstanceCollection is the collection for all the instances
 	InstanceCollection = "instances"
 
