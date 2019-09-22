@@ -29,13 +29,6 @@ func ContainerCleanup(appName string) error {
 	return docker.DeleteContainer(appName)
 }
 
-<<<<<<< HEAD
-// DatabaseCleanup cleans the database's space in the container
-func DatabaseCleanup(dbKey string) error {
-	dbUser := strings.Split(dbKey, ":")[0]
-	dbName := strings.Split(dbKey, ":")[1]
-	return database.DeleteDB(dbName, dbUser)
-=======
 // MysqlDatabaseCleanup cleans the database's space in the container
 func MysqlDatabaseCleanup(dbKey string) error {
 	dbName := strings.Split(dbKey, ":")[0]
@@ -47,13 +40,12 @@ func MysqlDatabaseCleanup(dbKey string) error {
 func MongoDatabaseCleanup(dbKey string) error {
 	dbName := strings.Split(dbKey, ":")[0]
 	dbUser := strings.Split(dbKey, ":")[1]
-	dbPass := strings.Split(dbKey, ":")[2]
-	return database.DeleteMongoDB(dbName, dbUser, dbPass)
->>>>>>> checked working
+	return database.DeleteMongoDB(dbName, dbUser)
 }
 
 // FullCleanup cleans the specified application's container and local storage
 func FullCleanup(instanceName, instanceType string) {
+	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
 	case mongo.AppInstance:
 		{
@@ -71,18 +63,14 @@ func FullCleanup(instanceName, instanceType string) {
 				utils.LogError(err)
 			}
 		}
-<<<<<<< HEAD
-	case mongo.DBInstance:
-=======
-	case "mysqldb":
+	case mongo.Mysql:
 		{
 			err := MysqlDatabaseCleanup(instanceName)
 			if err != nil {
 				utils.LogError(err)
 			}
 		}
-	case "mongoDb":
->>>>>>> checked working
+	case mongo.MongoDB:
 		{
 			err := MongoDatabaseCleanup(instanceName)
 			if err != nil {
@@ -98,17 +86,13 @@ func StateCleanup(instanceName, instanceType string) {
 		"name":         instanceName,
 		"instanceType": instanceType,
 	})
-
+	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
 	case mongo.AppInstance:
 		redis.RemoveApp(instanceName)
-<<<<<<< HEAD
-	case mongo.DBInstance:
-=======
-	case "mysqldb":
+	case mongo.Mysql:
 		redis.RemoveDB(instanceName)
-	case "mongoDb":
->>>>>>> checked working
+	case mongo.MongoDB:
 		redis.RemoveDB(instanceName)
 	}
 }

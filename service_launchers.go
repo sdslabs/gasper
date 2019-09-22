@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/database"
@@ -82,7 +83,7 @@ func startMySQLService(service, port string) UnivServer {
 			if err != nil {
 				utils.LogError(err)
 			}
-			containerID, err := database.SetupDBInstance()
+			containerID, err := database.SetupDBInstance("mysql")
 			if err != nil {
 				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
 				utils.LogError(err)

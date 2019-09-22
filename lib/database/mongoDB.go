@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/SWS/lib/configs"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -39,13 +39,13 @@ func CreateMongoDB(database, username, password string) error {
 		log.Fatalf("database configuration failed: %v", err)
 	}
 
-	db.RunCommand(ctx , bson.M{"create":"test"})
+	// db.RunCommand(ctx , bson.M{"create":"test"})
 
-	collection := db.Collection("test")
+	// collection := db.Collection("test")
 
-	ash := bson.D{primitive.E{Key: "autorefid", Value: "100"}}
+	// ash := bson.D{primitive.E{Key: "autorefid", Value: "100"}}
 
-	_, err = collection.InsertOne(ctx, ash)
+	// _, err = collection.InsertOne(ctx, ash)
 
 	return nil
 }
@@ -58,9 +58,11 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 	}
 
 	dbs,errg := client.ListDatabaseNames(ctx, bson.M{})
+	
 	if errg != nil {
 		return nil,fmt.Errorf("Error while creating the database : %s", errg)
 	}
+
 	for i := 0; i < len(dbs); i++ {
 		if strings.Compare(dbs[i], database) == 0 {
 			errs := MongoSanitaryActions(ctx, database, username, password, client, 1)
@@ -105,7 +107,6 @@ func DeleteMongoDB(database, username string) error {
 
 	ctx = context.WithValue(ctx, hostKey, agentAddress)
 	ctx = context.WithValue(ctx, usernameKey, username)
-	ctx = context.WithValue(ctx, passwordKey, password)
 
 	client, err := createConnection(ctx)
 	if err != nil {

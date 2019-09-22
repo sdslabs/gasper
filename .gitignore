@@ -6,6 +6,6 @@ config.json
 storage/
 # mysql-storage
 mysql-storage/
-mongodb-storage/
+mongodb-storage
 __debug_bin
 bin/

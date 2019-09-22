@@ -1,13 +1,8 @@
 package mongodb
 
 import (
-	"bytes"
-	"encoding/json"
-	"io/ioutil"
-	"strings"
-
-	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/middlewares"
 )
 
 type mongodbRequestBody struct {

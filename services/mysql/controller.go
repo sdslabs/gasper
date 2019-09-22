@@ -24,7 +24,6 @@ func createDB(c *gin.Context) {
 
 	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
 
-
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -39,10 +38,11 @@ func createDB(c *gin.Context) {
 			"instanceType": data["instanceType"],
 		}, data)
 
+	instanceType := mongo.DBInstance + ":" + mongo.Mysql
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -55,8 +55,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -69,8 +69,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})

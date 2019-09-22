@@ -26,10 +26,9 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 		return "", types.NewResErr(500, "cannot setup client", err)
 	}
 
-	dockerImage := configs.ServiceConfig["mysql"].(map[string]interface{})["image"].(string)
-	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
-	env := configs.ServiceConfig["mysql"].(map[string]interface{})["env"].(map[string]interface{})
-
+	dockerImage := configs.ServiceConfig[dbtype].(map[string]interface{})["image"].(string)
+	port := configs.ServiceConfig[dbtype].(map[string]interface{})["container_port"].(string)
+	env := configs.ServiceConfig[dbtype].(map[string]interface{})["env"].(map[string]interface{})
 	storepath, _ := os.Getwd()
 	workdir := "/var/lib/mysql"
 	storedir := filepath.Join(storepath, "mysql-storage")
@@ -57,7 +56,6 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 			storedir,
 			env)
 	}
-
 	err = docker.StartContainer(containerID)
 
 	if err != nil {

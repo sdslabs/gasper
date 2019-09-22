@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"github.com/sdslabs/SWS/lib/gin"
+	"github.com/sdslabs/SWS/lib/middlewares"
 )
 
 // Router is the main routes handler for the current microservice package
@@ -11,10 +12,10 @@ var Router = gin.NewServiceEngine()
 var ServiceName = "mongodb"
 
 func init() {
-	Router.POST("/", validateRequest, createDB)
+	Router.POST("/", validateRequestBody, middlewares.IsUniqueDB(), createDB)
 	Router.GET("/", fetchDBs)
 	Router.GET("/logs", gin.FetchMongoDBContainerLogs)
 	Router.GET("/restart", gin.ReloadMongoDBService)
 	Router.GET("/db/:db", gin.FetchDBInfo)
-	Router.DELETE("/", deleteDB)
+	Router.DELETE("/:user/:db", deleteDB)
 }

@@ -18,7 +18,7 @@ var sanitaryActionBindings = map[int]func(string, string, string, *sql.DB) error
 	2: refreshDBUser,
 }
 
-// CreateDB creates a database in the Mysql instance with the given database name, user and password
+// CreateMysqlDB creates a database in the Mysql instance with the given database name, user and password
 func CreateMysqlDB(database, username, password string) error {
 	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 
@@ -27,7 +27,6 @@ func CreateMysqlDB(database, username, password string) error {
 
 	db, err := sql.Open("mysql", connection)
 
-	fmt.Println("check6")
 
 	if err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
@@ -44,7 +43,6 @@ func CreateMysqlDB(database, username, password string) error {
 		}
 	}
 
-	fmt.Println("check7")
 
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, dbHost, password)
 	_, err = db.Exec(query)
@@ -55,7 +53,6 @@ func CreateMysqlDB(database, username, password string) error {
 		}
 	}
 
-	fmt.Println("check8")
 
 	query = fmt.Sprintf("GRANT ALL ON %s.* TO '%s'@'%s'", database, username, dbHost)
 	_, err = db.Exec(query)
@@ -67,8 +64,6 @@ func CreateMysqlDB(database, username, password string) error {
 	if err != nil {
 		return fmt.Errorf("Error while flushing user priviliges : %s", err)
 	}
-
-	fmt.Println("check9")
 
 	return nil
 }
