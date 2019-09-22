@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/utils"

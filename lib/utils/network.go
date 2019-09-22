@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 )
 
 // HostIP variable stores the IPv4 address of the host machine

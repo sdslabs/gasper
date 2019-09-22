@@ -3,7 +3,7 @@ package gin
 import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/middlewares"
 )
 
