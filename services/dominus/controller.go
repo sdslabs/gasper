@@ -4,9 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/utils"
 )
 
 func createApp(c *gin.Context) {
@@ -18,21 +16,14 @@ func createApp(c *gin.Context) {
 		})
 		return
 	}
-	if instanceURL == "Empty Set" {
+	if instanceURL == redis.ErrEmptySet {
 		c.JSON(400, gin.H{
 			"error": fmt.Sprintf("No %s instances available at the moment", service),
 		})
 		return
 	}
+	c.Request.URL.Path = ""
 	reverseProxy(c, instanceURL)
-}
-
-func fetchDocs(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
-	})
 }
 
 func execute(c *gin.Context) {
@@ -41,6 +32,20 @@ func execute(c *gin.Context) {
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": fmt.Sprintf("Application %s is not deployed at the moment", app),
+		})
+		return
+	}
+	reverseProxy(c, instanceURL)
+}
+
+func deleteDB(c *gin.Context) {
+	user := c.Param("user")
+	db := c.Param("db")
+	dbKey := fmt.Sprintf(`%s:%s`, user, db)
+	instanceURL, err := redis.FetchDBURL(dbKey)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": "No such database exists",
 		})
 		return
 	}

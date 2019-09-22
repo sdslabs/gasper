@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // FetchDocs is a generic function which takes a collection name and mongoDB filter as input and returns documents
@@ -16,6 +17,7 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 
 	cur, err := collection.Find(ctx, filter)
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 	defer cur.Close(ctx)
@@ -24,10 +26,12 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 		err := cur.Decode(&result)
 		data = append(data, result)
 		if err != nil {
+			utils.LogError(err)
 			panic(err)
 		}
 	}
 	if err := cur.Err(); err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 	return data
@@ -56,6 +60,11 @@ func CountDocs(collectionName string, filter bson.M) (int64, error) {
 
 	count, err := collection.Count(ctx, filter)
 	return count, err
+}
+
+// CountInstances returns the number of instances matching a filter
+func CountInstances(filter bson.M) (int64, error) {
+	return CountDocs(InstanceCollection, filter)
 }
 
 // CountServiceInstances returns the number of applications of a given service deployed

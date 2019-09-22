@@ -6,6 +6,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
+	"github.com/sdslabs/SWS/lib/utils"
 	"golang.org/x/net/context"
 )
 
@@ -13,11 +14,13 @@ import (
 func ListImages() []string {
 	cli, err := client.NewEnvClient()
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 
 	images, err := cli.ImageList(context.Background(), types.ImageListOptions{})
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 
@@ -36,11 +39,13 @@ func Pull(image string) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 
 	out, err := cli.ImagePull(ctx, image, types.ImagePullOptions{})
 	if err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 

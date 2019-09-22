@@ -1,20 +1,22 @@
 package python
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"strings"
 
-	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
+)
+
+const (
+	pythonVersionTag = "python_version"
+	python3Tag       = "3"
+	python2Tag       = "2"
 )
 
 type context struct {
@@ -25,41 +27,21 @@ type context struct {
 }
 
 type pythonRequestBody struct {
-	Name           string                 `json:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters"`
-	URL            string                 `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
-	Context        context                `json:"context"`
-	PythonVersion  string                 `json:"python_version" valid:"required~Field 'python_version' is required but was not provided"`
-	Requirements   string                 `json:"requirements" valid:"required~Field 'requirements' is required but was not provided"`
-	Django         bool                   `json:"django"`
-	Env            map[string]interface{} `json:"env"`
-	GitAccessToken string                 `json:"git_access_token"`
+	Name           string                     `json:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
+	Password       string                     `json:"password" valid:"required~Field 'password' is required but was not provided,alphanum~Field 'password' should only have alphanumeric characters"`
+	URL            string                     `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
+	Context        context                    `json:"context"`
+	Resources      types.ApplicationResources `json:"resources"`
+	PythonVersion  string                     `json:"python_version" valid:"required~Field 'python_version' is required but was not provided"`
+	Requirements   string                     `json:"requirements" valid:"required~Field 'requirements' is required but was not provided"`
+	Django         bool                       `json:"django"`
+	Env            map[string]interface{}     `json:"env"`
+	GitAccessToken string                     `json:"git_access_token"`
 }
 
-func validateRequest(c *gin.Context) {
-
-	var bodyBytes []byte
-	if c.Request.Body != nil {
-		bodyBytes, _ = ioutil.ReadAll(c.Request.Body)
-	}
-	// Restore the io.ReadCloser to its original state
-	c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-	var req pythonRequestBody
-
-	err := json.Unmarshal(bodyBytes, &req)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": "Invalid JSON",
-		})
-		return
-	}
-
-	if result, err := validator.ValidateStruct(req); !result {
-		c.AbortWithStatusJSON(400, gin.H{
-			"error": strings.Split(err.Error(), ";"),
-		})
-	} else {
-		c.Next()
-	}
+// validateRequestBody validates the request body for the current microservice
+func validateRequestBody(c *gin.Context) {
+	middlewares.ValidateRequestBody(c, &pythonRequestBody{})
 }
 
 func startServer(index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {
@@ -84,10 +66,10 @@ func installRequirements(path string, env *types.ApplicationEnv) (string, types.
 
 func pipeline(data map[string]interface{}) types.ResponseError {
 	var image string
-	if data["python_version"].(string) == "3" {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
-	} else {
-		image = utils.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
+	if data[pythonVersionTag].(string) == python3Tag {
+		image = configs.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
+	} else if data[pythonVersionTag].(string) == python2Tag {
+		image = configs.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
 	}
 
 	appConf := &types.ApplicationConfig{

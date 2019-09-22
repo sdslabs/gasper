@@ -1,10 +1,13 @@
 package mongo
 
-// MysqlDBInstance is db instance type name in the instances collection
-const MysqlDBInstance string = "mysqldb"
+// Mysql is db instance type name for mysql database in the instances collection
+const Mysql string = "mysql"
 
-// MongoDBInstance is db instance type name in the instances collection
-const MongoDBInstance string = "mongoDb"
+// MongoDB is db instance type name in the instances collection
+const MongoDB string = "mongoDb"
+
+// DBInstance is db instance type name for mongo database in the instances collection
+const DBInstance string = "database"
 
 // AppInstance is app instance type name in the instances collection
 const AppInstance string = "app"

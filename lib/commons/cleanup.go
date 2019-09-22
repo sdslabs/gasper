@@ -40,14 +40,14 @@ func MysqlDatabaseCleanup(dbKey string) error {
 func MongoDatabaseCleanup(dbKey string) error {
 	dbName := strings.Split(dbKey, ":")[0]
 	dbUser := strings.Split(dbKey, ":")[1]
-	dbPass := strings.Split(dbKey, ":")[2]
-	return database.DeleteMongoDB(dbName, dbUser, dbPass)
+	return database.DeleteMongoDB(dbName, dbUser)
 }
 
 // FullCleanup cleans the specified application's container and local storage
 func FullCleanup(instanceName, instanceType string) {
+	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
-	case "app":
+	case mongo.AppInstance:
 		{
 			var (
 				path, _ = os.Getwd()
@@ -63,14 +63,14 @@ func FullCleanup(instanceName, instanceType string) {
 				utils.LogError(err)
 			}
 		}
-	case "mysqldb":
+	case mongo.Mysql:
 		{
 			err := MysqlDatabaseCleanup(instanceName)
 			if err != nil {
 				utils.LogError(err)
 			}
 		}
-	case "mongoDb":
+	case mongo.MongoDB:
 		{
 			err := MongoDatabaseCleanup(instanceName)
 			if err != nil {
@@ -86,13 +86,13 @@ func StateCleanup(instanceName, instanceType string) {
 		"name":         instanceName,
 		"instanceType": instanceType,
 	})
-
+	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
-	case "app":
+	case mongo.AppInstance:
 		redis.RemoveApp(instanceName)
-	case "mysqldb":
+	case mongo.Mysql:
 		redis.RemoveDB(instanceName)
-	case "mongoDb":
+	case mongo.MongoDB:
 		redis.RemoveDB(instanceName)
 	}
 }

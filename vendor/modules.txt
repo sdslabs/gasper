@@ -84,13 +84,13 @@ github.com/modern-go/reflect2
 # github.com/mongodb/mongo-go-driver v0.1.0
 github.com/mongodb/mongo-go-driver/bson
 github.com/mongodb/mongo-go-driver/mongo
+github.com/mongodb/mongo-go-driver/mongo/options
 github.com/mongodb/mongo-go-driver/bson/primitive
 github.com/mongodb/mongo-go-driver/bson/bsoncodec
 github.com/mongodb/mongo-go-driver/bson/bsonrw
 github.com/mongodb/mongo-go-driver/bson/bsontype
 github.com/mongodb/mongo-go-driver/x/bsonx
 github.com/mongodb/mongo-go-driver/x/bsonx/bsoncore
-github.com/mongodb/mongo-go-driver/mongo/options
 github.com/mongodb/mongo-go-driver/mongo/readconcern
 github.com/mongodb/mongo-go-driver/mongo/readpref
 github.com/mongodb/mongo-go-driver/mongo/writeconcern

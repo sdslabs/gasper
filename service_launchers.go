@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/database"
@@ -67,10 +67,33 @@ func startMySQLService(service, port string) UnivServer {
 		fmt.Printf("No Mysql instance found in host. Building the instance.")
 		containerID, err := database.SetupDBInstance("mysql")
 		if err != nil {
-			fmt.Println("There was a problem deploying MySql service.")
-			fmt.Printf("ERROR:: %s\n", err.Error())
+			utils.Log("There was a problem deploying MySql service.", utils.ErrorTAG)
+			utils.LogError(err)
 		} else {
-			fmt.Printf("Container has been deployed with ID:\t%s \n", containerID)
+			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+		}
+	} else {
+		containerStatus, err := docker.InspectContainerState("/mysql")
+		if err != nil {
+			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
+			utils.LogError(err)
+			err := docker.DeleteContainer("/mysql")
+			if err != nil {
+				utils.LogError(err)
+			}
+			containerID, err := database.SetupDBInstance("mysql")
+			if err != nil {
+				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
+				utils.LogError(err)
+			} else {
+				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+			}
+		}
+		if containerStatus["Status"].(string) == "exited" {
+			err := docker.StartContainer("mysql")
+			if err != nil {
+				utils.LogError(err)
+			}
 		}
 	}
 	server := initHTTPServer(service, port)
@@ -86,18 +109,42 @@ func startMongoDBService(service, port string) UnivServer {
 			fmt.Println("There was a problem deploying mongoDb service.")
 			fmt.Printf("ERROR:: %s\n", err.Error())
 		} else {
-			fmt.Printf("Container has been deployed with ID:\t%s \n", containerID)
+			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+		}
+	} else {
+		containerStatus, err := docker.InspectContainerState("/mongodb")
+		if err != nil {
+			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
+			utils.LogError(err)
+			err := docker.DeleteContainer("/mongodb")
+			if err != nil {
+				utils.LogError(err)
+			}
+			containerID, err := database.SetupDBInstance("mongoDb")
+			if err != nil {
+				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
+				utils.LogError(err)
+			} else {
+				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+			}
+		}
+		if containerStatus["Status"].(string) == "exited" {
+			err := docker.StartContainer("mongodb")
+			if err != nil {
+				utils.LogError(err)
+			}
 		}
 	}
 	server := initHTTPServer(service, port)
 	return server
 }
 
+
 func startSSHService(service, port string) UnivServer {
 	server, err := ssh.BuildSSHServer(service)
 	if err != nil {
-		fmt.Println("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.")
-		fmt.Printf("ERROR:: %s\n", err.Error())
+		utils.Log("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.", utils.ErrorTAG)
+		utils.LogError(err)
 		return UnivServer{
 			SSHServer:  nil,
 			HTTPServer: nil,

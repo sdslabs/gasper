@@ -1,15 +1,14 @@
 package database
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/docker/docker/client"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
 	"golang.org/x/net/context"
 )
 
@@ -26,15 +25,15 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 		return "", types.NewResErr(500, "cannot setup client", err)
 	}
 
-	dockerImage := utils.ServiceConfig[dbtype].(map[string]interface{})["image"].(string)
-	port := utils.ServiceConfig[dbtype].(map[string]interface{})["container_port"].(string)
-	env := utils.ServiceConfig[dbtype].(map[string]interface{})["env"].(map[string]interface{})
+	dockerImage := configs.ServiceConfig[dbtype].(map[string]interface{})["image"].(string)
+	port := configs.ServiceConfig[dbtype].(map[string]interface{})["container_port"].(string)
+	env := configs.ServiceConfig[dbtype].(map[string]interface{})["env"].(map[string]interface{})
 	storepath, _ := os.Getwd()
 	workdir := "/var/lib/mysql"
 	storedir := filepath.Join(storepath, "mysql-storage")
 
 	if strings.Compare(dbtype,"mongoDb") == 0 {
-		workdir = "/var/lib/mongodb"
+		workdir = "/data/db"
 		storedir = filepath.Join(storepath, "mongodb-storage")
 	}
 	if strings.Compare(dbtype,"mysql") == 0 {
@@ -56,8 +55,7 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 			storedir,
 			env)
 	}
-	fmt.Println(containerID)
-	err = docker.StartContainer(dbctx, cli, containerID)
+	err = docker.StartContainer(containerID)
 	if err != nil {
 		return "", types.NewResErr(500, "container not started", err)
 	}

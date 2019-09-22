@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
@@ -20,13 +19,13 @@ func main() {
 
 	images := docker.ListImages()
 
-	for service, config := range utils.ServiceConfig {
+	for service, config := range configs.ServiceConfig {
 		config := config.(map[string]interface{})
 		if config["deploy"].(bool) {
 			if image, check := config["image"]; check {
 				image := image.(string)
 				if !utils.Contains(images, image) {
-					fmt.Printf("Image %s not present locally, pulling from DockerHUB\n", image)
+					utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
 					docker.Pull(image)
 				}
 			}
@@ -35,37 +34,38 @@ func main() {
 				customServer := Launcher(service, port)
 				if customServer.HTTPServer != nil {
 					serviceServer := customServer.HTTPServer
-					fmt.Printf("%s Service Active\n", strings.Title(service))
+					utils.LogInfo("%s Service Active\n", strings.Title(service))
 					g.Go(func() error {
 						return serviceServer.ListenAndServe()
 					})
 				} else if customServer.SSHServer != nil {
 					serviceServer := customServer.SSHServer
-					fmt.Printf("%s Service Active\n", strings.Title(service))
+					utils.LogInfo("%s Service Active\n", strings.Title(service))
 					g.Go(func() error {
 						return serviceServer.ListenAndServe()
 					})
 				}
 			} else {
-				panic(fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:]))
+				msg := fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:])
+				utils.Log(msg, utils.ErrorTAG)
+				panic(msg)
 			}
 		}
 	}
 
-	dominus.ExposeServices()
-	dominus.ScheduleStateCheckup(time.Duration(configs.SWSConfig["stateCheckInterval"].(float64)) * time.Second)
+	dominus.ScheduleServiceExposure()
 
-	if utils.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
-		cleanupInterval := time.Duration(configs.SWSConfig["cleanupInterval"].(float64))
-		dominus.ScheduleCleanup(cleanupInterval * time.Second)
+	if configs.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
+		dominus.ScheduleCleanup()
 	}
 
-	if utils.FalconConfig["plugIn"].(bool) {
+	if configs.FalconConfig["plugIn"].(bool) {
 		// Initialize the Falcon Config at startup
 		middlewares.InitializeFalconConfig()
 	}
 
 	if err := g.Wait(); err != nil {
+		utils.LogError(err)
 		panic(err)
 	}
 }

@@ -106,8 +106,8 @@
 
   // Use this setting to enable/disable experimental features from the language server.
   "go.languageServerExperimentalFeatures": {
-    "format": false,
-    "autoComplete": false
+    "format": true,
+    "autoComplete": true
   },
 
   // Flags like -trace and -logfile to be used while running the language server.
@@ -164,10 +164,10 @@
   "go.toolsGopath": "",
 
   // Complete functions with their parameter signature, including the variable types
-  "go.useCodeSnippetsOnFunctionSuggest": false,
+  "go.useCodeSnippetsOnFunctionSuggest": true,
 
   // Complete functions with their parameter signature, excluding the variable types
-  "go.useCodeSnippetsOnFunctionSuggestWithoutType": false,
+  "go.useCodeSnippetsOnFunctionSuggestWithoutType": true,
 
   // Experimental: Not available in Windows. Use Go language server from Sourcegraph for Hover, Definition, Find All References, Signature Help, File Outline and Workspace Symbol features instead of tools like guru, godef, go-outline and go-symbol
   "go.useLanguageServer": true,

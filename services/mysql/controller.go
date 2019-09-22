@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/commons"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
@@ -14,21 +16,33 @@ func createDB(c *gin.Context) {
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
-	data["language"] = "mysql"
-	data["instanceType"] = mongo.MysqlDBInstance
+	delete(data, "rebuild")
+	data["language"] = ServiceName
+	data["instanceType"] = mongo.DBInstance
+	data["hostIP"] = utils.HostIP
+	data["containerPort"] = configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 
-	var dbKey = fmt.Sprintf(`%s:%s`, data["name"].(string), data["user"].(string))
+	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
 
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
 		})
+		return
 	}
 
-	databaseID, err := mongo.RegisterInstance(data)
+	err = mongo.UpsertInstance(
+		map[string]interface{}{
+			"name":         data["name"],
+			"instanceType": data["instanceType"],
+		}, data)
+
+	instanceType := mongo.DBInstance + ":" + mongo.Mysql
 
 	if err != nil {
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -37,10 +51,12 @@ func createDB(c *gin.Context) {
 
 	err = redis.RegisterDB(
 		dbKey,
-		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -48,11 +64,13 @@ func createDB(c *gin.Context) {
 	}
 
 	err = redis.IncrementServiceLoad(
-		"mysql",
-		utils.HostIP+utils.ServiceConfig["mysql"].(map[string]interface{})["port"].(string),
+		ServiceName,
+		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -61,7 +79,6 @@ func createDB(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"id":      databaseID,
 	})
 
 }
@@ -70,8 +87,8 @@ func fetchDBs(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
-	filter["language"] = "mysql"
-	filter["instanceType"] = mongo.MysqlDBInstance
+	filter["language"] = ServiceName
+	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBs(filter),
@@ -79,18 +96,32 @@ func fetchDBs(c *gin.Context) {
 }
 
 func deleteDB(c *gin.Context) {
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
+	user := c.Param("user")
+	db := c.Param("db")
+	dbKey := fmt.Sprintf(`%s:%s`, user, db)
 
-	err := database.DeleteMysqlDB(filter["name"].(string), filter["user"].(string))
+	err := database.DeleteMysqlDB(db, user)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
 		})
+		return
 	}
 
-	filter["language"] = "mysql"
-	filter["instanceType"] = mongo.MysqlDBInstance
+	err = redis.RemoveDB(dbKey)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err,
+		})
+		return
+	}
+
+	filter := map[string]interface{}{
+		"name":         db,
+		"user":         user,
+		"language":     ServiceName,
+		"instanceType": mongo.DBInstance,
+	}
 
 	c.JSON(200, gin.H{
 		"message": mongo.DeleteInstance(filter),
