@@ -4,7 +4,7 @@ package mongo
 const Mysql string = "mysql"
 
 // MongoDB is db instance type name in the instances collection
-const MongoDB string = "mongoDb"
+const MongoDB string = "mongodb"
 
 // DBInstance is db instance type name for mongo database in the instances collection
 const DBInstance string = "database"

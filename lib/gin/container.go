@@ -92,7 +92,7 @@ func FetchMongoDBContainerLogs(c *gin.Context) {
 		return
 	}
 
-	data, err := docker.ReadLogs(ctx, cli, "mongoDb", filter["tail"].(string))
+	data, err := docker.ReadLogs(ctx, cli, "mongodb", filter["tail"].(string))
 
 	if err != nil && err.Error() != "EOF" {
 		c.JSON(500, gin.H{

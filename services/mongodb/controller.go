@@ -1,4 +1,4 @@
-package mongoDb
+package mongodb
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ func createDB(c *gin.Context) {
 	data["language"] = ServiceName
 	data["instanceType"] = mongo.DBInstance
 	data["hostIP"] = utils.HostIP
-	data["containerPort"] = configs.ServiceConfig["mongoDb"].(map[string]interface{})["container_port"].(string)
+	data["containerPort"] = configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 
 	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
 

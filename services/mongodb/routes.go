@@ -1,4 +1,4 @@
-package mongoDb
+package mongodb
 
 import (
 	"github.com/sdslabs/SWS/lib/gin"
@@ -9,7 +9,7 @@ import (
 var Router = gin.NewServiceEngine()
 
 // ServiceName is the name of the current microservice
-var ServiceName = "mongoDb"
+var ServiceName = "mongodb"
 
 func init() {
 	Router.POST("/", validateRequestBody, middlewares.IsUniqueDB(), createDB)

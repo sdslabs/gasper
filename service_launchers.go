@@ -11,7 +11,7 @@ import (
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
-	"github.com/sdslabs/SWS/services/mongoDb"
+	"github.com/sdslabs/SWS/services/mongodb"
 	"github.com/sdslabs/SWS/services/mysql"
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
@@ -32,7 +32,7 @@ type UnivServer struct {
 var launcherBindings = map[string]func(string, string) UnivServer{
 	"ssh":     startSSHService,
 	"mysql":   startMySQLService,
-	"mongoDb": startMongoDBService,
+	"mongodb": startMongoDBService,
 	"app":     startAppService,
 }
 
@@ -44,7 +44,7 @@ var serviceBindings = map[string]*gin.Engine{
 	"node":    node.Router,
 	"python":  python.Router,
 	"mysql":   mysql.Router,
-	"mongoDb": mongoDb.Router,
+	"mongodb": mongodb.Router,
 }
 
 func initHTTPServer(service, port string) UnivServer {
@@ -104,9 +104,9 @@ func startMongoDBService(service, port string) UnivServer {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mongodb") {
 		fmt.Printf("No MongoDB instance found in host. Building the instance.")
-		containerID, err := database.SetupDBInstance("mongoDb")
+		containerID, err := database.SetupDBInstance("mongodb")
 		if err != nil {
-			fmt.Println("There was a problem deploying mongoDb service.")
+			fmt.Println("There was a problem deploying mongodb service.")
 			fmt.Printf("ERROR:: %s\n", err.Error())
 		} else {
 			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
@@ -120,7 +120,7 @@ func startMongoDBService(service, port string) UnivServer {
 			if err != nil {
 				utils.LogError(err)
 			}
-			containerID, err := database.SetupDBInstance("mongoDb")
+			containerID, err := database.SetupDBInstance("mongodb")
 			if err != nil {
 				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
 				utils.LogError(err)
@@ -167,8 +167,8 @@ func Launcher(service, port string) UnivServer {
 		return launcherBindings["ssh"](service, port)
 	} else if strings.HasPrefix(service, "mysql") {
 		return launcherBindings["mysql"](service, port)
-	} else if strings.HasPrefix(service, "mongoDb") {
-		return launcherBindings["mongoDb"](service, port)
+	} else if strings.HasPrefix(service, "mongodb") {
+		return launcherBindings["mongodb"](service, port)
 	} else if service != "" {
 		return launcherBindings["app"](service, port)
 	}

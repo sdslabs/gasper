@@ -8,7 +8,6 @@ import (
 
 	"github.com/sdslabs/SWS/lib/configs"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -28,13 +27,13 @@ var MongoSanitaryActionBindings = map[int]func(context.Context, string, string, 
 
 // CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
 func CreateMongoDB(database, username, password string) error {
-	port := configs.ServiceConfig["mongoDb"].(map[string]interface{})["container_port"].(string)
+	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 	ctx = context.WithValue(ctx, hostKey, agentAddress)
-	db, err := configDB(ctx, database, username, password)
+	_, err := configDB(ctx, database, username, password)
 
 	if err != nil {
 		log.Fatalf("database configuration failed: %v", err)
@@ -100,7 +99,7 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 }
 
 func DeleteMongoDB(database, username string) error {
-	port := configs.ServiceConfig["mongoDb"].(map[string]interface{})["container_port"].(string)
+	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
