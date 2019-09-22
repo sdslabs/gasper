@@ -42,7 +42,7 @@ func createDB(c *gin.Context) {
 
 	if err != nil {
 		go commons.FullCleanup(data["name"].(string), instanceType)
-		go commons.StateCleanup(data["name"].(string),instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -69,8 +69,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string),instanceType)
-		go commons.StateCleanup(data["name"].(string),instanceType)
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -98,7 +98,7 @@ func deleteDB(c *gin.Context) {
 	user := c.Param("user")
 	db := c.Param("db")
 	dbKey := fmt.Sprintf(`%s:%s`, user, db)
-	err := database.DeleteMongoDB(db,user)
+	err := database.DeleteMongoDB(db, user)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,

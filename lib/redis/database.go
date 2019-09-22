@@ -1,10 +1,4 @@
-
 package redis
-
-import (
-	"fmt"
-	"strings"
-)
 
 // RegisterDB registers the database in the databases HashMap with its url
 func RegisterDB(db, url string) error {
@@ -22,16 +16,8 @@ func FetchDBURL(db string) (string, error) {
 }
 
 // RemoveDB removes the databases's entry from Redis
-<<<<<<< HEAD
 func RemoveDB(db string) error {
 	_, err := client.HDel(DatabaseKey, db).Result()
-=======
-func RemoveDB(dbKey string) error {
-	dbName := strings.Split(dbKey, ":")[0]
-	dbUser := strings.Split(dbKey, ":")[1]
-	dbKey = fmt.Sprintf(`%s:%s`, dbName, dbUser)
-	_, err := client.HDel(DatabaseKey, dbKey).Result()
->>>>>>> checked working
 	if err != nil {
 		return err
 	}

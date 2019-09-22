@@ -1,10 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/database"
@@ -31,10 +31,10 @@ type UnivServer struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]func(string, string) UnivServer{
-	"ssh":   startSSHService,
-	"mysql": startMySQLService,
-	"app":   startAppService,
-	"enrai": startEnraiService,
+	"ssh":     startSSHService,
+	"mysql":   startMySQLService,
+	"app":     startAppService,
+	"enrai":   startEnraiService,
 	"mongodb": startMongoDBService,
 }
 

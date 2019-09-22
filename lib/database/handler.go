@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,11 +32,11 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 	workdir := "/var/lib/mysql"
 	storedir := filepath.Join(storepath, "mysql-storage")
 
-	if strings.Compare(dbtype,"mongodb") == 0 {
+	if strings.Compare(dbtype, "mongodb") == 0 {
 		workdir = "/data/db"
 		storedir = filepath.Join(storepath, "mongodb-storage")
 	}
-	if strings.Compare(dbtype,"mysql") == 0 {
+	if strings.Compare(dbtype, "mysql") == 0 {
 		containerID, err = docker.CreateMysqlContainer(
 			dbctx,
 			cli,

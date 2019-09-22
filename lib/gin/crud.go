@@ -34,7 +34,7 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 				"instanceType": data["instanceType"],
 			}, data)
 
-		instanceType := mongo.AppInstance + ":" + mongo.AppInstance 
+		instanceType := mongo.AppInstance + ":" + mongo.AppInstance
 
 		if err != nil {
 			go commons.FullCleanup(data["name"].(string), instanceType)

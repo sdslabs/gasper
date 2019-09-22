@@ -54,13 +54,13 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 
 	client, err := createConnection(ctx)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 
-	dbs,errg := client.ListDatabaseNames(ctx, bson.M{})
-	
+	dbs, errg := client.ListDatabaseNames(ctx, bson.M{})
+
 	if errg != nil {
-		return nil,fmt.Errorf("Error while creating the database : %s", errg)
+		return nil, fmt.Errorf("Error while creating the database : %s", errg)
 	}
 
 	for i := 0; i < len(dbs); i++ {
@@ -74,24 +74,24 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 
 	db := client.Database(database)
 
-	commandData := bson.M{ "createUser": username , 
-							"pwd": password,
-							"roles": bson.A {
-								bson.M { "role": "dbOwner",
-										 "db": database },
-								"readWrite",
-							},
-						}
-					   
+	commandData := bson.M{"createUser": username,
+		"pwd": password,
+		"roles": bson.A{
+			bson.M{"role": "dbOwner",
+				"db": database},
+			"readWrite",
+		},
+	}
+
 	var v interface{}
 	v = &(mongo.SingleResult{})
-	result :=db.RunCommand(ctx,commandData)
-	errh:= (*result).Decode(v)
+	result := db.RunCommand(ctx, commandData)
+	errh := (*result).Decode(v)
 
 	if errh != nil {
-		errs := MongoSanitaryActions(ctx , database , username, password, client , 2)
+		errs := MongoSanitaryActions(ctx, database, username, password, client, 2)
 		if errs != nil {
-			return nil , fmt.Errorf("Error while creating the database : %s", err)
+			return nil, fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
 
@@ -113,7 +113,7 @@ func DeleteMongoDB(database, username string) error {
 		return err
 	}
 
-	db :=client.Database(database)
+	db := client.Database(database)
 
 	err = db.Drop(ctx)
 	if err != nil {
@@ -122,7 +122,7 @@ func DeleteMongoDB(database, username string) error {
 	return nil
 }
 
-func createConnection(ctx context.Context) (*mongo.Client , error) {
+func createConnection(ctx context.Context) (*mongo.Client, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27018/"))
 	if err != nil {
 		return nil, fmt.Errorf("couldn't connect to mongo: %v", err)
@@ -131,7 +131,7 @@ func createConnection(ctx context.Context) (*mongo.Client , error) {
 	if err != nil {
 		return nil, fmt.Errorf("mongo client couldn't connect with background context: %v", err)
 	}
-	return client,nil
+	return client, nil
 }
 
 func refreshMongoDB(ctx context.Context, database, username, password string, client *mongo.Client) error {
@@ -147,28 +147,28 @@ func refreshMongoDBUser(ctx context.Context, database, username, password string
 	db := client.Database(database)
 	var v interface{}
 	v = &(mongo.SingleResult{})
-	dropUser := db.RunCommand(ctx,bson.M {"dropUser" : username })
-	errh:= (*dropUser).Decode(v)
-		if errh != nil {
-			return fmt.Errorf("Error while deleting the user : %s", errh)
-		}
+	dropUser := db.RunCommand(ctx, bson.M{"dropUser": username})
+	errh := (*dropUser).Decode(v)
+	if errh != nil {
+		return fmt.Errorf("Error while deleting the user : %s", errh)
+	}
 
-	commandData := bson.M{ "createUser": username , 
-							"pwd": password,
-							"roles": bson.A {
-								bson.M { "role": "dbOwner",
-										 "db": database },
-								"readWrite",
-							},
-						}
-					   
-	reCreateUser:= db.RunCommand(ctx,commandData)
-	errc:= (*reCreateUser).Decode(v)
+	commandData := bson.M{"createUser": username,
+		"pwd": password,
+		"roles": bson.A{
+			bson.M{"role": "dbOwner",
+				"db": database},
+			"readWrite",
+		},
+	}
+
+	reCreateUser := db.RunCommand(ctx, commandData)
+	errc := (*reCreateUser).Decode(v)
 
 	if errc != nil {
 		return fmt.Errorf("Error while creating the database : %s", errc)
 	}
-	
+
 	return nil
 }
 

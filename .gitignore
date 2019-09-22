@@ -9,3 +9,4 @@ mysql-storage/
 mongodb-storage
 __debug_bin
 bin/
+.vscode/

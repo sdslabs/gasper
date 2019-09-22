@@ -8,9 +8,12 @@ github.com/asaskevich/govalidator
 github.com/docker/distribution/reference
 github.com/docker/distribution/digest
 # github.com/docker/docker v1.13.1
+github.com/docker/docker/api/types/container
 github.com/docker/docker/client
 github.com/docker/docker/api/types
-github.com/docker/docker/api/types/container
+github.com/docker/docker/api/types/blkiodev
+github.com/docker/docker/api/types/mount
+github.com/docker/docker/api/types/strslice
 github.com/docker/docker/api/types/events
 github.com/docker/docker/api/types/filters
 github.com/docker/docker/api/types/network
@@ -21,9 +24,6 @@ github.com/docker/docker/api/types/time
 github.com/docker/docker/api/types/versions
 github.com/docker/docker/api/types/volume
 github.com/docker/docker/pkg/tlsconfig
-github.com/docker/docker/api/types/mount
-github.com/docker/docker/api/types/blkiodev
-github.com/docker/docker/api/types/strslice
 # github.com/docker/go-connections v0.4.0
 github.com/docker/go-connections/nat
 github.com/docker/go-connections/sockets
@@ -65,6 +65,8 @@ github.com/go-stack/stack
 github.com/golang/protobuf/proto
 # github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
 github.com/golang/snappy
+# github.com/gorilla/mux v1.7.3
+github.com/gorilla/mux
 # github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 github.com/jbenet/go-context/io
 # github.com/json-iterator/go v1.1.6
@@ -82,10 +84,10 @@ github.com/modern-go/concurrent
 # github.com/modern-go/reflect2 v1.0.1
 github.com/modern-go/reflect2
 # github.com/mongodb/mongo-go-driver v0.1.0
+github.com/mongodb/mongo-go-driver/bson/primitive
 github.com/mongodb/mongo-go-driver/bson
 github.com/mongodb/mongo-go-driver/mongo
 github.com/mongodb/mongo-go-driver/mongo/options
-github.com/mongodb/mongo-go-driver/bson/primitive
 github.com/mongodb/mongo-go-driver/bson/bsoncodec
 github.com/mongodb/mongo-go-driver/bson/bsonrw
 github.com/mongodb/mongo-go-driver/bson/bsontype
@@ -135,12 +137,12 @@ github.com/xdg/scram
 github.com/xdg/stringprep
 # go.mongodb.org/mongo-driver v1.1.0
 go.mongodb.org/mongo-driver/bson
-go.mongodb.org/mongo-driver/bson/primitive
 go.mongodb.org/mongo-driver/mongo
 go.mongodb.org/mongo-driver/mongo/options
 go.mongodb.org/mongo-driver/bson/bsoncodec
 go.mongodb.org/mongo-driver/bson/bsonrw
 go.mongodb.org/mongo-driver/bson/bsontype
+go.mongodb.org/mongo-driver/bson/primitive
 go.mongodb.org/mongo-driver/x/bsonx/bsoncore
 go.mongodb.org/mongo-driver/event
 go.mongodb.org/mongo-driver/mongo/readconcern

@@ -27,7 +27,6 @@ func CreateMysqlDB(database, username, password string) error {
 
 	db, err := sql.Open("mysql", connection)
 
-
 	if err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
 	}
@@ -43,7 +42,6 @@ func CreateMysqlDB(database, username, password string) error {
 		}
 	}
 
-
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, dbHost, password)
 	_, err = db.Exec(query)
 	if err != nil {
@@ -52,7 +50,6 @@ func CreateMysqlDB(database, username, password string) error {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
-
 
 	query = fmt.Sprintf("GRANT ALL ON %s.* TO '%s'@'%s'", database, username, dbHost)
 	_, err = db.Exec(query)
