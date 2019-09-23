@@ -235,13 +235,18 @@ func UpdateAppInfo(service string) gin.HandlerFunc {
 		}
 		filter["name"] = app
 		filter["instanceType"] = mongo.AppInstance
+
 		var data map[string]interface{}
 		c.BindJSON(&data)
-		if data["name"] != nil {
+
+		err := validateUpdatePayload(data)
+		if err != nil {
 			c.JSON(400, gin.H{
-				"error": "You cannot change the application name once deployed",
+				"error": err,
 			})
+			return
 		}
+
 		c.JSON(200, gin.H{
 			"message": mongo.UpdateInstance(filter, data),
 		})
