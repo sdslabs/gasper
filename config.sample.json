@@ -5,10 +5,6 @@
     "projectRoot": "/SWS",
     "rcFile": "Gasperfile",
     "offlineMode": false,
-    "cloudflare": {
-        "available": false,
-        "token": ""
-    },
     "cron": {
         "cleanupInterval": 600,
         "exposureInterval": 30
@@ -21,6 +17,10 @@
         "port": ":6379",
         "password": "",
         "DB": 0
+    },
+    "cloudflare": {
+        "plugIn": false,
+        "token": ""
     },
     "falcon": {
         "plugIn": false,

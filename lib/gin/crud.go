@@ -1,6 +1,7 @@
 package gin
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -73,7 +74,7 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 			return
 		}
 
-		if configs.CloudflareConfig["available"].(bool) {
+		if configs.CloudflareConfig["plugIn"].(bool) {
 			resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance, utils.HostIP)
 			if err != nil {
 				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
@@ -84,6 +85,7 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 				return
 			}
 			data["cloudflareID"] = resp.Result.ID
+			data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.SWSConfig["domain"].(string))
 		}
 
 		data["success"] = true
