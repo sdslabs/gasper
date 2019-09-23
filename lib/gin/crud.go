@@ -215,7 +215,9 @@ func DeleteApp(service string) gin.HandlerFunc {
 		go redis.DecrementServiceLoad(service, node)
 		go redis.RemoveApp(app)
 		go commons.FullCleanup(app, mongo.AppInstance)
-		go cloudflare.DeleteRecord(app, mongo.AppInstance)
+		if configs.CloudflareConfig["plugIn"].(bool) {
+			go cloudflare.DeleteRecord(app, mongo.AppInstance)
+		}
 		c.JSON(200, gin.H{
 			"message": mongo.UpdateInstance(filter, update),
 		})
