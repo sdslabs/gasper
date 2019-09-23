@@ -6,7 +6,7 @@
     "rcFile": "Gasperfile",
     "offlineMode": false,
     "cloudflare": {
-        "available": true,
+        "available": false,
         "token": ""
     },
     "cron": {
