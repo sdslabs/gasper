@@ -211,11 +211,11 @@ func DeleteApp(service string) gin.HandlerFunc {
 		update := map[string]interface{}{
 			"deleted": true,
 		}
-		appURL, _ := redis.FetchAppNode(app)
-		redis.DecrementServiceLoad(service, appURL)
-		redis.RemoveApp(app)
+		node, _ := redis.FetchAppNode(app)
+		go redis.DecrementServiceLoad(service, node)
+		go redis.RemoveApp(app)
 		go commons.FullCleanup(app, mongo.AppInstance)
-		cloudflare.DeleteRecord(app, mongo.AppInstance)
+		go cloudflare.DeleteRecord(app, mongo.AppInstance)
 		c.JSON(200, gin.H{
 			"message": mongo.UpdateInstance(filter, update),
 		})
