@@ -4,8 +4,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/SWS/lib/cloudflare"
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/types"
@@ -72,9 +73,21 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 			return
 		}
 
-		c.JSON(200, gin.H{
-			"success": true,
-		})
+		if configs.CloudflareConfig["available"].(bool) {
+			resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance, utils.HostIP)
+			if err != nil {
+				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+				go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+				c.JSON(500, gin.H{
+					"error": err,
+				})
+				return
+			}
+			data["cloudflareID"] = resp.Result.ID
+		}
+
+		data["success"] = true
+		c.JSON(200, data)
 	}
 }
 
