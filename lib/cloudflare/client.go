@@ -34,7 +34,7 @@ func GetZones() (*ZoneResponse, error) {
 	}
 
 	if !data.Success {
-		return nil, fmt.Errorf("Errors: %s", formatErrorResponse(data.Errors))
+		return nil, formatErrorResponse(data.Errors)
 	}
 	return data, nil
 }
@@ -73,7 +73,7 @@ func FetchRecords(queryParams ...map[string]interface{}) (*MultiResponse, error)
 	}
 
 	if !data.Success {
-		return nil, fmt.Errorf("Errors: %s", formatErrorResponse(data.Errors))
+		return nil, formatErrorResponse(data.Errors)
 	}
 	return data, nil
 }
@@ -116,7 +116,7 @@ func CreateRecord(name, instanceType, IP string) (*SingleResponse, error) {
 	}
 
 	if !data.Success {
-		return nil, fmt.Errorf("Errors: %s", formatErrorResponse(data.Errors))
+		return nil, formatErrorResponse(data.Errors)
 	}
 	return data, nil
 }
@@ -159,7 +159,7 @@ func UpdateRecord(name, instanceType string, payload *singlePayload) (*SingleRes
 	}
 
 	if !data.Success {
-		return nil, fmt.Errorf("Errors: %s", formatErrorResponse(data.Errors))
+		return nil, formatErrorResponse(data.Errors)
 	}
 	return data, nil
 }
@@ -195,7 +195,7 @@ func DeleteRecord(name, instanceType string) (*GenericResponse, error) {
 	}
 
 	if !data.Success {
-		return nil, fmt.Errorf("Errors: %s", formatErrorResponse(data.Errors))
+		return nil, formatErrorResponse(data.Errors)
 	}
 	return data, nil
 }

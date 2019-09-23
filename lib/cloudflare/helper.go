@@ -5,12 +5,12 @@ import (
 	"fmt"
 )
 
-func formatErrorResponse(apiErrors []errorResponse) string {
+func formatErrorResponse(apiErrors []errorResponse) error {
 	res := ""
 	for _, value := range apiErrors {
 		res += value.Message + ";"
 	}
-	return res
+	return fmt.Errorf("Errors: %s", res)
 }
 
 // getZoneID returns the ID of the 1st zone
