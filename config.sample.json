@@ -18,6 +18,10 @@
         "password": "",
         "DB": 0
     },
+    "cloudflare": {
+        "plugIn": false,
+        "token": ""
+    },
     "falcon": {
         "plugIn": false,
         "falconClientId": "",

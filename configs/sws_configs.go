@@ -39,3 +39,6 @@ var FalconConfig = SWSConfig["falcon"].(map[string]interface{})
 
 // CronConfig is the configuration for all the daemons managed by SWS
 var CronConfig = SWSConfig["cron"].(map[string]interface{})
+
+// CloudflareConfig is the configuration for cloudflare services used by SWS
+var CloudflareConfig = SWSConfig["cloudflare"].(map[string]interface{})

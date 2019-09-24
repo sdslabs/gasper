@@ -1,11 +1,13 @@
 package gin
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/SWS/lib/cloudflare"
 	"github.com/sdslabs/SWS/lib/commons"
-	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/types"
@@ -72,9 +74,22 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 			return
 		}
 
-		c.JSON(200, gin.H{
-			"success": true,
-		})
+		if configs.CloudflareConfig["plugIn"].(bool) {
+			resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance, utils.HostIP)
+			if err != nil {
+				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+				go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+				c.JSON(500, gin.H{
+					"error": err,
+				})
+				return
+			}
+			data["cloudflareID"] = resp.Result.ID
+			data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.SWSConfig["domain"].(string))
+		}
+
+		data["success"] = true
+		c.JSON(200, data)
 	}
 }
 
@@ -196,10 +211,13 @@ func DeleteApp(service string) gin.HandlerFunc {
 		update := map[string]interface{}{
 			"deleted": true,
 		}
-		appURL, _ := redis.FetchAppNode(app)
-		redis.DecrementServiceLoad(service, appURL)
-		redis.RemoveApp(app)
+		node, _ := redis.FetchAppNode(app)
+		go redis.DecrementServiceLoad(service, node)
+		go redis.RemoveApp(app)
 		go commons.FullCleanup(app, mongo.AppInstance)
+		if configs.CloudflareConfig["plugIn"].(bool) {
+			go cloudflare.DeleteRecord(app, mongo.AppInstance)
+		}
 		c.JSON(200, gin.H{
 			"message": mongo.UpdateInstance(filter, update),
 		})
@@ -217,8 +235,18 @@ func UpdateAppInfo(service string) gin.HandlerFunc {
 		}
 		filter["name"] = app
 		filter["instanceType"] = mongo.AppInstance
+
 		var data map[string]interface{}
 		c.BindJSON(&data)
+
+		err := validateUpdatePayload(data)
+		if err != nil {
+			c.JSON(400, gin.H{
+				"error": err,
+			})
+			return
+		}
+
 		c.JSON(200, gin.H{
 			"message": mongo.UpdateInstance(filter, data),
 		})
