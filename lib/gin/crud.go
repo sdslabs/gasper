@@ -34,11 +34,9 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 				"instanceType": data["instanceType"],
 			}, data)
 
-		instanceType := mongo.AppInstance + ":" + mongo.AppInstance
-
 		if err != nil {
-			go commons.FullCleanup(data["name"].(string), instanceType)
-			go commons.StateCleanup(data["name"].(string), instanceType)
+			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 			c.JSON(500, gin.H{
 				"error": err,
 			})
@@ -52,8 +50,8 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		)
 
 		if err != nil {
-			go commons.FullCleanup(data["name"].(string), instanceType)
-			go commons.StateCleanup(data["name"].(string), instanceType)
+			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 			c.JSON(500, gin.H{
 				"error": err,
 			})
@@ -66,8 +64,8 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		)
 
 		if err != nil {
-			go commons.FullCleanup(data["name"].(string), instanceType)
-			go commons.StateCleanup(data["name"].(string), instanceType)
+			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 			c.JSON(500, gin.H{
 				"error": err,
 			})

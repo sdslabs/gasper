@@ -34,9 +34,7 @@ func CreateMysqlDB(database, username, password string) error {
 
 	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS" + database)
 	if err != nil {
-		fmt.Println(err)
 		errs := sanitaryActions(database, username, password, db, 1)
-		fmt.Println(errs)
 		if errs != nil {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}

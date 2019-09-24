@@ -14,11 +14,7 @@ import (
 
 type key string
 
-const (
-	hostKey     = key("hostKey")
-	usernameKey = key("usernameKey")
-	passwordKey = key("passwordKey")
-)
+const  hostKey = key("hostKey")
 
 var MongoSanitaryActionBindings = map[int]func(context.Context, string, string, string, *mongo.Client) error{
 	1: refreshMongoDB,
@@ -31,21 +27,15 @@ func CreateMongoDB(database, username, password string) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+	
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 	ctx = context.WithValue(ctx, hostKey, agentAddress)
+
 	_, err := configDB(ctx, database, username, password)
 
 	if err != nil {
-		log.Fatalf("database configuration failed: %v", err)
+		return  fmt.Errorf("database configuration failed: %v", err)
 	}
-
-	// db.RunCommand(ctx , bson.M{"create":"test"})
-
-	// collection := db.Collection("test")
-
-	// ash := bson.D{primitive.E{Key: "autorefid", Value: "100"}}
-
-	// _, err = collection.InsertOne(ctx, ash)
 
 	return nil
 }
@@ -106,7 +96,6 @@ func DeleteMongoDB(database, username string) error {
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 
 	ctx = context.WithValue(ctx, hostKey, agentAddress)
-	ctx = context.WithValue(ctx, usernameKey, username)
 
 	client, err := createConnection(ctx)
 	if err != nil {

@@ -66,7 +66,7 @@ func initHTTPServer(service, port string) UnivServer {
 func startMySQLService(service, port string) UnivServer {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mysql") {
-		fmt.Printf("No Mysql instance found in host. Building the instance.")
+		utils.LogInfo("No Mysql instance found in host. Building the instance.")
 		containerID, err := database.SetupDBInstance("mysql")
 		if err != nil {
 			utils.Log("There was a problem deploying MySql service.", utils.ErrorTAG)
@@ -105,11 +105,11 @@ func startMySQLService(service, port string) UnivServer {
 func startMongoDBService(service, port string) UnivServer {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mongodb") {
-		fmt.Printf("No MongoDB instance found in host. Building the instance.")
+		utils.LogInfo("No MongoDB instance found in host. Building the instance.")
 		containerID, err := database.SetupDBInstance("mongodb")
 		if err != nil {
-			fmt.Println("There was a problem deploying mongodb service.")
-			fmt.Printf("ERROR:: %s\n", err.Error())
+			utils.Log("There was a problem deploying mongodb service.",utils.ErrorTAG)
+			utils.LogError(err)
 		} else {
 			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
 		}

@@ -32,6 +32,10 @@
             "deploy": true,
             "port": ":3000"
         },
+        "enrai": {
+            "deploy": true,
+            "port": ":4040"
+        },
         "ssh": {
             "deploy": true,
             "port": ":2222",

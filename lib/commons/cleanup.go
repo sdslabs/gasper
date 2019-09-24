@@ -31,15 +31,15 @@ func ContainerCleanup(appName string) error {
 
 // MysqlDatabaseCleanup cleans the database's space in the container
 func MysqlDatabaseCleanup(dbKey string) error {
-	dbName := strings.Split(dbKey, ":")[0]
-	dbUser := strings.Split(dbKey, ":")[1]
+	dbUser := strings.Split(dbKey, ":")[0]
+	dbName := strings.Split(dbKey, ":")[1]
 	return database.DeleteMysqlDB(dbName, dbUser)
 }
 
 // MongoDatabaseCleanup cleans the database's space in the container
 func MongoDatabaseCleanup(dbKey string) error {
-	dbName := strings.Split(dbKey, ":")[0]
-	dbUser := strings.Split(dbKey, ":")[1]
+	dbUser := strings.Split(dbKey, ":")[0]
+	dbName := strings.Split(dbKey, ":")[1]
 	return database.DeleteMongoDB(dbName, dbUser)
 }
 
