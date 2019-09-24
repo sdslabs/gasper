@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-var immutableFields = []string{"name", "_id", "instanceType", "containerID", "execID", "hostIP", "httpPort", "language"}
+var immutableFields = []string{"name", "_id", "instanceType", "containerID", "execID", "hostIP", "httpPort", "language", "cloudflareID", "domainURL"}
 
 func validateUpdatePayload(data map[string]interface{}) error {
 	res := ""
