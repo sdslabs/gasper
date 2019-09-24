@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 

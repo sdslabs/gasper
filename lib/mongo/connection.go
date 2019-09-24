@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 )
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)

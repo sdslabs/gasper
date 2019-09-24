@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	g "github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	falconApi "github.com/supra08/falcon-client-golang"
 )
 

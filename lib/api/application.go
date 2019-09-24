@@ -9,7 +9,7 @@ import (
 
 	"github.com/docker/docker/api/types/container"
 	"github.com/sdslabs/SWS/lib/commons"
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/git"
 	"github.com/sdslabs/SWS/lib/types"

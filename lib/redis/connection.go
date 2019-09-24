@@ -2,7 +2,7 @@ package redis
 
 import (
 	"github.com/go-redis/redis"
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 

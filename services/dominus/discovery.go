@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/types"
