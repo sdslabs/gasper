@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"

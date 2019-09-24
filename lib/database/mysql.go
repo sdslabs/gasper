@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql" // MySQL driver
 	"github.com/sdslabs/SWS/configs"
 )
 
@@ -63,7 +63,7 @@ func CreateMysqlDB(database, username, password string) error {
 	return nil
 }
 
-// DeleteDB deletes the database given by the database name and username
+// DeleteMysqlDB deletes the database given by the database name and username
 func DeleteMysqlDB(database, username string) error {
 	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 

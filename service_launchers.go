@@ -107,7 +107,7 @@ func startMongoDBService(service, port string) UnivServer {
 		utils.LogInfo("No MongoDB instance found in host. Building the instance.")
 		containerID, err := database.SetupDBInstance("mongodb")
 		if err != nil {
-			utils.Log("There was a problem deploying mongodb service.",utils.ErrorTAG)
+			utils.Log("There was a problem deploying mongodb service.", utils.ErrorTAG)
 			utils.LogError(err)
 		} else {
 			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)

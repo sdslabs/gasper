@@ -5,13 +5,14 @@ import (
 	"path/filepath"
 
 	"github.com/docker/docker/client"
-	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/docker"
+	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/types"
 	"golang.org/x/net/context"
 )
 
+// SetupDBInstance sets up containers for database
 func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
@@ -51,7 +52,7 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 				port,
 				workdir,
 				storedir,
-				env)	
+				env)
 		}
 	}
 	err = docker.StartContainer(containerID)

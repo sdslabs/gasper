@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/commons"
-	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"

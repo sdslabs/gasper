@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/SWS/configs"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -13,9 +13,9 @@ import (
 
 type key string
 
-const  hostKey = key("hostKey")
+const hostKey = key("hostKey")
 
-var MongoSanitaryActionBindings = map[int]func(context.Context, string, string, string, *mongo.Client) error{
+var mongoSanitaryActionBindings = map[int]func(context.Context, string, string, string, *mongo.Client) error{
 	1: refreshMongoDB,
 	2: refreshMongoDBUser,
 }
@@ -33,7 +33,7 @@ func CreateMongoDB(database, username, password string) error {
 	_, err := configDB(ctx, database, username, password)
 
 	if err != nil {
-		return  fmt.Errorf("database configuration failed: %v", err)
+		return fmt.Errorf("database configuration failed: %v", err)
 	}
 
 	return nil
@@ -54,7 +54,7 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 
 	for i := 0; i < len(dbs); i++ {
 		if strings.Compare(dbs[i], database) == 0 {
-			errs := MongoSanitaryActions(ctx, database, username, password, client, 1)
+			errs := mongoSanitaryActions(ctx, database, username, password, client, 1)
 			if errs != nil {
 				return nil, fmt.Errorf("Error while creating the database : %s", err)
 			}
@@ -78,7 +78,7 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 	errh := (*result).Decode(v)
 
 	if errh != nil {
-		errs := MongoSanitaryActions(ctx, database, username, password, client, 2)
+		errs := mongoSanitaryActions(ctx, database, username, password, client, 2)
 		if errs != nil {
 			return nil, fmt.Errorf("Error while creating the database : %s", err)
 		}
@@ -87,6 +87,7 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 	return db, nil
 }
 
+// DeleteMongoDB deletes a mongo database
 func DeleteMongoDB(database, username string) error {
 	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 	ctx := context.Background()
@@ -160,6 +161,6 @@ func refreshMongoDBUser(ctx context.Context, database, username, password string
 	return nil
 }
 
-func MongoSanitaryActions(ctx context.Context, database, username, password string, client *mongo.Client, stage int) error {
-	return MongoSanitaryActionBindings[stage](ctx, database, username, password, client)
+func mongoSanitaryActions(ctx context.Context, database, username, password string, client *mongo.Client, stage int) error {
+	return mongoSanitaryActionBindings[stage](ctx, database, username, password, client)
 }
