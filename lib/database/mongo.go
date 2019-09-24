@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/sdslabs/SWS/lib/configs"
@@ -27,7 +26,7 @@ func CreateMongoDB(database, username, password string) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	
+
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 	ctx = context.WithValue(ctx, hostKey, agentAddress)
 

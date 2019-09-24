@@ -3,9 +3,9 @@ package database
 import (
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/docker/docker/client"
+	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/types"
