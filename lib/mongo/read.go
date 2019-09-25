@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/sdslabs/SWS/lib/utils"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // FetchDocs is a generic function which takes a collection name and mongoDB filter as input and returns documents
@@ -18,7 +18,7 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 	cur, err := collection.Find(ctx, filter)
 	if err != nil {
 		utils.LogError(err)
-		panic(err)
+		return nil
 	}
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
@@ -27,12 +27,12 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 		data = append(data, result)
 		if err != nil {
 			utils.LogError(err)
-			panic(err)
+			return nil
 		}
 	}
 	if err := cur.Err(); err != nil {
 		utils.LogError(err)
-		panic(err)
+		return nil
 	}
 	return data
 }
@@ -68,7 +68,7 @@ func CountDocs(collectionName string, filter bson.M) (int64, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	count, err := collection.Count(ctx, filter)
+	count, err := collection.CountDocuments(ctx, filter)
 	return count, err
 }
 

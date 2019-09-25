@@ -1,5 +1,7 @@
 package mongo
 
+import "go.mongodb.org/mongo-driver/mongo"
+
 const (
 	// DBInstance is db instance type name in the instances collection
 	DBInstance = "db"
@@ -18,3 +20,7 @@ const (
 	// UserCollection is the collection for all users
 	UserCollection = "users"
 )
+
+// ErrNoDocuments is the error when no matching documents are found
+// for an update operation
+var ErrNoDocuments = mongo.ErrNoDocuments

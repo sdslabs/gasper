@@ -2,15 +2,17 @@ package mongo
 
 import (
 	"context"
-	"github.com/sdslabs/SWS/lib/utils"
 	"time"
 
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/sdslabs/SWS/lib/utils"
+
 	"github.com/sdslabs/SWS/configs"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
-var client, err = mongo.Connect(ctx, configs.MongoConfig["url"].(string))
+var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig["url"].(string)))
 var link = client.Database("sws")
 
 func init() {

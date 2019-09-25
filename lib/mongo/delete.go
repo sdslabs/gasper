@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/sdslabs/SWS/lib/utils"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // DeleteOne deletes a document from a mongoDB collection
@@ -16,7 +16,7 @@ func DeleteOne(collectionName string, filter bson.M) interface{} {
 	res, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
 		utils.LogError(err)
-		panic(err)
+		return nil
 	}
 	return res
 }

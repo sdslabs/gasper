@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/mongodb/mongo-go-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // InsertOne inserts a document into a mongoDB collection
