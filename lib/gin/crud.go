@@ -36,7 +36,7 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 				"instanceType": data["instanceType"],
 			}, data)
 
-		if err != nil {
+		if err != nil && err != mongo.ErrNoDocuments {
 			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
 			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
 			c.JSON(500, gin.H{
