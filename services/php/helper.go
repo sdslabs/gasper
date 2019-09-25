@@ -70,7 +70,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 			}
 			execID, resErr := installPackages(composerPath, appEnv)
 			if resErr != nil {
-				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+				go commons.AppFullCleanup(data["name"].(string))
 				return resErr
 			}
 			data["execID"] = execID

@@ -37,10 +37,10 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 			}, data)
 
 		if err != nil && err != mongo.ErrNoDocuments {
-			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.AppFullCleanup(data["name"].(string))
+			go commons.AppStateCleanup(data["name"].(string))
 			c.JSON(500, gin.H{
-				"error": err,
+				"error": err.Error(),
 			})
 			return
 		}
@@ -52,10 +52,10 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		)
 
 		if err != nil {
-			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.AppFullCleanup(data["name"].(string))
+			go commons.AppStateCleanup(data["name"].(string))
 			c.JSON(500, gin.H{
-				"error": err,
+				"error": err.Error(),
 			})
 			return
 		}
@@ -66,10 +66,10 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		)
 
 		if err != nil {
-			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-			go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.AppFullCleanup(data["name"].(string))
+			go commons.AppStateCleanup(data["name"].(string))
 			c.JSON(500, gin.H{
-				"error": err,
+				"error": err.Error(),
 			})
 			return
 		}
@@ -77,10 +77,10 @@ func CreateApp(service string, pipeline func(data map[string]interface{}) types.
 		if configs.CloudflareConfig["plugIn"].(bool) {
 			resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance, utils.HostIP)
 			if err != nil {
-				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-				go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+				go commons.AppFullCleanup(data["name"].(string))
+				go commons.AppStateCleanup(data["name"].(string))
 				c.JSON(500, gin.H{
-					"error": err,
+					"error": err.Error(),
 				})
 				return
 			}
@@ -214,7 +214,7 @@ func DeleteApp(service string) gin.HandlerFunc {
 		node, _ := redis.FetchAppNode(app)
 		go redis.DecrementServiceLoad(service, node)
 		go redis.RemoveApp(app)
-		go commons.FullCleanup(app, mongo.AppInstance)
+		go commons.AppFullCleanup(app)
 		if configs.CloudflareConfig["plugIn"].(bool) {
 			go cloudflare.DeleteRecord(app, mongo.AppInstance)
 		}

@@ -93,7 +93,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 	if requirements != nil {
 		_, resErr = installRequirements(requirements.(string), appEnv)
 		if resErr != nil {
-			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.AppFullCleanup(data["name"].(string))
 			return resErr
 		}
 	}
@@ -116,7 +116,7 @@ func pipeline(data map[string]interface{}) types.ResponseError {
 		_, resErr = startServer(context["index"].(string), arguments, appEnv)
 	}
 	if resErr != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.AppFullCleanup(data["name"].(string))
 		return resErr
 	}
 

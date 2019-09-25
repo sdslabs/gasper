@@ -43,35 +43,45 @@ func MongoDatabaseCleanup(dbKey string) error {
 	return database.DeleteMongoDB(dbName, dbUser)
 }
 
-// FullCleanup cleans the specified application's container and local storage
-func FullCleanup(instanceName, instanceType string) {
-	switch instanceType {
-	case mongo.AppInstance:
-		{
-			var (
-				path, _ = os.Getwd()
-				appDir  = filepath.Join(path, fmt.Sprintf("storage/%s", instanceName))
-			)
-			err := StorageCleanup(appDir)
-			if err != nil {
-				utils.LogError(err)
-			}
+// AppFullCleanup cleans the specified application's container and local storage
+func AppFullCleanup(instanceName string) {
+	var (
+		path, _ = os.Getwd()
+		appDir  = filepath.Join(path, fmt.Sprintf("storage/%s", instanceName))
+	)
+	err := StorageCleanup(appDir)
+	if err != nil {
+		utils.LogError(err)
+	}
 
-			err = ContainerCleanup(instanceName)
-			if err != nil {
-				utils.LogError(err)
-			}
-		}
+	err = ContainerCleanup(instanceName)
+	if err != nil {
+		utils.LogError(err)
+	}
+}
+
+// AppStateCleanup removes the application's data from MongoDB and Redis
+func AppStateCleanup(instanceName string) {
+	mongo.DeleteInstance(map[string]interface{}{
+		"name":         instanceName,
+		"instanceType": mongo.AppInstance,
+	})
+	redis.RemoveApp(instanceName)
+}
+
+// DatabaseFullCleanup deletes the specified database from the container
+func DatabaseFullCleanup(dbKey, databaseType string) {
+	switch databaseType {
 	case mongo.Mysql:
 		{
-			err := MysqlDatabaseCleanup(instanceName)
+			err := MysqlDatabaseCleanup(dbKey)
 			if err != nil {
 				utils.LogError(err)
 			}
 		}
 	case mongo.MongoDB:
 		{
-			err := MongoDatabaseCleanup(instanceName)
+			err := MongoDatabaseCleanup(dbKey)
 			if err != nil {
 				utils.LogError(err)
 			}
@@ -79,18 +89,14 @@ func FullCleanup(instanceName, instanceType string) {
 	}
 }
 
-// StateCleanup removes the application's/database's data from MongoDB and Redis
-func StateCleanup(instanceName, instanceType string) {
+// DatabaseStateCleanup removes the database's data from MongoDB and Redis
+func DatabaseStateCleanup(dbKey string) {
+	dbUser := strings.Split(dbKey, ":")[0]
+	dbName := strings.Split(dbKey, ":")[1]
 	mongo.DeleteInstance(map[string]interface{}{
-		"name":         instanceName,
-		"instanceType": instanceType,
+		"name":         dbName,
+		"user":         dbUser,
+		"instanceType": mongo.DBInstance,
 	})
-	switch instanceType {
-	case mongo.AppInstance:
-		redis.RemoveApp(instanceName)
-	case mongo.Mysql:
-		redis.RemoveDB(instanceName)
-	case mongo.MongoDB:
-		redis.RemoveDB(instanceName)
-	}
+	redis.RemoveDB(dbKey)
 }

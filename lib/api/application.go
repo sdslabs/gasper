@@ -141,7 +141,7 @@ func CreateBasicApplication(
 	}
 
 	if setupFlag || cloneFlag {
-		go commons.FullCleanup(name, "app")
+		go commons.AppFullCleanup(name)
 	}
 
 	return appEnv, []types.ResponseError{setupErr, cloneErr}
@@ -220,7 +220,7 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 			// but if an error arises, this means there's some issue with "execing"
 			// any process in the container => there's a problem with the container
 			// hence we also run the cleanup here so that nothing else goes wrong
-			go commons.FullCleanup(data["name"].(string), "app")
+			go commons.AppFullCleanup(data["name"].(string))
 			return nil, types.NewResErr(500, "cannot exec rc file", err)
 		}
 	}

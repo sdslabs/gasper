@@ -17,8 +17,8 @@ func createDB(c *gin.Context) {
 	c.BindJSON(&data)
 
 	delete(data, "rebuild")
-	data["language"] = ServiceName
-	data["instanceType"] = mongo.Mysql
+	data["language"] = mongo.Mysql
+	data["instanceType"] = mongo.DBInstance
 	data["hostIP"] = utils.HostIP
 	data["containerPort"] = configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 
@@ -39,8 +39,8 @@ func createDB(c *gin.Context) {
 		}, data)
 
 	if err != nil && err != mongo.ErrNoDocuments {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
+		go commons.DatabaseStateCleanup(dbKey)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -53,8 +53,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
+		go commons.DatabaseStateCleanup(dbKey)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -67,8 +67,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
+		go commons.DatabaseStateCleanup(dbKey)
 		c.JSON(500, gin.H{
 			"error": err,
 		})

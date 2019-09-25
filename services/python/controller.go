@@ -2,10 +2,10 @@ package python
 
 import (
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/sdslabs/SWS/lib/commons"
 	g "github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/mongo"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func rebuildApp(c *gin.Context) {
@@ -18,7 +18,7 @@ func rebuildApp(c *gin.Context) {
 	data := mongo.FetchAppInfo(filter)[0]
 	data["context"] = map[string]interface{}(data["context"].(primitive.D).Map())
 
-	commons.FullCleanup(appName, mongo.AppInstance)
+	commons.AppFullCleanup(appName)
 
 	resErr := pipeline(data)
 	if resErr != nil {
