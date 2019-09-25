@@ -28,3 +28,12 @@ func RemoveDB(db string) error {
 func FetchAllDatabases() (map[string]string, error) {
 	return client.HGetAll(DatabaseKey).Result()
 }
+
+// BulkRegisterDatabases registers multiple databases at once
+func BulkRegisterDatabases(data map[string]interface{}) error {
+	if len(data) == 0 {
+		return nil
+	}
+	_, err := client.HMSet(DatabaseKey, data).Result()
+	return err
+}

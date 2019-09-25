@@ -14,14 +14,10 @@ func keyNotExists(service, url string) bool {
 	return false
 }
 
-// RegisterService puts a service URL in its respective sorted set if it doesn't exist
-// for service discovery
+// RegisterService puts a service URL in its respective sorted set
 func RegisterService(service, url string, score float64) error {
-	if keyNotExists(service, url) {
-		_, err := client.ZAdd(service, redis.Z{Score: score, Member: url}).Result()
-		return err
-	}
-	return nil
+	_, err := client.ZAdd(service, redis.Z{Score: score, Member: url}).Result()
+	return err
 }
 
 // IncrementServiceLoad increments the number of apps deployed on a service host by 1
