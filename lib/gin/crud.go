@@ -186,18 +186,14 @@ func DeleteUser(c *gin.Context) {
 	})
 }
 
-// FetchDocs returns a handler function for fetching documents of all microservices of one kind
-func FetchDocs(service string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		queries := c.Request.URL.Query()
-		filter := utils.QueryToFilter(queries)
-		if service != "dominus" {
-			filter["language"] = service
-		}
-		c.JSON(200, gin.H{
-			"data": mongo.FetchAppInfo(filter),
-		})
-	}
+// FetchDocs fetches documents of all from mongoDB based on a filter passed
+// in url query params
+func FetchDocs(c *gin.Context) {
+	queries := c.Request.URL.Query()
+	filter := utils.QueryToFilter(queries)
+	c.JSON(200, gin.H{
+		"data": mongo.FetchAppInfo(filter),
+	})
 }
 
 // DeleteApp returns a handler function for deleting an application bound to a microservice
@@ -224,31 +220,26 @@ func DeleteApp(service string) gin.HandlerFunc {
 	}
 }
 
-// UpdateAppInfo returns a handler function for updating an application bound to a microservice
-func UpdateAppInfo(service string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		app := c.Param("app")
-		queries := c.Request.URL.Query()
-		filter := utils.QueryToFilter(queries)
-		if service != "dominus" {
-			filter["language"] = service
-		}
-		filter["name"] = app
-		filter["instanceType"] = mongo.AppInstance
+// UpdateAppInfo updates the application document in mongoDB
+func UpdateAppInfo(c *gin.Context) {
+	app := c.Param("app")
+	queries := c.Request.URL.Query()
+	filter := utils.QueryToFilter(queries)
+	filter["name"] = app
+	filter["instanceType"] = mongo.AppInstance
 
-		var data map[string]interface{}
-		c.BindJSON(&data)
+	var data map[string]interface{}
+	c.BindJSON(&data)
 
-		err := validateUpdatePayload(data)
-		if err != nil {
-			c.JSON(400, gin.H{
-				"error": err,
-			})
-			return
-		}
-
-		c.JSON(200, gin.H{
-			"message": mongo.UpdateInstance(filter, data),
+	err := validateUpdatePayload(data)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err,
 		})
+		return
 	}
+
+	c.JSON(200, gin.H{
+		"message": mongo.UpdateInstance(filter, data),
+	})
 }
