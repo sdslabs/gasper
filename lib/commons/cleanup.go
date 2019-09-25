@@ -45,7 +45,6 @@ func MongoDatabaseCleanup(dbKey string) error {
 
 // FullCleanup cleans the specified application's container and local storage
 func FullCleanup(instanceName, instanceType string) {
-	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
 	case mongo.AppInstance:
 		{
@@ -86,7 +85,6 @@ func StateCleanup(instanceName, instanceType string) {
 		"name":         instanceName,
 		"instanceType": instanceType,
 	})
-	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
 	case mongo.AppInstance:
 		redis.RemoveApp(instanceName)

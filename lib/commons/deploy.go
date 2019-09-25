@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/utils"
 )
