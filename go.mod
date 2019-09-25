@@ -20,7 +20,7 @@ require (
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/kr/pty v1.1.1
 	github.com/mattn/go-colorable v0.1.1 // indirect
-	github.com/mongodb/mongo-go-driver v0.1.0
+	github.com/mongodb/mongo-go-driver v0.1.0 // indirect
 	github.com/onsi/ginkgo v1.10.1 // indirect
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
