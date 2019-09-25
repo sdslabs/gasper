@@ -2,8 +2,8 @@ package static
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
 )

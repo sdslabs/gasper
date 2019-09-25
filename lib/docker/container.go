@@ -86,6 +86,45 @@ func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlP
 	}
 
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mysql")
+
+	if err != nil {
+		return "", err
+	}
+
+	return createdConf.ID, nil
+}
+
+// CreateMongoDBContainer function sets up a mongoDB instance for managing databases
+func CreateMongoDBContainer(ctx context.Context, cli *client.Client, image, mongodbPort, workdir, storedir string, env map[string]interface{}) (string, error) {
+	volume := fmt.Sprintf("%s:%s", storedir, workdir)
+
+	envArr := []string{}
+	for key, value := range env {
+		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
+	}
+
+	containerConfig := &container.Config{
+		Image: image,
+		ExposedPorts: nat.PortSet{
+			"27017/tcp": struct{}{},
+		},
+		Env: envArr,
+		Volumes: map[string]struct{}{
+			volume: struct{}{},
+		},
+	}
+
+	hostConfig := &container.HostConfig{
+		Binds: []string{
+			"/var/run/docker.sock:/var/run/docker.sock",
+			volume,
+		},
+		PortBindings: nat.PortMap{
+			nat.Port("27017/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: mongodbPort}},
+		},
+	}
+
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mongodb")
 	if err != nil {
 		return "", err
 	}

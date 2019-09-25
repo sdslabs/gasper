@@ -29,15 +29,23 @@ func ContainerCleanup(appName string) error {
 	return docker.DeleteContainer(appName)
 }
 
-// DatabaseCleanup cleans the database's space in the container
-func DatabaseCleanup(dbKey string) error {
+// MysqlDatabaseCleanup cleans the database's space in the container
+func MysqlDatabaseCleanup(dbKey string) error {
 	dbUser := strings.Split(dbKey, ":")[0]
 	dbName := strings.Split(dbKey, ":")[1]
-	return database.DeleteDB(dbName, dbUser)
+	return database.DeleteMysqlDB(dbName, dbUser)
+}
+
+// MongoDatabaseCleanup cleans the database's space in the container
+func MongoDatabaseCleanup(dbKey string) error {
+	dbUser := strings.Split(dbKey, ":")[0]
+	dbName := strings.Split(dbKey, ":")[1]
+	return database.DeleteMongoDB(dbName, dbUser)
 }
 
 // FullCleanup cleans the specified application's container and local storage
 func FullCleanup(instanceName, instanceType string) {
+	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
 	case mongo.AppInstance:
 		{
@@ -55,9 +63,16 @@ func FullCleanup(instanceName, instanceType string) {
 				utils.LogError(err)
 			}
 		}
-	case mongo.DBInstance:
+	case mongo.Mysql:
 		{
-			err := DatabaseCleanup(instanceName)
+			err := MysqlDatabaseCleanup(instanceName)
+			if err != nil {
+				utils.LogError(err)
+			}
+		}
+	case mongo.MongoDB:
+		{
+			err := MongoDatabaseCleanup(instanceName)
 			if err != nil {
 				utils.LogError(err)
 			}
@@ -71,11 +86,13 @@ func StateCleanup(instanceName, instanceType string) {
 		"name":         instanceName,
 		"instanceType": instanceType,
 	})
-
+	instanceType = strings.Split(instanceType, ":")[1]
 	switch instanceType {
 	case mongo.AppInstance:
 		redis.RemoveApp(instanceName)
-	case mongo.DBInstance:
+	case mongo.Mysql:
+		redis.RemoveDB(instanceName)
+	case mongo.MongoDB:
 		redis.RemoveDB(instanceName)
 	}
 }

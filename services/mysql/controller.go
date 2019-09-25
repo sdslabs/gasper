@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
@@ -24,7 +24,7 @@ func createDB(c *gin.Context) {
 
 	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
 
-	err := database.CreateDB(data["name"].(string), data["user"].(string), data["password"].(string))
+	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,
@@ -38,9 +38,11 @@ func createDB(c *gin.Context) {
 			"instanceType": data["instanceType"],
 		}, data)
 
+	instanceType := mongo.DBInstance + ":" + mongo.Mysql
+
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -53,8 +55,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -67,8 +69,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
-		go commons.StateCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.FullCleanup(data["name"].(string), instanceType)
+		go commons.StateCleanup(data["name"].(string), instanceType)
 		c.JSON(500, gin.H{
 			"error": err,
 		})
@@ -78,6 +80,7 @@ func createDB(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"success": true,
 	})
+
 }
 
 func fetchDBs(c *gin.Context) {
@@ -97,7 +100,7 @@ func deleteDB(c *gin.Context) {
 	db := c.Param("db")
 	dbKey := fmt.Sprintf(`%s:%s`, user, db)
 
-	err := database.DeleteDB(db, user)
+	err := database.DeleteMysqlDB(db, user)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err,

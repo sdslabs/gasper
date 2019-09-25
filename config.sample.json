@@ -36,6 +36,10 @@
             "deploy": true,
             "port": ":3000"
         },
+        "enrai": {
+            "deploy": true,
+            "port": ":4040"
+        },
         "ssh": {
             "deploy": true,
             "port": ":2222",
@@ -79,6 +83,16 @@
             "env": {
                 "MYSQL_USER": "root",
                 "MYSQL_ALLOW_EMPTY_PASSWORD": "yes"
+            }
+        },
+        "mongodb": {
+            "deploy": true,
+            "image": "mongo:latest",
+            "port": ":9001",
+            "container_port": "27018",
+            "env": {
+                "MONGO_INITDB_ROOT_USERNAME": "",
+                "MONGO_INITDB_ROOT_PASSWORD": ""
             }
         }
     }

@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/enrai"
+	"github.com/sdslabs/SWS/services/mongodb"
 	"github.com/sdslabs/SWS/services/mysql"
 	"github.com/sdslabs/SWS/services/node"
 	"github.com/sdslabs/SWS/services/php"
@@ -29,10 +30,11 @@ type UnivServer struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]func(string, string) UnivServer{
-	"ssh":   startSSHService,
-	"mysql": startMySQLService,
-	"app":   startAppService,
-	"enrai": startEnraiService,
+	"ssh":     startSSHService,
+	"mysql":   startMySQLService,
+	"app":     startAppService,
+	"enrai":   startEnraiService,
+	"mongodb": startMongoDBService,
 }
 
 // Bind services to routers here
@@ -43,6 +45,7 @@ var serviceBindings = map[string]*gin.Engine{
 	"node":    node.Router,
 	"python":  python.Router,
 	"mysql":   mysql.Router,
+	"mongodb": mongodb.Router,
 }
 
 func initHTTPServer(service, port string) UnivServer {
@@ -63,7 +66,7 @@ func startMySQLService(service, port string) UnivServer {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mysql") {
 		utils.LogInfo("No Mysql instance found in host. Building the instance.")
-		containerID, err := database.SetupDBInstance()
+		containerID, err := database.SetupDBInstance("mysql")
 		if err != nil {
 			utils.Log("There was a problem deploying MySql service.", utils.ErrorTAG)
 			utils.LogError(err)
@@ -79,7 +82,7 @@ func startMySQLService(service, port string) UnivServer {
 			if err != nil {
 				utils.LogError(err)
 			}
-			containerID, err := database.SetupDBInstance()
+			containerID, err := database.SetupDBInstance("mysql")
 			if err != nil {
 				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
 				utils.LogError(err)
@@ -89,6 +92,45 @@ func startMySQLService(service, port string) UnivServer {
 		}
 		if containerStatus["Status"].(string) == "exited" {
 			err := docker.StartContainer("mysql")
+			if err != nil {
+				utils.LogError(err)
+			}
+		}
+	}
+	server := initHTTPServer(service, port)
+	return server
+}
+
+func startMongoDBService(service, port string) UnivServer {
+	containers := docker.ListContainers()
+	if !utils.Contains(containers, "/mongodb") {
+		utils.LogInfo("No MongoDB instance found in host. Building the instance.")
+		containerID, err := database.SetupDBInstance("mongodb")
+		if err != nil {
+			utils.Log("There was a problem deploying mongodb service.", utils.ErrorTAG)
+			utils.LogError(err)
+		} else {
+			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+		}
+	} else {
+		containerStatus, err := docker.InspectContainerState("/mongodb")
+		if err != nil {
+			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
+			utils.LogError(err)
+			err := docker.DeleteContainer("/mongodb")
+			if err != nil {
+				utils.LogError(err)
+			}
+			containerID, err := database.SetupDBInstance("mongodb")
+			if err != nil {
+				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
+				utils.LogError(err)
+			} else {
+				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+			}
+		}
+		if containerStatus["Status"].(string) == "exited" {
+			err := docker.StartContainer("mongodb")
 			if err != nil {
 				utils.LogError(err)
 			}
@@ -135,6 +177,8 @@ func Launcher(service, port string) UnivServer {
 		return launcherBindings["enrai"](service, port)
 	} else if strings.HasPrefix(service, "mysql") {
 		return launcherBindings["mysql"](service, port)
+	} else if strings.HasPrefix(service, "mongodb") {
+		return launcherBindings["mongodb"](service, port)
 	} else if service != "" {
 		return launcherBindings["app"](service, port)
 	}
