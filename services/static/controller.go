@@ -1,7 +1,7 @@
 package static
 
 import (
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/lib/commons"
