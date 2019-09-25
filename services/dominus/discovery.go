@@ -2,6 +2,7 @@ package dominus
 
 import (
 	"encoding/json"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -12,16 +13,63 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
+var instanceRegistrationBindings = map[string]func(instances []map[string]interface{}, currentIP string, config map[string]interface{}){
+	"php":     registerApps,
+	"node":    registerApps,
+	"python":  registerApps,
+	"static":  registerApps,
+	"mysql":   registerDatabases,
+	"mongodb": registerDatabases,
+}
+
+func registerApps(instances []map[string]interface{}, currentIP string, config map[string]interface{}) {
+	payload := make(map[string]interface{})
+
+	for _, instance := range instances {
+		appBind := &types.AppBindings{
+			Node:   currentIP + config["port"].(string),
+			Server: currentIP + ":" + strconv.FormatInt(int64(instance["httpPort"].(int32)), 10),
+		}
+
+		appBindingJSON, err := json.Marshal(appBind)
+
+		if err != nil {
+			utils.LogError(err)
+			return
+		}
+		payload[instance["name"].(string)] = appBindingJSON
+	}
+	err := redis.BulkRegisterApps(payload)
+	if err != nil {
+		utils.LogError(err)
+		return
+	}
+}
+
+func registerDatabases(instances []map[string]interface{}, currentIP string, config map[string]interface{}) {
+	payload := make(map[string]interface{})
+
+	for _, instance := range instances {
+		key := fmt.Sprintf("%s:%s", instance["user"].(string), instance["name"].(string))
+		payload[key] = currentIP + config["port"].(string)
+	}
+	err := redis.BulkRegisterDatabases(payload)
+	if err != nil {
+		utils.LogError(err)
+		return
+	}
+}
+
 // exposeService exposes a single microservice along with its apps
 func exposeService(service, currentIP string, config map[string]interface{}) {
 	if config["deploy"].(bool) {
-		apps := mongo.FetchAppInfo(
+		instances := mongo.FetchAppInfo(
 			map[string]interface{}{
 				"language": service,
 				"hostIP":   currentIP,
 			},
 		)
-		count := len(apps)
+		count := len(instances)
 		err := redis.RegisterService(
 			service,
 			currentIP+config["port"].(string),
@@ -29,30 +77,10 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 		)
 		if err != nil {
 			utils.LogError(err)
-			panic(err)
+			return
 		}
-
-		payload := make(map[string]interface{})
-
-		for _, app := range apps {
-
-			appBind := &types.AppBindings{
-				Node:   currentIP + config["port"].(string),
-				Server: currentIP + ":" + strconv.FormatInt(app["httpPort"].(int64), 10),
-			}
-
-			appBindingJSON, err := json.Marshal(appBind)
-
-			if err != nil {
-				utils.LogError(err)
-				panic(err)
-			}
-			payload[app["name"].(string)] = appBindingJSON
-		}
-		err = redis.BulkRegisterApps(payload)
-		if err != nil {
-			utils.LogError(err)
-			panic(err)
+		if instanceRegistrationBindings[service] != nil {
+			instanceRegistrationBindings[service](instances, currentIP, config)
 		}
 	}
 }
