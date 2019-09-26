@@ -31,17 +31,20 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 // if it is dead
 func inspectInstance(service, instance string) {
 	if utils.NotAlive(instance) {
-		instanceIP := strings.Split(instance, ":")
 		err := redis.RemoveServiceInstance(service, instance)
 		if err != nil {
 			utils.LogError(err)
 		}
-		apps := mongo.FetchAppInfo(
-			map[string]interface{}{
-				"hostIP": instanceIP[0],
-			},
-		)
-		go rescheduleInstance(apps, service)
+		if service == "mizu" {
+			instanceIP := strings.Split(instance, ":")
+			apps := mongo.FetchAppInfo(
+				map[string]interface{}{
+					"hostIP":       instanceIP[0],
+					"instanceType": mongo.AppInstance,
+				},
+			)
+			go rescheduleInstance(apps, service)
+		}
 	}
 }
 
