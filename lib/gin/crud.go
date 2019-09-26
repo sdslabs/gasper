@@ -1,97 +1,10 @@
 package gin
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/cloudflare"
-	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/types"
 	"github.com/sdslabs/SWS/lib/utils"
 )
-
-// CreateApp creates an application for a service
-func CreateApp(service string, pipeline func(data map[string]interface{}) types.ResponseError) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var data map[string]interface{}
-		c.BindJSON(&data)
-
-		delete(data, "rebuild")
-		data["language"] = service
-		data["instanceType"] = mongo.AppInstance
-
-		resErr := pipeline(data)
-		if resErr != nil {
-			SendResponse(c, resErr, gin.H{})
-			return
-		}
-
-		err := mongo.UpsertInstance(
-			map[string]interface{}{
-				"name":         data["name"],
-				"instanceType": data["instanceType"],
-			}, data)
-
-		if err != nil && err != mongo.ErrNoDocuments {
-			go commons.AppFullCleanup(data["name"].(string))
-			go commons.AppStateCleanup(data["name"].(string))
-			c.JSON(500, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		err = redis.RegisterApp(
-			data["name"].(string),
-			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
-			utils.HostIP+":"+strconv.Itoa(data["httpPort"].(int)),
-		)
-
-		if err != nil {
-			go commons.AppFullCleanup(data["name"].(string))
-			go commons.AppStateCleanup(data["name"].(string))
-			c.JSON(500, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		err = redis.IncrementServiceLoad(
-			service,
-			utils.HostIP+configs.ServiceConfig[service].(map[string]interface{})["port"].(string),
-		)
-
-		if err != nil {
-			go commons.AppFullCleanup(data["name"].(string))
-			go commons.AppStateCleanup(data["name"].(string))
-			c.JSON(500, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		if configs.CloudflareConfig["plugIn"].(bool) {
-			resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance, utils.HostIP)
-			if err != nil {
-				go commons.AppFullCleanup(data["name"].(string))
-				go commons.AppStateCleanup(data["name"].(string))
-				c.JSON(500, gin.H{
-					"error": err.Error(),
-				})
-				return
-			}
-			data["cloudflareID"] = resp.Result.ID
-			data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.SWSConfig["domain"].(string))
-		}
-
-		data["success"] = true
-		c.JSON(200, data)
-	}
-}
 
 // FetchAppInfo returns the information about a particular app
 func FetchAppInfo(c *gin.Context) {
@@ -196,30 +109,6 @@ func FetchDocs(c *gin.Context) {
 	})
 }
 
-// DeleteApp returns a handler function for deleting an application bound to a microservice
-func DeleteApp(service string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		app := c.Param("app")
-		filter := map[string]interface{}{
-			"name":         app,
-			"instanceType": mongo.AppInstance,
-		}
-		update := map[string]interface{}{
-			"deleted": true,
-		}
-		node, _ := redis.FetchAppNode(app)
-		go redis.DecrementServiceLoad(service, node)
-		go redis.RemoveApp(app)
-		go commons.AppFullCleanup(app)
-		if configs.CloudflareConfig["plugIn"].(bool) {
-			go cloudflare.DeleteRecord(app, mongo.AppInstance)
-		}
-		c.JSON(200, gin.H{
-			"message": mongo.UpdateInstance(filter, update),
-		})
-	}
-}
-
 // UpdateAppInfo updates the application document in mongoDB
 func UpdateAppInfo(c *gin.Context) {
 	app := c.Param("app")
@@ -234,7 +123,7 @@ func UpdateAppInfo(c *gin.Context) {
 	err := validateUpdatePayload(data)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
