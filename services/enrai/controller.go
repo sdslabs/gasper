@@ -30,6 +30,11 @@ func subdomainRootHandler(w http.ResponseWriter, r *http.Request) {
 	tenantDomains := strings.Split(configs.SWSConfig["domain"].(string), ".")
 	subdomains := strings.Split(r.Host, ".")
 	n := len(subdomains)
+	if n < 2 {
+		w.Write([]byte("Please provide the correct tenant subdomain."))
+		w.WriteHeader(500)
+		return
+	}
 	if subdomains[n-2] == tenantDomains[0] && subdomains[n-1] == tenantDomains[1] {
 		appName := subdomains[0]
 		appURL, err := redis.FetchAppServer(appName)
@@ -38,7 +43,6 @@ func subdomainRootHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(404)
 			return
 		}
-
 		reverseProxy(w, r, appURL)
 		w.WriteHeader(200)
 	} else {
