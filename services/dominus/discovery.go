@@ -14,12 +14,34 @@ import (
 )
 
 var instanceRegistrationBindings = map[string]func(instances []map[string]interface{}, currentIP string, config map[string]interface{}){
-	"php":     registerApps,
-	"node":    registerApps,
-	"python":  registerApps,
-	"static":  registerApps,
+	"mizu":    registerApps,
 	"mysql":   registerDatabases,
 	"mongodb": registerDatabases,
+}
+
+var instanceServiceBindings = map[string]func(currentIP, service string) []map[string]interface{}{
+	"mizu":    fetchBoundApps,
+	"mysql":   fetchBoundDatabases,
+	"mongodb": fetchBoundDatabases,
+}
+
+func fetchBoundApps(currentIP, service string) []map[string]interface{} {
+	return mongo.FetchAppInfo(
+		map[string]interface{}{
+			"instanceType": mongo.AppInstance,
+			"hostIP":       currentIP,
+		},
+	)
+}
+
+func fetchBoundDatabases(currentIP, service string) []map[string]interface{} {
+	return mongo.FetchAppInfo(
+		map[string]interface{}{
+			"instanceType": mongo.DBInstance,
+			"hostIP":       currentIP,
+			"language":     service,
+		},
+	)
 }
 
 func registerApps(instances []map[string]interface{}, currentIP string, config map[string]interface{}) {
@@ -62,26 +84,23 @@ func registerDatabases(instances []map[string]interface{}, currentIP string, con
 
 // exposeService exposes a single microservice along with its apps
 func exposeService(service, currentIP string, config map[string]interface{}) {
-	if config["deploy"].(bool) {
-		instances := mongo.FetchAppInfo(
-			map[string]interface{}{
-				"language": service,
-				"hostIP":   currentIP,
-			},
-		)
-		count := len(instances)
-		err := redis.RegisterService(
-			service,
-			currentIP+config["port"].(string),
-			float64(count),
-		)
-		if err != nil {
-			utils.LogError(err)
-			return
-		}
-		if instanceRegistrationBindings[service] != nil {
-			instanceRegistrationBindings[service](instances, currentIP, config)
-		}
+	count := 0
+	var instances []map[string]interface{}
+	if instanceServiceBindings[service] != nil {
+		instances = instanceServiceBindings[service](currentIP, service)
+		count = len(instances)
+	}
+	err := redis.RegisterService(
+		service,
+		currentIP+config["port"].(string),
+		float64(count),
+	)
+	if err != nil {
+		utils.LogError(err)
+		return
+	}
+	if instanceRegistrationBindings[service] != nil {
+		instanceRegistrationBindings[service](instances, currentIP, config)
 	}
 }
 
@@ -93,11 +112,9 @@ func exposeServices() {
 	}
 	checkAndUpdateState(currIP)
 	for service, config := range configs.ServiceConfig {
-		go exposeService(
-			service,
-			currIP,
-			config.(map[string]interface{}),
-		)
+		if config.(map[string]interface{})["deploy"].(bool) {
+			go exposeService(service, currIP, config.(map[string]interface{}))
+		}
 	}
 }
 
