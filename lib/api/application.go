@@ -43,7 +43,7 @@ func cloneRepo(url, storedir, accessToken string, mutex map[string]chan types.Re
 
 func setupContainer(
 	appEnv *types.ApplicationEnv,
-	storePath, confFileName, workdir, storedir, name, url, httpPort, hostPort string,
+	storePath, confFileName, workdir, storedir, name, url, httpPort, containerPort string,
 	env, appContext map[string]interface{},
 	appConf *types.ApplicationConfig,
 	resources container.Resources,
@@ -51,7 +51,7 @@ func setupContainer(
 
 	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, hostPort, workdir, storedir, name, resources, env)
+	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, containerPort, workdir, storedir, name, resources, env)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
@@ -81,7 +81,7 @@ func setupContainer(
 
 // CreateBasicApplication spawns a new container with the application of a particular service
 func CreateBasicApplication(
-	name, url, accessToken, httpPort, hostPort string,
+	name, url, accessToken, httpPort, containerPort string,
 	env, appContext map[string]interface{},
 	appConf *types.ApplicationConfig,
 	resources container.Resources) (*types.ApplicationEnv, []types.ResponseError) {
@@ -116,7 +116,7 @@ func CreateBasicApplication(
 		name,
 		url,
 		httpPort,
-		hostPort,
+		containerPort,
 		env,
 		appContext,
 		appConf,
@@ -189,11 +189,11 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 
 	context := data["context"].(map[string]interface{})
 
-	var hostPort string
-	if data["language"] == "php" || data["language"] == "static" {
-		hostPort = "80"
+	var containerPort string
+	if data["language"].(string) == "php" || data["language"].(string) == "static" {
+		containerPort = "80"
 	} else {
-		hostPort = context["port"].(string)
+		containerPort = context["port"].(string)
 	}
 
 	appEnv, errList := CreateBasicApplication(
@@ -201,7 +201,7 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 		data["url"].(string),
 		accessToken,
 		strconv.Itoa(httpPort),
-		hostPort,
+		containerPort,
 		env,
 		data["context"].(map[string]interface{}),
 		appConf,
