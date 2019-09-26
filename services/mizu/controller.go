@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/cloudflare"
 	"github.com/sdslabs/SWS/lib/commons"

@@ -12,7 +12,7 @@ func createApp(c *gin.Context) {
 	instanceURL, err := redis.GetLeastLoadedInstance(service)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
