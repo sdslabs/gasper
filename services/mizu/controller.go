@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/cloudflare"
 	"github.com/sdslabs/SWS/lib/commons"
@@ -13,6 +12,7 @@ import (
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // createApp creates an application for a given language
@@ -107,7 +107,8 @@ func rebuildApp(c *gin.Context) {
 		return
 	}
 	data := dataList[0]
-	data["context"] = map[string]interface{}(data["context"].(primitive.D).Map())
+	data["context"] = map[string]interface{}(data["context"].(primitive.M))
+	data["resources"] = map[string]interface{}(data["resources"].(primitive.M))
 
 	commons.AppFullCleanup(appName)
 

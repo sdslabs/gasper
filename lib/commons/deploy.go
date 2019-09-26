@@ -3,11 +3,11 @@ package commons
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/utils"
 )
@@ -17,15 +17,13 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 	utils.LogInfo("Re-deploying application %s with type %s to %s\n", app["name"], strings.Title(service), hostURL)
 
 	app["rebuild"] = true
-	app["context"] = app["context"].(primitive.D).Map()
-	app["resources"] = app["resources"].(primitive.D).Map()
 	reqBody, err := json.Marshal(app)
 	if err != nil {
 		utils.LogError(err)
 		return
 	}
 
-	req, err := http.NewRequest("POST", "http://"+hostURL, bytes.NewBuffer(reqBody))
+	req, err := http.NewRequest("POST", fmt.Sprintf("http://%s/%s", hostURL, app["language"].(string)), bytes.NewBuffer(reqBody))
 	if err != nil {
 		utils.LogError(err)
 		return
