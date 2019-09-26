@@ -7,6 +7,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
+	"github.com/sdslabs/SWS/lib/configs"
 	"github.com/sdslabs/SWS/lib/utils"
 	"golang.org/x/net/context"
 )
@@ -15,7 +16,7 @@ import (
 func CreateContainer(
 	ctx context.Context,
 	cli *client.Client,
-	image, httpPort, workdir, storedir, name string,
+	image, httpPort, hostPort, workdir, storedir, name string,
 	resources container.Resources,
 	env map[string]interface{}) (string, error) {
 
@@ -27,11 +28,14 @@ func CreateContainer(
 		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
 	}
 
+	var hostPortRule nat.Port
+	hostPortRule = nat.Port(fmt.Sprintf(`%s/tcp`, hostPort))
+
 	containerConfig := &container.Config{
 		WorkingDir: workdir,
 		Image:      image,
 		ExposedPorts: nat.PortSet{
-			"80/tcp": struct{}{},
+			hostPortRule: struct{}{},
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
@@ -43,11 +47,13 @@ func CreateContainer(
 			"/var/run/docker.sock:/var/run/docker.sock",
 			volume,
 		},
+		DNS: utils.ToStringSlice(configs.SWSConfig["dnsServers"]),
 		PortBindings: nat.PortMap{
-			nat.Port("80/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: httpPort}},
+			nat.Port(hostPortRule): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: httpPort}},
 		},
 		Resources: resources,
 	}
+
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, name)
 	if err != nil {
 		return "", err
