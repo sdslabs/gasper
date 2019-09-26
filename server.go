@@ -12,23 +12,24 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-var g errgroup.Group
+func checkAndPullImages() {
+	images := docker.ListImages()
+	for service, image := range configs.ImageConfig {
+		if !utils.Contains(images, image.(string)) {
+			utils.LogInfo("Image %s required by service %s not present locally, pulling from DockerHUB\n", image, service)
+			docker.Pull(image.(string))
+		}
+	}
+}
 
 func main() {
 	var g errgroup.Group
 
-	images := docker.ListImages()
+	checkAndPullImages()
 
 	for service, config := range configs.ServiceConfig {
 		config := config.(map[string]interface{})
 		if config["deploy"].(bool) {
-			if image, check := config["image"]; check {
-				image := image.(string)
-				if !utils.Contains(images, image) {
-					utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
-					docker.Pull(image)
-				}
-			}
 			port := config["port"].(string)
 			if utils.IsValidPort(port) {
 				customServer := Launcher(service, port)

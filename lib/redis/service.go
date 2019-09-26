@@ -61,6 +61,11 @@ func GetLeastLoadedInstance(service string) (string, error) {
 	return instance[0], nil
 }
 
+// GetLeastLoadedWorker returns a single worker instance having least number of apps deployed
+func GetLeastLoadedWorker() (string, error) {
+	return GetLeastLoadedInstance(WorkerInstanceKey)
+}
+
 // FetchServiceInstances returns all instances of a given service
 func FetchServiceInstances(service string) ([]string, error) {
 	data, err := client.ZRangeByScore(
@@ -77,6 +82,11 @@ func FetchServiceInstances(service string) ([]string, error) {
 		return []string{}, nil
 	}
 	return data, nil
+}
+
+// FetchWorkerInstances returns all worker service instances
+func FetchWorkerInstances() ([]string, error) {
+	return FetchServiceInstances(WorkerInstanceKey)
 }
 
 // RemoveServiceInstance removes an instance of a particular service

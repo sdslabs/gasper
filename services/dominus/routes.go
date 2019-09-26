@@ -14,7 +14,7 @@ var ServiceName = "dominus"
 
 func init() {
 	Router.Use(middlewares.FalconGuard())
-	Router.POST("/:service", createApp)
+	Router.POST("/:language", createApp)
 	app := Router.Group("/apps")
 	{
 		app.GET("/:app", gin.FetchAppInfo)

@@ -8,8 +8,7 @@ import (
 )
 
 func createApp(c *gin.Context) {
-	service := c.Param("service")
-	instanceURL, err := redis.GetLeastLoadedInstance(service)
+	instanceURL, err := redis.GetLeastLoadedWorker()
 	if err != nil {
 		c.JSON(400, gin.H{
 			"error": err.Error(),
@@ -18,11 +17,10 @@ func createApp(c *gin.Context) {
 	}
 	if instanceURL == redis.ErrEmptySet {
 		c.JSON(400, gin.H{
-			"error": fmt.Sprintf("No %s instances available at the moment", service),
+			"error": "No worker instances available at the moment",
 		})
 		return
 	}
-	c.Request.URL.Path = ""
 	reverseProxy(c, instanceURL)
 }
 
