@@ -221,11 +221,15 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	data["context"].(map[string]interface{})["rcFile"] = runCommands
 
 	if runCommands {
+		cmd := []string{"bash", "-c", `chmod 755 ./Gasperfile.txt && ./Gasperfile.txt`}
+		if data["language"].(string) == "node" {
+			cmd = []string{"bash", "-c", `export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; chmod 755 ./Gasperfile.txt && ./Gasperfile.txt`}
+		}
 		_, err = docker.ExecDetachedProcess(
 			appEnv.Context,
 			appEnv.Client,
 			appEnv.ContainerID,
-			[]string{"/bin/bash", configs.SWSConfig["rcFile"].(string)})
+			cmd)
 		if err != nil {
 			// this error cannot be ignored; the chances of error here are very less
 			// but if an error arises, this means there's some issue with "execing"

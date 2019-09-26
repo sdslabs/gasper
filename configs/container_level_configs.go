@@ -8,7 +8,7 @@ import (
 // and generates the container level config for the same
 // Location is the path of index.html or index.htm, leave empty if same
 func CreateStaticContainerConfig(name string, appContext map[string]interface{}) string {
-	path := fmt.Sprintf("%s/%s", name, appContext["index"].(string))
+	path := fmt.Sprintf("%s/%s", SWSConfig["projectRoot"].(string), name)
 	return fmt.Sprintf(`
 server {
 	listen       80;
@@ -18,8 +18,8 @@ server {
 	error_log   /var/log/nginx/%s.error.log   warn;
 
 	location / {
-		root   %s/%s;
-		index  index.html index.htm;
+		root   %s/;
+		index  %s index.html;
 	}
 
 	error_page   500 502 503 504  /50x.html;
@@ -27,7 +27,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, SWSConfig["domain"].(string), name, name, SWSConfig["projectRoot"].(string), path)
+	`, name, SWSConfig["domain"].(string), name, name, path, appContext["index"].(string))
 }
 
 // CreatePHPContainerConfig takes the name of the PHP application
