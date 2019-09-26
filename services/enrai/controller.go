@@ -27,9 +27,10 @@ func reverseProxy(w http.ResponseWriter, r *http.Request, target string) {
 // subdomainRootHandler handles the root route of the provided host
 // and extracts the url to perform the reverse proxy
 func subdomainRootHandler(w http.ResponseWriter, r *http.Request) {
+	tenantDomains := strings.Split(configs.SWSConfig["domain"].(string), ".")
 	subdomains := strings.Split(r.Host, ".")
 	n := len(subdomains)
-	if subdomains[n-2] == "sdslabs" && subdomains[n-1] == "co" {
+	if subdomains[n-2] == tenantDomains[0] && subdomains[n-1] == tenantDomains[1] {
 		appName := subdomains[0]
 		appURL, err := redis.FetchAppServer(appName)
 		if err != nil {
