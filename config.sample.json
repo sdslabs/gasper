@@ -33,11 +33,11 @@
         "redirectUri": ""
     },
     "images": {
-        "static": "nginx:latest",
-        "php": "nginx:latest",
-        "nodejs": "nginx:latest",
-        "python2": "6b9228af2a0a",
-        "python3": "nginx:latest",
+        "static": "sdsws/static:1.0",
+        "php": "f4d50a3b65e1",
+        "nodejs": "sdsws/node:1.2",
+        "python2": "sdsws/python:1.0",
+        "python3": "sdsws/python:1.0",
         "mysql": "mysql:5.7",
         "mongodb": "mongo:latest"
     },
