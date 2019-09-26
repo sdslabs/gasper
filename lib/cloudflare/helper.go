@@ -10,7 +10,7 @@ func formatErrorResponse(apiErrors []errorResponse) error {
 	for _, value := range apiErrors {
 		res += value.Message + ";"
 	}
-	return fmt.Errorf("Errors: %s", res)
+	return fmt.Errorf("Cloudflare Errors: %s", res)
 }
 
 // getZoneID returns the ID of the 1st zone
