@@ -21,7 +21,7 @@ func installPackages(path string, appEnv *types.ApplicationEnv) (string, types.R
 // Pipeline is the application creation pipeline
 func Pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
-		DockerImage:  configs.ServiceConfig["php"].(map[string]interface{})["image"].(string),
+		DockerImage:  configs.ImageConfig["php"].(string),
 		ConfFunction: configs.CreatePHPContainerConfig,
 	}
 
@@ -47,7 +47,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 			}
 			execID, resErr := installPackages(composerPath, appEnv)
 			if resErr != nil {
-				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+				go commons.AppFullCleanup(data["name"].(string))
 				return resErr
 			}
 			data["execID"] = execID

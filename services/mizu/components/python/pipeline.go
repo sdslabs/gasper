@@ -41,9 +41,9 @@ func installRequirements(path string, env *types.ApplicationEnv) (string, types.
 func Pipeline(data map[string]interface{}) types.ResponseError {
 	var image string
 	if data[pythonVersionTag].(string) == python3Tag {
-		image = configs.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
+		image = configs.ImageConfig["python3"].(string)
 	} else if data[pythonVersionTag].(string) == python2Tag {
-		image = configs.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
+		image = configs.ImageConfig["python2"].(string)
 	}
 
 	appConf := &types.ApplicationConfig{
@@ -67,7 +67,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 	if requirements != nil {
 		_, resErr = installRequirements(requirements.(string), appEnv)
 		if resErr != nil {
-			go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+			go commons.AppFullCleanup(data["name"].(string))
 			return resErr
 		}
 	}
@@ -90,7 +90,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 		_, resErr = startServer(context["index"].(string), arguments, appEnv)
 	}
 	if resErr != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.AppFullCleanup(data["name"].(string))
 		return resErr
 	}
 

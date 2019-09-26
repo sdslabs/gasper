@@ -31,7 +31,7 @@ func startApp(index string, appEnv *types.ApplicationEnv) (string, types.Respons
 // Pipeline is the application creation pipeline
 func Pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
-		DockerImage:  configs.ServiceConfig["node"].(map[string]interface{})["image"].(string),
+		DockerImage:  configs.ImageConfig["nodejs"].(string),
 		ConfFunction: configs.CreateNodeContainerConfig,
 	}
 
@@ -52,7 +52,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 		if data["npm"].(bool) {
 			execID, resErr = installPackages(appEnv)
 			if resErr != nil {
-				go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+				go commons.AppFullCleanup(data["name"].(string))
 				return resErr
 			}
 			data["execID"] = execID
@@ -64,7 +64,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 	// Start app using pm2 in the container
 	execID, resErr = startApp(index, appEnv)
 	if resErr != nil {
-		go commons.FullCleanup(data["name"].(string), data["instanceType"].(string))
+		go commons.AppFullCleanup(data["name"].(string))
 		return resErr
 	}
 	data["execID"] = execID

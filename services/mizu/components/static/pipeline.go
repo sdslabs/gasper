@@ -10,7 +10,7 @@ import (
 func Pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		ConfFunction: configs.CreateStaticContainerConfig,
-		DockerImage:  configs.ServiceConfig["static"].(map[string]interface{})["image"].(string),
+		DockerImage:  configs.ImageConfig["static"].(string),
 	}
 
 	_, resErr := api.SetupApplication(appConf, data)
