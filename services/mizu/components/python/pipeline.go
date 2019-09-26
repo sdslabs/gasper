@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/types"
 )
 
@@ -18,31 +16,6 @@ const (
 	python3Tag       = "3"
 	python2Tag       = "2"
 )
-
-type context struct {
-	Index  string   `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	Port   string   `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
-	Args   []string `json:"args"`
-	RcFile bool     `json:"rcFile"`
-}
-
-type pythonRequestBody struct {
-	Name           string                     `json:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
-	Password       string                     `json:"password" valid:"required~Field 'password' is required but was not provided,alphanum~Field 'password' should only have alphanumeric characters"`
-	URL            string                     `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
-	Context        context                    `json:"context"`
-	Resources      types.ApplicationResources `json:"resources"`
-	PythonVersion  string                     `json:"python_version" valid:"required~Field 'python_version' is required but was not provided"`
-	Requirements   string                     `json:"requirements" valid:"required~Field 'requirements' is required but was not provided"`
-	Django         bool                       `json:"django"`
-	Env            map[string]interface{}     `json:"env"`
-	GitAccessToken string                     `json:"git_access_token"`
-}
-
-// validateRequestBody validates the request body for the current microservice
-func validateRequestBody(c *gin.Context) {
-	middlewares.ValidateRequestBody(c, &pythonRequestBody{})
-}
 
 func startServer(index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {
 	arguments := strings.Join(args, " ")
@@ -64,12 +37,13 @@ func installRequirements(path string, env *types.ApplicationEnv) (string, types.
 	return execID, nil
 }
 
-func pipeline(data map[string]interface{}) types.ResponseError {
+// Pipeline is the application creation pipeline
+func Pipeline(data map[string]interface{}) types.ResponseError {
 	var image string
 	if data[pythonVersionTag].(string) == python3Tag {
-		image = configs.ServiceConfig["python"].(map[string]interface{})["python3_image"].(string)
+		image = configs.ImageConfig["python3"].(string)
 	} else if data[pythonVersionTag].(string) == python2Tag {
-		image = configs.ServiceConfig["python"].(map[string]interface{})["python2_image"].(string)
+		image = configs.ImageConfig["python2"].(string)
 	}
 
 	appConf := &types.ApplicationConfig{

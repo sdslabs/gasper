@@ -12,14 +12,11 @@ import (
 	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/enrai"
 	"github.com/sdslabs/SWS/services/mongodb"
+	"github.com/sdslabs/SWS/services/mizu"
 	"github.com/sdslabs/SWS/services/mysql"
-	"github.com/sdslabs/SWS/services/node"
-	"github.com/sdslabs/SWS/services/php"
-	"github.com/sdslabs/SWS/services/python"
 
 	sshserver "github.com/gliderlabs/ssh"
 	"github.com/sdslabs/SWS/services/ssh"
-	"github.com/sdslabs/SWS/services/static"
 )
 
 // UnivServer is used for handling all types of servers
@@ -40,10 +37,7 @@ var launcherBindings = map[string]func(string, string) UnivServer{
 // Bind services to routers here
 var serviceBindings = map[string]*gin.Engine{
 	"dominus": dominus.Router,
-	"static":  static.Router,
-	"php":     php.Router,
-	"node":    node.Router,
-	"python":  python.Router,
+	"mizu":    mizu.Router,
 	"mysql":   mysql.Router,
 	"mongodb": mongodb.Router,
 }

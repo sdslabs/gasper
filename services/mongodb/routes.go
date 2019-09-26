@@ -12,7 +12,7 @@ var Router = gin.NewServiceEngine()
 var ServiceName = "mongodb"
 
 func init() {
-	Router.POST("/", validateRequestBody, middlewares.IsUniqueDB(), createDB)
+	Router.POST("/mongodb", validateRequestBody, middlewares.IsUniqueDB(), createDB)
 	Router.GET("/", fetchDBs)
 	Router.GET("/logs", gin.FetchMongoDBContainerLogs)
 	Router.GET("/restart", gin.ReloadMongoDBService)

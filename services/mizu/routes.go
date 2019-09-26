@@ -1,4 +1,4 @@
-package python
+package mizu
 
 import (
 	"github.com/sdslabs/SWS/lib/gin"
@@ -9,15 +9,15 @@ import (
 var Router = gin.NewServiceEngine()
 
 // ServiceName is the name of the current microservice
-var ServiceName = "python"
+var ServiceName = "mizu"
 
 func init() {
-	Router.POST("/", validateRequestBody, middlewares.IsUniqueApp(), gin.CreateApp(ServiceName, pipeline))
-	Router.GET("/", gin.FetchDocs(ServiceName))
+	Router.POST("/:language", validateRequestBody, middlewares.IsUniqueApp(), createApp)
+	Router.GET("/", gin.FetchDocs)
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)
 	Router.GET("/:app/restart", gin.ReloadServer)
 	Router.GET("/:app/rebuild", rebuildApp)
-	Router.PUT("/:app", gin.UpdateAppInfo(ServiceName))
-	Router.DELETE("/:app", gin.DeleteApp(ServiceName))
+	Router.PUT("/:app", gin.UpdateAppInfo)
+	Router.DELETE("/:app", deleteApp)
 }

@@ -20,7 +20,7 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 		return "", types.NewResErr(500, "cannot setup client", err)
 	}
 
-	dockerImage := configs.ServiceConfig[dbtype].(map[string]interface{})["image"].(string)
+	dockerImage := configs.ImageConfig[dbtype].(string)
 	port := configs.ServiceConfig[dbtype].(map[string]interface{})["container_port"].(string)
 	env := configs.ServiceConfig[dbtype].(map[string]interface{})["env"].(map[string]interface{})
 	storepath, _ := os.Getwd()

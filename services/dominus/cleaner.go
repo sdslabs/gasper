@@ -17,7 +17,7 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 		return
 	}
 	for _, app := range apps {
-		instanceURL, err := redis.GetLeastLoadedInstance(service)
+		instanceURL, err := redis.GetLeastLoadedWorker()
 		if err != nil {
 			utils.LogError(err)
 		}
@@ -31,18 +31,20 @@ func rescheduleInstance(apps []map[string]interface{}, service string) {
 // if it is dead
 func inspectInstance(service, instance string) {
 	if utils.NotAlive(instance) {
-		instanceIP := strings.Split(instance, ":")
-		apps := mongo.FetchAppInfo(
-			map[string]interface{}{
-				"language": service,
-				"hostIP":   instanceIP[0],
-			},
-		)
 		err := redis.RemoveServiceInstance(service, instance)
 		if err != nil {
 			utils.LogError(err)
 		}
-		go rescheduleInstance(apps, service)
+		if service == "mizu" {
+			instanceIP := strings.Split(instance, ":")
+			apps := mongo.FetchAppInfo(
+				map[string]interface{}{
+					"hostIP":       instanceIP[0],
+					"instanceType": mongo.AppInstance,
+				},
+			)
+			go rescheduleInstance(apps, service)
+		}
 	}
 }
 

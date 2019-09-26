@@ -31,6 +31,15 @@
         "falconAccountsUrl": "http://arceus.sdslabs.local/",
         "redirectUri": ""
     },
+    "images": {
+        "static": "nginx:latest",
+        "php": "nginx:latest",
+        "nodejs": "nginx:latest",
+        "python2": "6b9228af2a0a",
+        "python3": "nginx:latest",
+        "mysql": "mysql:5.7",
+        "mongodb": "mongo:latest"
+    },
     "services": {
         "dominus": {
             "deploy": true,
@@ -39,6 +48,10 @@
         "enrai": {
             "deploy": true,
             "port": ":4040"
+        },
+        "mizu": {
+            "deploy": true,
+            "port": ":4000"
         },
         "ssh": {
             "deploy": true,
@@ -54,30 +67,8 @@
             "using_passphrase": false,
             "passphrase": ""
         },
-        "static": {
-            "deploy": true,
-            "image": "nginx:latest",
-            "port": ":8000"
-        },
-        "php": {
-            "deploy": true,
-            "image": "nginx:latest",
-            "port": ":8001"
-        },
-        "node": {
-            "deploy": true,
-            "image": "nginx:latest",
-            "port": ":8002"
-        },
-        "python": {
-            "deploy": true,
-            "python2_image": "6b9228af2a0a",
-            "python3_image": "nginx:latest",
-            "port": ":8003"
-        },
         "mysql": {
             "deploy": true,
-            "image": "mysql:5.7",
             "port": ":9000",
             "container_port": "33060",
             "env": {
@@ -87,7 +78,6 @@
         },
         "mongodb": {
             "deploy": true,
-            "image": "mongo:latest",
             "port": ":9001",
             "container_port": "27018",
             "env": {

@@ -42,3 +42,6 @@ var CronConfig = SWSConfig["cron"].(map[string]interface{})
 
 // CloudflareConfig is the configuration for cloudflare services used by SWS
 var CloudflareConfig = SWSConfig["cloudflare"].(map[string]interface{})
+
+// ImageConfig is the configuration for the images used by SWS
+var ImageConfig = SWSConfig["images"].(map[string]interface{})

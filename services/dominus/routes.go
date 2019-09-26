@@ -14,9 +14,9 @@ var ServiceName = "dominus"
 
 func init() {
 	Router.Use(middlewares.FalconGuard())
-	Router.POST("/:service", createApp)
 	app := Router.Group("/apps")
 	{
+		app.POST("/:language", trimURLPath(2), createApp)
 		app.GET("/:app", gin.FetchAppInfo)
 		app.PUT("/:app", gin.UpdateAppByName)
 		app.DELETE("/:app", trimURLPath(2), execute)
@@ -24,6 +24,7 @@ func init() {
 	}
 	db := Router.Group("/dbs")
 	{
+		db.POST("/:database", trimURLPath(2), createDatabase)
 		db.GET("/:db", gin.FetchDBInfo)
 		db.DELETE("/:user/:db", trimURLPath(2), deleteDB)
 	}
@@ -31,25 +32,25 @@ func init() {
 	{
 		apps := admin.Group("/apps")
 		{
-			apps.GET("", adminHandlers.GetAllApplications)
+			apps.GET("/", adminHandlers.GetAllApplications)
 			apps.GET("/:app", adminHandlers.GetApplicationInfo)
 			apps.DELETE("/:app", trimURLPath(3), execute)
 		}
 		dbs := admin.Group("/dbs")
 		{
-			dbs.GET("", adminHandlers.GetAllDatabases)
+			dbs.GET("/", adminHandlers.GetAllDatabases)
 			dbs.GET("/:db", adminHandlers.GetDatabaseInfo)
 			dbs.DELETE("/:user/:db", trimURLPath(3), execute)
 		}
 		users := admin.Group("/users")
 		{
-			users.GET("", adminHandlers.GetAllUsers)
+			users.GET("/", adminHandlers.GetAllUsers)
 			users.GET("/:user", adminHandlers.GetUserInfo)
 			users.DELETE("/:user", adminHandlers.DeleteUser)
 		}
 		nodes := admin.Group("/nodes")
 		{
-			nodes.GET("", adminHandlers.GetAllNodes)
+			nodes.GET("/", adminHandlers.GetAllNodes)
 			nodes.GET("/:node", adminHandlers.GetNodesByName)
 		}
 	}

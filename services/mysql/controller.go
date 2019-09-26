@@ -27,7 +27,7 @@ func createDB(c *gin.Context) {
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -42,7 +42,7 @@ func createDB(c *gin.Context) {
 		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
 		go commons.DatabaseStateCleanup(dbKey)
 		c.JSON(500, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -56,7 +56,7 @@ func createDB(c *gin.Context) {
 		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
 		go commons.DatabaseStateCleanup(dbKey)
 		c.JSON(500, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -70,7 +70,7 @@ func createDB(c *gin.Context) {
 		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
 		go commons.DatabaseStateCleanup(dbKey)
 		c.JSON(500, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -101,7 +101,7 @@ func deleteDB(c *gin.Context) {
 	err := database.DeleteMysqlDB(db, user)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
@@ -109,7 +109,7 @@ func deleteDB(c *gin.Context) {
 	err = redis.RemoveDB(dbKey)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"error": err,
+			"error": err.Error(),
 		})
 		return
 	}
