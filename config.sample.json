@@ -3,8 +3,9 @@
     "domain": "sdslabs.co",
     "secret": "YOUR_SECRET_KEY",
     "projectRoot": "/SWS",
-    "rcFile": "Gasperfile",
+    "rcFile": "Gasperfile.txt",
     "offlineMode": false,
+    "dnsServers": ["192.168.0.1"],
     "cron": {
         "cleanupInterval": 600,
         "exposureInterval": 30
