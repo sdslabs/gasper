@@ -37,7 +37,7 @@ func subdomainRootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if subdomains[n-2] == tenantDomains[0] && subdomains[n-1] == tenantDomains[1] {
 		appName := subdomains[0]
-		appURL, err := redis.FetchAppServer(appName)
+		appURL, err := redis.FetchAppURL(appName)
 		if err != nil {
 			w.Write([]byte("Could not resolve the requested host."))
 			w.WriteHeader(404)

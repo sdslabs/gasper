@@ -52,6 +52,15 @@ func FetchAppServer(appName string) (string, error) {
 	return url.Server, nil
 }
 
+// FetchAppURL returns the URL of the machine where the app in query is deployed
+func FetchAppURL(app string) (string, error) {
+	result, err := client.HGet(AppKey, app).Result()
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}
+
 // FetchAppNode returns the URL of the machine where the app in query is deployed
 func FetchAppNode(appName string) (string, error) {
 	url, err := fetchAppBindings(appName)
