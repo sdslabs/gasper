@@ -54,7 +54,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 		}
 	}
 
-	cmd := []string{"sh", "-c", `php -S 0.0.0.0:` + context["port"].(string)}
+	cmd := []string{"sh", "-c", `php -S 0.0.0.0:` + context["port"].(string) + ` &> /proc/1/fd/1`}
 	_, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
 	if err != nil {
 		return types.NewResErr(500, "Failed to start server", err)
