@@ -20,7 +20,7 @@ const (
 func startServer(index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {
 	arguments := strings.Join(args, " ")
 	serveCmd := fmt.Sprintf(`python %s %s &> /proc/1/fd/1`, index, arguments)
-	cmd := []string{"bash", "-c", serveCmd}
+	cmd := []string{"sh", "-c", serveCmd}
 	execID, err := docker.ExecDetachedProcess(env.Context, env.Client, env.ContainerID, cmd)
 	if err != nil {
 		return execID, types.NewResErr(500, "failed to start the server", err)
@@ -29,7 +29,7 @@ func startServer(index string, args []string, env *types.ApplicationEnv) (string
 }
 
 func installRequirements(path string, env *types.ApplicationEnv) (string, types.ResponseError) {
-	cmd := []string{"bash", "-c", fmt.Sprintf(`pip install -r %s &> /proc/1/fd/1`, path)}
+	cmd := []string{"sh", "-c", fmt.Sprintf(`pip install -r %s &> /proc/1/fd/1`, path)}
 	execID, err := docker.ExecDetachedProcess(env.Context, env.Client, env.ContainerID, cmd)
 	if err != nil {
 		return execID, types.NewResErr(500, "failed to install requirements", err)
