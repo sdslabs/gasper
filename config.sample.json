@@ -33,7 +33,7 @@
         "redirectUri": ""
     },
     "images": {
-        "static": "1.17.4-alpine",
+        "static": "nginx:1.17.4-alpine",
         "php": "sdsws/php:2.0",
         "nodejs": "sdsws/node:2.0",
         "python2": "sdsws/python2:1.0",
