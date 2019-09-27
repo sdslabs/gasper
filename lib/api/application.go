@@ -57,17 +57,19 @@ func setupContainer(
 		return
 	}
 
-	// write config to the container
-	confFile := []byte(appConf.ConfFunction(name, appContext))
-	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
-	if err != nil {
-		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		return
-	}
-	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
-	if err != nil {
-		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		return
+	if appContext["port"] == nil {
+		// write config to the container
+		confFile := []byte(appConf.ConfFunction(name, appContext))
+		archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
+		if err != nil {
+			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+			return
+		}
+		err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
+		if err != nil {
+			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+			return
+		}
 	}
 
 	// start the container
@@ -221,10 +223,7 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	data["context"].(map[string]interface{})["rcFile"] = runCommands
 
 	if runCommands {
-		cmd := []string{"bash", "-c", `chmod 755 ./Gasperfile.txt && ./Gasperfile.txt`}
-		if data["language"].(string) == "node" {
-			cmd = []string{"bash", "-c", `export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; chmod 755 ./Gasperfile.txt && ./Gasperfile.txt`}
-		}
+		cmd := []string{"sh", "-c", fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`, configs.SWSConfig["rcFile"].(string), configs.SWSConfig["rcFile"].(string))}
 		_, err = docker.ExecDetachedProcess(
 			appEnv.Context,
 			appEnv.Client,

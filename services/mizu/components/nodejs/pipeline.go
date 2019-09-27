@@ -1,6 +1,8 @@
 package nodejs
 
 import (
+	"fmt"
+
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/api"
 	"github.com/sdslabs/SWS/lib/commons"
@@ -8,19 +10,9 @@ import (
 	"github.com/sdslabs/SWS/lib/types"
 )
 
-// installPackages function installs the dependancies for the app
-func installPackages(appEnv *types.ApplicationEnv) (string, types.ResponseError) {
-	cmd := []string{"bash", "-c", `export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; npm install &> /proc/1/fd/1`}
-	execID, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
-	if err != nil {
-		return "", types.NewResErr(500, "Failed to perform npm install in the container", err)
-	}
-	return execID, nil
-}
-
 // startApp function starts the app using pm2
-func startApp(index string, appEnv *types.ApplicationEnv) (string, types.ResponseError) {
-	cmd := []string{"bash", "-c", `export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"; pm2 start ` + index + ` &> /proc/1/fd/1`}
+func bootstrap(index string, appEnv *types.ApplicationEnv) (string, types.ResponseError) {
+	cmd := []string{"sh", "-c", fmt.Sprintf(`npm install &> /proc/1/fd/1; node %s &> /proc/1/fd/1`, index)}
 	execID, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
 	if err != nil {
 		return "", types.NewResErr(500, "Failed to perform start app in the container", err)
@@ -46,23 +38,10 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 		return nil
 	}
 
-	var execID string
-	// Perform npm install in the container
-	if data["npm"] != nil {
-		if data["npm"].(bool) {
-			execID, resErr = installPackages(appEnv)
-			if resErr != nil {
-				go commons.AppFullCleanup(data["name"].(string))
-				return resErr
-			}
-			data["execID"] = execID
-		}
-	}
-
 	index := context["index"].(string)
 
 	// Start app using pm2 in the container
-	execID, resErr = startApp(index, appEnv)
+	execID, resErr := bootstrap(index, appEnv)
 	if resErr != nil {
 		go commons.AppFullCleanup(data["name"].(string))
 		return resErr

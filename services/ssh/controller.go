@@ -53,7 +53,7 @@ func newHandler(service string) func(s ssh.Session) {
 			}
 			cmd = exec.Command("ssh", "-p", port, fmt.Sprintf("%s@%s", s.User(), instanceURL))
 		} else {
-			cmd = exec.Command("docker", "exec", "-it", s.User(), "/bin/bash")
+			cmd = exec.Command("docker", "exec", "-it", s.User(), "/bin/sh")
 		}
 		cmd.Env = append(cmd.Env, s.Environ()...)
 		termEnv := fmt.Sprintf("TERM=%s", ptyReq.Term)

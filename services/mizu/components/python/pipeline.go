@@ -17,22 +17,18 @@ const (
 	python2Tag       = "2"
 )
 
-func startServer(index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {
+func bootstrap(requirementsPath, index string, args []string, env *types.ApplicationEnv) (string, types.ResponseError) {
 	arguments := strings.Join(args, " ")
-	serveCmd := fmt.Sprintf(`python %s %s &> /proc/1/fd/1`, index, arguments)
-	cmd := []string{"bash", "-c", serveCmd}
+	var serveCmd string
+	if requirementsPath == "" {
+		serveCmd = fmt.Sprintf(`python %s %s &> /proc/1/fd/1`, index, arguments)
+	} else {
+		serveCmd = fmt.Sprintf(`pip install -r %s &> /proc/1/fd/1; python %s %s &> /proc/1/fd/1`, requirementsPath, index, arguments)
+	}
+	cmd := []string{"sh", "-c", serveCmd}
 	execID, err := docker.ExecDetachedProcess(env.Context, env.Client, env.ContainerID, cmd)
 	if err != nil {
 		return execID, types.NewResErr(500, "failed to start the server", err)
-	}
-	return execID, nil
-}
-
-func installRequirements(path string, env *types.ApplicationEnv) (string, types.ResponseError) {
-	cmd := []string{"bash", "-c", fmt.Sprintf(`pip install -r %s &> /proc/1/fd/1`, path)}
-	execID, err := docker.ExecDetachedProcess(env.Context, env.Client, env.ContainerID, cmd)
-	if err != nil {
-		return execID, types.NewResErr(500, "failed to install requirements", err)
 	}
 	return execID, nil
 }
@@ -63,13 +59,9 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 	}
 
 	// Path of `requirements.txt` or any-other file containing requirements
-	requirements := data["requirements"]
-	if requirements != nil {
-		_, resErr = installRequirements(requirements.(string), appEnv)
-		if resErr != nil {
-			go commons.AppFullCleanup(data["name"].(string))
-			return resErr
-		}
+	var requirements = ""
+	if data["requirements"] != nil {
+		requirements = data["requirements"].(string)
 	}
 
 	if data["django"] == nil {
@@ -77,7 +69,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 	}
 
 	if data["django"].(bool) {
-		_, resErr = startServer("manage.py", []string{"runserver"}, appEnv)
+		_, resErr = bootstrap(requirements, "manage.py", []string{"runserver"}, appEnv)
 	} else {
 		var args []interface{}
 		if context["args"] != nil {
@@ -87,7 +79,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 		for _, arg := range args {
 			arguments = append(arguments, arg.(string))
 		}
-		_, resErr = startServer(context["index"].(string), arguments, appEnv)
+		_, resErr = bootstrap(requirements, context["index"].(string), arguments, appEnv)
 	}
 	if resErr != nil {
 		go commons.AppFullCleanup(data["name"].(string))

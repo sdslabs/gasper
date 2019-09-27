@@ -18,7 +18,7 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 	if resErr != nil {
 		return resErr
 	}
-	cmd := []string{"bash", "-c", `rm /etc/nginx/conf.d/default.conf && nginx -s reload`}
+	cmd := []string{"sh", "-c", `rm /etc/nginx/conf.d/default.conf && nginx -s reload`}
 	_, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
 	if err != nil {
 		return types.NewResErr(500, "Failed to perform npm install in the container", err)
