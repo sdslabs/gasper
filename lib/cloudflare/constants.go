@@ -11,4 +11,5 @@ var (
 	deleteRecordEndpoint = listZonesEndpoint + "/%s/dns_records/%s"
 	token                = configs.CloudflareConfig["token"].(string)
 	domain               = configs.SWSConfig["domain"].(string)
+	publicIP             = configs.CloudflareConfig["publicIP"].(string)
 )

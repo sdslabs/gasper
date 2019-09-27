@@ -80,7 +80,7 @@ func FetchRecords(queryParams ...map[string]interface{}) (*MultiResponse, error)
 
 // CreateRecord creates a new DNS record for the given zone
 // and returns its ID
-func CreateRecord(name, instanceType, IP string) (*SingleResponse, error) {
+func CreateRecord(name, instanceType string) (*SingleResponse, error) {
 	zoneID, err := getZoneID()
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func CreateRecord(name, instanceType, IP string) (*SingleResponse, error) {
 	payload := &singlePayload{
 		Name:    fmt.Sprintf("%s.%s", name, instanceType),
 		Type:    "A",
-		Content: IP,
+		Content: publicIP,
 	}
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {

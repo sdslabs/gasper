@@ -21,6 +21,7 @@
     },
     "cloudflare": {
         "plugIn": false,
+        "publicIP": "",
         "token": ""
     },
     "falcon": {

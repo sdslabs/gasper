@@ -76,7 +76,7 @@ func createApp(c *gin.Context) {
 	}
 
 	if configs.CloudflareConfig["plugIn"].(bool) {
-		resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance, utils.HostIP)
+		resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance)
 		if err != nil {
 			go commons.AppFullCleanup(data["name"].(string))
 			go commons.AppStateCleanup(data["name"].(string))
