@@ -15,7 +15,7 @@ func bootstrap(index string, appEnv *types.ApplicationEnv) (string, types.Respon
 	cmd := []string{"sh", "-c", fmt.Sprintf(`npm install &> /proc/1/fd/1; node %s &> /proc/1/fd/1`, index)}
 	execID, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
 	if err != nil {
-		return "", types.NewResErr(500, "Failed to perform start app in the container", err)
+		return "", types.NewResErr(500, "Failed to launch application in the container", err)
 	}
 	return execID, nil
 }

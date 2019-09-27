@@ -12,7 +12,7 @@ func CreateStaticContainerConfig(name string, appContext map[string]interface{})
 	return fmt.Sprintf(`
 server {
 	listen       80;
-	server_name  %s.%s;
+	server_name  %s.app.%s;
 
 	access_log  /var/log/nginx/%s.access.log  main;
 	error_log   /var/log/nginx/%s.error.log   warn;
@@ -39,9 +39,9 @@ func CreatePHPContainerConfig(name string, appContext map[string]interface{}) st
 server {
 	listen 80;
 	listen [::]:80;
-	server_name %s.%s;
+	server_name %s.app.%s;
 
-	access_log  /var/log/nginx/%s.access.log  main;
+	access_log  /var/log/nginx/%s.access.log;
 	error_log   /var/log/nginx/%s.error.log   warn;
 
 	root %s/%s;
