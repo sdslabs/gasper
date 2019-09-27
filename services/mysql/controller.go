@@ -74,11 +74,8 @@ func createDB(c *gin.Context) {
 		})
 		return
 	}
-
-	c.JSON(200, gin.H{
-		"success": true,
-	})
-
+	data["success"] = true
+	c.JSON(200, data)
 }
 
 func fetchDBs(c *gin.Context) {
