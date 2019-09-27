@@ -192,7 +192,7 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	context := data["context"].(map[string]interface{})
 
 	var containerPort string
-	if data["language"].(string) == "php" || data["language"].(string) == "static" {
+	if data["language"].(string) == "static" {
 		containerPort = "80"
 	} else {
 		containerPort = context["port"].(string)

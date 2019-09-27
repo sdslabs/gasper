@@ -54,10 +54,10 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 		}
 	}
 
-	cmd := []string{"sh", "-c", `cp /etc/nginx/conf.d/* /etc/nginx/sites-enabled/. && rm /etc/nginx/sites-enabled/default.conf && nginx -s reload`}
+	cmd := []string{"sh", "-c", `php -S 0.0.0.0:` + context["port"].(string)}
 	_, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
 	if err != nil {
-		return types.NewResErr(500, "Failed to load application configuration", err)
+		return types.NewResErr(500, "Failed to start server", err)
 	}
 	return nil
 }

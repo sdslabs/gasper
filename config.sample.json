@@ -34,7 +34,7 @@
     },
     "images": {
         "static": "1.17.4-alpine",
-        "php": "richarvey/nginx-php-fpm:latest",
+        "php": "php:7.2-fpm-alpine",
         "nodejs": "sdsws/node:2.0",
         "python2": "sdsws/python2:1.0",
         "python3": "sdsws/python3:1.0",
