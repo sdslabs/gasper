@@ -1,6 +1,7 @@
 package dominus
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/sdslabs/SWS/lib/gin"
 	"github.com/sdslabs/SWS/lib/middlewares"
 	adminHandlers "github.com/sdslabs/SWS/services/dominus/admin"
@@ -13,6 +14,7 @@ var Router = gin.NewEngine()
 var ServiceName = "dominus"
 
 func init() {
+	Router.Use(cors.Default())
 	Router.Use(middlewares.FalconGuard())
 	app := Router.Group("/apps")
 	{

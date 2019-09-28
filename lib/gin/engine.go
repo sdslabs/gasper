@@ -1,7 +1,6 @@
 package gin
 
 import (
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/middlewares"
@@ -15,7 +14,6 @@ func NewEngine() *gin.Engine {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	engine := gin.Default()
-	engine.Use(cors.Default())
 	return engine
 }
 
