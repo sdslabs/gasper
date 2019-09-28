@@ -15,6 +15,9 @@ type key string
 
 const hostKey = key("hostKey")
 
+var mongoUser = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_USERNAME"].(string)
+var mongoPass = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_PASSWORD"].(string)
+
 var mongoSanitaryActionBindings = map[int]func(context.Context, string, string, string, *mongo.Client) error{
 	1: refreshMongoDB,
 	2: refreshMongoDBUser,
@@ -112,7 +115,9 @@ func DeleteMongoDB(database, username string) error {
 }
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://127.0.0.1:27018/"))
+	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
+	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%s/", mongoUser, mongoPass, port)
+	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {
 		return nil, fmt.Errorf("couldn't connect to mongo: %v", err)
 	}
