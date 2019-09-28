@@ -27,39 +27,21 @@ func reverseProxy(w http.ResponseWriter, r *http.Request, target string) {
 // subdomainRootHandler handles the root route of the provided host
 // and extracts the url to perform the reverse proxy
 func subdomainRootHandler(w http.ResponseWriter, r *http.Request) {
-	tenantDomains := strings.Split(configs.SWSConfig["domain"].(string), ".")
-	subdomains := strings.Split(r.Host, ".")
-	n := len(subdomains)
-	if n < 2 {
-		w.Write([]byte("Please provide the correct tenant subdomain."))
-		w.WriteHeader(500)
+	appURL, err := redis.FetchAppServer(strings.Split(r.Host, ".")[0])
+	if err != nil {
+		w.WriteHeader(404)
 		return
 	}
-	if subdomains[n-2] == tenantDomains[0] && subdomains[n-1] == tenantDomains[1] {
-		appName := subdomains[0]
-		appURL, err := redis.FetchAppServer(appName)
-		if err != nil {
-			w.Write([]byte("Could not resolve the requested host."))
-			w.WriteHeader(404)
-			return
-		}
-		reverseProxy(w, r, appURL)
-		w.WriteHeader(200)
-	} else {
-		w.Write([]byte("Please provide the correct tenant subdomain."))
-		w.WriteHeader(500)
-		return
-	}
+	reverseProxy(w, r, appURL)
 }
 
 // BuildEnraiServer sets up the gorilla multiplexer to handle different subdomains
 func BuildEnraiServer(service string) *http.Server {
 	enraiConfig := configs.ServiceConfig[service].(map[string]interface{})
-	domain := configs.SWSConfig["domain"].(string)
 
-	router := mux.NewRouter().StrictSlash(true)
-	host := fmt.Sprintf(`{_:.+}.%s`, domain)
-	router.HandleFunc("/", subdomainRootHandler).Host(host)
+	router := mux.NewRouter()
+	host := fmt.Sprintf(`{_:.+}.%s`, configs.SWSConfig["domain"].(string))
+	router.PathPrefix("/").HandlerFunc(subdomainRootHandler).Host(host)
 
 	server := &http.Server{
 		Addr:         enraiConfig["port"].(string),
