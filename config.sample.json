@@ -87,8 +87,8 @@
             "port": ":9001",
             "container_port": "27018",
             "env": {
-                "MONGO_INITDB_ROOT_USERNAME": "root",
-                "MONGO_INITDB_ROOT_PASSWORD": "YOUR_MONGODB_PASSWORD"
+                "MONGO_INITDB_ROOT_USERNAME": "YOUR_ROOT_NAME",
+                "MONGO_INITDB_ROOT_PASSWORD": "YOUR_ROOT_PASSWORD"
             }
         }
     }

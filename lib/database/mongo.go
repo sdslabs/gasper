@@ -14,6 +14,8 @@ import (
 type key string
 
 const hostKey = key("hostKey")
+const usrname = key("username")
+const pwd = key("password")
 
 var mongoUser = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_USERNAME"].(string)
 var mongoPass = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_PASSWORD"].(string)
@@ -25,13 +27,11 @@ var mongoSanitaryActionBindings = map[int]func(context.Context, string, string, 
 
 // CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
 func CreateMongoDB(database, username, password string) error {
-	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+	ctx = fillContextWithValues(ctx)
 
-	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
-	ctx = context.WithValue(ctx, hostKey, agentAddress)
 	_, err := configDB(ctx, database, username, password)
 
 	if err != nil {
@@ -92,13 +92,11 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 
 // DeleteMongoDB deletes a mongo database
 func DeleteMongoDB(database, username string) error {
-	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 
-	ctx = context.WithValue(ctx, hostKey, agentAddress)
+	ctx = fillContextWithValues(ctx)
 
 	client, err := createConnection(ctx)
 	if err != nil {
@@ -112,6 +110,17 @@ func DeleteMongoDB(database, username string) error {
 		return fmt.Errorf("Error while deleting the database : %s", err)
 	}
 	return nil
+}
+
+func fillContextWithValues(ctx context.Context) context.Context {
+	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
+	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
+	rootUser := configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_USERNAME"].(string)
+	rootPwd := configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_PASSWORD"].(string)
+	ctx = context.WithValue(ctx, hostKey, agentAddress)
+	ctx = context.WithValue(ctx, usrname, rootUser)
+	ctx = context.WithValue(ctx, pwd, rootPwd)
+	return ctx
 }
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {

@@ -16,8 +16,6 @@ import (
 
 var pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz"
 
-// var pool = "_:$%&/()"
-
 // Generate a random string of A-Z chars with len = l
 func randomString(l int) string {
 	bytes := make([]byte, l)
