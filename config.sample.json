@@ -6,6 +6,11 @@
     "rcFile": "Gasperfile.txt",
     "offlineMode": false,
     "dnsServers": ["192.168.0.1"],
+    "admin": {
+	"email": "",
+	"password": "",
+	"username": ""
+    },
     "cron": {
         "cleanupInterval": 600,
         "exposureInterval": 30

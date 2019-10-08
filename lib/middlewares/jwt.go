@@ -7,56 +7,45 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/mongo"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/sdslabs/SWS/lib/utils"
 	gojwt "gopkg.in/dgrijalva/jwt-go.v3"
 )
 
-type userStruct struct {
+const (
+	emailKey    = "email"
+	usernameKey = "username"
+	passwordKey = "password"
+	isAdminKey  = "is_admin"
+)
+
+// User to store user data after extracting from JWT Claims
+type User struct {
 	Email    string
 	Username string
 	IsAdmin  bool
 }
 
-type authStruct struct {
+type authBody struct {
 	Email    string `form:"email" json:"email" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
-type registerStruct struct {
-	Username string `form:"username" json:"username" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-	Email    string `form:"email" json:"email" binding:"required"`
+type registerBody struct {
+	Username string `form:"username" json:"username" binding:"required" valid:"required~Field 'username' is required but was not provided"`
+	Password string `form:"password" json:"password" binding:"required" valid:"required~Field 'password' is required but was not provided"`
+	Email    string `form:"email" json:"email" binding:"required" valid:"required~Field 'email' is required but was not provided,email"`
 }
 
-func hashPassword(password string) (string, error) {
-	pass := []byte(password)
-	hash, err := bcrypt.GenerateFromPassword(pass, bcrypt.MinCost)
-	if err != nil {
-		return "", err
-	}
-	return string(hash), nil
-}
-
-func compareHashWithPassword(hashedPassword, password string) bool {
-	hash := []byte(hashedPassword)
-	pass := []byte(password)
-	err := bcrypt.CompareHashAndPassword(hash, pass)
-	if err != nil {
-		return false
-	}
-	return true
+// RegisterValidator validates the user registration request
+func RegisterValidator(ctx *gin.Context) {
+	ValidateRequestBody(ctx, &registerBody{})
 }
 
 // Register handles registration of new users
 func Register(ctx *gin.Context) {
-	var register registerStruct
-	if err := ctx.ShouldBind(&register); err != nil {
-		ctx.JSON(400, gin.H{
-			"error": "bad request parameters",
-		})
-		return
-	}
-	filter := map[string]interface{}{"email": register.Email}
+	var register registerBody
+	ctx.BindJSON(&register)
+	filter := map[string]interface{}{emailKey: register.Email}
 	userInfo := mongo.FetchUserInfo(filter)
 	if len(userInfo) > 0 {
 		ctx.JSON(400, gin.H{
@@ -64,17 +53,18 @@ func Register(ctx *gin.Context) {
 		})
 		return
 	}
-	hashedPass, err := hashPassword(register.Password)
+	hashedPass, err := utils.HashPassword(register.Password)
 	if err != nil {
 		ctx.JSON(500, gin.H{
 			"error": err,
 		})
+		return
 	}
 	createUser := map[string]interface{}{
-		"email":    register.Email,
-		"username": register.Username,
-		"password": hashedPass,
-		"is_admin": false,
+		emailKey:    register.Email,
+		usernameKey: register.Username,
+		passwordKey: hashedPass,
+		isAdminKey:  false,
 	}
 	_, err = mongo.RegisterUser(createUser)
 	if err != nil {
@@ -88,8 +78,8 @@ func Register(ctx *gin.Context) {
 	})
 }
 
-// JWTMiddleware handles the auth through JWT token
-var JWTMiddleware = &jwt.GinJWTMiddleware{
+// JWT handles the auth through JWT token
+var JWT = &jwt.GinJWTMiddleware{
 	Realm:         "SDS Gasper",
 	Key:           []byte(configs.SWSConfig["secret"].(string)),
 	Timeout:       time.Hour,
@@ -98,48 +88,48 @@ var JWTMiddleware = &jwt.GinJWTMiddleware{
 	TokenHeadName: "Bearer",
 	TimeFunc:      time.Now,
 	Authenticator: func(ctx *gin.Context) (interface{}, error) {
-		var auth authStruct
+		var auth authBody
 		if err := ctx.ShouldBind(&auth); err != nil {
 			return nil, jwt.ErrMissingLoginValues
 		}
 		email := auth.Email
 		password := auth.Password
-		filter := map[string]interface{}{"email": email}
+		filter := map[string]interface{}{emailKey: email}
 		userInfo := mongo.FetchUserInfo(filter)
 		var userData map[string]interface{}
 		if len(userInfo) == 0 {
 			return nil, jwt.ErrFailedAuthentication
 		}
 		userData = userInfo[0]
-		hashedPassword := userData["password"].(string)
-		if !compareHashWithPassword(hashedPassword, password) {
+		hashedPassword := userData[passwordKey].(string)
+		if !utils.CompareHashWithPassword(hashedPassword, password) {
 			return nil, jwt.ErrFailedAuthentication
 		}
-		return &userStruct{
-			Email:    userData["email"].(string),
-			Username: userData["username"].(string),
-			IsAdmin:  userData["is_admin"].(bool),
+		return &User{
+			Email:    userData[emailKey].(string),
+			Username: userData[usernameKey].(string),
+			IsAdmin:  userData[isAdminKey].(bool),
 		}, nil
 	},
 	PayloadFunc: func(data interface{}) jwt.MapClaims {
-		if v, ok := data.(*userStruct); ok {
+		if v, ok := data.(*User); ok {
 			return jwt.MapClaims{
-				"email":    v.Email,
-				"username": v.Username,
-				"is_admin": v.IsAdmin,
+				emailKey:    v.Email,
+				usernameKey: v.Username,
+				isAdminKey:  v.IsAdmin,
 			}
 		}
 		return jwt.MapClaims{}
 	},
 	IdentityHandler: func(mapClaims gojwt.MapClaims) interface{} {
-		return &userStruct{
-			Email:    mapClaims["email"].(string),
-			Username: mapClaims["username"].(string),
-			IsAdmin:  mapClaims["is_admin"].(bool),
+		return &User{
+			Email:    mapClaims[emailKey].(string),
+			Username: mapClaims[usernameKey].(string),
+			IsAdmin:  mapClaims[isAdminKey].(bool),
 		}
 	},
 	Authorizator: func(data interface{}, ctx *gin.Context) bool {
-		_, ok := data.(*userStruct)
+		_, ok := data.(*User)
 		return ok
 	},
 	Unauthorized: func(ctx *gin.Context, code int, message string) {
@@ -149,10 +139,17 @@ var JWTMiddleware = &jwt.GinJWTMiddleware{
 	},
 }
 
+// ExtractClaims takes the gin context and returns the User
+func ExtractClaims(ctx *gin.Context) *User {
+	claimsMap := jwt.ExtractClaims(ctx)
+	getUser := JWT.IdentityHandler
+	return getUser(claimsMap).(*User)
+}
+
 func init() {
 	// This keeps the middleware in check if the configuration is correct
 	// Prevents runtime errors
-	if err := JWTMiddleware.MiddlewareInit(); err != nil {
+	if err := JWT.MiddlewareInit(); err != nil {
 		panic(err)
 	}
 }
