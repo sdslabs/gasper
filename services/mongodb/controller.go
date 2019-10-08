@@ -2,6 +2,7 @@ package mongodb
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
@@ -12,6 +13,33 @@ import (
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
+
+var pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz"
+
+// var pool = "_:$%&/()"
+
+// Generate a random string of A-Z chars with len = l
+func randomString(l int) string {
+	bytes := make([]byte, l)
+	for i := 0; i < l; i++ {
+		bytes[i] = pool[rand.Intn(len(pool))]
+	}
+	return string(bytes)
+}
+
+func isUniqueUsername(username string) bool {
+	count, err := mongo.CountInstances(map[string]interface{}{
+		"user":         username,
+		"instanceType": mongo.DBInstance,
+	})
+	if err != nil {
+		return false
+	}
+	if count != 0 {
+		return false
+	}
+	return true
+}
 
 func createDB(c *gin.Context) {
 	userStr := middlewares.ExtractClaims(c)
@@ -25,6 +53,13 @@ func createDB(c *gin.Context) {
 	data["hostIP"] = utils.HostIP
 	data["containerPort"] = configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
 	data["owner"] = userStr.Email
+
+	data["user"] = randomString(10)
+	for isUniqueUsername(data["user"].(string)) != true {
+		data["user"] = randomString(10)
+	}
+
+	data["password"] = randomString(10)
 
 	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
 
@@ -40,6 +75,7 @@ func createDB(c *gin.Context) {
 	err = mongo.UpsertInstance(
 		map[string]interface{}{
 			"name":         data["name"],
+			"user":         data["user"],
 			"instanceType": data["instanceType"],
 		}, data)
 

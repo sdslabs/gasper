@@ -32,7 +32,6 @@ func CreateMongoDB(database, username, password string) error {
 
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
 	ctx = context.WithValue(ctx, hostKey, agentAddress)
-
 	_, err := configDB(ctx, database, username, password)
 
 	if err != nil {
@@ -50,7 +49,7 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 	}
 
 	dbs, errg := client.ListDatabaseNames(ctx, bson.M{})
-
+	fmt.Println(dbs)
 	if errg != nil {
 		return nil, fmt.Errorf("Error while creating the database : %s", errg)
 	}
@@ -65,11 +64,12 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 	}
 
 	db := client.Database(database)
+	fmt.Println(db)
 
 	commandData := bson.M{"createUser": username,
 		"pwd": password,
 		"roles": bson.A{
-			bson.M{"role": "dbOwner",
+			bson.M{"role": "userAdmin",
 				"db": database},
 			"readWrite",
 		},
@@ -116,12 +116,13 @@ func DeleteMongoDB(database, username string) error {
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
 	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
-	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%s/", mongoUser, mongoPass, port)
+	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%s/admin", mongoUser, mongoPass, port)
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {
 		return nil, fmt.Errorf("couldn't connect to mongo: %v", err)
 	}
 	err = client.Connect(ctx)
+	fmt.Println("connetion1")
 	if err != nil {
 		return nil, fmt.Errorf("mongo client couldn't connect with background context: %v", err)
 	}
