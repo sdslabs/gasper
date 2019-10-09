@@ -1,9 +1,6 @@
 package mysql
 
 import (
-	"fmt"
-	"math/rand"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/commons"
@@ -13,33 +10,6 @@ import (
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
-
-var pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvwxyz"
-
-// /var pool = "_:$%&/()"
-
-// Generate a random string of A-Z chars with len = l
-func randomString(l int) string {
-	bytes := make([]byte, l)
-	for i := 0; i < l; i++ {
-		bytes[i] = pool[rand.Intn(len(pool))]
-	}
-	return string(bytes)
-}
-
-func isUniqueUsername(username string) bool {
-	count, err := mongo.CountInstances(map[string]interface{}{
-		"user":         username,
-		"instanceType": mongo.DBInstance,
-	})
-	if err != nil {
-		return false
-	}
-	if count != 0 {
-		return false
-	}
-	return true
-}
 
 func createDB(c *gin.Context) {
 	userStr := middlewares.ExtractClaims(c)
@@ -54,14 +24,9 @@ func createDB(c *gin.Context) {
 	data["containerPort"] = configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 	data["owner"] = userStr.Email
 
-	data["user"] = randomString(10)
-	for isUniqueUsername(data["user"].(string)) != true {
-		data["user"] = randomString(10)
-	}
+	data["user"] = data["name"].(string)
 
-	data["password"] = randomString(10)
-
-	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
+	db := data["name"].(string)
 
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
@@ -74,13 +39,12 @@ func createDB(c *gin.Context) {
 	err = mongo.UpsertInstance(
 		map[string]interface{}{
 			"name":         data["name"],
-			"user":         data["user"],
 			"instanceType": data["instanceType"],
 		}, data)
 
 	if err != nil && err != mongo.ErrNoDocuments {
-		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
-		go commons.DatabaseStateCleanup(dbKey)
+		go commons.DatabaseFullCleanup(db, mongo.Mysql)
+		go commons.DatabaseStateCleanup(db)
 		c.JSON(500, gin.H{
 			"error": err.Error(),
 		})
@@ -88,13 +52,13 @@ func createDB(c *gin.Context) {
 	}
 
 	err = redis.RegisterDB(
-		dbKey,
+		db,
 		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
-		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
-		go commons.DatabaseStateCleanup(dbKey)
+		go commons.DatabaseFullCleanup(db, mongo.Mysql)
+		go commons.DatabaseStateCleanup(db)
 		c.JSON(500, gin.H{
 			"error": err.Error(),
 		})
@@ -107,8 +71,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
-		go commons.DatabaseStateCleanup(dbKey)
+		go commons.DatabaseFullCleanup(db, mongo.Mysql)
+		go commons.DatabaseStateCleanup(db)
 		c.JSON(500, gin.H{
 			"error": err.Error(),
 		})
@@ -136,11 +100,9 @@ func fetchDBs(c *gin.Context) {
 func deleteDB(c *gin.Context) {
 	userStr := middlewares.ExtractClaims(c)
 
-	user := c.Param("user")
 	db := c.Param("db")
-	dbKey := fmt.Sprintf(`%s:%s`, user, db)
 
-	err := database.DeleteMysqlDB(db, user)
+	err := database.DeleteMysqlDB(db)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),
@@ -148,7 +110,7 @@ func deleteDB(c *gin.Context) {
 		return
 	}
 
-	err = redis.RemoveDB(dbKey)
+	err = redis.RemoveDB(db)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),
@@ -158,9 +120,8 @@ func deleteDB(c *gin.Context) {
 
 	filter := map[string]interface{}{
 		"name":         db,
-		"user":         user,
 		"language":     ServiceName,
-		"instanceType": mongo.Mysql,
+		"instanceType": mongo.DBInstance,
 	}
 
 	if !userStr.IsAdmin {

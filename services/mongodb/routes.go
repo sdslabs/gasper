@@ -17,5 +17,5 @@ func init() {
 	Router.GET("/logs", gin.FetchMongoDBContainerLogs)
 	Router.GET("/restart", gin.ReloadMongoDBService)
 	Router.GET("/db/:db", gin.FetchDBInfo)
-	Router.DELETE("/:user/:db", deleteDB)
+	Router.DELETE("/:db", deleteDB)
 }

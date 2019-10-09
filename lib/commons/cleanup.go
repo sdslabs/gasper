@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/docker"
@@ -30,17 +29,13 @@ func ContainerCleanup(appName string) error {
 }
 
 // MysqlDatabaseCleanup cleans the database's space in the container
-func MysqlDatabaseCleanup(dbKey string) error {
-	dbUser := strings.Split(dbKey, ":")[0]
-	dbName := strings.Split(dbKey, ":")[1]
-	return database.DeleteMysqlDB(dbName, dbUser)
+func MysqlDatabaseCleanup(db string) error {
+	return database.DeleteMysqlDB(db)
 }
 
 // MongoDatabaseCleanup cleans the database's space in the container
-func MongoDatabaseCleanup(dbKey string) error {
-	dbUser := strings.Split(dbKey, ":")[0]
-	dbName := strings.Split(dbKey, ":")[1]
-	return database.DeleteMongoDB(dbName, dbUser)
+func MongoDatabaseCleanup(db string) error {
+	return database.DeleteMongoDB(db)
 }
 
 // AppFullCleanup cleans the specified application's container and local storage
@@ -70,18 +65,18 @@ func AppStateCleanup(instanceName string) {
 }
 
 // DatabaseFullCleanup deletes the specified database from the container
-func DatabaseFullCleanup(dbKey, databaseType string) {
+func DatabaseFullCleanup(db, databaseType string) {
 	switch databaseType {
 	case mongo.Mysql:
 		{
-			err := MysqlDatabaseCleanup(dbKey)
+			err := MysqlDatabaseCleanup(db)
 			if err != nil {
 				utils.LogError(err)
 			}
 		}
 	case mongo.MongoDB:
 		{
-			err := MongoDatabaseCleanup(dbKey)
+			err := MongoDatabaseCleanup(db)
 			if err != nil {
 				utils.LogError(err)
 			}
@@ -90,13 +85,11 @@ func DatabaseFullCleanup(dbKey, databaseType string) {
 }
 
 // DatabaseStateCleanup removes the database's data from MongoDB and Redis
-func DatabaseStateCleanup(dbKey string) {
-	dbUser := strings.Split(dbKey, ":")[0]
-	dbName := strings.Split(dbKey, ":")[1]
+func DatabaseStateCleanup(db string) {
 	mongo.DeleteInstance(map[string]interface{}{
-		"name":         dbName,
-		"user":         dbUser,
+		"name":         db,
+		"user":         db,
 		"instanceType": mongo.DBInstance,
 	})
-	redis.RemoveDB(dbKey)
+	redis.RemoveDB(db)
 }

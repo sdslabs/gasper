@@ -91,7 +91,7 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 }
 
 // DeleteMongoDB deletes a mongo database
-func DeleteMongoDB(database, username string) error {
+func DeleteMongoDB(database string) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -105,8 +105,14 @@ func DeleteMongoDB(database, username string) error {
 
 	db := client.Database(database)
 
-	err = db.Drop(ctx)
-	if err != nil {
+	commandData := bson.M{"dropDatabase": 1}
+
+	var v interface{}
+	v = &(mongo.SingleResult{})
+	result := db.RunCommand(ctx, commandData)
+	errh := (*result).Decode(v)
+
+	if errh != nil {
 		return fmt.Errorf("Error while deleting the database : %s", err)
 	}
 	return nil
@@ -131,7 +137,6 @@ func createConnection(ctx context.Context) (*mongo.Client, error) {
 		return nil, fmt.Errorf("couldn't connect to mongo: %v", err)
 	}
 	err = client.Connect(ctx)
-	fmt.Println("connetion1")
 	if err != nil {
 		return nil, fmt.Errorf("mongo client couldn't connect with background context: %v", err)
 	}

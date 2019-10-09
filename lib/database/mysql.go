@@ -65,7 +65,8 @@ func CreateMysqlDB(database, username, password string) error {
 }
 
 // DeleteMysqlDB deletes the database given by the database name and username
-func DeleteMysqlDB(database, username string) error {
+func DeleteMysqlDB(database string) error {
+	username := database
 	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
