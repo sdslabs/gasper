@@ -14,11 +14,6 @@ var dbPass = configs.ServiceConfig["mysql"].(map[string]interface{})["env"].(map
 
 type mysqlAgentServer struct{}
 
-var sanitaryActionBindings = map[int]func(string, string, string, *sql.DB) error{
-	1: refreshDB,
-	2: refreshDBUser,
-}
-
 // CreateMysqlDB creates a database in the Mysql instance with the given database name, user and password
 func CreateMysqlDB(database, username, password string) error {
 	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
@@ -33,18 +28,15 @@ func CreateMysqlDB(database, username, password string) error {
 	}
 	defer db.Close()
 
-	_, err = db.Exec("CREATE DATABASE IF NOT EXISTS" + database)
+	_, err = db.Exec("CREATE DATABASE " + database)
 	if err != nil {
-		errs := sanitaryActions(database, username, password, db, 1)
-		if errs != nil {
-			return fmt.Errorf("Error while creating the database : %s", err)
-		}
+		return fmt.Errorf("Error while creating the database : Database Already Exists")
 	}
 
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", username, dbHost, password)
 	_, err = db.Exec(query)
 	if err != nil {
-		errs := sanitaryActions(database, username, password, db, 2)
+		errs := refreshDBUser(database, username, password, db)
 		if errs != nil {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}
@@ -90,20 +82,6 @@ func DeleteMysqlDB(database string) error {
 	return nil
 }
 
-func refreshDB(database, username, password string, db *sql.DB) error {
-	_, errf := db.Exec("DROP DATABASE IF EXISTS " + database)
-	if errf != nil {
-		return fmt.Errorf("Error while deleting the database : %s", errf)
-	}
-
-	_, errc := db.Exec("CREATE DATABASE " + database)
-	if errc != nil {
-		return fmt.Errorf("Error while creating the database : %s", errc)
-	}
-
-	return nil
-}
-
 func refreshDBUser(database, username, password string, db *sql.DB) error {
 	_, errf := db.Exec(fmt.Sprintf("DROP USER IF EXISTS '%s'@'%s'", username, dbHost))
 	if errf != nil {
@@ -117,8 +95,4 @@ func refreshDBUser(database, username, password string, db *sql.DB) error {
 	}
 
 	return nil
-}
-
-func sanitaryActions(database, username, password string, db *sql.DB, stage int) error {
-	return sanitaryActionBindings[stage](database, username, password, db)
 }

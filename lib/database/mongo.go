@@ -20,17 +20,11 @@ const pwd = key("password")
 var mongoUser = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_USERNAME"].(string)
 var mongoPass = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_PASSWORD"].(string)
 
-var mongoSanitaryActionBindings = map[int]func(context.Context, string, string, string, *mongo.Client) error{
-	1: refreshMongoDB,
-	2: refreshMongoDBUser,
-}
-
 // CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
 func CreateMongoDB(database, username, password string) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	ctx = fillContextWithValues(ctx)
 
 	_, err := configDB(ctx, database, username, password)
 
@@ -49,27 +43,23 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 	}
 
 	dbs, errg := client.ListDatabaseNames(ctx, bson.M{})
-	fmt.Println(dbs)
+
 	if errg != nil {
 		return nil, fmt.Errorf("Error while creating the database : %s", errg)
 	}
 
 	for i := 0; i < len(dbs); i++ {
 		if strings.Compare(dbs[i], database) == 0 {
-			errs := mongoSanitaryActions(ctx, database, username, password, client, 1)
-			if errs != nil {
-				return nil, fmt.Errorf("Error while creating the database : %s", err)
-			}
+			return nil, fmt.Errorf("Error while creating the database : Database already Exists")
 		}
 	}
 
 	db := client.Database(database)
-	fmt.Println(db)
 
 	commandData := bson.M{"createUser": username,
 		"pwd": password,
 		"roles": bson.A{
-			bson.M{"role": "userAdmin",
+			bson.M{"role": "dbOwner",
 				"db": database},
 			"readWrite",
 		},
@@ -78,12 +68,12 @@ func configDB(ctx context.Context, database, username, password string) (*mongo.
 	var v interface{}
 	v = &(mongo.SingleResult{})
 	result := db.RunCommand(ctx, commandData)
-	errh := (*result).Decode(v)
+	err = (*result).Decode(v)
 
-	if errh != nil {
-		errs := mongoSanitaryActions(ctx, database, username, password, client, 2)
+	if err != nil {
+		errs := refreshMongoDBUser(ctx, database, username, password, client)
 		if errs != nil {
-			return nil, fmt.Errorf("Error while creating the database : %s", err)
+			return nil, fmt.Errorf("Error while creating the database : %s", errs)
 		}
 	}
 
@@ -95,8 +85,6 @@ func DeleteMongoDB(database string) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-
-	ctx = fillContextWithValues(ctx)
 
 	client, err := createConnection(ctx)
 	if err != nil {
@@ -110,23 +98,12 @@ func DeleteMongoDB(database string) error {
 	var v interface{}
 	v = &(mongo.SingleResult{})
 	result := db.RunCommand(ctx, commandData)
-	errh := (*result).Decode(v)
+	err = (*result).Decode(v)
 
-	if errh != nil {
+	if err != nil {
 		return fmt.Errorf("Error while deleting the database : %s", err)
 	}
 	return nil
-}
-
-func fillContextWithValues(ctx context.Context) context.Context {
-	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
-	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
-	rootUser := configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_USERNAME"].(string)
-	rootPwd := configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_PASSWORD"].(string)
-	ctx = context.WithValue(ctx, hostKey, agentAddress)
-	ctx = context.WithValue(ctx, usrname, rootUser)
-	ctx = context.WithValue(ctx, pwd, rootPwd)
-	return ctx
 }
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
@@ -143,23 +120,14 @@ func createConnection(ctx context.Context) (*mongo.Client, error) {
 	return client, nil
 }
 
-func refreshMongoDB(ctx context.Context, database, username, password string, client *mongo.Client) error {
-	db := client.Database(database)
-	err := db.Drop(ctx)
-	if err != nil {
-		return fmt.Errorf("Error while deleting the database : %s", err)
-	}
-	return nil
-}
-
 func refreshMongoDBUser(ctx context.Context, database, username, password string, client *mongo.Client) error {
 	db := client.Database(database)
 	var v interface{}
 	v = &(mongo.SingleResult{})
 	dropUser := db.RunCommand(ctx, bson.M{"dropUser": username})
-	errh := (*dropUser).Decode(v)
-	if errh != nil {
-		return fmt.Errorf("Error while deleting the user : %s", errh)
+	err := (*dropUser).Decode(v)
+	if err != nil {
+		return fmt.Errorf("Error while deleting the user : %s", err)
 	}
 
 	commandData := bson.M{"createUser": username,
@@ -179,8 +147,4 @@ func refreshMongoDBUser(ctx context.Context, database, username, password string
 	}
 
 	return nil
-}
-
-func mongoSanitaryActions(ctx context.Context, database, username, password string, client *mongo.Client, stage int) error {
-	return mongoSanitaryActionBindings[stage](ctx, database, username, password, client)
 }
