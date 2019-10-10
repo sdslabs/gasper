@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/go-redis/redis"
@@ -49,7 +50,28 @@ func GetLeastLoadedInstances(service string, count int64) ([]string, error) {
 	if len(data) == 0 {
 		return []string{ErrEmptySet}, nil
 	}
+
 	return data, nil
+}
+
+// GetLeastLoadedInstancesWithScores returns the n least loaded instances along with their scores
+func GetLeastLoadedInstancesWithScores(service string, count int64) ([]string, error) {
+	var dataWithScores []string
+
+	data, err := GetLeastLoadedInstances(service, count)
+	if err != nil {
+		return nil, err
+	}
+
+	// combine instance urls with their respective scores
+	for _, instance := range data {
+		score, err := client.ZScore(service, instance).Result()
+		if err != nil {
+			return nil, err
+		}
+		dataWithScores = append(dataWithScores, instance+":"+strconv.Itoa(int(score)))
+	}
+	return dataWithScores, nil
 }
 
 // GetLeastLoadedInstance returns a single instance having least number of apps of a particular service deployed
