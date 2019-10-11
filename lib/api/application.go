@@ -96,7 +96,7 @@ func CreateBasicApplication(
 	var (
 		storepath, _ = os.Getwd()
 		confFileName = fmt.Sprintf("%s.sws.conf", name)
-		workdir      = fmt.Sprintf("%s/%s", configs.SWSConfig["projectRoot"].(string), name)
+		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, name)
 		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
 	)
 
@@ -223,7 +223,7 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	data["context"].(map[string]interface{})["rcFile"] = runCommands
 
 	if runCommands {
-		cmd := []string{"sh", "-c", fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`, configs.SWSConfig["rcFile"].(string), configs.SWSConfig["rcFile"].(string))}
+		cmd := []string{"sh", "-c", fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`, configs.GasperConfig.RcFile, configs.GasperConfig.RcFile)}
 		_, err = docker.ExecDetachedProcess(
 			appEnv.Context,
 			appEnv.Client,

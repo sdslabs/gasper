@@ -7,7 +7,7 @@ import (
 
 // AuthorizeService creates a gin middleware to authorize dominus requests
 func AuthorizeService() gin.HandlerFunc {
-	secret := configs.SWSConfig["secret"].(string)
+	secret := configs.GasperConfig.Secret
 	return func(c *gin.Context) {
 		dominusSecret := c.GetHeader("dominus-secret")
 		if dominusSecret == "" {

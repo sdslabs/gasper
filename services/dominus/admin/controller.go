@@ -40,7 +40,7 @@ func GetUserInfo(ctx *gogin.Context) {
 
 // GetAllNodes fetches all the nodes registered on redis corresponding to their service
 func GetAllNodes(ctx *gogin.Context) {
-	services := configs.ServiceConfig
+	services := configs.ServiceMap
 	res := gogin.H{}
 	// loop just to get names of services dynamically
 	for service := range services {
@@ -62,7 +62,7 @@ func GetNodesByName(ctx *gogin.Context) {
 	res := gogin.H{}
 	switch node {
 	case WorkerNode:
-		services := configs.ServiceConfig
+		services := configs.ServiceMap
 		for service := range services {
 			if service == "dominus" {
 				continue
@@ -80,7 +80,7 @@ func GetNodesByName(ctx *gogin.Context) {
 	case MasterNode:
 		node = "dominus"
 	default:
-		services := configs.ServiceConfig
+		services := configs.ServiceMap
 		serviceExists := false
 		for service := range services {
 			if node == service {

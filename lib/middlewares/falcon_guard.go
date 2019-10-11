@@ -14,11 +14,11 @@ var falconConf falconApi.FalconClientGolang
 
 // InitializeFalconConfig intializes the falcon API
 func InitializeFalconConfig() {
-	clientID := configs.FalconConfig["falconClientId"].(string)
-	clientSecret := configs.FalconConfig["falconClientSecret"].(string)
-	falconURLAccessToken := configs.FalconConfig["falconUrlAccessToken"].(string)
-	falconURLResourceOwner := configs.FalconConfig["falconUrlResourceOwnerDetails"].(string)
-	falconAccountsURL := configs.FalconConfig["falconAccountsUrl"].(string)
+	clientID := configs.FalconConfig.FalconClientID
+	clientSecret := configs.FalconConfig.FalconClientSecret
+	falconURLAccessToken := configs.FalconConfig.FalconURLAccessToken
+	falconURLResourceOwner := configs.FalconConfig.FalconURLResourceOwnerDetails
+	falconAccountsURL := configs.FalconConfig.FalconAccountsURL
 	falconConf = falconApi.New(clientID, clientSecret, falconURLAccessToken, falconURLResourceOwner, falconAccountsURL)
 }
 
@@ -36,7 +36,7 @@ func getUser(cookie string) (string, error) {
 
 // FalconGuard is a middleware for checking whether the user is logged into accounts or not
 func FalconGuard() gin.HandlerFunc {
-	if configs.FalconConfig["plugIn"].(bool) {
+	if configs.FalconConfig.PlugIn {
 		return func(c *gin.Context) {
 			cookie := c.GetHeader("Cookie")
 			user, err := getUser(cookie)

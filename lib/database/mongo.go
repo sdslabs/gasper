@@ -17,8 +17,8 @@ const hostKey = key("hostKey")
 const usrname = key("username")
 const pwd = key("password")
 
-var mongoUser = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_USERNAME"].(string)
-var mongoPass = configs.ServiceConfig["mongodb"].(map[string]interface{})["env"].(map[string]interface{})["MONGO_INITDB_ROOT_PASSWORD"].(string)
+var mongoUser = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
+var mongoPass = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
 
 // CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
 func CreateMongoDB(database, username, password string) error {
@@ -107,7 +107,7 @@ func DeleteMongoDB(database string) error {
 }
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
-	port := configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
+	port := configs.ServiceConfig.Mongodb.ContainerPort
 	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%s/admin", mongoUser, mongoPass, port)
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {

@@ -23,7 +23,7 @@ func bootstrap(index string, appEnv *types.ApplicationEnv) (string, types.Respon
 // Pipeline is the application creation pipeline
 func Pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
-		DockerImage:  configs.ImageConfig["nodejs"].(string),
+		DockerImage:  configs.ImageConfig.Nodejs,
 		ConfFunction: configs.CreateNodeContainerConfig,
 	}
 

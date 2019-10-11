@@ -11,7 +11,7 @@ import (
 func Pipeline(data map[string]interface{}) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		ConfFunction: configs.CreateStaticContainerConfig,
-		DockerImage:  configs.ImageConfig["static"].(string),
+		DockerImage:  configs.ImageConfig.Static,
 	}
 
 	appEnv, resErr := api.SetupApplication(appConf, data)

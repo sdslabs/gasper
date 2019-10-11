@@ -1,6 +1,7 @@
 package ssh
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os/exec"
@@ -108,14 +109,26 @@ func passwordHandler(ctx ssh.Context, password string) bool {
 
 // BuildSSHServer creates a server for the given parameters
 func BuildSSHServer(service string) (*ssh.Server, error) {
-	sshConfig := configs.ServiceConfig[service].(map[string]interface{})
-	filepaths := utils.ToStringSlice(sshConfig["host_signers"])
+	sshConfig := configs.ServiceMap[service]
+	var filepaths []string
+	if service == "ssh" {
+		filepaths = configs.ServiceConfig.SSH.HostSigners
+	} else if service == "ssh_proxy" {
+		filepaths = configs.ServiceConfig.SSHProxy.HostSigners
+	} else {
+		return nil, errors.New("Invalid service name")
+	}
 	hostSigners, err := getHostSigners(service, filepaths)
 	if err != nil {
 		return nil, err
 	}
+	if !utils.IsValidPort(sshConfig.Port) {
+		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", sshConfig.Port)
+		utils.Log(msg, utils.ErrorTAG)
+		return nil, errors.New(msg)
+	}
 	return &ssh.Server{
-		Addr:        sshConfig["port"].(string),
+		Addr:        fmt.Sprintf(":%d", sshConfig.Port),
 		HostSigners: hostSigners,
 
 		Handler:          newHandler(service),

@@ -47,7 +47,7 @@ func CreateContainer(
 			"/var/run/docker.sock:/var/run/docker.sock",
 			volume,
 		},
-		DNS: utils.ToStringSlice(configs.SWSConfig["dnsServers"]),
+		DNS: configs.GasperConfig.DNSServers,
 		PortBindings: nat.PortMap{
 			nat.Port(containerPortRule): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: httpPort}},
 		},

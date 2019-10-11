@@ -3,6 +3,7 @@ package database
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/docker/docker/client"
 	"github.com/sdslabs/SWS/configs"
@@ -20,9 +21,6 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 		return "", types.NewResErr(500, "cannot setup client", err)
 	}
 
-	dockerImage := configs.ImageConfig[dbtype].(string)
-	port := configs.ServiceConfig[dbtype].(map[string]interface{})["container_port"].(string)
-	env := configs.ServiceConfig[dbtype].(map[string]interface{})["env"].(map[string]interface{})
 	storepath, _ := os.Getwd()
 
 	var containerID string
@@ -30,6 +28,9 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 	switch dbtype {
 	case mongo.MongoDB:
 		{
+			dockerImage := configs.ImageConfig.Mongodb
+			port := strconv.Itoa(configs.ServiceConfig.Mongodb.ContainerPort)
+			env := configs.ServiceConfig.Mongodb.Env
 			workdir := "/data/db"
 			storedir := filepath.Join(storepath, "mongodb-storage")
 			containerID, err = docker.CreateMongoDBContainer(
@@ -43,6 +44,9 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 		}
 	case mongo.Mysql:
 		{
+			dockerImage := configs.ImageConfig.Mysql
+			port := strconv.Itoa(configs.ServiceConfig.Mysql.ContainerPort)
+			env := configs.ServiceConfig.Mysql.Env
 			workdir := "/var/lib/mysql"
 			storedir := filepath.Join(storepath, "mysql-storage")
 			containerID, err = docker.CreateMysqlContainer(

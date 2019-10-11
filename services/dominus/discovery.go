@@ -3,7 +3,6 @@ package dominus
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/sdslabs/SWS/configs"
@@ -13,7 +12,7 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
-var instanceRegistrationBindings = map[string]func(instances []map[string]interface{}, currentIP string, config map[string]interface{}){
+var instanceRegistrationBindings = map[string]func(instances []map[string]interface{}, currentIP string, config *configs.GenericService){
 	"mizu":    registerApps,
 	"mysql":   registerDatabases,
 	"mongodb": registerDatabases,
@@ -44,15 +43,14 @@ func fetchBoundDatabases(currentIP, service string) []map[string]interface{} {
 	)
 }
 
-func registerApps(instances []map[string]interface{}, currentIP string, config map[string]interface{}) {
+func registerApps(instances []map[string]interface{}, currentIP string, config *configs.GenericService) {
 	payload := make(map[string]interface{})
 
 	for _, instance := range instances {
 		appBind := &types.AppBindings{
-			Node:   currentIP + config["port"].(string),
-			Server: currentIP + ":" + strconv.FormatInt(int64(instance["httpPort"].(int32)), 10),
+			Node:   fmt.Sprintf("%s:%d", currentIP, config.Port),
+			Server: fmt.Sprintf("%s:%d", currentIP, instance["httpPort"].(int32)),
 		}
-
 		appBindingJSON, err := json.Marshal(appBind)
 
 		if err != nil {
@@ -68,12 +66,12 @@ func registerApps(instances []map[string]interface{}, currentIP string, config m
 	}
 }
 
-func registerDatabases(instances []map[string]interface{}, currentIP string, config map[string]interface{}) {
+func registerDatabases(instances []map[string]interface{}, currentIP string, config *configs.GenericService) {
 	payload := make(map[string]interface{})
 
 	for _, instance := range instances {
 		key := fmt.Sprintf("%s:%s", instance["user"].(string), instance["name"].(string))
-		payload[key] = currentIP + config["port"].(string)
+		payload[key] = fmt.Sprintf("%s:%d", currentIP, config.Port)
 	}
 	err := redis.BulkRegisterDatabases(payload)
 	if err != nil {
@@ -83,7 +81,7 @@ func registerDatabases(instances []map[string]interface{}, currentIP string, con
 }
 
 // exposeService exposes a single microservice along with its apps
-func exposeService(service, currentIP string, config map[string]interface{}) {
+func exposeService(service, currentIP string, config *configs.GenericService) {
 	count := 0
 	var instances []map[string]interface{}
 	if instanceServiceBindings[service] != nil {
@@ -92,7 +90,7 @@ func exposeService(service, currentIP string, config map[string]interface{}) {
 	}
 	err := redis.RegisterService(
 		service,
-		currentIP+config["port"].(string),
+		fmt.Sprintf("%s:%d", currentIP, config.Port),
 		float64(count),
 	)
 	if err != nil {
@@ -111,16 +109,16 @@ func exposeServices() {
 		return
 	}
 	checkAndUpdateState(currIP)
-	for service, config := range configs.ServiceConfig {
-		if config.(map[string]interface{})["deploy"].(bool) {
-			go exposeService(service, currIP, config.(map[string]interface{}))
+	for service, config := range configs.ServiceMap {
+		if config.Deploy {
+			go exposeService(service, currIP, config)
 		}
 	}
 }
 
 // ScheduleServiceExposure exposes the application services at regular intervals
 func ScheduleServiceExposure() {
-	interval := time.Duration(configs.CronConfig["exposureInterval"].(float64)) * time.Second
+	interval := time.Duration(configs.CronConfig.ExposureInterval) * time.Second
 	scheduler := utils.NewScheduler(interval, exposeServices)
 	scheduler.RunAsync()
 }

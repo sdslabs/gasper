@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"fmt"
 	"net"
-	"strconv"
 	"time"
 
 	"github.com/sdslabs/SWS/configs"
@@ -13,7 +13,7 @@ var HostIP, _ = GetOutboundIP()
 
 // GetOutboundIP returns the preferred outbound IP of this machine
 func GetOutboundIP() (string, error) {
-	if configs.SWSConfig["offlineMode"].(bool) {
+	if configs.GasperConfig.OfflineMode {
 		return "0.0.0.0", nil
 	}
 	conn, err := net.Dial("udp", "8.8.8.8:80")
@@ -74,15 +74,9 @@ func GetFreePorts(count int) ([]int, error) {
 	return ports, nil
 }
 
-// IsValidPort checks if the port is valid and free to use.
-// Port of the format ":8888"
-func IsValidPort(port string) bool {
-	_, err := strconv.ParseUint(port[1:], 10, 16)
-	if err != nil {
-		return false
-	}
-
-	ln, err := net.Listen("tcp", port)
+// IsValidPort checks if the port is valid and free to use
+func IsValidPort(port int) bool {
+	ln, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		return false
 	}

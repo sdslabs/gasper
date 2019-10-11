@@ -1,15 +1,17 @@
 package redis
 
 import (
+	"fmt"
+
 	"github.com/go-redis/redis"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
 var client = redis.NewClient(&redis.Options{
-	Addr:     configs.RedisConfig["host"].(string) + configs.RedisConfig["port"].(string),
-	Password: configs.RedisConfig["password"].(string),
-	DB:       int(configs.RedisConfig["DB"].(float64)),
+	Addr:     fmt.Sprintf("%s:%d", configs.RedisConfig.Host, configs.RedisConfig.Port),
+	Password: configs.RedisConfig.Password,
+	DB:       configs.RedisConfig.DB,
 })
 
 func init() {

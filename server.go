@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/sdslabs/SWS/configs"
@@ -14,59 +14,47 @@ import (
 
 func checkAndPullImages() {
 	images := docker.ListImages()
-	for service, image := range configs.ImageConfig {
-		if !utils.Contains(images, image.(string)) {
-			utils.LogInfo("Image %s required by service %s not present locally, pulling from DockerHUB\n", image, service)
-			docker.Pull(image.(string))
+	v := reflect.ValueOf(configs.ImageConfig)
+	for i := 0; i < v.NumField(); i++ {
+		image := v.Field(i).String()
+		if !utils.Contains(images, image) {
+			utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
+			docker.Pull(image)
 		}
 	}
 }
 
-func main() {
-	var g errgroup.Group
-
-	checkAndPullImages()
-
-	for service, config := range configs.ServiceConfig {
-		config := config.(map[string]interface{})
-		if config["deploy"].(bool) {
-			port := config["port"].(string)
-			if utils.IsValidPort(port) {
-				customServer := Launcher(service, port)
-				if customServer.HTTPServer != nil {
-					serviceServer := customServer.HTTPServer
-					utils.LogInfo("%s Service Active\n", strings.Title(service))
-					g.Go(func() error {
-						return serviceServer.ListenAndServe()
-					})
-				} else if customServer.SSHServer != nil {
-					serviceServer := customServer.SSHServer
-					utils.LogInfo("%s Service Active\n", strings.Title(service))
-					g.Go(func() error {
-						return serviceServer.ListenAndServe()
-					})
-				}
-			} else {
-				msg := fmt.Sprintf("Cannot deploy %s service. Port %s is invalid or already in use.\n", service, port[1:])
-				utils.Log(msg, utils.ErrorTAG)
-				panic(msg)
-			}
-		}
-	}
-
+func initDominus() {
 	dominus.ScheduleServiceExposure()
-
-	if configs.ServiceConfig["dominus"].(map[string]interface{})["deploy"].(bool) {
+	if configs.ServiceConfig.Dominus.Deploy {
 		dominus.ScheduleCleanup()
 	}
+}
 
-	if configs.FalconConfig["plugIn"].(bool) {
+func initFalcon() {
+	if configs.FalconConfig.PlugIn {
 		// Initialize the Falcon Config at startup
 		middlewares.InitializeFalconConfig()
 	}
+}
 
+func initServices() {
+	var g errgroup.Group
+	for service, launcher := range launcherBindings {
+		if launcher.Deploy {
+			g.Go(launcher.Start)
+			utils.LogInfo("%s Service Active\n", strings.Title(service))
+		}
+	}
 	if err := g.Wait(); err != nil {
 		utils.LogError(err)
 		panic(err)
 	}
+}
+
+func main() {
+	checkAndPullImages()
+	initDominus()
+	initFalcon()
+	initServices()
 }

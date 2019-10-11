@@ -8,7 +8,7 @@ import (
 
 // NewEngine returns a router setting up required configs
 func NewEngine() *gin.Engine {
-	if configs.SWSConfig["debug"].(bool) {
+	if configs.GasperConfig.Debug {
 		gin.SetMode(gin.DebugMode)
 	} else {
 		gin.SetMode(gin.ReleaseMode)

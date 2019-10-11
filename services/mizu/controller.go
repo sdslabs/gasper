@@ -2,7 +2,6 @@ package mizu
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
@@ -52,8 +51,8 @@ func createApp(c *gin.Context) {
 
 	err = redis.RegisterApp(
 		data["name"].(string),
-		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
-		utils.HostIP+":"+strconv.Itoa(data["httpPort"].(int)),
+		fmt.Sprintf("%s:%d", utils.HostIP, configs.ServiceConfig.Mizu.Port),
+		fmt.Sprintf("%s:%d", utils.HostIP, data["httpPort"].(int)),
 	)
 
 	if err != nil {
@@ -67,7 +66,7 @@ func createApp(c *gin.Context) {
 
 	err = redis.IncrementServiceLoad(
 		ServiceName,
-		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
+		fmt.Sprintf("%s:%d", utils.HostIP, configs.ServiceConfig.Mizu.Port),
 	)
 
 	if err != nil {
@@ -79,7 +78,7 @@ func createApp(c *gin.Context) {
 		return
 	}
 
-	if configs.CloudflareConfig["plugIn"].(bool) {
+	if configs.CloudflareConfig.PlugIn {
 		resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance)
 		if err != nil {
 			go commons.AppFullCleanup(data["name"].(string))
@@ -90,7 +89,7 @@ func createApp(c *gin.Context) {
 			return
 		}
 		data["cloudflareID"] = resp.Result.ID
-		data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.SWSConfig["domain"].(string))
+		data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.GasperConfig.Domain)
 	}
 
 	data["success"] = true
@@ -150,7 +149,7 @@ func deleteApp(c *gin.Context) {
 	go redis.DecrementServiceLoad(ServiceName, node)
 	go redis.RemoveApp(app)
 	go commons.AppFullCleanup(app)
-	if configs.CloudflareConfig["plugIn"].(bool) {
+	if configs.CloudflareConfig.PlugIn {
 		go cloudflare.DeleteRecord(app, mongo.AppInstance)
 	}
 	c.JSON(200, gin.H{

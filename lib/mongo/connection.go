@@ -12,7 +12,7 @@ import (
 )
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
-var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig["url"].(string)))
+var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig.URL))
 var link = client.Database("sws")
 
 func setupAdmin() {

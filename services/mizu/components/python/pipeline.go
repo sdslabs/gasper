@@ -37,9 +37,9 @@ func bootstrap(requirementsPath, index string, args []string, env *types.Applica
 func Pipeline(data map[string]interface{}) types.ResponseError {
 	var image string
 	if data[pythonVersionTag].(string) == python3Tag {
-		image = configs.ImageConfig["python3"].(string)
+		image = configs.ImageConfig.Python3
 	} else if data[pythonVersionTag].(string) == python2Tag {
-		image = configs.ImageConfig["python2"].(string)
+		image = configs.ImageConfig.Python2
 	}
 
 	appConf := &types.ApplicationConfig{

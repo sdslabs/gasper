@@ -9,7 +9,7 @@ var (
 	createRecordEndpoint = listZonesEndpoint + "/%s/dns_records"
 	updateRecordEndpoint = listZonesEndpoint + "/%s/dns_records/%s"
 	deleteRecordEndpoint = listZonesEndpoint + "/%s/dns_records/%s"
-	token                = configs.CloudflareConfig["token"].(string)
-	domain               = configs.SWSConfig["domain"].(string)
-	publicIP             = configs.CloudflareConfig["publicIP"].(string)
+	token                = configs.CloudflareConfig.Token
+	domain               = configs.GasperConfig.Domain
+	publicIP             = configs.CloudflareConfig.PublicIP
 )
