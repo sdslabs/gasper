@@ -28,6 +28,12 @@ func createDB(c *gin.Context) {
 
 	db := data["name"].(string)
 
+	if db == "admin" {
+		c.JSON(400, gin.H{
+			"error": "Database name cannot be `admin`",
+		})
+		return
+	}
 	err := database.CreateMongoDB(data["name"].(string), data["user"].(string), data["password"].(string))
 
 	if err != nil {

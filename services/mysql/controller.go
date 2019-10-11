@@ -28,6 +28,12 @@ func createDB(c *gin.Context) {
 
 	db := data["name"].(string)
 
+	if db == "root" {
+		c.JSON(400, gin.H{
+			"error": "Database name cannot be `root`",
+		})
+		return
+	}
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
