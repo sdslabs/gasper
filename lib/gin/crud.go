@@ -2,16 +2,21 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
 // FetchAppInfo returns the information about a particular app
 func FetchAppInfo(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	filter := make(map[string]interface{})
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
+	if !userStr.IsAdmin {
+		filter["owner"] = userStr.Email
+	}
 	c.JSON(200, gin.H{
 		"data": mongo.FetchAppInfo(filter),
 	})
@@ -19,10 +24,14 @@ func FetchAppInfo(c *gin.Context) {
 
 // FetchDBInfo returns the information about a particular db
 func FetchDBInfo(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
 	db := c.Param("db")
 	filter := make(map[string]interface{})
 	filter["name"] = db
 	filter["instanceType"] = mongo.DBInstance
+	if !userStr.IsAdmin {
+		filter["owner"] = userStr.Email
+	}
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBInfo(filter),
 	})
@@ -30,10 +39,12 @@ func FetchDBInfo(c *gin.Context) {
 
 // UpdateAppByName updates the app getting name from url params
 func UpdateAppByName(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         app,
 		"instanceType": mongo.AppInstance,
+		"owner":        userStr.Email,
 	}
 	var data map[string]interface{}
 	c.BindJSON(&data)
@@ -46,7 +57,7 @@ func UpdateAppByName(c *gin.Context) {
 func FetchUserInfo(c *gin.Context) {
 	user := c.Param("user")
 	filter := map[string]interface{}{
-		"username": user,
+		"email": user,
 	}
 	c.JSON(200, gin.H{
 		"data": mongo.FetchUserInfo(filter),
@@ -85,10 +96,10 @@ func FetchAllUsers(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	user := c.Param("user")
 	filter := map[string]interface{}{
-		"username": user,
+		"email": user,
 	}
 	instanceFilter := map[string]interface{}{
-		"user": user,
+		"owner": user,
 	}
 	update := map[string]interface{}{
 		"deleted": true,
@@ -111,11 +122,13 @@ func FetchDocs(c *gin.Context) {
 
 // UpdateAppInfo updates the application document in mongoDB
 func UpdateAppInfo(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
+	filter["owner"] = userStr.Email
 
 	var data map[string]interface{}
 	c.BindJSON(&data)

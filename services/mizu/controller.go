@@ -9,6 +9,7 @@ import (
 	"github.com/sdslabs/SWS/lib/cloudflare"
 	"github.com/sdslabs/SWS/lib/commons"
 	g "github.com/sdslabs/SWS/lib/gin"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
@@ -17,6 +18,8 @@ import (
 
 // createApp creates an application for a given language
 func createApp(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
+
 	language := c.Param("language")
 	var data map[string]interface{}
 	c.BindJSON(&data)
@@ -24,6 +27,7 @@ func createApp(c *gin.Context) {
 	delete(data, "rebuild")
 	data["language"] = language
 	data["instanceType"] = mongo.AppInstance
+	data["owner"] = userStr.Email
 
 	resErr := componentMap[language].pipeline(data)
 	if resErr != nil {
@@ -94,10 +98,13 @@ func createApp(c *gin.Context) {
 }
 
 func rebuildApp(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
+
 	appName := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         appName,
 		"instanceType": mongo.AppInstance,
+		"owner":        userStr.Email,
 	}
 	dataList := mongo.FetchAppInfo(filter)
 	if len(dataList) == 0 {
@@ -125,10 +132,16 @@ func rebuildApp(c *gin.Context) {
 
 // deleteApp deletes an application in a worker node
 func deleteApp(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
+
 	app := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         app,
 		"instanceType": mongo.AppInstance,
+	}
+
+	if !userStr.IsAdmin {
+		filter["owner"] = userStr.Email
 	}
 	update := map[string]interface{}{
 		"deleted": true,

@@ -45,3 +45,6 @@ var CloudflareConfig = SWSConfig["cloudflare"].(map[string]interface{})
 
 // ImageConfig is the configuration for the images used by SWS
 var ImageConfig = SWSConfig["images"].(map[string]interface{})
+
+// AdminConfig is the configuration for default SWS admin
+var AdminConfig = SWSConfig["admin"].(map[string]interface{})

@@ -16,7 +16,14 @@ var ServiceName = "dominus"
 func init() {
 	Router.Use(cors.Default())
 	Router.Use(middlewares.FalconGuard())
+	auth := Router.Group("/auth")
+	{
+		auth.POST("/login", middlewares.JWT.LoginHandler)
+		auth.POST("/register", middlewares.RegisterValidator, middlewares.Register)
+		auth.GET("/refresh", middlewares.JWT.MiddlewareFunc(), middlewares.JWT.RefreshHandler)
+	}
 	app := Router.Group("/apps")
+	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
 		app.POST("/:language", trimURLPath(2), createApp)
 		app.GET("/:app", gin.FetchAppInfo)
@@ -25,12 +32,15 @@ func init() {
 		app.GET("/:app/:action", trimURLPath(2), execute)
 	}
 	db := Router.Group("/dbs")
+	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
 		db.POST("/:database", trimURLPath(2), createDatabase)
 		db.GET("/:db", gin.FetchDBInfo)
 		db.DELETE("/:user/:db", trimURLPath(2), deleteDB)
 	}
 	admin := Router.Group("/admin")
+	admin.Use(middlewares.JWT.MiddlewareFunc())
+	admin.Use(middlewares.VerifyAdmin)
 	{
 		apps := admin.Group("/apps")
 		{

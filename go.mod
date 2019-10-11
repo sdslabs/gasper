@@ -2,6 +2,7 @@ module github.com/sdslabs/SWS
 
 require (
 	github.com/Microsoft/go-winio v0.4.11 // indirect
+	github.com/appleboy/gin-jwt v2.5.0+incompatible
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/docker/distribution v2.6.2+incompatible // indirect
 	github.com/docker/docker v1.13.1
@@ -29,9 +30,12 @@ require (
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	go.mongodb.org/mongo-driver v1.1.0
-	golang.org/x/crypto v0.0.0-20190605123033-f99c8df09eb5
-	golang.org/x/net v0.0.0-20190603091049-60506f45cf65
-	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
+	golang.org/x/net v0.0.0-20191003171128-d98b1b443823
+	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
+	golang.org/x/sys v0.0.0-20191003212358-c178f38b412c // indirect
+	golang.org/x/tools v0.0.0-20191005014404-c9f9432ec4b2 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
+	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
 	gopkg.in/src-d/go-git.v4 v4.8.1
 )

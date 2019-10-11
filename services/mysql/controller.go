@@ -7,12 +7,15 @@ import (
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/commons"
 	"github.com/sdslabs/SWS/lib/database"
+	"github.com/sdslabs/SWS/lib/middlewares"
 	"github.com/sdslabs/SWS/lib/mongo"
 	"github.com/sdslabs/SWS/lib/redis"
 	"github.com/sdslabs/SWS/lib/utils"
 )
 
 func createDB(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
+
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
@@ -21,6 +24,7 @@ func createDB(c *gin.Context) {
 	data["instanceType"] = mongo.DBInstance
 	data["hostIP"] = utils.HostIP
 	data["containerPort"] = configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
+	data["owner"] = userStr.Email
 
 	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
 
@@ -79,11 +83,14 @@ func createDB(c *gin.Context) {
 }
 
 func fetchDBs(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
+
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = ServiceName
 	filter["instanceType"] = mongo.DBInstance
+	filter["owner"] = userStr.Email
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBs(filter),
@@ -91,6 +98,8 @@ func fetchDBs(c *gin.Context) {
 }
 
 func deleteDB(c *gin.Context) {
+	userStr := middlewares.ExtractClaims(c)
+
 	user := c.Param("user")
 	db := c.Param("db")
 	dbKey := fmt.Sprintf(`%s:%s`, user, db)
@@ -116,6 +125,10 @@ func deleteDB(c *gin.Context) {
 		"user":         user,
 		"language":     ServiceName,
 		"instanceType": mongo.Mysql,
+	}
+
+	if !userStr.IsAdmin {
+		filter["owner"] = userStr.Email
 	}
 
 	c.JSON(200, gin.H{

@@ -11,8 +11,8 @@ import (
 	"github.com/sdslabs/SWS/lib/utils"
 	"github.com/sdslabs/SWS/services/dominus"
 	"github.com/sdslabs/SWS/services/enrai"
-	"github.com/sdslabs/SWS/services/mongodb"
 	"github.com/sdslabs/SWS/services/mizu"
+	"github.com/sdslabs/SWS/services/mongodb"
 	"github.com/sdslabs/SWS/services/mysql"
 
 	sshserver "github.com/gliderlabs/ssh"
