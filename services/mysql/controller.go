@@ -1,8 +1,6 @@
 package mysql
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/commons"
@@ -26,8 +24,16 @@ func createDB(c *gin.Context) {
 	data["containerPort"] = configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
 	data["owner"] = userStr.Email
 
-	dbKey := fmt.Sprintf(`%s:%s`, data["user"].(string), data["name"].(string))
+	data["user"] = data["name"].(string)
 
+	db := data["name"].(string)
+
+	if db == "root" {
+		c.JSON(400, gin.H{
+			"error": "Database name cannot be `root`",
+		})
+		return
+	}
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -43,8 +49,8 @@ func createDB(c *gin.Context) {
 		}, data)
 
 	if err != nil && err != mongo.ErrNoDocuments {
-		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
-		go commons.DatabaseStateCleanup(dbKey)
+		go commons.DatabaseFullCleanup(db, mongo.Mysql)
+		go commons.DatabaseStateCleanup(db)
 		c.JSON(500, gin.H{
 			"error": err.Error(),
 		})
@@ -52,13 +58,13 @@ func createDB(c *gin.Context) {
 	}
 
 	err = redis.RegisterDB(
-		dbKey,
+		db,
 		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
 	)
 
 	if err != nil {
-		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
-		go commons.DatabaseStateCleanup(dbKey)
+		go commons.DatabaseFullCleanup(db, mongo.Mysql)
+		go commons.DatabaseStateCleanup(db)
 		c.JSON(500, gin.H{
 			"error": err.Error(),
 		})
@@ -71,8 +77,8 @@ func createDB(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.DatabaseFullCleanup(dbKey, mongo.Mysql)
-		go commons.DatabaseStateCleanup(dbKey)
+		go commons.DatabaseFullCleanup(db, mongo.Mysql)
+		go commons.DatabaseStateCleanup(db)
 		c.JSON(500, gin.H{
 			"error": err.Error(),
 		})
@@ -100,11 +106,9 @@ func fetchDBs(c *gin.Context) {
 func deleteDB(c *gin.Context) {
 	userStr := middlewares.ExtractClaims(c)
 
-	user := c.Param("user")
 	db := c.Param("db")
-	dbKey := fmt.Sprintf(`%s:%s`, user, db)
 
-	err := database.DeleteMysqlDB(db, user)
+	err := database.DeleteMysqlDB(db)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),
@@ -112,7 +116,7 @@ func deleteDB(c *gin.Context) {
 		return
 	}
 
-	err = redis.RemoveDB(dbKey)
+	err = redis.RemoveDB(db)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),
@@ -122,9 +126,8 @@ func deleteDB(c *gin.Context) {
 
 	filter := map[string]interface{}{
 		"name":         db,
-		"user":         user,
 		"language":     ServiceName,
-		"instanceType": mongo.Mysql,
+		"instanceType": mongo.DBInstance,
 	}
 
 	if !userStr.IsAdmin {

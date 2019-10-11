@@ -36,7 +36,7 @@ func init() {
 	{
 		db.POST("/:database", trimURLPath(2), createDatabase)
 		db.GET("/:db", gin.FetchDBInfo)
-		db.DELETE("/:user/:db", trimURLPath(2), deleteDB)
+		db.DELETE("/:db", trimURLPath(2), deleteDB)
 	}
 	admin := Router.Group("/admin")
 	admin.Use(middlewares.JWT.MiddlewareFunc())
@@ -52,7 +52,7 @@ func init() {
 		{
 			dbs.GET("/", adminHandlers.GetAllDatabases)
 			dbs.GET("/:db", adminHandlers.GetDatabaseInfo)
-			dbs.DELETE("/:user/:db", trimURLPath(3), execute)
+			dbs.DELETE("/:db", trimURLPath(3), deleteDB)
 		}
 		users := admin.Group("/users")
 		{
