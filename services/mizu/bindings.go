@@ -2,11 +2,11 @@ package mizu
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/services/mizu/components/nodejs"
-	"github.com/sdslabs/SWS/services/mizu/components/php"
-	"github.com/sdslabs/SWS/services/mizu/components/python"
-	"github.com/sdslabs/SWS/services/mizu/components/static"
+	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/services/mizu/components/nodejs"
+	"github.com/sdslabs/gasper/services/mizu/components/php"
+	"github.com/sdslabs/gasper/services/mizu/components/python"
+	"github.com/sdslabs/gasper/services/mizu/components/static"
 )
 
 type componentBinding struct {

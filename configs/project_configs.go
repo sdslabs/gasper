@@ -37,13 +37,13 @@ var ServiceConfig = GasperConfig.Services
 // FalconConfig is the configuration for all the falcon client services
 var FalconConfig = GasperConfig.Falcon
 
-// CronConfig is the configuration for all the daemons managed by SWS
+// CronConfig is the configuration for all the daemons managed by gasper
 var CronConfig = GasperConfig.Cron
 
-// CloudflareConfig is the configuration for cloudflare services used by SWS
+// CloudflareConfig is the configuration for cloudflare services used by gasper
 var CloudflareConfig = GasperConfig.Cloudflare
 
-// ImageConfig is the configuration for the images used by SWS
+// ImageConfig is the configuration for the images used by gasper
 var ImageConfig = GasperConfig.Images
 
 // AdminConfig is the configuration for default Gasper admin

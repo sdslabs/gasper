@@ -9,10 +9,10 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/kr/pty"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // newHandler returns a handler function which manages the ssh session.

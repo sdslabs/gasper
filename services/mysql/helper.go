@@ -2,7 +2,7 @@ package mysql
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/middlewares"
 )
 
 type mysqlRequestBody struct {

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 var instanceRegistrationBindings = map[string]func(instances []map[string]interface{}, currentIP string, config *configs.GenericService){

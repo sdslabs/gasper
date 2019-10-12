@@ -4,11 +4,11 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/middlewares"
-	"github.com/sdslabs/SWS/lib/utils"
-	"github.com/sdslabs/SWS/services/dominus"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/services/dominus"
 	"golang.org/x/sync/errgroup"
 )
 

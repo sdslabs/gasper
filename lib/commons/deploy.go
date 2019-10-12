@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // DeployRPC re-deploys applications on different hosts

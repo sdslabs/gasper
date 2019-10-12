@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/gasper/configs"
 )
 
 // HostIP variable stores the IPv4 address of the host machine

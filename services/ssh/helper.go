@@ -7,8 +7,8 @@ import (
 	"unsafe"
 
 	"github.com/gliderlabs/ssh"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/mongo"
 	gossh "golang.org/x/crypto/ssh"
 )
 

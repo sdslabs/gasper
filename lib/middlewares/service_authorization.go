@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/gasper/configs"
 )
 
 // AuthorizeService creates a gin middleware to authorize dominus requests

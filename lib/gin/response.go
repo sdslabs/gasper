@@ -2,9 +2,9 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // SendResponse sends the response back to client

@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/docker/docker/client"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/lib/types"
 	"golang.org/x/net/context"
 )
 

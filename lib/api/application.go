@@ -8,12 +8,12 @@ import (
 	"strconv"
 
 	"github.com/docker/docker/api/types/container"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/commons"
-	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/git"
-	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/commons"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/git"
+	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/lib/utils"
 	gogit "gopkg.in/src-d/go-git.v4"
 )
 
@@ -95,7 +95,7 @@ func CreateBasicApplication(
 
 	var (
 		storepath, _ = os.Getwd()
-		confFileName = fmt.Sprintf("%s.sws.conf", name)
+		confFileName = fmt.Sprintf("%s.gasper.conf", name)
 		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, name)
 		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
 	)

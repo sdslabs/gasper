@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/lib/utils"
 
-	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/gasper/configs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig.URL))
-var link = client.Database("sws")
+var link = client.Database("gasper")
 
 func setupAdmin() {
 	adminInfo := configs.AdminConfig

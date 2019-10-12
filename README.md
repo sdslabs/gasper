@@ -1,4 +1,4 @@
-# SWS
+# Gasper
 
 > SDS Web Services
 
@@ -28,7 +28,7 @@
 - `cp config.sample.json config.json`
 - Start hacking
 
-**Note:** The vendor is committed, to add another package as dependency, `go get ...` the package in your gopath and then run the command `go mod vendor` to add the dependency in the SWS package.
+**Note:** The vendor is committed, to add another package as dependency, `go get ...` the package in your gopath and then run the command `go mod vendor` to add the dependency in the gasper package.
 
 *To use go-modules you must have Golang version 1.11 or later. Also remember to set the environment variable `GO111MODULE=on`. For reference see - [https://github.com/golang/go/wiki/Modules](https://github.com/golang/go/wiki/Modules).*
 

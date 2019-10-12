@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/lib/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/redis"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/redis"
 )
 
 // reverseProxy sets up the reverse proxy from the given

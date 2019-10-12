@@ -2,7 +2,7 @@
     "debug": true,
     "domain": "sdslabs.co",
     "secret": "YOUR_SECRET_KEY",
-    "projectRoot": "/SWS",
+    "projectRoot": "/gasper",
     "rcFile": "Gasperfile.txt",
     "offlineMode": false,
     "dnsServers": ["8.8.8.8", "8.8.4.4"],

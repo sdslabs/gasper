@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/cloudflare"
-	"github.com/sdslabs/SWS/lib/commons"
-	g "github.com/sdslabs/SWS/lib/gin"
-	"github.com/sdslabs/SWS/lib/middlewares"
-	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/cloudflare"
+	"github.com/sdslabs/gasper/lib/commons"
+	g "github.com/sdslabs/gasper/lib/gin"
+	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/lib/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
