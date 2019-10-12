@@ -10,15 +10,15 @@ import (
 
 var dbHost = `%`
 var dbUser = "root"
-var dbPass = configs.ServiceConfig["mysql"].(map[string]interface{})["env"].(map[string]interface{})["MYSQL_ROOT_PASSWORD"].(string)
+var dbPass = configs.ServiceConfig.Mysql.Env["MYSQL_ROOT_PASSWORD"].(string)
 
 type mysqlAgentServer struct{}
 
 // CreateMysqlDB creates a database in the Mysql instance with the given database name, user and password
 func CreateMysqlDB(database, username, password string) error {
-	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
+	port := configs.ServiceConfig.Mysql.ContainerPort
 
-	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
+	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", port)
 	connection := fmt.Sprintf("%s:%s@%s/", dbUser, dbPass, agentAddress)
 
 	db, err := sql.Open("mysql", connection)
@@ -59,9 +59,9 @@ func CreateMysqlDB(database, username, password string) error {
 // DeleteMysqlDB deletes the database given by the database name and username
 func DeleteMysqlDB(database string) error {
 	username := database
-	port := configs.ServiceConfig["mysql"].(map[string]interface{})["container_port"].(string)
+	port := configs.ServiceConfig.Mysql.ContainerPort
 
-	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%s)", port)
+	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", port)
 	connection := fmt.Sprintf("%s:%s@%s/", dbUser, dbPass, agentAddress)
 
 	db, err := sql.Open("mysql", connection)

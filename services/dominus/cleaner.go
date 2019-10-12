@@ -62,14 +62,14 @@ func removeDeadServiceInstances(service string) {
 // removeDeadInstances removes all inactive instances in every service
 func removeDeadInstances() {
 	time.Sleep(5 * time.Second)
-	for service := range configs.ServiceConfig {
+	for service := range configs.ServiceMap {
 		go removeDeadServiceInstances(service)
 	}
 }
 
 // ScheduleCleanup runs removeDeadInstances on given intervals of time
 func ScheduleCleanup() {
-	interval := time.Duration(configs.CronConfig["cleanupInterval"].(float64)) * time.Second
+	interval := time.Duration(configs.CronConfig.CleanupInterval) * time.Second
 	scheduler := utils.NewScheduler(interval, removeDeadInstances)
 	scheduler.RunAsync()
 }

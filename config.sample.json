@@ -5,11 +5,11 @@
     "projectRoot": "/SWS",
     "rcFile": "Gasperfile.txt",
     "offlineMode": false,
-    "dnsServers": ["192.168.0.1"],
+    "dnsServers": ["8.8.8.8", "8.8.4.4"],
     "admin": {
-	"email": "",
-	"password": "",
-	"username": ""
+        "email": "alphadose@gmail.com",
+        "password": "alphadose",
+        "username": "alphadose"
     },
     "cron": {
         "cleanupInterval": 600,
@@ -20,7 +20,7 @@
     },
     "redis": {
         "host": "localhost",
-        "port": ":6379",
+        "port": 6379,
         "password": "",
         "DB": 0
     },
@@ -50,42 +50,42 @@
     "services": {
         "dominus": {
             "deploy": true,
-            "port": ":3000"
+            "port": 3000
         },
         "enrai": {
             "deploy": true,
-            "port": ":4040"
+            "port": 4040
         },
         "mizu": {
             "deploy": true,
-            "port": ":4000"
+            "port": 4000
         },
         "ssh": {
             "deploy": true,
-            "port": ":2222",
+            "port": 2222,
             "host_signers": ["/home/user/.ssh/id_rsa"],
             "using_passphrase": false,
             "passphrase": ""
         },
         "ssh_proxy": {
             "deploy": true,
-            "port": ":3222",
+            "port": 3222,
             "host_signers": ["/home/user/.ssh/id_rsa"],
             "using_passphrase": false,
             "passphrase": ""
         },
         "mysql": {
             "deploy": true,
-            "port": ":9000",
-            "container_port": "33060",
+            "port": 9000,
+            "container_port": 33060,
             "env": {
                 "MYSQL_ROOT_PASSWORD": "YOUR_MYSQL_PASSWORD"
             }
         },
         "mongodb": {
             "deploy": true,
-            "port": ":9001",
-            "container_port": "27018",
+            "port": 9001,
+            "container_port": 27018,
             "env": {
                 "MONGO_INITDB_ROOT_USERNAME": "YOUR_ROOT_NAME",
                 "MONGO_INITDB_ROOT_PASSWORD": "YOUR_ROOT_PASSWORD"

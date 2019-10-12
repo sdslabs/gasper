@@ -29,7 +29,7 @@ func DeployRPC(app map[string]interface{}, hostURL, service string) {
 		return
 	}
 
-	req.Header.Set("dominus-secret", configs.SWSConfig["secret"].(string))
+	req.Header.Set("dominus-secret", configs.GasperConfig.Secret)
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)

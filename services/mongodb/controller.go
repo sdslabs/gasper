@@ -1,6 +1,8 @@
 package mongodb
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/commons"
@@ -21,7 +23,7 @@ func createDB(c *gin.Context) {
 	data["language"] = mongo.MongoDB
 	data["instanceType"] = mongo.DBInstance
 	data["hostIP"] = utils.HostIP
-	data["containerPort"] = configs.ServiceConfig["mongodb"].(map[string]interface{})["container_port"].(string)
+	data["containerPort"] = configs.ServiceConfig.Mongodb.ContainerPort
 	data["owner"] = userStr.Email
 
 	data["user"] = data["name"].(string)
@@ -60,7 +62,7 @@ func createDB(c *gin.Context) {
 
 	err = redis.RegisterDB(
 		db,
-		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
+		fmt.Sprintf("%s:%d", utils.HostIP, configs.ServiceConfig.Mongodb.Port),
 	)
 
 	if err != nil {
@@ -74,7 +76,7 @@ func createDB(c *gin.Context) {
 
 	err = redis.IncrementServiceLoad(
 		ServiceName,
-		utils.HostIP+configs.ServiceConfig[ServiceName].(map[string]interface{})["port"].(string),
+		fmt.Sprintf("%s:%d", utils.HostIP, configs.ServiceConfig.Mongodb.Port),
 	)
 
 	if err != nil {

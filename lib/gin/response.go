@@ -17,7 +17,7 @@ func SendResponse(c *gin.Context, r types.ResponseError, response gin.H) {
 	}
 	utils.LogResErr(r)
 	if r.Status() == 500 {
-		if configs.SWSConfig["debug"].(bool) {
+		if configs.GasperConfig.Debug {
 			c.JSON(500, gin.H{
 				"error": r.Verbose(),
 			})

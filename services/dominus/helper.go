@@ -29,7 +29,7 @@ func reverseProxy(c *gin.Context, target string) {
 		req.URL.Scheme = "http"
 		req.URL.Host = target
 		req.Host = target
-		req.Header["dominus-secret"] = []string{configs.SWSConfig["secret"].(string)}
+		req.Header["dominus-secret"] = []string{configs.GasperConfig.Secret}
 	}
 	proxy := &httputil.ReverseProxy{Director: director}
 	proxy.ServeHTTP(c.Writer, c.Request)

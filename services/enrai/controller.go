@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/sdslabs/SWS/configs"
@@ -36,19 +35,9 @@ func subdomainRootHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // BuildEnraiServer sets up the gorilla multiplexer to handle different subdomains
-func BuildEnraiServer(service string) *http.Server {
-	enraiConfig := configs.ServiceConfig[service].(map[string]interface{})
-
+func BuildEnraiServer() *mux.Router {
 	router := mux.NewRouter()
-	host := fmt.Sprintf(`{_:.+}.%s`, configs.SWSConfig["domain"].(string))
+	host := fmt.Sprintf(`{_:.+}.%s`, configs.GasperConfig.Domain)
 	router.PathPrefix("/").HandlerFunc(subdomainRootHandler).Host(host)
-
-	server := &http.Server{
-		Addr:         enraiConfig["port"].(string),
-		Handler:      router,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 30 * time.Second,
-	}
-
-	return server
+	return router
 }

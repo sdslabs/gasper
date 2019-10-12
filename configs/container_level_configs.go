@@ -8,7 +8,7 @@ import (
 // and generates the container level config for the same
 // Location is the path of index.html or index.htm, leave empty if same
 func CreateStaticContainerConfig(name string, appContext map[string]interface{}) string {
-	path := fmt.Sprintf("%s/%s", SWSConfig["projectRoot"].(string), name)
+	path := fmt.Sprintf("%s/%s", GasperConfig.ProjectRoot, name)
 	return fmt.Sprintf(`
 server {
 	listen       80;
@@ -27,7 +27,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, SWSConfig["domain"].(string), name, name, path, appContext["index"].(string))
+	`, name, GasperConfig.Domain, name, name, path, appContext["index"].(string))
 }
 
 // CreatePHPContainerConfig takes the name of the PHP application
@@ -65,7 +65,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-`, name, SWSConfig["domain"].(string), name, name, SWSConfig["projectRoot"].(string), path)
+`, name, GasperConfig.Domain, name, name, GasperConfig.ProjectRoot, path)
 }
 
 // CreateNodeContainerConfig takes the name of the node app
@@ -82,7 +82,7 @@ server {
     	proxy_pass         http://127.0.0.1:%s;
 	}
 }
-`, name, SWSConfig["domain"].(string), appContext["port"].(string))
+`, name, GasperConfig.Domain, appContext["port"].(string))
 }
 
 // CreatePythonContainerConfig takes the name of the Python app
@@ -99,5 +99,5 @@ server {
     	proxy_pass         http://127.0.0.1:%s;
 	}
 }
-`, name, SWSConfig["domain"].(string), appContext["port"].(string))
+`, name, GasperConfig.Domain, appContext["port"].(string))
 }

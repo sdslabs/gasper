@@ -12,25 +12,25 @@ import (
 )
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
-var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig["url"].(string)))
+var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig.URL))
 var link = client.Database("sws")
 
 func setupAdmin() {
 	adminInfo := configs.AdminConfig
-	pwd, err := utils.HashPassword(adminInfo["password"].(string))
+	pwd, err := utils.HashPassword(adminInfo.Password)
 	if err != nil {
 		utils.LogError(err)
 		panic(err)
 	}
 	admin := map[string]interface{}{
-		"email":    adminInfo["email"],
-		"username": adminInfo["username"],
+		"email":    adminInfo.Email,
+		"username": adminInfo.Username,
 		"password": pwd,
 		"is_admin": true,
 	}
-	filter := map[string]interface{}{"email": adminInfo["email"]}
+	filter := map[string]interface{}{"email": adminInfo.Email}
 	UpsertUser(filter, admin)
-	utils.LogInfo("%s (%s) has been given admin privileges", adminInfo["username"], adminInfo["email"])
+	utils.LogInfo("%s (%s) has been given admin privileges", adminInfo.Username, adminInfo.Email)
 }
 
 func init() {

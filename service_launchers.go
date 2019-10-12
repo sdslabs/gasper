@@ -1,11 +1,13 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/SWS/configs"
 	"github.com/sdslabs/SWS/lib/database"
 	"github.com/sdslabs/SWS/lib/docker"
 	"github.com/sdslabs/SWS/lib/utils"
@@ -15,48 +17,63 @@ import (
 	"github.com/sdslabs/SWS/services/mongodb"
 	"github.com/sdslabs/SWS/services/mysql"
 
-	sshserver "github.com/gliderlabs/ssh"
 	"github.com/sdslabs/SWS/services/ssh"
 )
 
-// UnivServer is used for handling all types of servers
-type UnivServer struct {
-	SSHServer  *sshserver.Server
-	HTTPServer *http.Server
+type serviceLauncher struct {
+	Deploy bool
+	Start  func() error
 }
 
 // Bind the services to the launchers
-var launcherBindings = map[string]func(string, string) UnivServer{
-	"ssh":     startSSHService,
-	"mysql":   startMySQLService,
-	"app":     startAppService,
-	"enrai":   startEnraiService,
-	"mongodb": startMongoDBService,
+var launcherBindings = map[string]*serviceLauncher{
+	"ssh": &serviceLauncher{
+		Deploy: configs.ServiceConfig.SSH.Deploy,
+		Start:  startSSHService("ssh"),
+	},
+	"ssh_proxy": &serviceLauncher{
+		Deploy: configs.ServiceConfig.SSHProxy.Deploy,
+		Start:  startSSHService("ssh_proxy"),
+	},
+	"mysql": &serviceLauncher{
+		Deploy: configs.ServiceConfig.Mysql.Deploy,
+		Start:  startMySQLService,
+	},
+	"mizu": &serviceLauncher{
+		Deploy: configs.ServiceConfig.Mizu.Deploy,
+		Start:  startGinService(mizu.Router, configs.ServiceConfig.Mizu.Port),
+	},
+	"dominus": &serviceLauncher{
+		Deploy: configs.ServiceConfig.Dominus.Deploy,
+		Start:  startGinService(dominus.Router, configs.ServiceConfig.Dominus.Port),
+	},
+	"enrai": &serviceLauncher{
+		Deploy: configs.ServiceConfig.Enrai.Deploy,
+		Start:  startEnraiService,
+	},
+	"mongodb": &serviceLauncher{
+		Deploy: configs.ServiceConfig.Mongodb.Deploy,
+		Start:  startMongoDBService,
+	},
 }
 
-// Bind services to routers here
-var serviceBindings = map[string]*gin.Engine{
-	"dominus": dominus.Router,
-	"mizu":    mizu.Router,
-	"mysql":   mysql.Router,
-	"mongodb": mongodb.Router,
-}
-
-func initHTTPServer(service, port string) UnivServer {
+func initHTTPServer(handler http.Handler, port int) error {
+	if !utils.IsValidPort(port) {
+		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
+		utils.Log(msg, utils.ErrorTAG)
+		panic(msg)
+		return errors.New(msg)
+	}
 	server := &http.Server{
-		Addr:         port,
-		Handler:      serviceBindings[service],
+		Addr:         fmt.Sprintf(":%d", port),
+		Handler:      handler,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
-
-	return UnivServer{
-		SSHServer:  nil,
-		HTTPServer: server,
-	}
+	return server.ListenAndServe()
 }
 
-func startMySQLService(service, port string) UnivServer {
+func startMySQLService() error {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mysql") {
 		utils.LogInfo("No Mysql instance found in host. Building the instance.")
@@ -91,11 +108,10 @@ func startMySQLService(service, port string) UnivServer {
 			}
 		}
 	}
-	server := initHTTPServer(service, port)
-	return server
+	return initHTTPServer(mysql.Router, configs.ServiceConfig.Mysql.Port)
 }
 
-func startMongoDBService(service, port string) UnivServer {
+func startMongoDBService() error {
 	containers := docker.ListContainers()
 	if !utils.Contains(containers, "/mongodb") {
 		utils.LogInfo("No MongoDB instance found in host. Building the instance.")
@@ -130,55 +146,27 @@ func startMongoDBService(service, port string) UnivServer {
 			}
 		}
 	}
-	server := initHTTPServer(service, port)
-	return server
+	return initHTTPServer(mongodb.Router, configs.ServiceConfig.Mongodb.Port)
 }
 
-func startSSHService(service, port string) UnivServer {
-	server, err := ssh.BuildSSHServer(service)
-	if err != nil {
-		utils.Log("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.", utils.ErrorTAG)
-		utils.LogError(err)
-		return UnivServer{
-			SSHServer:  nil,
-			HTTPServer: nil,
+func startSSHService(service string) func() error {
+	return func() error {
+		server, err := ssh.BuildSSHServer(service)
+		if err != nil {
+			utils.Log("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.", utils.ErrorTAG)
+			utils.LogError(err)
+			return err
 		}
-	}
-	return UnivServer{
-		SSHServer:  server,
-		HTTPServer: nil,
+		return server.ListenAndServe()
 	}
 }
 
-func startAppService(service, port string) UnivServer {
-	server := initHTTPServer(service, port)
-	return server
-}
-
-func startEnraiService(service, port string) UnivServer {
-	server := enrai.BuildEnraiServer(service)
-	return UnivServer{
-		SSHServer:  nil,
-		HTTPServer: server,
+func startGinService(handler *gin.Engine, port int) func() error {
+	return func() error {
+		return initHTTPServer(handler, port)
 	}
 }
 
-// Launcher invokes the respective launcher functions for the services
-func Launcher(service, port string) UnivServer {
-	if strings.HasPrefix(service, "ssh") {
-		return launcherBindings["ssh"](service, port)
-	} else if strings.HasPrefix(service, "enrai") {
-		return launcherBindings["enrai"](service, port)
-	} else if strings.HasPrefix(service, "mysql") {
-		return launcherBindings["mysql"](service, port)
-	} else if strings.HasPrefix(service, "mongodb") {
-		return launcherBindings["mongodb"](service, port)
-	} else if service != "" {
-		return launcherBindings["app"](service, port)
-	}
-
-	return UnivServer{
-		SSHServer:  nil,
-		HTTPServer: nil,
-	}
+func startEnraiService() error {
+	return initHTTPServer(enrai.BuildEnraiServer(), configs.ServiceConfig.Enrai.Port)
 }

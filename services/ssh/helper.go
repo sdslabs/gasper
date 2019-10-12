@@ -24,10 +24,10 @@ func getPrivateKey(service, filepath string) (ssh.Signer, error) {
 
 	var signer gossh.Signer
 
-	if configs.ServiceConfig[service].(map[string]interface{})["using_passphrase"].(bool) {
+	if configs.ServiceConfig.SSH.UsingPassphrase {
 		signer, err = gossh.ParsePrivateKeyWithPassphrase(
 			key,
-			[]byte(configs.ServiceConfig[service].(map[string]interface{})["passphrase"].(string)),
+			[]byte(configs.ServiceConfig.SSH.Passphrase),
 		)
 	} else {
 		signer, err = gossh.ParsePrivateKey(key)

@@ -14,8 +14,7 @@ var Router = gin.NewEngine()
 var ServiceName = "dominus"
 
 func init() {
-	Router.Use(cors.Default())
-	Router.Use(middlewares.FalconGuard())
+	Router.Use(cors.Default(), middlewares.FalconGuard())
 	auth := Router.Group("/auth")
 	{
 		auth.POST("/login", middlewares.JWT.LoginHandler)
@@ -39,8 +38,7 @@ func init() {
 		db.DELETE("/:db", trimURLPath(2), deleteDB)
 	}
 	admin := Router.Group("/admin")
-	admin.Use(middlewares.JWT.MiddlewareFunc())
-	admin.Use(middlewares.VerifyAdmin)
+	admin.Use(middlewares.JWT.MiddlewareFunc(), middlewares.VerifyAdmin)
 	{
 		apps := admin.Group("/apps")
 		{
