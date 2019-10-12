@@ -84,7 +84,7 @@ var JWT = &jwt.GinJWTMiddleware{
 	Key:           []byte(configs.GasperConfig.Secret),
 	Timeout:       time.Hour,
 	MaxRefresh:    time.Hour,
-	TokenLookup:   "header: Authorization, query: token, cookie: jwt",
+	TokenLookup:   "header: Authorization",
 	TokenHeadName: "Bearer",
 	TimeFunc:      time.Now,
 	Authenticator: func(ctx *gin.Context) (interface{}, error) {
