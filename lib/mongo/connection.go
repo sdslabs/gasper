@@ -13,7 +13,7 @@ import (
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig.URL))
-var link = client.Database("sws")
+var link = client.Database("gasper")
 
 func setupAdmin() {
 	adminInfo := configs.AdminConfig

@@ -95,7 +95,7 @@ func CreateBasicApplication(
 
 	var (
 		storepath, _ = os.Getwd()
-		confFileName = fmt.Sprintf("%s.sws.conf", name)
+		confFileName = fmt.Sprintf("%s.gasper.conf", name)
 		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, name)
 		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
 	)
