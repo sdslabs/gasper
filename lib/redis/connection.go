@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 var client = redis.NewClient(&redis.Options{

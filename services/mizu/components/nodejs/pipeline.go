@@ -3,11 +3,11 @@ package nodejs
 import (
 	"fmt"
 
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/api"
-	"github.com/sdslabs/SWS/lib/commons"
-	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/api"
+	"github.com/sdslabs/gasper/lib/commons"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/types"
 )
 
 // startApp function starts the app using pm2

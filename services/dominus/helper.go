@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/gasper/configs"
 )
 
 func trimURLPath(length int) gin.HandlerFunc {

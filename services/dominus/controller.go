@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/redis"
+	"github.com/sdslabs/gasper/lib/redis"
 )
 
 func createApp(c *gin.Context) {

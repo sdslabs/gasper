@@ -2,8 +2,8 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/middlewares"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/middlewares"
 )
 
 // NewEngine returns a router setting up required configs

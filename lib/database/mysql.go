@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/go-sql-driver/mysql" // MySQL driver
-	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/gasper/configs"
 )
 
 var dbHost = `%`

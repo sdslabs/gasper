@@ -1,8 +1,8 @@
 package mizu
 
 import (
-	"github.com/sdslabs/SWS/lib/gin"
-	"github.com/sdslabs/SWS/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/gin"
+	"github.com/sdslabs/gasper/lib/middlewares"
 )
 
 // Router is the main routes handler for the current microservice package

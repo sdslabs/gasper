@@ -7,17 +7,17 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/database"
-	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/utils"
-	"github.com/sdslabs/SWS/services/dominus"
-	"github.com/sdslabs/SWS/services/enrai"
-	"github.com/sdslabs/SWS/services/mizu"
-	"github.com/sdslabs/SWS/services/mongodb"
-	"github.com/sdslabs/SWS/services/mysql"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/database"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/services/dominus"
+	"github.com/sdslabs/gasper/services/enrai"
+	"github.com/sdslabs/gasper/services/mizu"
+	"github.com/sdslabs/gasper/services/mongodb"
+	"github.com/sdslabs/gasper/services/mysql"
 
-	"github.com/sdslabs/SWS/services/ssh"
+	"github.com/sdslabs/gasper/services/ssh"
 )
 
 type serviceLauncher struct {

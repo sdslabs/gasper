@@ -1,10 +1,10 @@
 package static
 
 import (
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/api"
-	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/api"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/types"
 )
 
 // Pipeline is the application creation pipeline

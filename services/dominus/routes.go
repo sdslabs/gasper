@@ -2,9 +2,9 @@ package dominus
 
 import (
 	"github.com/gin-contrib/cors"
-	"github.com/sdslabs/SWS/lib/gin"
-	"github.com/sdslabs/SWS/lib/middlewares"
-	adminHandlers "github.com/sdslabs/SWS/services/dominus/admin"
+	"github.com/sdslabs/gasper/lib/gin"
+	"github.com/sdslabs/gasper/lib/middlewares"
+	adminHandlers "github.com/sdslabs/gasper/services/dominus/admin"
 )
 
 // Router is the main routes handler for the current microservice package

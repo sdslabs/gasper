@@ -8,7 +8,7 @@ import (
 
 	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/mongo"
+	"github.com/sdslabs/gasper/lib/mongo"
 )
 
 func getBodyFromContext(c *gin.Context) []byte {

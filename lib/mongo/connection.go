@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/lib/utils"
 
-	"github.com/sdslabs/SWS/configs"
+	"github.com/sdslabs/gasper/configs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

@@ -6,7 +6,7 @@ import (
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/lib/utils"
 	"golang.org/x/net/context"
 )
 

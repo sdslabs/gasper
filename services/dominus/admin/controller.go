@@ -2,10 +2,10 @@ package admin
 
 import (
 	gogin "github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/gin"
-	"github.com/sdslabs/SWS/lib/redis"
-	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/gin"
+	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/lib/types"
 )
 
 // GetAllApplications gets all the applications from DB

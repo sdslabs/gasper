@@ -7,8 +7,8 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
-	"github.com/sdslabs/SWS/configs"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
 	"golang.org/x/net/context"
 )
 

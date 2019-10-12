@@ -3,7 +3,7 @@ package redis
 import (
 	"encoding/json"
 
-	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/gasper/lib/types"
 )
 
 // RegisterApp registers the app in the apps HashMap with its url

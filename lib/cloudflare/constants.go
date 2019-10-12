@@ -1,6 +1,6 @@
 package cloudflare
 
-import "github.com/sdslabs/SWS/configs"
+import "github.com/sdslabs/gasper/configs"
 
 var (
 	baseEndpoint         = "https://api.cloudflare.com/client/v4"

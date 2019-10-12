@@ -1,4 +1,4 @@
-module github.com/sdslabs/SWS
+module github.com/sdslabs/gasper
 
 require (
 	github.com/Microsoft/go-winio v0.4.11 // indirect

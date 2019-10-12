@@ -2,8 +2,8 @@ package php
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/middlewares"
-	"github.com/sdslabs/SWS/lib/types"
+	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/types"
 )
 
 type context struct {

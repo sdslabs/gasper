@@ -2,9 +2,9 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/SWS/lib/middlewares"
-	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // FetchAppInfo returns the information about a particular app

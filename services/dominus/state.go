@@ -1,8 +1,8 @@
 package dominus
 
 import (
-	"github.com/sdslabs/SWS/lib/mongo"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // updateHostIP updates the application's host IP address
