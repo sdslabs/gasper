@@ -1,5 +1,12 @@
 package configs
 
+// Admin is the configuration for the default Admin
+type Admin struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Username string `json:"username"`
+}
+
 // Cloudflare is the configuration for cloudflare API
 type Cloudflare struct {
 	PlugIn   bool   `json:"plugIn"`
@@ -96,6 +103,7 @@ type GasperCfg struct {
 	RcFile      string     `json:"rcFile"`
 	OfflineMode bool       `json:"offlineMode"`
 	DNSServers  []string   `json:"dnsServers"`
+	Admin       Admin      `json:"admin"`
 	Cloudflare  Cloudflare `json:"cloudflare"`
 	Cron        Cron       `json:"cron"`
 	Mongo       Mongo      `json:"mongo"`

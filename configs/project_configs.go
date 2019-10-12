@@ -46,6 +46,9 @@ var CloudflareConfig = GasperConfig.Cloudflare
 // ImageConfig is the configuration for the images used by SWS
 var ImageConfig = GasperConfig.Images
 
+// AdminConfig is the configuration for default Gasper admin
+var AdminConfig = GasperConfig.Admin
+
 // ServiceMap is the configuration binding the service name to its
 // deployment status and port
 var ServiceMap = map[string]*GenericService{

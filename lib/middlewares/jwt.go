@@ -81,7 +81,7 @@ func Register(ctx *gin.Context) {
 // JWT handles the auth through JWT token
 var JWT = &jwt.GinJWTMiddleware{
 	Realm:         "SDS Gasper",
-	Key:           []byte(configs.SWSConfig["secret"].(string)),
+	Key:           []byte(configs.GasperConfig.Secret),
 	Timeout:       time.Hour,
 	MaxRefresh:    time.Hour,
 	TokenLookup:   "header: Authorization, query: token, cookie: jwt",

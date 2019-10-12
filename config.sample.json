@@ -7,9 +7,9 @@
     "offlineMode": false,
     "dnsServers": ["8.8.8.8", "8.8.4.4"],
     "admin": {
-        "email": "",
-        "password": "",
-        "username": ""
+        "email": "alphadose@gmail.com",
+        "password": "alphadose",
+        "username": "alphadose"
     },
     "cron": {
         "cleanupInterval": 600,
