@@ -34,6 +34,20 @@ func createApp(c *gin.Context) {
 		return
 	}
 
+	if configs.CloudflareConfig.PlugIn {
+		resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance)
+		if err != nil {
+			go commons.AppFullCleanup(data["name"].(string))
+			go commons.AppStateCleanup(data["name"].(string))
+			c.JSON(500, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		data["cloudflareID"] = resp.Result.ID
+		data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.GasperConfig.Domain)
+	}
+
 	err := mongo.UpsertInstance(
 		map[string]interface{}{
 			"name":         data["name"],
@@ -76,20 +90,6 @@ func createApp(c *gin.Context) {
 			"error": err.Error(),
 		})
 		return
-	}
-
-	if configs.CloudflareConfig.PlugIn {
-		resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance)
-		if err != nil {
-			go commons.AppFullCleanup(data["name"].(string))
-			go commons.AppStateCleanup(data["name"].(string))
-			c.JSON(500, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-		data["cloudflareID"] = resp.Result.ID
-		data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.GasperConfig.Domain)
 	}
 
 	data["success"] = true
