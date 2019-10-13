@@ -24,7 +24,7 @@ func init() {
 	app := Router.Group("/apps")
 	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		app.POST("/:language", middlewares.IsUniqueApp(), trimURLPath(2), createApp)
+		app.POST("/:language", middlewares.InsertOwner, trimURLPath(2), createApp)
 		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
 		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
 		app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
@@ -33,7 +33,7 @@ func init() {
 	db := Router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		db.POST("/:database", middlewares.IsUniqueDB(), trimURLPath(2), createDatabase)
+		db.POST("/:database", middlewares.InsertOwner, trimURLPath(2), createDatabase)
 		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
 		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
 	}
