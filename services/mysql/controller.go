@@ -123,7 +123,15 @@ func deleteDB(c *gin.Context) {
 		"instanceType": mongo.DBInstance,
 	}
 
+	_, err = mongo.DeleteInstance(filter)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"message": mongo.DeleteInstance(filter),
+		"success": true,
 	})
 }

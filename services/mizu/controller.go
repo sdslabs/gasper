@@ -145,9 +145,6 @@ func deleteApp(c *gin.Context) {
 		"instanceType": mongo.AppInstance,
 	}
 
-	update := map[string]interface{}{
-		"deleted": true,
-	}
 	node, _ := redis.FetchAppNode(app)
 	go redis.DecrementServiceLoad(ServiceName, node)
 	go redis.RemoveApp(app)
@@ -156,7 +153,7 @@ func deleteApp(c *gin.Context) {
 		go cloudflare.DeleteRecord(app, mongo.AppInstance)
 	}
 
-	err := mongo.UpdateInstance(filter, update)
+	_, err := mongo.DeleteInstance(filter)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"error": err.Error(),
