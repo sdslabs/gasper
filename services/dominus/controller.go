@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 )
 
@@ -70,4 +72,26 @@ func deleteDB(c *gin.Context) {
 		return
 	}
 	reverseProxy(c, instanceURL)
+}
+
+func fetchInstancesByUser(instanceType string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userStr := middlewares.ExtractClaims(c)
+		filter := map[string]interface{}{
+			"instanceType": instanceType,
+			"owner":        userStr.Email,
+		}
+		c.JSON(200, gin.H{
+			"success": true,
+			"data":    mongo.FetchAppInfo(filter),
+		})
+	}
+}
+
+func fetchAppsByUser() gin.HandlerFunc {
+	return fetchInstancesByUser(mongo.AppInstance)
+}
+
+func fetchDbsByUser() gin.HandlerFunc {
+	return fetchInstancesByUser(mongo.DBInstance)
 }
