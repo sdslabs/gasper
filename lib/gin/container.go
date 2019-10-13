@@ -22,23 +22,20 @@ func FetchLogs(c *gin.Context) {
 	appEnv, err := types.NewAppEnv()
 
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	data, err := docker.ReadLogs(appEnv.Context, appEnv.Client, app, filter["tail"].(string))
 
 	if err != nil && err.Error() != "EOF" {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"data": data,
+		"success": true,
+		"data":    data,
 	})
 }
 
@@ -54,23 +51,20 @@ func FetchMysqlContainerLogs(c *gin.Context) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	data, err := docker.ReadLogs(ctx, cli, "mysql", filter["tail"].(string))
 
 	if err != nil && err.Error() != "EOF" {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"data": data,
+		"success": true,
+		"data":    data,
 	})
 }
 
@@ -86,23 +80,20 @@ func FetchMongoDBContainerLogs(c *gin.Context) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	data, err := docker.ReadLogs(ctx, cli, "mongodb", filter["tail"].(string))
 
 	if err != nil && err.Error() != "EOF" {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"data": data,
+		"success": true,
+		"data":    data,
 	})
 }
 
@@ -112,18 +103,14 @@ func ReloadServer(c *gin.Context) {
 	appEnv, err := types.NewAppEnv()
 
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	cmd := []string{"nginx", "-s", "reload"}
 	_, err = docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, app, cmd)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 	c.JSON(200, gin.H{
@@ -136,18 +123,14 @@ func ReloadMysqlService(c *gin.Context) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	cmd := []string{"service", "mysql", "start"}
 	_, err = docker.ExecDetachedProcess(ctx, cli, "mysql", cmd)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 	c.JSON(200, gin.H{
@@ -160,18 +143,14 @@ func ReloadMongoDBService(c *gin.Context) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	cmd := []string{"service", "monogdb", "restart"}
 	_, err = docker.ExecDetachedProcess(ctx, cli, "mongodb", cmd)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 	c.JSON(200, gin.H{

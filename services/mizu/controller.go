@@ -35,9 +35,7 @@ func createApp(c *gin.Context) {
 		if err != nil {
 			go commons.AppFullCleanup(data["name"].(string))
 			go commons.AppStateCleanup(data["name"].(string))
-			c.JSON(500, gin.H{
-				"error": err.Error(),
-			})
+			utils.SendServerErrorResponse(c, err)
 			return
 		}
 		data["cloudflareID"] = resp.Result.ID
@@ -53,9 +51,7 @@ func createApp(c *gin.Context) {
 	if err != nil && err != mongo.ErrNoDocuments {
 		go commons.AppFullCleanup(data["name"].(string))
 		go commons.AppStateCleanup(data["name"].(string))
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -68,9 +64,7 @@ func createApp(c *gin.Context) {
 	if err != nil {
 		go commons.AppFullCleanup(data["name"].(string))
 		go commons.AppStateCleanup(data["name"].(string))
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -82,9 +76,7 @@ func createApp(c *gin.Context) {
 	if err != nil {
 		go commons.AppFullCleanup(data["name"].(string))
 		go commons.AppStateCleanup(data["name"].(string))
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -102,7 +94,8 @@ func rebuildApp(c *gin.Context) {
 	dataList := mongo.FetchAppInfo(filter)
 	if len(dataList) == 0 {
 		c.JSON(400, gin.H{
-			"error": "No such application exists",
+			"success": false,
+			"error":   "No such application exists",
 		})
 		return
 	}
@@ -126,9 +119,7 @@ func rebuildApp(c *gin.Context) {
 
 	err := mongo.UpdateInstance(filter, data)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -155,9 +146,7 @@ func deleteApp(c *gin.Context) {
 
 	_, err := mongo.DeleteInstance(filter)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 

@@ -42,7 +42,8 @@ func FalconGuard() gin.HandlerFunc {
 			user, err := getUser(cookie)
 			if user == "" {
 				c.JSON(403, gin.H{
-					"error": err.Error(),
+					"success": false,
+					"error":   err.Error(),
 				})
 				c.Abort()
 				return

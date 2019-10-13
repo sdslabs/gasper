@@ -13,7 +13,8 @@ func FetchAppInfo(c *gin.Context) {
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
 	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
+		"success": true,
+		"data":    mongo.FetchAppInfo(filter),
 	})
 }
 
@@ -24,7 +25,8 @@ func FetchDBInfo(c *gin.Context) {
 	filter["name"] = db
 	filter["instanceType"] = mongo.DBInstance
 	c.JSON(200, gin.H{
-		"data": mongo.FetchDBInfo(filter),
+		"success": true,
+		"data":    mongo.FetchDBInfo(filter),
 	})
 }
 
@@ -41,13 +43,20 @@ func UpdateAppByName(c *gin.Context) {
 	err := validateUpdatePayload(data)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": err.Error(),
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
 
+	err = mongo.UpdateInstance(filter, data)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
+		"success": true,
 	})
 }
 
@@ -58,7 +67,8 @@ func FetchUserInfo(c *gin.Context) {
 		"email": user,
 	}
 	c.JSON(200, gin.H{
-		"data": mongo.FetchUserInfo(filter),
+		"success": true,
+		"data":    mongo.FetchUserInfo(filter),
 	})
 }
 
@@ -86,7 +96,8 @@ func FetchAllDBs(c *gin.Context) {
 // FetchAllUsers gets information for all applications deployed
 func FetchAllUsers(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"data": mongo.FetchUsers(map[string]interface{}{}),
+		"success": true,
+		"data":    mongo.FetchUsers(map[string]interface{}{}),
 	})
 }
 
@@ -103,8 +114,14 @@ func DeleteUser(c *gin.Context) {
 		"deleted": true,
 	}
 	go mongo.UpdateInstances(instanceFilter, update)
+
+	err := mongo.UpdateUser(filter, update)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateUser(filter, update),
+		"success": true,
 	})
 }
 
@@ -114,7 +131,8 @@ func FetchDocs(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
+		"success": true,
+		"data":    mongo.FetchAppInfo(filter),
 	})
 }
 
@@ -132,12 +150,19 @@ func UpdateAppInfo(c *gin.Context) {
 	err := validateUpdatePayload(data)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": err.Error(),
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
 
+	err = mongo.UpdateInstance(filter, data)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
+		"success": true,
 	})
 }

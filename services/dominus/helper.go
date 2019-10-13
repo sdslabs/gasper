@@ -19,6 +19,7 @@ func trimURLPath(length int) gin.HandlerFunc {
 		} else {
 			c.AbortWithStatusJSON(404, gin.H{
 				"message": "Page not found",
+				"success": false,
 			})
 		}
 	}

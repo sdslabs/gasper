@@ -28,15 +28,14 @@ func createDB(c *gin.Context) {
 
 	if db == "root" {
 		c.JSON(400, gin.H{
-			"error": "Database name cannot be `root`",
+			"success": false,
+			"error":   "Database name cannot be `root`",
 		})
 		return
 	}
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -49,9 +48,7 @@ func createDB(c *gin.Context) {
 	if err != nil && err != mongo.ErrNoDocuments {
 		go commons.DatabaseFullCleanup(db, mongo.Mysql)
 		go commons.DatabaseStateCleanup(db)
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -63,9 +60,7 @@ func createDB(c *gin.Context) {
 	if err != nil {
 		go commons.DatabaseFullCleanup(db, mongo.Mysql)
 		go commons.DatabaseStateCleanup(db)
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -77,9 +72,7 @@ func createDB(c *gin.Context) {
 	if err != nil {
 		go commons.DatabaseFullCleanup(db, mongo.Mysql)
 		go commons.DatabaseStateCleanup(db)
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 	data["success"] = true
@@ -94,7 +87,8 @@ func fetchDBs(c *gin.Context) {
 	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
-		"data": mongo.FetchDBs(filter),
+		"success": true,
+		"data":    mongo.FetchDBs(filter),
 	})
 }
 
@@ -103,17 +97,13 @@ func deleteDB(c *gin.Context) {
 
 	err := database.DeleteMysqlDB(db)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	err = redis.RemoveDB(db)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -125,9 +115,7 @@ func deleteDB(c *gin.Context) {
 
 	_, err = mongo.DeleteInstance(filter)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
