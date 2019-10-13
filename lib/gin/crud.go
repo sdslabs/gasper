@@ -2,21 +2,16 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // FetchAppInfo returns the information about a particular app
 func FetchAppInfo(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	filter := make(map[string]interface{})
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
-	if !userStr.IsAdmin {
-		filter["owner"] = userStr.Email
-	}
 	c.JSON(200, gin.H{
 		"data": mongo.FetchAppInfo(filter),
 	})
@@ -24,14 +19,10 @@ func FetchAppInfo(c *gin.Context) {
 
 // FetchDBInfo returns the information about a particular db
 func FetchDBInfo(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	db := c.Param("db")
 	filter := make(map[string]interface{})
 	filter["name"] = db
 	filter["instanceType"] = mongo.DBInstance
-	if !userStr.IsAdmin {
-		filter["owner"] = userStr.Email
-	}
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBInfo(filter),
 	})
@@ -39,15 +30,22 @@ func FetchDBInfo(c *gin.Context) {
 
 // UpdateAppByName updates the app getting name from url params
 func UpdateAppByName(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         app,
 		"instanceType": mongo.AppInstance,
-		"owner":        userStr.Email,
 	}
 	var data map[string]interface{}
 	c.BindJSON(&data)
+
+	err := validateUpdatePayload(data)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(200, gin.H{
 		"message": mongo.UpdateInstance(filter, data),
 	})
@@ -122,13 +120,11 @@ func FetchDocs(c *gin.Context) {
 
 // UpdateAppInfo updates the application document in mongoDB
 func UpdateAppInfo(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
-	filter["owner"] = userStr.Email
 
 	var data map[string]interface{}
 	c.BindJSON(&data)

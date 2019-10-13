@@ -7,15 +7,12 @@ import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/database"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 )
 
 func createDB(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
@@ -24,7 +21,6 @@ func createDB(c *gin.Context) {
 	data["instanceType"] = mongo.DBInstance
 	data["hostIP"] = utils.HostIP
 	data["containerPort"] = configs.ServiceConfig.Mysql.ContainerPort
-	data["owner"] = userStr.Email
 
 	data["user"] = data["name"].(string)
 
@@ -91,14 +87,11 @@ func createDB(c *gin.Context) {
 }
 
 func fetchDBs(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = ServiceName
 	filter["instanceType"] = mongo.DBInstance
-	filter["owner"] = userStr.Email
 
 	c.JSON(200, gin.H{
 		"data": mongo.FetchDBs(filter),
@@ -106,8 +99,6 @@ func fetchDBs(c *gin.Context) {
 }
 
 func deleteDB(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	db := c.Param("db")
 
 	err := database.DeleteMysqlDB(db)
@@ -130,10 +121,6 @@ func deleteDB(c *gin.Context) {
 		"name":         db,
 		"language":     ServiceName,
 		"instanceType": mongo.DBInstance,
-	}
-
-	if !userStr.IsAdmin {
-		filter["owner"] = userStr.Email
 	}
 
 	c.JSON(200, gin.H{

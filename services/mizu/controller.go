@@ -8,7 +8,6 @@ import (
 	"github.com/sdslabs/gasper/lib/cloudflare"
 	"github.com/sdslabs/gasper/lib/commons"
 	g "github.com/sdslabs/gasper/lib/gin"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -17,8 +16,6 @@ import (
 
 // createApp creates an application for a given language
 func createApp(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	language := c.Param("language")
 	var data map[string]interface{}
 	c.BindJSON(&data)
@@ -26,7 +23,6 @@ func createApp(c *gin.Context) {
 	delete(data, "rebuild")
 	data["language"] = language
 	data["instanceType"] = mongo.AppInstance
-	data["owner"] = userStr.Email
 
 	resErr := componentMap[language].pipeline(data)
 	if resErr != nil {
@@ -97,14 +93,12 @@ func createApp(c *gin.Context) {
 }
 
 func rebuildApp(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	appName := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         appName,
 		"instanceType": mongo.AppInstance,
-		"owner":        userStr.Email,
 	}
+
 	dataList := mongo.FetchAppInfo(filter)
 	if len(dataList) == 0 {
 		c.JSON(400, gin.H{
@@ -118,30 +112,39 @@ func rebuildApp(c *gin.Context) {
 
 	commons.AppFullCleanup(appName)
 
+	if componentMap[data["language"].(string)] == nil {
+		c.AbortWithStatusJSON(500, gin.H{
+			"error": fmt.Sprintf("Non-supported language `%s` specified for `%s`", data["language"].(string), appName),
+		})
+		return
+	}
 	resErr := componentMap[data["language"].(string)].pipeline(data)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})
 		return
 	}
 
+	err := mongo.UpdateInstance(filter, data)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
+		"success": true,
 	})
 }
 
 // deleteApp deletes an application in a worker node
 func deleteApp(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	app := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         app,
 		"instanceType": mongo.AppInstance,
 	}
 
-	if !userStr.IsAdmin {
-		filter["owner"] = userStr.Email
-	}
 	update := map[string]interface{}{
 		"deleted": true,
 	}
@@ -152,7 +155,16 @@ func deleteApp(c *gin.Context) {
 	if configs.CloudflareConfig.PlugIn {
 		go cloudflare.DeleteRecord(app, mongo.AppInstance)
 	}
+
+	err := mongo.UpdateInstance(filter, update)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, update),
+		"success": true,
 	})
 }

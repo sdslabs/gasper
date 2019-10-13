@@ -24,18 +24,18 @@ func init() {
 	app := Router.Group("/apps")
 	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		app.POST("/:language", trimURLPath(2), createApp)
-		app.GET("/:app", gin.FetchAppInfo)
-		app.PUT("/:app", gin.UpdateAppByName)
-		app.DELETE("/:app", trimURLPath(2), execute)
-		app.GET("/:app/:action", trimURLPath(2), execute)
+		app.POST("/:language", middlewares.IsUniqueApp(), trimURLPath(2), createApp)
+		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
+		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
+		app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
+		app.GET("/:app/:action", middlewares.IsAppOwner(), trimURLPath(2), execute)
 	}
 	db := Router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		db.POST("/:database", trimURLPath(2), createDatabase)
-		db.GET("/:db", gin.FetchDBInfo)
-		db.DELETE("/:db", trimURLPath(2), deleteDB)
+		db.POST("/:database", middlewares.IsUniqueDB(), trimURLPath(2), createDatabase)
+		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
+		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
 	}
 	admin := Router.Group("/admin")
 	admin.Use(middlewares.JWT.MiddlewareFunc(), middlewares.VerifyAdmin)
