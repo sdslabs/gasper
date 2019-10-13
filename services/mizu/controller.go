@@ -106,9 +106,7 @@ func rebuildApp(c *gin.Context) {
 	commons.AppFullCleanup(appName)
 
 	if componentMap[data["language"].(string)] == nil {
-		c.AbortWithStatusJSON(500, gin.H{
-			"error": fmt.Sprintf("Non-supported language `%s` specified for `%s`", data["language"].(string), appName),
-		})
+		utils.SendServerErrorResponse(c, fmt.Errorf("Non-supported language `%s` specified for `%s`", data["language"].(string), appName))
 		return
 	}
 	resErr := componentMap[data["language"].(string)].pipeline(data)

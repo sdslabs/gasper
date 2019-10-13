@@ -12,13 +12,15 @@ func AuthorizeService() gin.HandlerFunc {
 		dominusSecret := c.GetHeader("dominus-secret")
 		if dominusSecret == "" {
 			c.AbortWithStatusJSON(400, gin.H{
-				"error": "Missing 'dominus-secret' header",
+				"success": false,
+				"error":   "Missing 'dominus-secret' header",
 			})
 			return
 		}
 		if dominusSecret != secret {
 			c.AbortWithStatusJSON(401, gin.H{
-				"error": "Invalid 'dominus-secret'",
+				"success": false,
+				"error":   "Invalid 'dominus-secret'",
 			})
 			return
 		}

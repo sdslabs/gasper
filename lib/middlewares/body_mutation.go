@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // InsertOwner inserts the owner details into the request payload
@@ -15,7 +16,8 @@ func InsertOwner(c *gin.Context) {
 	err := json.Unmarshal(getBodyFromContext(c), &data)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
-			"error": err.Error(),
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
@@ -23,9 +25,7 @@ func InsertOwner(c *gin.Context) {
 	data["owner"] = ExtractClaims(c).Email
 	bodyBytes, err := json.Marshal(data)
 	if err != nil {
-		c.AbortWithStatusJSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 

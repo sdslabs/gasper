@@ -27,7 +27,8 @@ func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 		err := json.Unmarshal(getBodyFromContext(c), &data)
 		if err != nil {
 			c.AbortWithStatusJSON(400, gin.H{
-				"error": err.Error(),
+				"success": false,
+				"error":   err.Error(),
 			})
 			return
 		}
@@ -41,13 +42,15 @@ func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 		})
 		if err != nil {
 			c.AbortWithStatusJSON(400, gin.H{
-				"error": err.Error(),
+				"success": false,
+				"error":   err.Error(),
 			})
 			return
 		}
 		if count != 0 {
 			c.AbortWithStatusJSON(400, gin.H{
-				"error": failureMessage,
+				"success": false,
+				"error":   failureMessage,
 			})
 			return
 		}
@@ -71,13 +74,15 @@ func ValidateRequestBody(c *gin.Context, validationBody interface{}) {
 	err := json.Unmarshal(getBodyFromContext(c), validationBody)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
-			"error": err.Error(),
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
 	if result, err := validator.ValidateStruct(validationBody); !result {
 		c.AbortWithStatusJSON(400, gin.H{
-			"error": strings.Split(err.Error(), ";"),
+			"success": false,
+			"error":   strings.Split(err.Error(), ";"),
 		})
 	} else {
 		c.Next()
