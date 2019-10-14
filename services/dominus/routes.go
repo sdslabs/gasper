@@ -24,43 +24,45 @@ func init() {
 	app := Router.Group("/apps")
 	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		app.POST("/:language", trimURLPath(2), createApp)
-		app.GET("/:app", gin.FetchAppInfo)
-		app.PUT("/:app", gin.UpdateAppByName)
-		app.DELETE("/:app", trimURLPath(2), execute)
-		app.GET("/:app/:action", trimURLPath(2), execute)
+		app.POST("/:language", middlewares.InsertOwner, trimURLPath(2), createApp)
+		app.GET("", fetchAppsByUser())
+		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
+		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
+		app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
+		app.GET("/:app/:action", middlewares.IsAppOwner(), trimURLPath(2), execute)
 	}
 	db := Router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		db.POST("/:database", trimURLPath(2), createDatabase)
-		db.GET("/:db", gin.FetchDBInfo)
-		db.DELETE("/:db", trimURLPath(2), deleteDB)
+		db.POST("/:database", middlewares.InsertOwner, trimURLPath(2), createDatabase)
+		db.GET("", fetchDbsByUser())
+		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
+		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
 	}
 	admin := Router.Group("/admin")
 	admin.Use(middlewares.JWT.MiddlewareFunc(), middlewares.VerifyAdmin)
 	{
 		apps := admin.Group("/apps")
 		{
-			apps.GET("/", adminHandlers.GetAllApplications)
+			apps.GET("", adminHandlers.GetAllApplications)
 			apps.GET("/:app", adminHandlers.GetApplicationInfo)
 			apps.DELETE("/:app", trimURLPath(3), execute)
 		}
 		dbs := admin.Group("/dbs")
 		{
-			dbs.GET("/", adminHandlers.GetAllDatabases)
+			dbs.GET("", adminHandlers.GetAllDatabases)
 			dbs.GET("/:db", adminHandlers.GetDatabaseInfo)
 			dbs.DELETE("/:db", trimURLPath(3), deleteDB)
 		}
 		users := admin.Group("/users")
 		{
-			users.GET("/", adminHandlers.GetAllUsers)
+			users.GET("", adminHandlers.GetAllUsers)
 			users.GET("/:user", adminHandlers.GetUserInfo)
 			users.DELETE("/:user", adminHandlers.DeleteUser)
 		}
 		nodes := admin.Group("/nodes")
 		{
-			nodes.GET("/", adminHandlers.GetAllNodes)
+			nodes.GET("", adminHandlers.GetAllNodes)
 			nodes.GET("/:node", adminHandlers.GetNodesByName)
 		}
 	}

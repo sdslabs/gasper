@@ -108,7 +108,7 @@ func DeleteMongoDB(database string) error {
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
 	port := configs.ServiceConfig.Mongodb.ContainerPort
-	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%s/admin", mongoUser, mongoPass, port)
+	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoUser, mongoPass, port)
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {
 		return nil, fmt.Errorf("couldn't connect to mongo: %v", err)

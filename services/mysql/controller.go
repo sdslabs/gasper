@@ -7,15 +7,12 @@ import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/database"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 )
 
 func createDB(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	var data map[string]interface{}
 	c.BindJSON(&data)
 
@@ -24,7 +21,6 @@ func createDB(c *gin.Context) {
 	data["instanceType"] = mongo.DBInstance
 	data["hostIP"] = utils.HostIP
 	data["containerPort"] = configs.ServiceConfig.Mysql.ContainerPort
-	data["owner"] = userStr.Email
 
 	data["user"] = data["name"].(string)
 
@@ -32,15 +28,14 @@ func createDB(c *gin.Context) {
 
 	if db == "root" {
 		c.JSON(400, gin.H{
-			"error": "Database name cannot be `root`",
+			"success": false,
+			"error":   "Database name cannot be `root`",
 		})
 		return
 	}
 	err := database.CreateMysqlDB(data["name"].(string), data["user"].(string), data["password"].(string))
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -53,9 +48,7 @@ func createDB(c *gin.Context) {
 	if err != nil && err != mongo.ErrNoDocuments {
 		go commons.DatabaseFullCleanup(db, mongo.Mysql)
 		go commons.DatabaseStateCleanup(db)
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -67,9 +60,7 @@ func createDB(c *gin.Context) {
 	if err != nil {
 		go commons.DatabaseFullCleanup(db, mongo.Mysql)
 		go commons.DatabaseStateCleanup(db)
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -81,9 +72,7 @@ func createDB(c *gin.Context) {
 	if err != nil {
 		go commons.DatabaseFullCleanup(db, mongo.Mysql)
 		go commons.DatabaseStateCleanup(db)
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 	data["success"] = true
@@ -91,38 +80,30 @@ func createDB(c *gin.Context) {
 }
 
 func fetchDBs(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 
 	filter["language"] = ServiceName
 	filter["instanceType"] = mongo.DBInstance
-	filter["owner"] = userStr.Email
 
 	c.JSON(200, gin.H{
-		"data": mongo.FetchDBs(filter),
+		"success": true,
+		"data":    mongo.FetchDBs(filter),
 	})
 }
 
 func deleteDB(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
-
 	db := c.Param("db")
 
 	err := database.DeleteMysqlDB(db)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	err = redis.RemoveDB(db)
 	if err != nil {
-		c.JSON(500, gin.H{
-			"error": err.Error(),
-		})
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
@@ -132,11 +113,13 @@ func deleteDB(c *gin.Context) {
 		"instanceType": mongo.DBInstance,
 	}
 
-	if !userStr.IsAdmin {
-		filter["owner"] = userStr.Email
+	_, err = mongo.DeleteInstance(filter)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
 	}
 
 	c.JSON(200, gin.H{
-		"message": mongo.DeleteInstance(filter),
+		"success": true,
 	})
 }

@@ -13,7 +13,7 @@ var ServiceName = "mizu"
 
 func init() {
 	Router.POST("/:language", validateRequestBody, middlewares.IsUniqueApp(), createApp)
-	Router.GET("/", gin.FetchDocs)
+	Router.GET("", gin.FetchDocs)
 	Router.GET("/:app", gin.FetchAppInfo)
 	Router.GET("/:app/logs", gin.FetchLogs)
 	Router.GET("/:app/restart", gin.ReloadServer)

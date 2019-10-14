@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 )
 
@@ -11,13 +13,15 @@ func createApp(c *gin.Context) {
 	instanceURL, err := redis.GetLeastLoadedWorker()
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": err.Error(),
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
 	if instanceURL == redis.ErrEmptySet {
 		c.JSON(400, gin.H{
-			"error": "No worker instances available at the moment",
+			"success": false,
+			"error":   "No worker instances available at the moment",
 		})
 		return
 	}
@@ -29,13 +33,15 @@ func createDatabase(c *gin.Context) {
 	instanceURL, err := redis.GetLeastLoadedInstance(database)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": err.Error(),
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
 	if instanceURL == redis.ErrEmptySet {
 		c.JSON(400, gin.H{
-			"error": "No worker instances available at the moment",
+			"success": false,
+			"error":   "No worker instances available at the moment",
 		})
 		return
 	}
@@ -47,7 +53,8 @@ func execute(c *gin.Context) {
 	instanceURL, err := redis.FetchAppNode(app)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": fmt.Sprintf("Application %s is not deployed at the moment", app),
+			"success": false,
+			"error":   fmt.Sprintf("Application %s is not deployed at the moment", app),
 		})
 		return
 	}
@@ -59,9 +66,32 @@ func deleteDB(c *gin.Context) {
 	instanceURL, err := redis.FetchDBURL(db)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": "No such database exists",
+			"success": false,
+			"error":   "No such database exists",
 		})
 		return
 	}
 	reverseProxy(c, instanceURL)
+}
+
+func fetchInstancesByUser(instanceType string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		userStr := middlewares.ExtractClaims(c)
+		filter := map[string]interface{}{
+			"instanceType": instanceType,
+			"owner":        userStr.Email,
+		}
+		c.JSON(200, gin.H{
+			"success": true,
+			"data":    mongo.FetchAppInfo(filter),
+		})
+	}
+}
+
+func fetchAppsByUser() gin.HandlerFunc {
+	return fetchInstancesByUser(mongo.AppInstance)
+}
+
+func fetchDbsByUser() gin.HandlerFunc {
+	return fetchInstancesByUser(mongo.DBInstance)
 }

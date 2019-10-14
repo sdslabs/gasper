@@ -13,7 +13,7 @@ var ServiceName = "mongodb"
 
 func init() {
 	Router.POST("/mongodb", validateRequestBody, middlewares.IsUniqueDB(), createDB)
-	Router.GET("/", fetchDBs)
+	Router.GET("", fetchDBs)
 	Router.GET("/logs", gin.FetchMongoDBContainerLogs)
 	Router.GET("/restart", gin.ReloadMongoDBService)
 	Router.GET("/db/:db", gin.FetchDBInfo)

@@ -74,7 +74,8 @@ func Register(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(200, gin.H{
-		"message": "user created",
+		"message": "User created",
+		"success": true,
 	})
 }
 

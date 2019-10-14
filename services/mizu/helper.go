@@ -10,7 +10,8 @@ func validateRequestBody(c *gin.Context) {
 	language := c.Param("language")
 	if componentMap[language] == nil {
 		c.AbortWithStatusJSON(400, gin.H{
-			"error": fmt.Sprintf("Language `%s` is not supported", language),
+			"success": false,
+			"error":   fmt.Sprintf("Language `%s` is not supported", language),
 		})
 		return
 	}

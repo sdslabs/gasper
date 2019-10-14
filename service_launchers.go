@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -62,7 +61,6 @@ func initHTTPServer(handler http.Handler, port int) error {
 		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
 		utils.Log(msg, utils.ErrorTAG)
 		panic(msg)
-		return errors.New(msg)
 	}
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),

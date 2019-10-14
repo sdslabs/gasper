@@ -13,7 +13,7 @@ var ServiceName = "mysql"
 
 func init() {
 	Router.POST("/mysql", validateRequestBody, middlewares.IsUniqueDB(), createDB)
-	Router.GET("/", fetchDBs)
+	Router.GET("", fetchDBs)
 	Router.GET("/logs", gin.FetchMysqlContainerLogs)
 	Router.GET("/restart", gin.ReloadMysqlService)
 	Router.GET("/db/:db", gin.FetchDBInfo)

@@ -2,54 +2,61 @@ package gin
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
 )
 
 // FetchAppInfo returns the information about a particular app
 func FetchAppInfo(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	filter := make(map[string]interface{})
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
-	if !userStr.IsAdmin {
-		filter["owner"] = userStr.Email
-	}
 	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
+		"success": true,
+		"data":    mongo.FetchAppInfo(filter),
 	})
 }
 
 // FetchDBInfo returns the information about a particular db
 func FetchDBInfo(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	db := c.Param("db")
 	filter := make(map[string]interface{})
 	filter["name"] = db
 	filter["instanceType"] = mongo.DBInstance
-	if !userStr.IsAdmin {
-		filter["owner"] = userStr.Email
-	}
 	c.JSON(200, gin.H{
-		"data": mongo.FetchDBInfo(filter),
+		"success": true,
+		"data":    mongo.FetchDBInfo(filter),
 	})
 }
 
 // UpdateAppByName updates the app getting name from url params
 func UpdateAppByName(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	filter := map[string]interface{}{
 		"name":         app,
 		"instanceType": mongo.AppInstance,
-		"owner":        userStr.Email,
 	}
 	var data map[string]interface{}
 	c.BindJSON(&data)
+
+	err := validateUpdatePayload(data)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = mongo.UpdateInstance(filter, data)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
+		"success": true,
 	})
 }
 
@@ -60,7 +67,8 @@ func FetchUserInfo(c *gin.Context) {
 		"email": user,
 	}
 	c.JSON(200, gin.H{
-		"data": mongo.FetchUserInfo(filter),
+		"success": true,
+		"data":    mongo.FetchUserInfo(filter),
 	})
 }
 
@@ -88,7 +96,8 @@ func FetchAllDBs(c *gin.Context) {
 // FetchAllUsers gets information for all applications deployed
 func FetchAllUsers(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"data": mongo.FetchUsers(map[string]interface{}{}),
+		"success": true,
+		"data":    mongo.FetchUsers(map[string]interface{}{}),
 	})
 }
 
@@ -105,8 +114,14 @@ func DeleteUser(c *gin.Context) {
 		"deleted": true,
 	}
 	go mongo.UpdateInstances(instanceFilter, update)
+
+	err := mongo.UpdateUser(filter, update)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateUser(filter, update),
+		"success": true,
 	})
 }
 
@@ -116,19 +131,18 @@ func FetchDocs(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 	c.JSON(200, gin.H{
-		"data": mongo.FetchAppInfo(filter),
+		"success": true,
+		"data":    mongo.FetchAppInfo(filter),
 	})
 }
 
 // UpdateAppInfo updates the application document in mongoDB
 func UpdateAppInfo(c *gin.Context) {
-	userStr := middlewares.ExtractClaims(c)
 	app := c.Param("app")
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
-	filter["owner"] = userStr.Email
 
 	var data map[string]interface{}
 	c.BindJSON(&data)
@@ -136,12 +150,19 @@ func UpdateAppInfo(c *gin.Context) {
 	err := validateUpdatePayload(data)
 	if err != nil {
 		c.JSON(400, gin.H{
-			"error": err.Error(),
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
 
+	err = mongo.UpdateInstance(filter, data)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"message": mongo.UpdateInstance(filter, data),
+		"success": true,
 	})
 }
