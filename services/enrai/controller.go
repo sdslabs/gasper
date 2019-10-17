@@ -6,38 +6,50 @@ import (
 	"net/http/httputil"
 	"strings"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/redis"
 )
 
 // reverseProxy sets up the reverse proxy from the given
 // to the target ip
-func reverseProxy(w http.ResponseWriter, r *http.Request, target string) {
-	director := func(req *http.Request) {
-		req.URL.Scheme = "http"
-		req.URL.Host = target
-		req.Host = target
-	}
-	proxy := &httputil.ReverseProxy{Director: director}
-	proxy.ServeHTTP(w, r)
-}
+func reverseProxy(c *gin.Context) {
+	hostNameCheck := fmt.Sprintf(".%s", configs.GasperConfig.Domain)
+	hostNameWithPortCheck := fmt.Sprintf("%s:%d", hostNameCheck, configs.ServiceConfig.Enrai.Port)
 
-// subdomainRootHandler handles the root route of the provided host
-// and extracts the url to perform the reverse proxy
-func subdomainRootHandler(w http.ResponseWriter, r *http.Request) {
-	appURL, err := redis.FetchAppServer(strings.Split(r.Host, ".")[0])
-	if err != nil {
-		w.WriteHeader(404)
+	if strings.HasSuffix(c.Request.Host, hostNameCheck) || strings.HasSuffix(c.Request.Host, hostNameWithPortCheck) {
+		target, err := redis.FetchAppServer(strings.Split(c.Request.Host, ".")[0])
+
+		if err != nil {
+			c.AbortWithStatusJSON(503, gin.H{
+				"success": false,
+				"message": "No such application exists",
+			})
+			return
+		}
+
+		director := func(req *http.Request) {
+			req.URL.Scheme = "http"
+			req.URL.Host = target
+			req.Host = target
+			req.Header["dominus-secret"] = []string{configs.GasperConfig.Secret}
+		}
+		proxy := &httputil.ReverseProxy{Director: director}
+		proxy.ServeHTTP(c.Writer, c.Request)
+
 		return
 	}
-	reverseProxy(w, r, appURL)
+
+	c.AbortWithStatusJSON(403, gin.H{
+		"success": false,
+		"message": "Incorrect root domain",
+	})
+	return
 }
 
 // BuildEnraiServer sets up the gorilla multiplexer to handle different subdomains
-func BuildEnraiServer() *mux.Router {
-	router := mux.NewRouter()
-	host := fmt.Sprintf(`{_:.+}.%s`, configs.GasperConfig.Domain)
-	router.PathPrefix("/").HandlerFunc(subdomainRootHandler).Host(host)
+func BuildEnraiServer() *gin.Engine {
+	router := gin.New()
+	router.NoRoute(reverseProxy)
 	return router
 }

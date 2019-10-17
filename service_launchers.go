@@ -48,7 +48,7 @@ var launcherBindings = map[string]*serviceLauncher{
 	},
 	"enrai": &serviceLauncher{
 		Deploy: configs.ServiceConfig.Enrai.Deploy,
-		Start:  startEnraiService,
+		Start:  startGinService(enrai.BuildEnraiServer(), configs.ServiceConfig.Enrai.Port),
 	},
 	"mongodb": &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mongodb.Deploy,
@@ -163,8 +163,4 @@ func startGinService(handler *gin.Engine, port int) func() error {
 	return func() error {
 		return initHTTPServer(handler, port)
 	}
-}
-
-func startEnraiService() error {
-	return initHTTPServer(enrai.BuildEnraiServer(), configs.ServiceConfig.Enrai.Port)
 }
