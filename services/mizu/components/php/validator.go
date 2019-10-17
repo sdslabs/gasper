@@ -8,7 +8,6 @@ import (
 
 type context struct {
 	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	Port   string `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
 	RcFile bool   `json:"rcFile"`
 }
 

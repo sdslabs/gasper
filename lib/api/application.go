@@ -192,10 +192,11 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	context := data["context"].(map[string]interface{})
 
 	var containerPort string
-	if data["language"].(string) == "static" {
-		containerPort = "80"
-	} else {
+
+	if context["port"] != nil {
 		containerPort = context["port"].(string)
+	} else {
+		containerPort = "80"
 	}
 
 	appEnv, errList := CreateBasicApplication(

@@ -20,8 +20,8 @@ server {
 	sendfile_max_chunk 1m;
 	tcp_nopush on;
 
-	access_log  /var/log/nginx/%s.access.log  main;
-	error_log   /var/log/nginx/%s.error.log   warn;
+	access_log  /var/log/nginx/access.log  main;
+	error_log   /var/log/nginx/error.log   warn;
 
 	location / {
 		root   %s/;
@@ -33,7 +33,7 @@ server {
 		root   /usr/share/nginx/html;
 	}
 }
-	`, name, name, path, appContext["index"].(string))
+	`, path, appContext["index"].(string))
 }
 
 // CreatePHPContainerConfig takes the name of the PHP application
@@ -50,47 +50,47 @@ func CreatePHPContainerConfig(name string, appContext map[string]interface{}) st
 	}
 
 	return fmt.Sprintf(`
-	server {
-		listen 80 default_server;
-		listen [::]:80 default_server;
-		
-		server_name _;
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
 	
-		sendfile on;
-		sendfile_max_chunk 1m;
-		tcp_nopush on;
-	
-		access_log  /var/log/nginx/%s.access.log;
-		error_log   /var/log/nginx/%s.error.log   warn;
-	
-		root %s/;
-		index %s index.php index.html;
-	
-		location / {
-			try_files $uri $uri/ /index.php?q=$uri&$args;
-		}
-	
-		error_page 500 502 503 504 /50x.html;
-		location = /50x.html {
-			root /var/lib/nginx/html;
-		}
-	
-		# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-		location ~ \.php$ {
-			try_files $uri =404;
-			fastcgi_split_path_info ^(.+\.php)(/.+)$;
-			fastcgi_pass  127.0.0.1:9000;
-			fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-			fastcgi_param SCRIPT_NAME $fastcgi_script_name;
-			fastcgi_index index.php;
-			include fastcgi_params;
-		}
-	
-		location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
-			expires 5d;
-		}
+	server_name _;
+
+	sendfile on;
+	sendfile_max_chunk 1m;
+	tcp_nopush on;
+
+	access_log  /var/log/nginx/access.log;
+	error_log   /var/log/nginx/error.log   warn;
+
+	root %s/;
+	index %s index.php index.html;
+
+	location / {
+		try_files $uri $uri/ /index.php?q=$uri&$args;
 	}
-	`, name, name, path, index)
+
+	error_page 500 502 503 504 /50x.html;
+	location = /50x.html {
+		root /var/lib/nginx/html;
+	}
+
+	# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+	location ~ \.php$ {
+		try_files $uri =404;
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass  127.0.0.1:9000;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+
+	location ~* \.(jpg|jpeg|gif|png|css|js|ico|xml)$ {
+		expires 5d;
+	}
+}
+	`, path, index)
 }
 
 // CreateNodeContainerConfig takes the name of the node app
