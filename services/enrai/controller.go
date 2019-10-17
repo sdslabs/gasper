@@ -11,8 +11,8 @@ import (
 	"github.com/sdslabs/gasper/lib/redis"
 )
 
-// reverseProxy sets up the reverse proxy from the given
-// to the target ip
+// reverseProxy sets up the reverse proxy from the given domain
+// to the target IP
 func reverseProxy(c *gin.Context) {
 	hostNameCheck := fmt.Sprintf(".%s", configs.GasperConfig.Domain)
 	hostNameWithPortCheck := fmt.Sprintf("%s:%d", hostNameCheck, configs.ServiceConfig.Enrai.Port)
@@ -47,7 +47,8 @@ func reverseProxy(c *gin.Context) {
 	return
 }
 
-// BuildEnraiServer sets up the gorilla multiplexer to handle different subdomains
+// BuildEnraiServer sets up a reverse proxy server for mapping
+// domain names to application containers
 func BuildEnraiServer() *gin.Engine {
 	router := gin.New()
 	router.NoRoute(reverseProxy)
