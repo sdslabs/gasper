@@ -38,18 +38,20 @@ func fetchAppBindings(appName string) (*types.AppBindings, error) {
 
 	appInfoStruct := &types.AppBindings{}
 	resultByte := []byte(result)
-	json.Unmarshal(resultByte, appInfoStruct)
-
+	err = json.Unmarshal(resultByte, appInfoStruct)
+	if err != nil {
+		return nil, err
+	}
 	return appInfoStruct, nil
 }
 
 // FetchAppServer returns the URL of deployed application bound to the container
 func FetchAppServer(appName string) (string, error) {
-	url, err := fetchAppBindings(appName)
+	app, err := fetchAppBindings(appName)
 	if err != nil {
 		return "", err
 	}
-	return url.Server, nil
+	return app.Server, nil
 }
 
 // FetchAppURL returns the URL of the machine where the app in query is deployed
@@ -63,11 +65,11 @@ func FetchAppURL(app string) (string, error) {
 
 // FetchAppNode returns the URL of the machine where the app in query is deployed
 func FetchAppNode(appName string) (string, error) {
-	url, err := fetchAppBindings(appName)
+	app, err := fetchAppBindings(appName)
 	if err != nil {
 		return "", err
 	}
-	return url.Node, nil
+	return app.Node, nil
 }
 
 // RemoveApp removes the application's entry from Redis

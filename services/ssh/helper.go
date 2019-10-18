@@ -14,7 +14,7 @@ import (
 
 // getPrivateKey returns a Signer interface for the private key
 // specified from the filepath
-func getPrivateKey(service, filepath string) (ssh.Signer, error) {
+func getPrivateKey(filepath string) (ssh.Signer, error) {
 
 	var err error
 	key, err := ioutil.ReadFile(filepath)
@@ -42,10 +42,10 @@ func getPrivateKey(service, filepath string) (ssh.Signer, error) {
 
 // getHostSigners returns a slice of Signer interface for the
 // specified filepaths of the private keys
-func getHostSigners(service string, filepaths []string) ([]ssh.Signer, error) {
+func getHostSigners(filepaths []string) ([]ssh.Signer, error) {
 	var signers []ssh.Signer
 	for _, filepath := range filepaths {
-		signer, err := getPrivateKey(service, filepath)
+		signer, err := getPrivateKey(filepath)
 		if err != nil {
 			return nil, err
 		}

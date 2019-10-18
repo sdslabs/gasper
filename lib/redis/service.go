@@ -102,10 +102,10 @@ func RemoveServiceInstance(service, member string) error {
 func GetSSHPort(url string) (string, error) {
 	data, _, err := client.ZScan(SSHKey, 0, url+":*", 1).Result()
 	if err != nil {
-		return "", err
+		return ErrEmptySet, err
 	}
 	if len(data) == 0 {
-		return "", nil
+		return ErrEmptySet, nil
 	}
 	return strings.Split(data[0], ":")[1], nil
 }

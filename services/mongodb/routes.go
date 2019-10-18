@@ -1,21 +1,26 @@
 package mongodb
 
 import (
+	"net/http"
+
 	"github.com/sdslabs/gasper/lib/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
 )
 
-// Router is the main routes handler for the current microservice package
-var Router = gin.NewServiceEngine()
-
 // ServiceName is the name of the current microservice
-var ServiceName = "mongodb"
+const ServiceName = "mongodb"
 
-func init() {
-	Router.POST("/mongodb", validateRequestBody, middlewares.IsUniqueDB(), createDB)
-	Router.GET("", fetchDBs)
-	Router.GET("/logs", gin.FetchMongoDBContainerLogs)
-	Router.GET("/restart", gin.ReloadMongoDBService)
-	Router.GET("/db/:db", gin.FetchDBInfo)
-	Router.DELETE("/:db", deleteDB)
+// NewService returns a new instance of the current microservice
+func NewService() http.Handler {
+	// router is the main routes handler for the current microservice package
+	router := gin.NewServiceEngine()
+
+	router.POST("/mongodb", validateRequestBody, middlewares.IsUniqueDB(), createDB)
+	router.GET("", fetchDBs)
+	router.GET("/logs", gin.FetchMongoDBContainerLogs)
+	router.GET("/restart", gin.ReloadMongoDBService)
+	router.GET("/db/:db", gin.FetchDBInfo)
+	router.DELETE("/:db", deleteDB)
+
+	return router
 }

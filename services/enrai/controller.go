@@ -11,13 +11,16 @@ import (
 	"github.com/sdslabs/gasper/lib/redis"
 )
 
+// ServiceName is the name of the current microservice
+const ServiceName = "enrai"
+
 // reverseProxy sets up the reverse proxy from the given domain
 // to the target IP
 func reverseProxy(c *gin.Context) {
-	hostNameCheck := fmt.Sprintf(".%s", configs.GasperConfig.Domain)
-	hostNameWithPortCheck := fmt.Sprintf("%s:%d", hostNameCheck, configs.ServiceConfig.Enrai.Port)
+	rootDomain := fmt.Sprintf(".%s", configs.GasperConfig.Domain)
+	rootDomainWithPort := fmt.Sprintf("%s:%d", rootDomain, configs.ServiceConfig.Enrai.Port)
 
-	if strings.HasSuffix(c.Request.Host, hostNameCheck) || strings.HasSuffix(c.Request.Host, hostNameWithPortCheck) {
+	if strings.HasSuffix(c.Request.Host, rootDomain) || strings.HasSuffix(c.Request.Host, rootDomainWithPort) {
 		target, err := redis.FetchAppServer(strings.Split(c.Request.Host, ".")[0])
 
 		if err != nil {
@@ -36,7 +39,6 @@ func reverseProxy(c *gin.Context) {
 		}
 		proxy := &httputil.ReverseProxy{Director: director}
 		proxy.ServeHTTP(c.Writer, c.Request)
-
 		return
 	}
 
@@ -44,12 +46,11 @@ func reverseProxy(c *gin.Context) {
 		"success": false,
 		"message": "Incorrect root domain",
 	})
-	return
 }
 
-// BuildEnraiServer sets up a reverse proxy server for mapping
-// domain names to application containers
-func BuildEnraiServer() *gin.Engine {
+// NewService returns a new instance of the current microservice
+func NewService() http.Handler {
+	// router is the main routes handler for the current microservice package
 	router := gin.New()
 	router.NoRoute(reverseProxy)
 	return router

@@ -1,27 +1,31 @@
 package dominus
 
 import (
+	"net/http"
+
 	"github.com/gin-contrib/cors"
 	"github.com/sdslabs/gasper/lib/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
 	adminHandlers "github.com/sdslabs/gasper/services/dominus/admin"
 )
 
-// Router is the main routes handler for the current microservice package
-var Router = gin.NewEngine()
-
 // ServiceName is the name of the current microservice
-var ServiceName = "dominus"
+const ServiceName = "dominus"
 
-func init() {
-	Router.Use(cors.Default(), middlewares.FalconGuard())
-	auth := Router.Group("/auth")
+// NewService returns a new instance of the current microservice
+func NewService() http.Handler {
+	// router is the main routes handler for the current microservice package
+	router := gin.NewEngine()
+	router.Use(cors.Default(), middlewares.FalconGuard())
+
+	auth := router.Group("/auth")
 	{
 		auth.POST("/login", middlewares.JWT.LoginHandler)
 		auth.POST("/register", middlewares.RegisterValidator, middlewares.Register)
 		auth.GET("/refresh", middlewares.JWT.MiddlewareFunc(), middlewares.JWT.RefreshHandler)
 	}
-	app := Router.Group("/apps")
+
+	app := router.Group("/apps")
 	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
 		app.POST("/:language", middlewares.InsertOwner, trimURLPath(2), createApp)
@@ -31,7 +35,8 @@ func init() {
 		app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
 		app.GET("/:app/:action", middlewares.IsAppOwner(), trimURLPath(2), execute)
 	}
-	db := Router.Group("/dbs")
+
+	db := router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
 		db.POST("/:database", middlewares.InsertOwner, trimURLPath(2), createDatabase)
@@ -39,7 +44,8 @@ func init() {
 		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
 		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
 	}
-	admin := Router.Group("/admin")
+
+	admin := router.Group("/admin")
 	admin.Use(middlewares.JWT.MiddlewareFunc(), middlewares.VerifyAdmin)
 	{
 		apps := admin.Group("/apps")
@@ -66,4 +72,6 @@ func init() {
 			nodes.GET("/:node", adminHandlers.GetNodesByName)
 		}
 	}
+
+	return router
 }
