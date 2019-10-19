@@ -16,6 +16,9 @@ const (
 	// Enrai holds the name of `enrai` microservice
 	Enrai = "enrai"
 
+	// EnraiSSL holds the name of `enrai` microservice with SSL support
+	EnraiSSL = "enrai_ssl"
+
 	// MySQL holds the name of `mysql` microservice
 	MySQL = "mysql"
 

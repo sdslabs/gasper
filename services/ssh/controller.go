@@ -19,6 +19,7 @@ import (
 const (
 	// DefaultServiceName is the name of the SSH microservice
 	DefaultServiceName = types.SSH
+
 	// ProxyServiceName is the name of the proxy service of SSH
 	ProxyServiceName = types.SSHProxy
 )
@@ -137,7 +138,8 @@ func serviceBuilder(service string, filepaths []string, port int) (*ssh.Server, 
 }
 
 func handleError(err error) {
-	utils.Log("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.", utils.ErrorTAG)
+	utils.Log("There was a problem deploying SSH service", utils.ErrorTAG)
+	utils.Log("Make sure the paths of Private Keys is correct in `config.json`", utils.ErrorTAG)
 	utils.LogError(err)
 	panic(err)
 }

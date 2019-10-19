@@ -54,7 +54,13 @@
         },
         "enrai": {
             "deploy": true,
-            "port": 4040
+            "port": 4040,
+            "ssl": {
+                "plugIn": false,
+                "port": 443,
+                "certificate": "/home/user/fullchain.pem",
+                "privateKey": "/home/user/privkey.pem"
+            }
         },
         "mizu": {
             "deploy": true,

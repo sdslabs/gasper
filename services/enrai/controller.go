@@ -12,8 +12,13 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
-// ServiceName is the name of the current microservice
-const ServiceName = types.Enrai
+const (
+	// DefaultServiceName is the name of the service proxying HTTP connections
+	DefaultServiceName = types.Enrai
+
+	// SSLServiceName is the name of the service proxying HTTPS connections
+	SSLServiceName = types.EnraiSSL
+)
 
 // reverseProxy sets up the reverse proxy from the given domain
 // to the target IP

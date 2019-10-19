@@ -60,6 +60,20 @@ type SSHService struct {
 	Passphrase      string   `json:"passphrase"`
 }
 
+// SSLConfig is the configuration for SSL in Enrai microservice
+type SSLConfig struct {
+	PlugIn      bool   `json:"plugIn"`
+	Port        int    `json:"port"`
+	Certificate string `json:"certificate"`
+	PrivateKey  string `json:"privateKey"`
+}
+
+// EnraiService is the configuration for Enrai microservice
+type EnraiService struct {
+	GenericService
+	SSL SSLConfig `json:"ssl"`
+}
+
 // MysqlService is the configuration for Mysql microservice
 type MysqlService struct {
 	GenericService
@@ -91,7 +105,7 @@ type Services struct {
 	Mizu     GenericService `json:"mizu"`
 	SSH      SSHService     `json:"ssh"`
 	SSHProxy SSHService     `json:"ssh_proxy"`
-	Enrai    GenericService `json:"enrai"`
+	Enrai    EnraiService   `json:"enrai"`
 	Mysql    MysqlService   `json:"mysql"`
 	Mongodb  MongodbService `json:"mongodb"`
 }

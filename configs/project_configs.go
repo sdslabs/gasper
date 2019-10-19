@@ -46,7 +46,10 @@ var (
 			Deploy: ServiceConfig.SSHProxy.Deploy,
 			Port:   ServiceConfig.SSHProxy.Port,
 		},
-		types.Enrai: &ServiceConfig.Enrai,
+		types.Enrai: &GenericService{
+			Deploy: ServiceConfig.Enrai.Deploy,
+			Port:   ServiceConfig.Enrai.Port,
+		},
 		types.MySQL: &GenericService{
 			Deploy: ServiceConfig.Mysql.Deploy,
 			Port:   ServiceConfig.Mysql.Port,
