@@ -1,15 +1,19 @@
 package mongo
 
-import "go.mongodb.org/mongo-driver/mongo"
+import (
+	"github.com/sdslabs/gasper/types"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 const (
 	// DBInstance is db instance type name in the instances collection
 	DBInstance = "db"
+
 	// Mysql is db instance type name for mysql database in the instances collection
-	Mysql = "mysql"
+	Mysql = types.MySQL
 
 	// MongoDB is db instance type name in the instances collection
-	MongoDB = "mongodb"
+	MongoDB = types.MongoDB
 
 	// AppInstance is app instance type name in the instances collection
 	AppInstance = "app"

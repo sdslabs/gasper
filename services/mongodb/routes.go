@@ -5,10 +5,11 @@ import (
 
 	"github.com/sdslabs/gasper/lib/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/types"
 )
 
 // ServiceName is the name of the current microservice
-const ServiceName = "mongodb"
+const ServiceName = types.MongoDB
 
 // NewService returns a new instance of the current microservice
 func NewService() http.Handler {

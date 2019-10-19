@@ -13,15 +13,15 @@ import (
 )
 
 var instanceRegistrationBindings = map[string]func(instances []types.M, currentIP string, config *configs.GenericService){
-	"mizu":    registerApps,
-	"mysql":   registerDatabases,
-	"mongodb": registerDatabases,
+	types.Mizu:    registerApps,
+	types.MySQL:   registerDatabases,
+	types.MongoDB: registerDatabases,
 }
 
 var instanceServiceBindings = map[string]func(currentIP, service string) []types.M{
-	"mizu":    fetchBoundApps,
-	"mysql":   fetchBoundDatabases,
-	"mongodb": fetchBoundDatabases,
+	types.Mizu:    fetchBoundApps,
+	types.MySQL:   fetchBoundDatabases,
+	types.MongoDB: fetchBoundDatabases,
 }
 
 func fetchBoundApps(currentIP, service string) []types.M {

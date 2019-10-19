@@ -19,7 +19,7 @@ type nodejsRequestBody struct {
 	Context        context                    `json:"context"`
 	Resources      types.ApplicationResources `json:"resources"`
 	NPM            bool                       `json:"npm"`
-	Env            types.M     `json:"env"`
+	Env            types.M                    `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
 }
 

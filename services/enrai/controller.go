@@ -9,10 +9,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/types"
 )
 
 // ServiceName is the name of the current microservice
-const ServiceName = "enrai"
+const ServiceName = types.Enrai
 
 // reverseProxy sets up the reverse proxy from the given domain
 // to the target IP

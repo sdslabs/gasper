@@ -18,9 +18,9 @@ import (
 
 const (
 	// DefaultServiceName is the name of the SSH microservice
-	DefaultServiceName = "ssh"
+	DefaultServiceName = types.SSH
 	// ProxyServiceName is the name of the proxy service of SSH
-	ProxyServiceName = "ssh_proxy"
+	ProxyServiceName = types.SSHProxy
 )
 
 // newHandler returns a handler function which manages the ssh session.

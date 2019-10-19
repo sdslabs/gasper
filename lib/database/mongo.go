@@ -11,14 +11,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type key string
-
-const hostKey = key("hostKey")
-const usrname = key("username")
-const pwd = key("password")
-
-var mongoUser = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
-var mongoPass = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
+var (
+	mongoRootUser     = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
+	mongoRootPassword = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
+)
 
 // CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
 func CreateMongoDB(database, username, password string) error {
@@ -36,7 +32,6 @@ func CreateMongoDB(database, username, password string) error {
 }
 
 func configDB(ctx context.Context, database, username, password string) (*mongo.Database, error) {
-
 	client, err := createConnection(ctx)
 	if err != nil {
 		return nil, err
@@ -108,7 +103,7 @@ func DeleteMongoDB(database string) error {
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
 	port := configs.ServiceConfig.Mongodb.ContainerPort
-	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoUser, mongoPass, port)
+	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, port)
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {
 		return nil, fmt.Errorf("couldn't connect to mongo: %v", err)

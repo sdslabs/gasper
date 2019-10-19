@@ -7,10 +7,11 @@ import (
 	"github.com/sdslabs/gasper/lib/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
 	adminHandlers "github.com/sdslabs/gasper/services/dominus/admin"
+	"github.com/sdslabs/gasper/types"
 )
 
 // ServiceName is the name of the current microservice
-const ServiceName = "dominus"
+const ServiceName = types.Dominus
 
 // NewService returns a new instance of the current microservice
 func NewService() http.Handler {
