@@ -4,7 +4,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 	"github.com/sdslabs/gasper/lib/utils"
 	"golang.org/x/net/context"
 )

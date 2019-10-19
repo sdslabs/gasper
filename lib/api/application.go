@@ -12,7 +12,7 @@ import (
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/git"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 	"github.com/sdslabs/gasper/lib/utils"
 	gogit "gopkg.in/src-d/go-git.v4"
 )

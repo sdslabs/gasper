@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -67,14 +68,14 @@ func AppStateCleanup(instanceName string) {
 // DatabaseFullCleanup deletes the specified database from the container
 func DatabaseFullCleanup(db, databaseType string) {
 	switch databaseType {
-	case mongo.Mysql:
+	case configs.MySQL:
 		{
 			err := MysqlDatabaseCleanup(db)
 			if err != nil {
 				utils.LogError(err)
 			}
 		}
-	case mongo.MongoDB:
+	case configs.MongoDB:
 		{
 			err := MongoDatabaseCleanup(db)
 			if err != nil {

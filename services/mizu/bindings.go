@@ -2,7 +2,7 @@ package mizu
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 	"github.com/sdslabs/gasper/services/mizu/components/nodejs"
 	"github.com/sdslabs/gasper/services/mizu/components/php"
 	"github.com/sdslabs/gasper/services/mizu/components/python"

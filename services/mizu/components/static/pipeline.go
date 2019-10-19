@@ -3,7 +3,7 @@ package static
 import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/api"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 // Pipeline is the application creation pipeline

@@ -7,7 +7,7 @@ import (
 	"github.com/sdslabs/gasper/lib/api"
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 // startApp function starts the app using pm2

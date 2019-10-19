@@ -3,7 +3,7 @@ package gin
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 	"github.com/sdslabs/gasper/lib/utils"
 )
 

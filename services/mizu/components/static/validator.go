@@ -3,7 +3,7 @@ package static
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 type context struct {

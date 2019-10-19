@@ -50,29 +50,29 @@ type GenericService struct {
 	Port   int  `json:"port"`
 }
 
-// SSH is the configuration for SSH and SSH_Proxy service
-type SSH struct {
+// SSHService is the configuration for SSH and SSH_Proxy microservices
+type SSHService struct {
 	GenericService
 	HostSigners     []string `json:"host_signers"`
 	UsingPassphrase bool     `json:"using_passphrase"`
 	Passphrase      string   `json:"passphrase"`
 }
 
-// Mysql is the configuration for Mysql service
-type Mysql struct {
+// MysqlService is the configuration for Mysql microservice
+type MysqlService struct {
 	GenericService
 	ContainerPort int                    `json:"container_port"`
 	Env           map[string]interface{} `json:"env"`
 }
 
-// Mongodb is the configuration for Mongodb service
-type Mongodb struct {
+// MongodbService is the configuration for Mongodb microservice
+type MongodbService struct {
 	GenericService
 	ContainerPort int                    `json:"container_port"`
 	Env           map[string]interface{} `json:"env"`
 }
 
-// Images is the configuration for the images in use
+// Images is the configuration for the docker images in use
 type Images struct {
 	Static  string `json:"static"`
 	Php     string `json:"php"`
@@ -87,11 +87,11 @@ type Images struct {
 type Services struct {
 	Dominus  GenericService `json:"dominus"`
 	Mizu     GenericService `json:"mizu"`
-	SSH      SSH            `json:"ssh"`
-	SSHProxy SSH            `json:"ssh_proxy"`
+	SSH      SSHService     `json:"ssh"`
+	SSHProxy SSHService     `json:"ssh_proxy"`
 	Enrai    GenericService `json:"enrai"`
-	Mysql    Mysql          `json:"mysql"`
-	Mongodb  Mongodb        `json:"mongodb"`
+	Mysql    MysqlService   `json:"mysql"`
+	Mongodb  MongodbService `json:"mongodb"`
 }
 
 // GasperCfg is the configuration for the entire project
