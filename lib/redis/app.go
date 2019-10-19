@@ -21,7 +21,7 @@ func RegisterApp(appName, nodeURL, serverURL string) error {
 }
 
 // BulkRegisterApps registers multiple apps at once
-func BulkRegisterApps(data map[string]interface{}) error {
+func BulkRegisterApps(data types.M) error {
 	if len(data) == 0 {
 		return nil
 	}

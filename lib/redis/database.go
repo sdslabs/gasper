@@ -1,5 +1,7 @@
 package redis
 
+import "github.com/sdslabs/gasper/types"
+
 // RegisterDB registers the database in the databases HashMap with its url
 func RegisterDB(db, url string) error {
 	_, err := client.HSet(DatabaseKey, db, url).Result()
@@ -30,7 +32,7 @@ func FetchAllDatabases() (map[string]string, error) {
 }
 
 // BulkRegisterDatabases registers multiple databases at once
-func BulkRegisterDatabases(data map[string]interface{}) error {
+func BulkRegisterDatabases(data types.M) error {
 	if len(data) == 0 {
 		return nil
 	}

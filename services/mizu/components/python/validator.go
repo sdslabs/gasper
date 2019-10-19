@@ -22,7 +22,7 @@ type pythonRequestBody struct {
 	PythonVersion  string                     `json:"python_version" valid:"required~Field 'python_version' is required but was not provided"`
 	Requirements   string                     `json:"requirements" valid:"required~Field 'requirements' is required but was not provided"`
 	Django         bool                       `json:"django"`
-	Env            map[string]interface{}     `json:"env"`
+	Env            types.M     `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
 }
 

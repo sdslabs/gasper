@@ -3,12 +3,14 @@ package configs
 import (
 	"fmt"
 	"strings"
+
+	"github.com/sdslabs/gasper/types"
 )
 
 // CreateStaticContainerConfig takes the name of the static application
 // and generates the container level config for the same
 // Location is the path of index.html or index.htm, leave empty if same
-func CreateStaticContainerConfig(name string, appContext map[string]interface{}) string {
+func CreateStaticContainerConfig(name string, appContext types.M) string {
 	path := fmt.Sprintf("%s/%s", GasperConfig.ProjectRoot, name)
 	return fmt.Sprintf(`
 server {
@@ -39,7 +41,7 @@ server {
 // CreatePHPContainerConfig takes the name of the PHP application
 // and generates the container level config for the same
 // Location is the path of index.php, leave empty if same
-func CreatePHPContainerConfig(name string, appContext map[string]interface{}) string {
+func CreatePHPContainerConfig(name string, appContext types.M) string {
 	path := fmt.Sprintf("%s/%s", GasperConfig.ProjectRoot, name)
 	index := appContext["index"].(string)
 
@@ -95,7 +97,7 @@ server {
 
 // CreateNodeContainerConfig takes the name of the node app
 // and port and generated the config for the same
-func CreateNodeContainerConfig(name string, appContext map[string]interface{}) string {
+func CreateNodeContainerConfig(name string, appContext types.M) string {
 	return fmt.Sprintf(`
 server {
     listen 80;
@@ -112,7 +114,7 @@ server {
 
 // CreatePythonContainerConfig takes the name of the Python app
 // and port and generated the config for the same
-func CreatePythonContainerConfig(name string, appContext map[string]interface{}) string {
+func CreatePythonContainerConfig(name string, appContext types.M) string {
 	return fmt.Sprintf(`
 server {
     listen 80;

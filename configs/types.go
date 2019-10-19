@@ -1,5 +1,7 @@
 package configs
 
+import "github.com/sdslabs/gasper/types"
+
 // Admin is the configuration for the default Admin
 type Admin struct {
 	Email    string `json:"email"`
@@ -61,15 +63,15 @@ type SSHService struct {
 // MysqlService is the configuration for Mysql microservice
 type MysqlService struct {
 	GenericService
-	ContainerPort int                    `json:"container_port"`
-	Env           map[string]interface{} `json:"env"`
+	ContainerPort int     `json:"container_port"`
+	Env           types.M `json:"env"`
 }
 
 // MongodbService is the configuration for Mongodb microservice
 type MongodbService struct {
 	GenericService
-	ContainerPort int                    `json:"container_port"`
-	Env           map[string]interface{} `json:"env"`
+	ContainerPort int     `json:"container_port"`
+	Env           types.M `json:"env"`
 }
 
 // Images is the configuration for the docker images in use

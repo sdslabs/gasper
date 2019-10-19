@@ -17,7 +17,7 @@ type staticRequestBody struct {
 	URL            string                     `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
 	Context        context                    `json:"context"`
 	Resources      types.ApplicationResources `json:"resources"`
-	Env            map[string]interface{}     `json:"env"`
+	Env            types.M     `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/gliderlabs/ssh"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/types"
 	gossh "golang.org/x/crypto/ssh"
 )
 
@@ -78,8 +79,8 @@ func setWinsize(f *os.File, w, h int) {
 }
 
 // getAppFromContext gets fetches the app docs for the ssh user
-func getAppFromContext(ctx ssh.Context) map[string]interface{} {
-	app := mongo.FetchAppInfo(map[string]interface{}{
+func getAppFromContext(ctx ssh.Context) types.M {
+	app := mongo.FetchAppInfo(types.M{
 		"name": ctx.User(),
 	})
 	// Should return just one app

@@ -13,6 +13,7 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 const (
@@ -98,7 +99,7 @@ func publicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
 // passwordHandler handles the password authentication
 func passwordHandler(ctx ssh.Context, password string) bool {
 	eventLog := "SSH login attempt `%s` on application container %s deployed at %s from IP %s"
-	count, err := mongo.CountInstances(map[string]interface{}{
+	count, err := mongo.CountInstances(types.M{
 		"name":         ctx.User(),
 		"password":     password,
 		"instanceType": mongo.AppInstance,

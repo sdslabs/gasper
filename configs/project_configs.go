@@ -1,30 +1,9 @@
 package configs
 
-const (
-	// configFile is the main configuration file for gasper
-	configFile = "config.json"
+import "github.com/sdslabs/gasper/types"
 
-	// Dominus holds the name of `dominus` microservice
-	Dominus = "dominus"
-
-	// Mizu holds the name of `mizu` microservice
-	Mizu = "mizu"
-
-	// SSH holds the name of `ssh` microservice
-	SSH = "ssh"
-
-	// SSHProxy holds the name of `ssh_proxy` microservice
-	SSHProxy = "ssh_proxy"
-
-	// Enrai holds the name of `enrai` microservice
-	Enrai = "enrai"
-
-	// MySQL holds the name of `mysql` microservice
-	MySQL = "mysql"
-
-	// MongoDB holds the name of `mongodb` microservice
-	MongoDB = "mongodb"
-)
+// configFile is the main configuration file for gasper
+const configFile = "config.json"
 
 var (
 	// GasperConfig is parsed data for `configFile`
@@ -57,22 +36,22 @@ var (
 	// ServiceMap is the configuration binding the service name to its
 	// deployment status and port
 	ServiceMap = map[string]*GenericService{
-		Dominus: &ServiceConfig.Dominus,
-		Mizu:    &ServiceConfig.Mizu,
-		Ssh: &GenericService{
+		types.Dominus: &ServiceConfig.Dominus,
+		types.Mizu:    &ServiceConfig.Mizu,
+		types.SSH: &GenericService{
 			Deploy: ServiceConfig.SSH.Deploy,
 			Port:   ServiceConfig.SSH.Port,
 		},
-		SshProxy: &GenericService{
+		types.SSHProxy: &GenericService{
 			Deploy: ServiceConfig.SSHProxy.Deploy,
 			Port:   ServiceConfig.SSHProxy.Port,
 		},
-		Enrai: &ServiceConfig.Enrai,
-		MySQL: &GenericService{
+		types.Enrai: &ServiceConfig.Enrai,
+		types.MySQL: &GenericService{
 			Deploy: ServiceConfig.Mysql.Deploy,
 			Port:   ServiceConfig.Mysql.Port,
 		},
-		MongoDB: &GenericService{
+		types.MongoDB: &GenericService{
 			Deploy: ServiceConfig.Mongodb.Deploy,
 			Port:   ServiceConfig.Mongodb.Port,
 		},

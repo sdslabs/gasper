@@ -7,7 +7,7 @@ import (
 )
 
 // Pipeline is the application creation pipeline
-func Pipeline(data map[string]interface{}) types.ResponseError {
+func Pipeline(data types.M) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		ConfFunction: configs.CreateStaticContainerConfig,
 		DockerImage:  configs.ImageConfig.Static,

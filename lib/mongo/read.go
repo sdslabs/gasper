@@ -5,15 +5,15 @@ import (
 	"time"
 
 	"github.com/sdslabs/gasper/lib/utils"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/sdslabs/gasper/types"
 )
 
 // FetchDocs is a generic function which takes a collection name and mongoDB filter as input and returns documents
-func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
+func FetchDocs(collectionName string, filter types.M) []types.M {
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	var data []map[string]interface{}
+	var data []types.M
 
 	cur, err := collection.Find(ctx, filter)
 	if err != nil {
@@ -22,7 +22,7 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 	}
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
-		var result bson.M
+		var result types.M
 		err := cur.Decode(&result)
 		data = append(data, result)
 		if err != nil {
@@ -38,32 +38,32 @@ func FetchDocs(collectionName string, filter bson.M) []map[string]interface{} {
 }
 
 // FetchAppInfo is an abstraction over FetchDocs for retrieving application related documents
-func FetchAppInfo(filter bson.M) []map[string]interface{} {
+func FetchAppInfo(filter types.M) []types.M {
 	return FetchDocs(InstanceCollection, filter)
 }
 
 // FetchDBInfo is an abstraction over FetchDocs for retrieving database related documents
-func FetchDBInfo(filter bson.M) []map[string]interface{} {
+func FetchDBInfo(filter types.M) []types.M {
 	return FetchDocs(InstanceCollection, filter)
 }
 
 // FetchDBs is an abstraction over FetchDocs for retrieving details of all the databases
-func FetchDBs(filter bson.M) []map[string]interface{} {
+func FetchDBs(filter types.M) []types.M {
 	return FetchDocs(InstanceCollection, filter)
 }
 
 // FetchUserInfo is an abstraction over FetchDocs for retrieving user details
-func FetchUserInfo(filter bson.M) []map[string]interface{} {
+func FetchUserInfo(filter types.M) []types.M {
 	return FetchDocs(UserCollection, filter)
 }
 
 // FetchUsers is an abstraction over FetchDocs for retreiving users
-func FetchUsers(filter bson.M) []map[string]interface{} {
+func FetchUsers(filter types.M) []types.M {
 	return FetchDocs(UserCollection, filter)
 }
 
 // CountDocs returns the number of documents matching a filter
-func CountDocs(collectionName string, filter bson.M) (int64, error) {
+func CountDocs(collectionName string, filter types.M) (int64, error) {
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -73,14 +73,14 @@ func CountDocs(collectionName string, filter bson.M) (int64, error) {
 }
 
 // CountInstances returns the number of instances matching a filter
-func CountInstances(filter bson.M) (int64, error) {
+func CountInstances(filter types.M) (int64, error) {
 	return CountDocs(InstanceCollection, filter)
 }
 
 // CountServiceInstances returns the number of applications of a given service deployed
 // in a host machine
 func CountServiceInstances(service, hostIP string) (int64, error) {
-	filter := bson.M{
+	filter := types.M{
 		"language": service,
 		"hostIP":   hostIP,
 	}

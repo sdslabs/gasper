@@ -12,8 +12,8 @@ import (
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/git"
-	"github.com/sdslabs/gasper/types"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 	gogit "gopkg.in/src-d/go-git.v4"
 )
 
@@ -44,7 +44,7 @@ func cloneRepo(url, storedir, accessToken string, mutex map[string]chan types.Re
 func setupContainer(
 	appEnv *types.ApplicationEnv,
 	storePath, confFileName, workdir, storedir, name, url, httpPort, containerPort string,
-	env, appContext map[string]interface{},
+	env, appContext types.M,
 	appConf *types.ApplicationConfig,
 	resources container.Resources,
 	mutex map[string]chan types.ResponseError) {
@@ -84,7 +84,7 @@ func setupContainer(
 // CreateBasicApplication spawns a new container with the application of a particular service
 func CreateBasicApplication(
 	name, url, accessToken, httpPort, containerPort string,
-	env, appContext map[string]interface{},
+	env, appContext types.M,
 	appConf *types.ApplicationConfig,
 	resources container.Resources) (*types.ApplicationEnv, []types.ResponseError) {
 
@@ -151,7 +151,7 @@ func CreateBasicApplication(
 }
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
-func SetupApplication(appConf *types.ApplicationConfig, data map[string]interface{}) (*types.ApplicationEnv, types.ResponseError) {
+func SetupApplication(appConf *types.ApplicationConfig, data types.M) (*types.ApplicationEnv, types.ResponseError) {
 	ports, err := utils.GetFreePorts(1)
 	if err != nil {
 		return nil, types.NewResErr(500, "free ports unavailable", err)
@@ -161,26 +161,26 @@ func SetupApplication(appConf *types.ApplicationConfig, data map[string]interfac
 	}
 	httpPort := ports[0]
 
-	var env map[string]interface{}
+	var env types.M
 
 	if data["env"] != nil {
-		env = data["env"].(map[string]interface{})
+		env = data["env"].(types.M)
 	}
 
 	var resources container.Resources
 
 	if data["resources"] == nil {
-		data["resources"] = map[string]interface{}{
+		data["resources"] = types.M{
 			"memory": docker.DefaultMemory,
 			"cpu":    docker.DefaultCPUs,
 		}
 	}
 
-	if data["resources"].(map[string]interface{})["memory"] != nil {
-		resources.Memory = int64(data["resources"].(map[string]interface{})["memory"].(float64) * math.Pow(1024, 3))
+	if data["resources"].(types.M)["memory"] != nil {
+		resources.Memory = int64(data["resources"].(types.M)["memory"].(float64) * math.Pow(1024, 3))
 	}
-	if data["resources"].(map[string]interface{})["cpu"] != nil {
-		resources.NanoCPUs = int64(data["resources"].(map[string]interface{})["cpu"].(float64) * math.Pow(10, 9))
+	if data["resources"].(types.M)["cpu"] != nil {
+		resources.NanoCPUs = int64(data["resources"].(types.M)["cpu"].(float64) * math.Pow(10, 9))
 	}
 
 	accessToken := ""

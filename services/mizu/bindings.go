@@ -11,7 +11,7 @@ import (
 
 type componentBinding struct {
 	validator func(c *gin.Context)
-	pipeline  func(data map[string]interface{}) types.ResponseError
+	pipeline  func(data types.M) types.ResponseError
 }
 
 var componentMap = map[string]*componentBinding{

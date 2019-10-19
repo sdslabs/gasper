@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 // VerifyAdmin allows the request to proceed only if the user has admin privileges
@@ -30,7 +31,7 @@ func isInstanceOwner(instanceType string) gin.HandlerFunc {
 			return
 		}
 
-		count, err := mongo.CountInstances(map[string]interface{}{
+		count, err := mongo.CountInstances(types.M{
 			"name":         instance,
 			"instanceType": instanceType,
 			"owner":        userStr.Email,

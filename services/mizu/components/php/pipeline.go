@@ -19,7 +19,7 @@ func installPackages(path string, appEnv *types.ApplicationEnv) (string, types.R
 }
 
 // Pipeline is the application creation pipeline
-func Pipeline(data map[string]interface{}) types.ResponseError {
+func Pipeline(data types.M) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		DockerImage:  configs.ImageConfig.Php,
 		ConfFunction: configs.CreatePHPContainerConfig,

@@ -8,6 +8,7 @@ import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 	gojwt "gopkg.in/dgrijalva/jwt-go.v3"
 )
 
@@ -45,7 +46,7 @@ func RegisterValidator(ctx *gin.Context) {
 func Register(ctx *gin.Context) {
 	var register registerBody
 	ctx.BindJSON(&register)
-	filter := map[string]interface{}{emailKey: register.Email}
+	filter := types.M{emailKey: register.Email}
 	userInfo := mongo.FetchUserInfo(filter)
 	if len(userInfo) > 0 {
 		ctx.JSON(400, gin.H{
@@ -60,7 +61,7 @@ func Register(ctx *gin.Context) {
 		})
 		return
 	}
-	createUser := map[string]interface{}{
+	createUser := types.M{
 		emailKey:    register.Email,
 		usernameKey: register.Username,
 		passwordKey: hashedPass,
@@ -95,9 +96,9 @@ var JWT = &jwt.GinJWTMiddleware{
 		}
 		email := auth.Email
 		password := auth.Password
-		filter := map[string]interface{}{emailKey: email}
+		filter := types.M{emailKey: email}
 		userInfo := mongo.FetchUserInfo(filter)
-		var userData map[string]interface{}
+		var userData types.M
 		if len(userInfo) == 0 {
 			return nil, jwt.ErrFailedAuthentication
 		}

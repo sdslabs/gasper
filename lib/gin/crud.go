@@ -4,12 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 // FetchAppInfo returns the information about a particular app
 func FetchAppInfo(c *gin.Context) {
 	app := c.Param("app")
-	filter := make(map[string]interface{})
+	filter := make(types.M)
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
 	c.JSON(200, gin.H{
@@ -21,7 +22,7 @@ func FetchAppInfo(c *gin.Context) {
 // FetchDBInfo returns the information about a particular db
 func FetchDBInfo(c *gin.Context) {
 	db := c.Param("db")
-	filter := make(map[string]interface{})
+	filter := make(types.M)
 	filter["name"] = db
 	filter["instanceType"] = mongo.DBInstance
 	c.JSON(200, gin.H{
@@ -33,11 +34,11 @@ func FetchDBInfo(c *gin.Context) {
 // UpdateAppByName updates the app getting name from url params
 func UpdateAppByName(c *gin.Context) {
 	app := c.Param("app")
-	filter := map[string]interface{}{
+	filter := types.M{
 		"name":         app,
 		"instanceType": mongo.AppInstance,
 	}
-	var data map[string]interface{}
+	var data types.M
 	c.BindJSON(&data)
 
 	err := validateUpdatePayload(data)
@@ -63,7 +64,7 @@ func UpdateAppByName(c *gin.Context) {
 // FetchUserInfo returns the information about a particular user
 func FetchUserInfo(c *gin.Context) {
 	user := c.Param("user")
-	filter := map[string]interface{}{
+	filter := types.M{
 		"email": user,
 	}
 	c.JSON(200, gin.H{
@@ -74,7 +75,7 @@ func FetchUserInfo(c *gin.Context) {
 
 func fetchAllInstances(instance string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		filter := map[string]interface{}{
+		filter := types.M{
 			"instanceType": instance,
 		}
 		ctx.JSON(200, gin.H{
@@ -97,20 +98,20 @@ func FetchAllDBs(c *gin.Context) {
 func FetchAllUsers(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"success": true,
-		"data":    mongo.FetchUsers(map[string]interface{}{}),
+		"data":    mongo.FetchUsers(types.M{}),
 	})
 }
 
 // DeleteUser deletes the user from database and corresponding instances
 func DeleteUser(c *gin.Context) {
 	user := c.Param("user")
-	filter := map[string]interface{}{
+	filter := types.M{
 		"email": user,
 	}
-	instanceFilter := map[string]interface{}{
+	instanceFilter := types.M{
 		"owner": user,
 	}
-	update := map[string]interface{}{
+	update := types.M{
 		"deleted": true,
 	}
 	go mongo.UpdateInstances(instanceFilter, update)
@@ -144,7 +145,7 @@ func UpdateAppInfo(c *gin.Context) {
 	filter["name"] = app
 	filter["instanceType"] = mongo.AppInstance
 
-	var data map[string]interface{}
+	var data types.M
 	c.BindJSON(&data)
 
 	err := validateUpdatePayload(data)

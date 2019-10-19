@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/sdslabs/gasper/types"
 )
 
 // GetZones returns information of all zones associated
@@ -40,7 +42,7 @@ func GetZones() (*ZoneResponse, error) {
 }
 
 // FetchRecords returns all the DNS records for the given zone
-func FetchRecords(queryParams ...map[string]interface{}) (*MultiResponse, error) {
+func FetchRecords(queryParams ...types.M) (*MultiResponse, error) {
 	zoneID, err := getZoneID()
 	if err != nil {
 		return nil, err

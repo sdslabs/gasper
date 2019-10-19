@@ -19,7 +19,7 @@ type phpRequestBody struct {
 	Resources      types.ApplicationResources `json:"resources"`
 	Composer       bool                       `json:"composer"`
 	ComposerPath   string                     `json:"composerPath"`
-	Env            map[string]interface{}     `json:"env"`
+	Env            types.M     `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
 }
 

@@ -8,34 +8,34 @@ import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
-	"github.com/sdslabs/gasper/types"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
-var instanceRegistrationBindings = map[string]func(instances []map[string]interface{}, currentIP string, config *configs.GenericService){
+var instanceRegistrationBindings = map[string]func(instances []types.M, currentIP string, config *configs.GenericService){
 	"mizu":    registerApps,
 	"mysql":   registerDatabases,
 	"mongodb": registerDatabases,
 }
 
-var instanceServiceBindings = map[string]func(currentIP, service string) []map[string]interface{}{
+var instanceServiceBindings = map[string]func(currentIP, service string) []types.M{
 	"mizu":    fetchBoundApps,
 	"mysql":   fetchBoundDatabases,
 	"mongodb": fetchBoundDatabases,
 }
 
-func fetchBoundApps(currentIP, service string) []map[string]interface{} {
+func fetchBoundApps(currentIP, service string) []types.M {
 	return mongo.FetchAppInfo(
-		map[string]interface{}{
+		types.M{
 			"instanceType": mongo.AppInstance,
 			"hostIP":       currentIP,
 		},
 	)
 }
 
-func fetchBoundDatabases(currentIP, service string) []map[string]interface{} {
+func fetchBoundDatabases(currentIP, service string) []types.M {
 	return mongo.FetchAppInfo(
-		map[string]interface{}{
+		types.M{
 			"instanceType": mongo.DBInstance,
 			"hostIP":       currentIP,
 			"language":     service,
@@ -43,8 +43,8 @@ func fetchBoundDatabases(currentIP, service string) []map[string]interface{} {
 	)
 }
 
-func registerApps(instances []map[string]interface{}, currentIP string, config *configs.GenericService) {
-	payload := make(map[string]interface{})
+func registerApps(instances []types.M, currentIP string, config *configs.GenericService) {
+	payload := make(types.M)
 
 	for _, instance := range instances {
 		appBind := &types.AppBindings{
@@ -66,8 +66,8 @@ func registerApps(instances []map[string]interface{}, currentIP string, config *
 	}
 }
 
-func registerDatabases(instances []map[string]interface{}, currentIP string, config *configs.GenericService) {
-	payload := make(map[string]interface{})
+func registerDatabases(instances []types.M, currentIP string, config *configs.GenericService) {
+	payload := make(types.M)
 
 	for _, instance := range instances {
 		key := fmt.Sprintf("%s:%s", instance["user"].(string), instance["name"].(string))
@@ -83,7 +83,7 @@ func registerDatabases(instances []map[string]interface{}, currentIP string, con
 // exposeService exposes a single microservice along with its apps
 func exposeService(service, currentIP string, config *configs.GenericService) {
 	count := 0
-	var instances []map[string]interface{}
+	var instances []types.M
 	if instanceServiceBindings[service] != nil {
 		instances = instanceServiceBindings[service](currentIP, service)
 		count = len(instances)
