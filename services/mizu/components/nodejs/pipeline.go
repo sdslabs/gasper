@@ -7,7 +7,7 @@ import (
 	"github.com/sdslabs/gasper/lib/api"
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 // startApp function starts the app using pm2
@@ -21,7 +21,7 @@ func bootstrap(index string, appEnv *types.ApplicationEnv) (string, types.Respon
 }
 
 // Pipeline is the application creation pipeline
-func Pipeline(data map[string]interface{}) types.ResponseError {
+func Pipeline(data types.M) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		DockerImage:  configs.ImageConfig.Nodejs,
 		ConfFunction: configs.CreateNodeContainerConfig,

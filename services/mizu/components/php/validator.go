@@ -3,12 +3,11 @@ package php
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 type context struct {
 	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	Port   string `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
 	RcFile bool   `json:"rcFile"`
 }
 
@@ -20,7 +19,7 @@ type phpRequestBody struct {
 	Resources      types.ApplicationResources `json:"resources"`
 	Composer       bool                       `json:"composer"`
 	ComposerPath   string                     `json:"composerPath"`
-	Env            map[string]interface{}     `json:"env"`
+	Env            types.M                    `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
 }
 

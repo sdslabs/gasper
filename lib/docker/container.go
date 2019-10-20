@@ -3,12 +3,13 @@ package docker
 import (
 	"fmt"
 
-	"github.com/docker/docker/api/types"
+	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
 )
 
@@ -18,7 +19,7 @@ func CreateContainer(
 	cli *client.Client,
 	image, httpPort, containerPort, workdir, storedir, name string,
 	resources container.Resources,
-	env map[string]interface{}) (string, error) {
+	env types.M) (string, error) {
 
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
@@ -62,7 +63,7 @@ func CreateContainer(
 }
 
 // CreateMysqlContainer function sets up a mysql instance for managing databases
-func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlPort, workdir, storedir string, env map[string]interface{}) (string, error) {
+func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlPort, workdir, storedir string, env types.M) (string, error) {
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	envArr := []string{}
@@ -91,7 +92,7 @@ func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlP
 		},
 	}
 
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mysql")
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.MySQL)
 
 	if err != nil {
 		return "", err
@@ -101,7 +102,7 @@ func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlP
 }
 
 // CreateMongoDBContainer function sets up a mongoDB instance for managing databases
-func CreateMongoDBContainer(ctx context.Context, cli *client.Client, image, mongodbPort, workdir, storedir string, env map[string]interface{}) (string, error) {
+func CreateMongoDBContainer(ctx context.Context, cli *client.Client, image, mongodbPort, workdir, storedir string, env types.M) (string, error) {
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	envArr := []string{}
@@ -130,7 +131,7 @@ func CreateMongoDBContainer(ctx context.Context, cli *client.Client, image, mong
 		},
 	}
 
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, "mongodb")
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.MongoDB)
 	if err != nil {
 		return "", err
 	}
@@ -146,7 +147,7 @@ func StartContainer(containerID string) error {
 		utils.LogError(err)
 		return err
 	}
-	return cli.ContainerStart(ctx, containerID, types.ContainerStartOptions{})
+	return cli.ContainerStart(ctx, containerID, dockerTypes.ContainerStartOptions{})
 }
 
 // StopContainer stops the container corresponding to given containerID
@@ -168,7 +169,7 @@ func ListContainers() []string {
 		panic(err)
 	}
 
-	containers, err := cli.ContainerList(context.Background(), types.ContainerListOptions{All: true})
+	containers, err := cli.ContainerList(context.Background(), dockerTypes.ContainerListOptions{All: true})
 	if err != nil {
 		utils.LogError(err)
 		panic(err)

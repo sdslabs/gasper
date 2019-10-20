@@ -3,15 +3,16 @@ package dominus
 import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 // updateHostIP updates the application's host IP address
 func updateHostIP(oldIP, currentIP string) (interface{}, error) {
 	return mongo.UpdateInstances(
-		map[string]interface{}{
+		types.M{
 			"hostIP": oldIP,
 		},
-		map[string]interface{}{
+		types.M{
 			"hostIP": currentIP,
 		},
 	)

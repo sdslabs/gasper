@@ -9,10 +9,11 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 // rescheduleInstance redeploys down instances on least loaded servers
-func rescheduleInstance(apps []map[string]interface{}, service string) {
+func rescheduleInstance(apps []types.M, service string) {
 	if len(apps) == 0 {
 		return
 	}
@@ -38,7 +39,7 @@ func inspectInstance(service, instance string) {
 		if service == "mizu" {
 			instanceIP := strings.Split(instance, ":")
 			apps := mongo.FetchAppInfo(
-				map[string]interface{}{
+				types.M{
 					"hostIP":       instanceIP[0],
 					"instanceType": mongo.AppInstance,
 				},

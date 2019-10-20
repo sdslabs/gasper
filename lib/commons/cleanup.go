@@ -10,16 +10,15 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 // StorageCleanup removes the application's local storage directory
 func StorageCleanup(path string) error {
 	err := os.RemoveAll(path)
-
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -57,7 +56,7 @@ func AppFullCleanup(instanceName string) {
 
 // AppStateCleanup removes the application's data from MongoDB and Redis
 func AppStateCleanup(instanceName string) {
-	mongo.DeleteInstance(map[string]interface{}{
+	mongo.DeleteInstance(types.M{
 		"name":         instanceName,
 		"instanceType": mongo.AppInstance,
 	})
@@ -67,14 +66,14 @@ func AppStateCleanup(instanceName string) {
 // DatabaseFullCleanup deletes the specified database from the container
 func DatabaseFullCleanup(db, databaseType string) {
 	switch databaseType {
-	case mongo.Mysql:
+	case types.MySQL:
 		{
 			err := MysqlDatabaseCleanup(db)
 			if err != nil {
 				utils.LogError(err)
 			}
 		}
-	case mongo.MongoDB:
+	case types.MongoDB:
 		{
 			err := MongoDatabaseCleanup(db)
 			if err != nil {
@@ -86,7 +85,7 @@ func DatabaseFullCleanup(db, databaseType string) {
 
 // DatabaseStateCleanup removes the database's data from MongoDB and Redis
 func DatabaseStateCleanup(db string) {
-	mongo.DeleteInstance(map[string]interface{}{
+	mongo.DeleteInstance(types.M{
 		"name":         db,
 		"user":         db,
 		"instanceType": mongo.DBInstance,

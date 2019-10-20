@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 
 	"github.com/sdslabs/gasper/configs"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,13 +23,13 @@ func setupAdmin() {
 		utils.LogError(err)
 		panic(err)
 	}
-	admin := map[string]interface{}{
+	admin := types.M{
 		"email":    adminInfo.Email,
 		"username": adminInfo.Username,
 		"password": pwd,
 		"is_admin": true,
 	}
-	filter := map[string]interface{}{"email": adminInfo.Email}
+	filter := types.M{"email": adminInfo.Email}
 	UpsertUser(filter, admin)
 	utils.LogInfo("%s (%s) has been given admin privileges", adminInfo.Username, adminInfo.Email)
 }

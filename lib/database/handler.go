@@ -8,8 +8,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/mongo"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
 )
 
@@ -26,7 +25,7 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 	var containerID string
 
 	switch dbtype {
-	case mongo.MongoDB:
+	case types.MongoDB:
 		{
 			dockerImage := configs.ImageConfig.Mongodb
 			port := strconv.Itoa(configs.ServiceConfig.Mongodb.ContainerPort)
@@ -42,7 +41,7 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 				storedir,
 				env)
 		}
-	case mongo.Mysql:
+	case types.MySQL:
 		{
 			dockerImage := configs.ImageConfig.Mysql
 			port := strconv.Itoa(configs.ServiceConfig.Mysql.ContainerPort)

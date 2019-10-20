@@ -11,13 +11,14 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // createApp creates an application for a given language
 func createApp(c *gin.Context) {
 	language := c.Param("language")
-	var data map[string]interface{}
+	var data types.M
 	c.BindJSON(&data)
 
 	delete(data, "rebuild")
@@ -43,7 +44,7 @@ func createApp(c *gin.Context) {
 	}
 
 	err := mongo.UpsertInstance(
-		map[string]interface{}{
+		types.M{
 			"name":         data["name"],
 			"instanceType": data["instanceType"],
 		}, data)
@@ -86,7 +87,7 @@ func createApp(c *gin.Context) {
 
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
-	filter := map[string]interface{}{
+	filter := types.M{
 		"name":         appName,
 		"instanceType": mongo.AppInstance,
 	}
@@ -100,8 +101,8 @@ func rebuildApp(c *gin.Context) {
 		return
 	}
 	data := dataList[0]
-	data["context"] = map[string]interface{}(data["context"].(primitive.M))
-	data["resources"] = map[string]interface{}(data["resources"].(primitive.M))
+	data["context"] = types.M(data["context"].(primitive.M))
+	data["resources"] = types.M(data["resources"].(primitive.M))
 
 	commons.AppFullCleanup(appName)
 
@@ -129,7 +130,7 @@ func rebuildApp(c *gin.Context) {
 // deleteApp deletes an application in a worker node
 func deleteApp(c *gin.Context) {
 	app := c.Param("app")
-	filter := map[string]interface{}{
+	filter := types.M{
 		"name":         app,
 		"instanceType": mongo.AppInstance,
 	}

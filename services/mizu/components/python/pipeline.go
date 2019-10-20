@@ -8,7 +8,7 @@ import (
 	"github.com/sdslabs/gasper/lib/api"
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 const (
@@ -34,7 +34,7 @@ func bootstrap(requirementsPath, index string, args []string, env *types.Applica
 }
 
 // Pipeline is the application creation pipeline
-func Pipeline(data map[string]interface{}) types.ResponseError {
+func Pipeline(data types.M) types.ResponseError {
 	var image string
 	if data[pythonVersionTag].(string) == python3Tag {
 		image = configs.ImageConfig.Python3

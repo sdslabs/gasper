@@ -1,21 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"time"
-
-	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/database"
-	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/dominus"
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/mizu"
 	"github.com/sdslabs/gasper/services/mongodb"
 	"github.com/sdslabs/gasper/services/mysql"
-
 	"github.com/sdslabs/gasper/services/ssh"
 )
 
@@ -26,145 +18,72 @@ type serviceLauncher struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]*serviceLauncher{
-	"ssh": &serviceLauncher{
+	ssh.DefaultServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.SSH.Deploy,
-		Start:  startSSHService("ssh"),
+		Start:  ssh.NewDefaultService().ListenAndServe,
 	},
-	"ssh_proxy": &serviceLauncher{
+	ssh.ProxyServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.SSHProxy.Deploy,
-		Start:  startSSHService("ssh_proxy"),
+		Start:  ssh.NewProxyService().ListenAndServe,
 	},
-	"mysql": &serviceLauncher{
+	mysql.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mysql.Deploy,
 		Start:  startMySQLService,
 	},
-	"mizu": &serviceLauncher{
+	mizu.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mizu.Deploy,
-		Start:  startGinService(mizu.Router, configs.ServiceConfig.Mizu.Port),
+		Start:  startMizuService,
 	},
-	"dominus": &serviceLauncher{
+	dominus.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Dominus.Deploy,
-		Start:  startGinService(dominus.Router, configs.ServiceConfig.Dominus.Port),
+		Start:  startDominusService,
 	},
-	"enrai": &serviceLauncher{
+	enrai.DefaultServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Enrai.Deploy,
 		Start:  startEnraiService,
 	},
-	"mongodb": &serviceLauncher{
+	enrai.SSLServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Enrai.SSL.PlugIn,
+		Start:  startEnraiServiceWithSSL,
+	},
+	mongodb.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mongodb.Deploy,
 		Start:  startMongoDBService,
 	},
 }
 
-func initHTTPServer(handler http.Handler, port int) error {
-	if !utils.IsValidPort(port) {
-		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
-		utils.Log(msg, utils.ErrorTAG)
-		panic(msg)
-	}
-	server := &http.Server{
-		Addr:         fmt.Sprintf(":%d", port),
-		Handler:      handler,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 30 * time.Second,
-	}
-	return server.ListenAndServe()
-}
-
 func startMySQLService() error {
-	containers := docker.ListContainers()
-	if !utils.Contains(containers, "/mysql") {
-		utils.LogInfo("No Mysql instance found in host. Building the instance.")
-		containerID, err := database.SetupDBInstance("mysql")
-		if err != nil {
-			utils.Log("There was a problem deploying MySql service.", utils.ErrorTAG)
-			utils.LogError(err)
-		} else {
-			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
-		}
-	} else {
-		containerStatus, err := docker.InspectContainerState("/mysql")
-		if err != nil {
-			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
-			utils.LogError(err)
-			err := docker.DeleteContainer("/mysql")
-			if err != nil {
-				utils.LogError(err)
-			}
-			containerID, err := database.SetupDBInstance("mysql")
-			if err != nil {
-				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
-				utils.LogError(err)
-			} else {
-				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
-			}
-		}
-		if containerStatus["Status"].(string) == "exited" {
-			err := docker.StartContainer("mysql")
-			if err != nil {
-				utils.LogError(err)
-			}
-		}
-	}
-	return initHTTPServer(mysql.Router, configs.ServiceConfig.Mysql.Port)
+	setupDatabaseContainer(mysql.ServiceName)
+	return buildHTTPServer(mysql.NewService(), configs.ServiceConfig.Mysql.Port).ListenAndServe()
 }
 
 func startMongoDBService() error {
-	containers := docker.ListContainers()
-	if !utils.Contains(containers, "/mongodb") {
-		utils.LogInfo("No MongoDB instance found in host. Building the instance.")
-		containerID, err := database.SetupDBInstance("mongodb")
-		if err != nil {
-			utils.Log("There was a problem deploying mongodb service.", utils.ErrorTAG)
-			utils.LogError(err)
-		} else {
-			utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
-		}
-	} else {
-		containerStatus, err := docker.InspectContainerState("/mongodb")
-		if err != nil {
-			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
-			utils.LogError(err)
-			err := docker.DeleteContainer("/mongodb")
-			if err != nil {
-				utils.LogError(err)
-			}
-			containerID, err := database.SetupDBInstance("mongodb")
-			if err != nil {
-				utils.Log("There was a problem deploying MySql service even after restart.", utils.ErrorTAG)
-				utils.LogError(err)
-			} else {
-				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
-			}
-		}
-		if containerStatus["Status"].(string) == "exited" {
-			err := docker.StartContainer("mongodb")
-			if err != nil {
-				utils.LogError(err)
-			}
-		}
-	}
-	return initHTTPServer(mongodb.Router, configs.ServiceConfig.Mongodb.Port)
+	setupDatabaseContainer(mongodb.ServiceName)
+	return buildHTTPServer(mongodb.NewService(), configs.ServiceConfig.Mongodb.Port).ListenAndServe()
 }
 
-func startSSHService(service string) func() error {
-	return func() error {
-		server, err := ssh.BuildSSHServer(service)
-		if err != nil {
-			utils.Log("There was a problem deploying SSH service. Make sure the address of Private Keys is correct in `config.json`.", utils.ErrorTAG)
-			utils.LogError(err)
-			return err
-		}
-		return server.ListenAndServe()
-	}
+func startMizuService() error {
+	return buildHTTPServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port).ListenAndServe()
 }
 
-func startGinService(handler *gin.Engine, port int) func() error {
-	return func() error {
-		return initHTTPServer(handler, port)
-	}
+func startDominusService() error {
+	return buildHTTPServer(dominus.NewService(), configs.ServiceConfig.Dominus.Port).ListenAndServe()
 }
 
 func startEnraiService() error {
-	return initHTTPServer(enrai.BuildEnraiServer(), configs.ServiceConfig.Enrai.Port)
+	return buildHTTPServer(enrai.NewService(), configs.ServiceConfig.Enrai.Port).ListenAndServe()
+}
+
+func startEnraiServiceWithSSL() error {
+	port := configs.ServiceConfig.Enrai.SSL.Port
+	certificate := configs.ServiceConfig.Enrai.SSL.Certificate
+	privateKey := configs.ServiceConfig.Enrai.SSL.PrivateKey
+	err := buildHTTPServer(enrai.NewService(), port).ListenAndServeTLS(certificate, privateKey)
+	if err != nil {
+		utils.Log("There was a problem deploying Enrai Service with SSL", utils.ErrorTAG)
+		utils.Log("Make sure the paths of certificate and private key are correct in `config.json`", utils.ErrorTAG)
+		utils.LogError(err)
+		panic(err)
+	}
+	return nil
 }

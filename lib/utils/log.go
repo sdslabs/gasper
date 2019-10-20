@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 // color definitions

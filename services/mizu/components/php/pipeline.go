@@ -5,7 +5,7 @@ import (
 	"github.com/sdslabs/gasper/lib/api"
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 // installPackages installs dependancies for the specific microservice
@@ -19,7 +19,7 @@ func installPackages(path string, appEnv *types.ApplicationEnv) (string, types.R
 }
 
 // Pipeline is the application creation pipeline
-func Pipeline(data map[string]interface{}) types.ResponseError {
+func Pipeline(data types.M) types.ResponseError {
 	appConf := &types.ApplicationConfig{
 		DockerImage:  configs.ImageConfig.Php,
 		ConfFunction: configs.CreatePHPContainerConfig,
@@ -52,12 +52,6 @@ func Pipeline(data map[string]interface{}) types.ResponseError {
 			}
 			data["execID"] = execID
 		}
-	}
-
-	cmd := []string{"sh", "-c", `php -S 0.0.0.0:` + context["port"].(string) + ` &> /proc/1/fd/1`}
-	_, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
-	if err != nil {
-		return types.NewResErr(500, "Failed to start server", err)
 	}
 	return nil
 }

@@ -9,12 +9,13 @@ import (
 	"github.com/gliderlabs/ssh"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/types"
 	gossh "golang.org/x/crypto/ssh"
 )
 
 // getPrivateKey returns a Signer interface for the private key
 // specified from the filepath
-func getPrivateKey(service, filepath string) (ssh.Signer, error) {
+func getPrivateKey(filepath string) (ssh.Signer, error) {
 
 	var err error
 	key, err := ioutil.ReadFile(filepath)
@@ -42,10 +43,10 @@ func getPrivateKey(service, filepath string) (ssh.Signer, error) {
 
 // getHostSigners returns a slice of Signer interface for the
 // specified filepaths of the private keys
-func getHostSigners(service string, filepaths []string) ([]ssh.Signer, error) {
+func getHostSigners(filepaths []string) ([]ssh.Signer, error) {
 	var signers []ssh.Signer
 	for _, filepath := range filepaths {
-		signer, err := getPrivateKey(service, filepath)
+		signer, err := getPrivateKey(filepath)
 		if err != nil {
 			return nil, err
 		}
@@ -78,8 +79,8 @@ func setWinsize(f *os.File, w, h int) {
 }
 
 // getAppFromContext gets fetches the app docs for the ssh user
-func getAppFromContext(ctx ssh.Context) map[string]interface{} {
-	app := mongo.FetchAppInfo(map[string]interface{}{
+func getAppFromContext(ctx ssh.Context) types.M {
+	app := mongo.FetchAppInfo(types.M{
 		"name": ctx.User(),
 	})
 	// Should return just one app

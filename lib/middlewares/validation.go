@@ -9,6 +9,7 @@ import (
 	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/types"
 )
 
 func getBodyFromContext(c *gin.Context) []byte {
@@ -23,7 +24,7 @@ func getBodyFromContext(c *gin.Context) []byte {
 
 func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var data map[string]interface{}
+		var data types.M
 		err := json.Unmarshal(getBodyFromContext(c), &data)
 		if err != nil {
 			c.AbortWithStatusJSON(400, gin.H{
@@ -36,7 +37,7 @@ func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		count, err := mongo.CountInstances(map[string]interface{}{
+		count, err := mongo.CountInstances(types.M{
 			"name":         data["name"].(string),
 			"instanceType": instanceType,
 		})

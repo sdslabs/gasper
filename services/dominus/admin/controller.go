@@ -5,7 +5,7 @@ import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/gin"
 	"github.com/sdslabs/gasper/lib/redis"
-	"github.com/sdslabs/gasper/lib/types"
+	"github.com/sdslabs/gasper/types"
 )
 
 // GetAllApplications gets all the applications from DB

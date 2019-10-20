@@ -8,11 +8,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 // InsertOwner inserts the owner details into the request payload
 func InsertOwner(c *gin.Context) {
-	var data map[string]interface{}
+	var data types.M
 	err := json.Unmarshal(getBodyFromContext(c), &data)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{

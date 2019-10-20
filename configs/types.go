@@ -1,5 +1,7 @@
 package configs
 
+import "github.com/sdslabs/gasper/types"
+
 // Admin is the configuration for the default Admin
 type Admin struct {
 	Email    string `json:"email"`
@@ -50,29 +52,43 @@ type GenericService struct {
 	Port   int  `json:"port"`
 }
 
-// SSH is the configuration for SSH and SSH_Proxy service
-type SSH struct {
+// SSHService is the configuration for SSH and SSH_Proxy microservices
+type SSHService struct {
 	GenericService
 	HostSigners     []string `json:"host_signers"`
 	UsingPassphrase bool     `json:"using_passphrase"`
 	Passphrase      string   `json:"passphrase"`
 }
 
-// Mysql is the configuration for Mysql service
-type Mysql struct {
-	GenericService
-	ContainerPort int                    `json:"container_port"`
-	Env           map[string]interface{} `json:"env"`
+// SSLConfig is the configuration for SSL in Enrai microservice
+type SSLConfig struct {
+	PlugIn      bool   `json:"plugIn"`
+	Port        int    `json:"port"`
+	Certificate string `json:"certificate"`
+	PrivateKey  string `json:"privateKey"`
 }
 
-// Mongodb is the configuration for Mongodb service
-type Mongodb struct {
+// EnraiService is the configuration for Enrai microservice
+type EnraiService struct {
 	GenericService
-	ContainerPort int                    `json:"container_port"`
-	Env           map[string]interface{} `json:"env"`
+	SSL SSLConfig `json:"ssl"`
 }
 
-// Images is the configuration for the images in use
+// MysqlService is the configuration for Mysql microservice
+type MysqlService struct {
+	GenericService
+	ContainerPort int     `json:"container_port"`
+	Env           types.M `json:"env"`
+}
+
+// MongodbService is the configuration for Mongodb microservice
+type MongodbService struct {
+	GenericService
+	ContainerPort int     `json:"container_port"`
+	Env           types.M `json:"env"`
+}
+
+// Images is the configuration for the docker images in use
 type Images struct {
 	Static  string `json:"static"`
 	Php     string `json:"php"`
@@ -87,11 +103,11 @@ type Images struct {
 type Services struct {
 	Dominus  GenericService `json:"dominus"`
 	Mizu     GenericService `json:"mizu"`
-	SSH      SSH            `json:"ssh"`
-	SSHProxy SSH            `json:"ssh_proxy"`
-	Enrai    GenericService `json:"enrai"`
-	Mysql    Mysql          `json:"mysql"`
-	Mongodb  Mongodb        `json:"mongodb"`
+	SSH      SSHService     `json:"ssh"`
+	SSHProxy SSHService     `json:"ssh_proxy"`
+	Enrai    EnraiService   `json:"enrai"`
+	Mysql    MysqlService   `json:"mysql"`
+	Mongodb  MongodbService `json:"mongodb"`
 }
 
 // GasperCfg is the configuration for the entire project

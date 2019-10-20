@@ -3,6 +3,8 @@ package cloudflare
 import (
 	"errors"
 	"fmt"
+
+	"github.com/sdslabs/gasper/types"
 )
 
 func formatErrorResponse(apiErrors []errorResponse) error {
@@ -27,7 +29,7 @@ func getZoneID() (string, error) {
 
 // getRecordID returns the ID of the desired record
 func getRecordID(name, instanceType string) (string, error) {
-	res, err := FetchRecords(map[string]interface{}{
+	res, err := FetchRecords(types.M{
 		"name": fmt.Sprintf("%s.%s.%s", name, instanceType, domain),
 	})
 	if err != nil {

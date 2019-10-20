@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/sdslabs/gasper/lib/utils"
-	"go.mongodb.org/mongo-driver/bson"
+	"github.com/sdslabs/gasper/types"
 )
 
 // DeleteOne deletes a document from a mongoDB collection
-func DeleteOne(collectionName string, filter bson.M) (interface{}, error) {
+func DeleteOne(collectionName string, filter types.M) (interface{}, error) {
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -22,11 +22,11 @@ func DeleteOne(collectionName string, filter bson.M) (interface{}, error) {
 }
 
 // DeleteInstance is an abstraction over DeleteOne which deletes an application from mongoDB
-func DeleteInstance(filter bson.M) (interface{}, error) {
+func DeleteInstance(filter types.M) (interface{}, error) {
 	return DeleteOne(InstanceCollection, filter)
 }
 
 // DeleteUser is an abstraction over DeleteOne which deletes a user from mongoDB
-func DeleteUser(filter bson.M) (interface{}, error) {
+func DeleteUser(filter types.M) (interface{}, error) {
 	return DeleteOne(UserCollection, filter)
 }

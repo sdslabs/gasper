@@ -17,7 +17,7 @@ require (
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/example v0.0.0-20170904185048-46695d81d1fa // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
-	github.com/gorilla/mux v1.7.3
+	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/kr/pty v1.1.1
 	github.com/mattn/go-colorable v0.1.1 // indirect

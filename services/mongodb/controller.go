@@ -10,10 +10,11 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 func createDB(c *gin.Context) {
-	var data map[string]interface{}
+	var data types.M
 	c.BindJSON(&data)
 
 	delete(data, "rebuild")
@@ -41,7 +42,7 @@ func createDB(c *gin.Context) {
 	}
 
 	err = mongo.UpsertInstance(
-		map[string]interface{}{
+		types.M{
 			"name":         data["name"],
 			"instanceType": data["instanceType"],
 		}, data)
@@ -106,7 +107,7 @@ func deleteDB(c *gin.Context) {
 		return
 	}
 
-	filter := map[string]interface{}{
+	filter := types.M{
 		"name":         db,
 		"language":     ServiceName,
 		"instanceType": mongo.DBInstance,

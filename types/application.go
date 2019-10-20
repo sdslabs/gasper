@@ -14,7 +14,7 @@ type AppBindings struct {
 // ApplicationConfig defines the config for various service apps
 type ApplicationConfig struct {
 	DockerImage  string
-	ConfFunction func(string, map[string]interface{}) string
+	ConfFunction func(string, M) string
 }
 
 // ApplicationEnv defines the environment of the running app

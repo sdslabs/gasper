@@ -10,10 +10,11 @@ import (
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
 // DeployRPC re-deploys applications on different hosts
-func DeployRPC(app map[string]interface{}, hostURL, service string) {
+func DeployRPC(app types.M, hostURL, service string) {
 	utils.LogInfo("Re-deploying application %s with type %s to %s\n", app["name"], strings.Title(service), hostURL)
 
 	app["rebuild"] = true

@@ -1,21 +1,27 @@
 package mysql
 
 import (
+	"net/http"
+
 	"github.com/sdslabs/gasper/lib/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
+	"github.com/sdslabs/gasper/types"
 )
 
-// Router is the main routes handler for the current microservice package
-var Router = gin.NewServiceEngine()
-
 // ServiceName is the name of the current microservice
-var ServiceName = "mysql"
+const ServiceName = types.MySQL
 
-func init() {
-	Router.POST("/mysql", validateRequestBody, middlewares.IsUniqueDB(), createDB)
-	Router.GET("", fetchDBs)
-	Router.GET("/logs", gin.FetchMysqlContainerLogs)
-	Router.GET("/restart", gin.ReloadMysqlService)
-	Router.GET("/db/:db", gin.FetchDBInfo)
-	Router.DELETE("/:db", deleteDB)
+// NewService returns a new instance of the current microservice
+func NewService() http.Handler {
+	// router is the main routes handler for the current microservice package
+	router := gin.NewServiceEngine()
+
+	router.POST("/mysql", validateRequestBody, middlewares.IsUniqueDB(), createDB)
+	router.GET("", fetchDBs)
+	router.GET("/logs", gin.FetchMysqlContainerLogs)
+	router.GET("/restart", gin.ReloadMysqlService)
+	router.GET("/db/:db", gin.FetchDBInfo)
+	router.DELETE("/:db", deleteDB)
+
+	return router
 }

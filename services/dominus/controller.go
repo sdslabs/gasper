@@ -7,6 +7,7 @@ import (
 	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/types"
 )
 
 func createApp(c *gin.Context) {
@@ -77,7 +78,7 @@ func deleteDB(c *gin.Context) {
 func fetchInstancesByUser(instanceType string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userStr := middlewares.ExtractClaims(c)
-		filter := map[string]interface{}{
+		filter := types.M{
 			"instanceType": instanceType,
 			"owner":        userStr.Email,
 		}

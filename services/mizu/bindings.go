@@ -2,16 +2,16 @@ package mizu
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/gasper/lib/types"
 	"github.com/sdslabs/gasper/services/mizu/components/nodejs"
 	"github.com/sdslabs/gasper/services/mizu/components/php"
 	"github.com/sdslabs/gasper/services/mizu/components/python"
 	"github.com/sdslabs/gasper/services/mizu/components/static"
+	"github.com/sdslabs/gasper/types"
 )
 
 type componentBinding struct {
 	validator func(c *gin.Context)
-	pipeline  func(data map[string]interface{}) types.ResponseError
+	pipeline  func(data types.M) types.ResponseError
 }
 
 var componentMap = map[string]*componentBinding{

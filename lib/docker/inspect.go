@@ -4,11 +4,12 @@ import (
 	"encoding/json"
 
 	"github.com/docker/docker/client"
+	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
 )
 
 // InspectContainerState returns the state of the container using the containerID
-func InspectContainerState(containerID string) (map[string]interface{}, error) {
+func InspectContainerState(containerID string) (types.M, error) {
 	ctx := context.Background()
 	cli, err := client.NewEnvClient()
 	if err != nil {
@@ -19,7 +20,7 @@ func InspectContainerState(containerID string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	var containerStatusInterface map[string]interface{}
+	var containerStatusInterface types.M
 	marshalledInterface, err := json.Marshal(containerStatus.ContainerJSONBase.State)
 	if err != nil {
 		return nil, err
