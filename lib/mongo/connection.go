@@ -39,6 +39,7 @@ func init() {
 	defer cancel()
 	err = client.Ping(ctx, nil)
 	if err != nil {
+		utils.Log("MongoDB connection was not established", utils.ErrorTAG)
 		utils.LogError(err)
 		panic(err)
 	} else {
