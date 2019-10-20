@@ -11,7 +11,7 @@ import (
 // FetchDocs is a generic function which takes a collection name and mongoDB filter as input and returns documents
 func FetchDocs(collectionName string, filter types.M) []types.M {
 	collection := link.Collection(collectionName)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	var data []types.M
 
@@ -65,7 +65,7 @@ func FetchUsers(filter types.M) []types.M {
 // CountDocs returns the number of documents matching a filter
 func CountDocs(collectionName string, filter types.M) (int64, error) {
 	collection := link.Collection(collectionName)
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	count, err := collection.CountDocuments(ctx, filter)
