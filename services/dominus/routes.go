@@ -41,7 +41,7 @@ func NewService() http.Handler {
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
 		db.POST("/:database", middlewares.InsertOwner, trimURLPath(2), createDatabase)
-		db.GET("", fetchDbsByUser())
+		db.GET("", fetchDBsByUser())
 		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
 		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
 	}

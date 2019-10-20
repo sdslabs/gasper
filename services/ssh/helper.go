@@ -8,8 +8,6 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/mongo"
-	"github.com/sdslabs/gasper/types"
 	gossh "golang.org/x/crypto/ssh"
 )
 
@@ -76,13 +74,4 @@ func getPublicKey(filepath string) (ssh.PublicKey, error) {
 func setWinsize(f *os.File, w, h int) {
 	syscall.Syscall(syscall.SYS_IOCTL, f.Fd(), uintptr(syscall.TIOCSWINSZ),
 		uintptr(unsafe.Pointer(&struct{ h, w, x, y uint16 }{uint16(h), uint16(w), 0, 0})))
-}
-
-// getAppFromContext gets fetches the app docs for the ssh user
-func getAppFromContext(ctx ssh.Context) types.M {
-	app := mongo.FetchAppInfo(types.M{
-		"name": ctx.User(),
-	})
-	// Should return just one app
-	return app[0]
 }

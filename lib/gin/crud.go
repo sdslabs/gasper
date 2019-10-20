@@ -12,7 +12,6 @@ func FetchAppInfo(c *gin.Context) {
 	app := c.Param("app")
 	filter := make(types.M)
 	filter["name"] = app
-	filter["instanceType"] = mongo.AppInstance
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchAppInfo(filter),
@@ -24,7 +23,6 @@ func FetchDBInfo(c *gin.Context) {
 	db := c.Param("db")
 	filter := make(types.M)
 	filter["name"] = db
-	filter["instanceType"] = mongo.DBInstance
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchDBInfo(filter),
@@ -98,7 +96,7 @@ func FetchAllDBs(c *gin.Context) {
 func FetchAllUsers(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"success": true,
-		"data":    mongo.FetchUsers(types.M{}),
+		"data":    mongo.FetchUserInfo(types.M{}),
 	})
 }
 

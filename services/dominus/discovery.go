@@ -27,18 +27,16 @@ var instanceServiceBindings = map[string]func(currentIP, service string) []types
 func fetchBoundApps(currentIP, service string) []types.M {
 	return mongo.FetchAppInfo(
 		types.M{
-			"instanceType": mongo.AppInstance,
-			"hostIP":       currentIP,
+			"hostIP": currentIP,
 		},
 	)
 }
 
 func fetchBoundDatabases(currentIP, service string) []types.M {
-	return mongo.FetchAppInfo(
+	return mongo.FetchDBInfo(
 		types.M{
-			"instanceType": mongo.DBInstance,
-			"hostIP":       currentIP,
-			"language":     service,
+			"hostIP":   currentIP,
+			"language": service,
 		},
 	)
 }

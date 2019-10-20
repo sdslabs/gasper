@@ -21,7 +21,7 @@ func NewService() http.Handler {
 	router.GET("/logs", gin.FetchMysqlContainerLogs)
 	router.GET("/restart", gin.ReloadMysqlService)
 	router.GET("/db/:db", gin.FetchDBInfo)
-	router.DELETE("/:db", deleteDB)
+	router.DELETE("/db/:db", deleteDB)
 
 	return router
 }

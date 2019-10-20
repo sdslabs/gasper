@@ -88,8 +88,7 @@ func createApp(c *gin.Context) {
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
 	filter := types.M{
-		"name":         appName,
-		"instanceType": mongo.AppInstance,
+		"name": appName,
 	}
 
 	dataList := mongo.FetchAppInfo(filter)

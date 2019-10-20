@@ -84,7 +84,7 @@ func fetchInstancesByUser(instanceType string) gin.HandlerFunc {
 		}
 		c.JSON(200, gin.H{
 			"success": true,
-			"data":    mongo.FetchAppInfo(filter),
+			"data":    mongo.FetchInstances(filter),
 		})
 	}
 }
@@ -93,6 +93,6 @@ func fetchAppsByUser() gin.HandlerFunc {
 	return fetchInstancesByUser(mongo.AppInstance)
 }
 
-func fetchDbsByUser() gin.HandlerFunc {
+func fetchDBsByUser() gin.HandlerFunc {
 	return fetchInstancesByUser(mongo.DBInstance)
 }

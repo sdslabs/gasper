@@ -37,28 +37,25 @@ func FetchDocs(collectionName string, filter types.M) []types.M {
 	return data
 }
 
+// FetchInstances is an abstraction over FetchDocs for retrieving any instance documents
+func FetchInstances(filter types.M) []types.M {
+	return FetchDocs(InstanceCollection, filter)
+}
+
 // FetchAppInfo is an abstraction over FetchDocs for retrieving application related documents
 func FetchAppInfo(filter types.M) []types.M {
-	return FetchDocs(InstanceCollection, filter)
+	filter["instanceType"] = AppInstance
+	return FetchInstances(filter)
 }
 
 // FetchDBInfo is an abstraction over FetchDocs for retrieving database related documents
 func FetchDBInfo(filter types.M) []types.M {
-	return FetchDocs(InstanceCollection, filter)
-}
-
-// FetchDBs is an abstraction over FetchDocs for retrieving details of all the databases
-func FetchDBs(filter types.M) []types.M {
-	return FetchDocs(InstanceCollection, filter)
+	filter["instanceType"] = DBInstance
+	return FetchInstances(filter)
 }
 
 // FetchUserInfo is an abstraction over FetchDocs for retrieving user details
 func FetchUserInfo(filter types.M) []types.M {
-	return FetchDocs(UserCollection, filter)
-}
-
-// FetchUsers is an abstraction over FetchDocs for retreiving users
-func FetchUsers(filter types.M) []types.M {
 	return FetchDocs(UserCollection, filter)
 }
 

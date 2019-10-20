@@ -21,7 +21,7 @@ func NewService() http.Handler {
 	router.GET("/logs", gin.FetchMongoDBContainerLogs)
 	router.GET("/restart", gin.ReloadMongoDBService)
 	router.GET("/db/:db", gin.FetchDBInfo)
-	router.DELETE("/:db", deleteDB)
+	router.DELETE("/db/:db", deleteDB)
 
 	return router
 }

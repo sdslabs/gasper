@@ -42,7 +42,7 @@ func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 			"instanceType": instanceType,
 		})
 		if err != nil {
-			c.AbortWithStatusJSON(400, gin.H{
+			c.AbortWithStatusJSON(500, gin.H{
 				"success": false,
 				"error":   err.Error(),
 			})

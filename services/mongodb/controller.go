@@ -84,13 +84,11 @@ func createDB(c *gin.Context) {
 func fetchDBs(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
-
 	filter["language"] = ServiceName
-	filter["instanceType"] = mongo.DBInstance
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"data":    mongo.FetchDBs(filter),
+		"data":    mongo.FetchDBInfo(filter),
 	})
 }
 

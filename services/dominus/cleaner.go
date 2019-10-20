@@ -38,11 +38,9 @@ func inspectInstance(service, instance string) {
 		}
 		if service == "mizu" {
 			instanceIP := strings.Split(instance, ":")
-			apps := mongo.FetchAppInfo(
-				types.M{
-					"hostIP":       instanceIP[0],
-					"instanceType": mongo.AppInstance,
-				},
+			apps := mongo.FetchAppInfo(types.M{
+				"hostIP": instanceIP[0],
+			},
 			)
 			go rescheduleInstance(apps, service)
 		}
