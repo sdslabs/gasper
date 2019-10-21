@@ -77,6 +77,8 @@ github.com/kevinburke/ssh_config
 github.com/kr/pty
 # github.com/mattn/go-isatty v0.0.7
 github.com/mattn/go-isatty
+# github.com/miekg/dns v1.1.22
+github.com/miekg/dns
 # github.com/mitchellh/go-homedir v1.0.0
 github.com/mitchellh/go-homedir
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
@@ -138,8 +140,8 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/ssh
 golang.org/x/crypto/openpgp
 golang.org/x/crypto/blowfish
-golang.org/x/crypto/curve25519
 golang.org/x/crypto/ed25519
+golang.org/x/crypto/curve25519
 golang.org/x/crypto/internal/chacha20
 golang.org/x/crypto/poly1305
 golang.org/x/crypto/openpgp/armor
@@ -156,7 +158,12 @@ golang.org/x/crypto/ssh/agent
 # golang.org/x/net v0.0.0-20191003171128-d98b1b443823
 golang.org/x/net/context
 golang.org/x/net/context/ctxhttp
+golang.org/x/net/ipv4
+golang.org/x/net/ipv6
 golang.org/x/net/proxy
+golang.org/x/net/bpf
+golang.org/x/net/internal/iana
+golang.org/x/net/internal/socket
 golang.org/x/net/internal/socks
 # golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 golang.org/x/sync/errgroup
