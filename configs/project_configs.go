@@ -50,6 +50,7 @@ var (
 			Deploy: ServiceConfig.Enrai.Deploy,
 			Port:   ServiceConfig.Enrai.Port,
 		},
+		types.Hikari: &ServiceConfig.Hikari,
 		types.MySQL: &GenericService{
 			Deploy: ServiceConfig.Mysql.Deploy,
 			Port:   ServiceConfig.Mysql.Port,

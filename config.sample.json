@@ -66,6 +66,10 @@
             "deploy": true,
             "port": 4000
         },
+        "hikari": {
+            "deploy": false,
+            "port": 53
+        },
         "ssh": {
             "deploy": true,
             "port": 2222,

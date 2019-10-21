@@ -106,6 +106,7 @@ type Services struct {
 	SSH      SSHService     `json:"ssh"`
 	SSHProxy SSHService     `json:"ssh_proxy"`
 	Enrai    EnraiService   `json:"enrai"`
+	Hikari   GenericService `json:"hikari"`
 	Mysql    MysqlService   `json:"mysql"`
 	Mongodb  MongodbService `json:"mongodb"`
 }

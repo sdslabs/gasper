@@ -16,6 +16,9 @@ const (
 	// Enrai holds the name of `enrai` microservice
 	Enrai = "enrai"
 
+	// Hikari holds the name of `hikari` microservice
+	Hikari = "hikari"
+
 	// EnraiSSL holds the name of `enrai` microservice with SSL support
 	EnraiSSL = "enrai_ssl"
 
