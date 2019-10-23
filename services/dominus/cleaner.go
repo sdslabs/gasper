@@ -62,6 +62,10 @@ func removeDeadServiceInstances(service string) {
 func removeDeadInstances() {
 	time.Sleep(5 * time.Second)
 	for service := range configs.ServiceMap {
+		// No need to send TCP health-check probe to DNS microservice (Hikari)
+		if service == types.Hikari {
+			continue
+		}
 		go removeDeadServiceInstances(service)
 	}
 }

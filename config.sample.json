@@ -13,7 +13,8 @@
     },
     "cron": {
         "cleanupInterval": 600,
-        "exposureInterval": 30
+        "exposureInterval": 30,
+        "dnsRecordUpdateInterval": 10
     },
     "mongo": {
         "url": "mongodb://localhost:27017"

@@ -18,8 +18,9 @@ type Cloudflare struct {
 
 // Cron is the configuration for cronjobs
 type Cron struct {
-	CleanupInterval  int `json:"cleanupInterval"`
-	ExposureInterval int `json:"exposureInterval"`
+	CleanupInterval         int `json:"cleanupInterval"`
+	ExposureInterval        int `json:"exposureInterval"`
+	DNSRecordUpdateInterval int `json:"dnsRecordUpdateInterval"`
 }
 
 // Mongo is the configuration for mongodb storage
