@@ -57,14 +57,12 @@ func updateStorage() {
 
 	sort.Strings(reverseProxyInstances)
 	updateBody := make(map[string]string)
-	instanceIndex := 0
 	instanceNum := len(reverseProxyInstances)
 
-	for _, app := range apps {
+	for index, app := range apps {
 		fqdn := fmt.Sprintf("%s.app.%s.", app, configs.GasperConfig.Domain)
-		address := strings.Split(reverseProxyInstances[instanceIndex%instanceNum], ":")[0]
+		address := strings.Split(reverseProxyInstances[index%instanceNum], ":")[0]
 		updateBody[fqdn] = address
-		instanceIndex++
 	}
 	storage.SetBulk(updateBody)
 }
