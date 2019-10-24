@@ -30,3 +30,30 @@ func ExecDetachedProcess(ctx context.Context, cli *client.Client, containerID st
 	}
 	return execID, nil
 }
+
+// ExecProcess executes a command in detached form, returns the id of the process
+// Command of the exec format: mkdir folder => ["mkdir", "folder"]
+func ExecProcess(ctx context.Context, cli *client.Client, containerID string, command []string) (string, error) {
+	// TODO: check if container is up and running first
+	config := types.ExecConfig{
+		Detach:       false,
+		Tty:          true,
+		Cmd:          command,
+		AttachStdin:  true,
+		AttachStderr: true,
+		AttachStdout: true,
+	}
+	execProcess, err := cli.ContainerExecCreate(ctx, containerID, config)
+	if err != nil {
+		return "", err
+	}
+	execID := execProcess.ID
+	if execID == "" {
+		return "", errors.New("empty exec ID")
+	}
+	err = cli.ContainerExecStart(ctx, execID, types.ExecStartCheck{Detach: false, Tty: true})
+	if err != nil {
+		return "", err
+	}
+	return execID, nil
+}

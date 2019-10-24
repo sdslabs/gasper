@@ -7,8 +7,7 @@ import (
 )
 
 type context struct {
-	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	RcFile bool   `json:"rcFile"`
+	Index string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
 }
 
 type phpRequestBody struct {
@@ -21,6 +20,8 @@ type phpRequestBody struct {
 	ComposerPath   string                     `json:"composerPath"`
 	Env            types.M                    `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
+	BuilCommands   []string                   `json:"buildCommands"`
+	RunCommands    []string                   `json:"runCommands"`
 }
 
 // Validator validates the request body for php applications

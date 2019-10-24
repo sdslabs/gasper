@@ -25,7 +25,7 @@ func createApp(c *gin.Context) {
 	data["language"] = language
 	data["instanceType"] = mongo.AppInstance
 
-	resErr := componentMap[language].pipeline(data)
+	resErr := pipeline(data)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})
 		return
@@ -109,18 +109,20 @@ func rebuildApp(c *gin.Context) {
 		utils.SendServerErrorResponse(c, fmt.Errorf("Non-supported language `%s` specified for `%s`", data["language"].(string), appName))
 		return
 	}
-	resErr := componentMap[data["language"].(string)].pipeline(data)
+	resErr := pipeline(data)
 	if resErr != nil {
+		fmt.Println("error mila 1")
 		g.SendResponse(c, resErr, gin.H{})
 		return
 	}
-
+	fmt.Println("error nhi mila 1")
 	err := mongo.UpdateInstance(filter, data)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
+	fmt.Println("error nhi mila 2")
 	c.JSON(200, gin.H{
 		"success": true,
 	})

@@ -27,15 +27,22 @@ func NewService() http.Handler {
 	}
 
 	app := router.Group("/apps")
-	app.Use(middlewares.JWT.MiddlewareFunc())
-	{
-		app.POST("/:language", middlewares.InsertOwner, trimURLPath(2), createApp)
-		app.GET("", fetchAppsByUser())
-		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
-		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
-		app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
-		app.GET("/:app/:action", middlewares.IsAppOwner(), trimURLPath(2), execute)
-	}
+	// app.Use(middlewares.JWT.MiddlewareFunc())
+	// {
+	// 	app.POST("/:language", middlewares.InsertOwner, trimURLPath(2), createApp)
+	// 	app.GET("", fetchAppsByUser())
+	// 	app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
+	// 	app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
+	// 	app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
+	// 	app.GET("/:app/:action", middlewares.IsAppOwner(), trimURLPath(2), execute)
+	// }
+
+	app.POST("/:language", trimURLPath(2), createApp)
+	app.GET("", fetchAppsByUser())
+	app.GET("/:app", gin.FetchAppInfo)
+	app.PUT("/:app", gin.UpdateAppByName)
+	app.DELETE("/:app", trimURLPath(2), execute)
+	app.GET("/:app/:action", trimURLPath(2), execute)
 
 	db := router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())

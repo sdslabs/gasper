@@ -193,10 +193,15 @@ func SetupApplication(appConf *types.ApplicationConfig, data types.M) (*types.Ap
 
 	var containerPort string
 
-	if context["port"] != nil {
+	switch data["language"].(string) {
+	case types.Nodejs:
 		containerPort = context["port"].(string)
-	} else {
-		containerPort = "80"
+	case types.Php:
+		containerPort = context["port"].(string)
+	case types.Python:
+		containerPort = context["port"].(string)
+	case types.Static:
+		containerPort = context["port"].(string)
 	}
 
 	appEnv, errList := CreateBasicApplication(
@@ -216,16 +221,10 @@ func SetupApplication(appConf *types.ApplicationConfig, data types.M) (*types.Ap
 		}
 	}
 
-	runCommands := false
-	rcFile := data["context"].(map[string]interface{})["rcFile"]
-	if rcFile != nil {
-		runCommands = rcFile.(bool)
-	}
-	data["context"].(map[string]interface{})["rcFile"] = runCommands
-
-	if runCommands {
-		cmd := []string{"sh", "-c", fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`, configs.GasperConfig.RcFile, configs.GasperConfig.RcFile)}
-		_, err = docker.ExecDetachedProcess(
+	for _, command := range data["buildCommands"].([]interface{}) {
+		commandStr := fmt.Sprintf("%s &> /proc/1/fd/1", command.(string))
+		cmd := []string{"sh", "-c", commandStr}
+		_, err = docker.ExecProcess(
 			appEnv.Context,
 			appEnv.Client,
 			appEnv.ContainerID,
@@ -236,9 +235,27 @@ func SetupApplication(appConf *types.ApplicationConfig, data types.M) (*types.Ap
 			// any process in the container => there's a problem with the container
 			// hence we also run the cleanup here so that nothing else goes wrong
 			go commons.AppFullCleanup(data["name"].(string))
-			return nil, types.NewResErr(500, "cannot exec rc file", err)
+			return nil, types.NewResErr(500, "cannot exec build commands", err)
 		}
 	}
+
+	go func() {
+		cmd := []string{"sh", "-c", data["runCommand"].(string)}
+		_, err = docker.ExecDetachedProcess(
+			appEnv.Context,
+			appEnv.Client,
+			appEnv.ContainerID,
+			cmd)
+		fmt.Println(err)
+		// if err != nil {
+		// 	// this error cannot be ignored; the chances of error here are very less
+		// 	// but if an error arises, this means there's some issue with "execing"
+		// 	// any process in the container => there's a problem with the container
+		// 	// hence we also run the cleanup here so that nothing else goes wrong
+		// 	go commons.AppFullCleanup(data["name"].(string))
+		// 	return nil, types.NewResErr(500, "cannot exec run commands", err)
+		// }
+	}()
 
 	data["httpPort"] = httpPort
 	data["containerID"] = appEnv.ContainerID

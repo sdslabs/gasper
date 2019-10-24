@@ -7,8 +7,7 @@ import (
 )
 
 type context struct {
-	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	RcFile bool   `json:"rcFile"`
+	Index string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
 }
 
 type staticRequestBody struct {
@@ -19,6 +18,8 @@ type staticRequestBody struct {
 	Resources      types.ApplicationResources `json:"resources"`
 	Env            types.M                    `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
+	BuilCommands   []string                   `json:"buildCommands"`
+	RunCommands    []string                   `json:"runCommands"`
 }
 
 // Validator validates the request body for static applications

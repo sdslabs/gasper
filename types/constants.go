@@ -24,4 +24,16 @@ const (
 
 	// MongoDB holds the name of `mongodb` microservice
 	MongoDB = "mongodb"
+
+	// Nodejs  holds the name of `nodejs` microservice
+	Nodejs = "nodejs"
+
+	// Php holds the name of `Php` microservice
+	Php = "php"
+
+	// Python holds the name of 'pyhton`  microservice
+	Python = "python"
+
+	// Static holds the name of `static` microservice
+	Static = "static"
 )

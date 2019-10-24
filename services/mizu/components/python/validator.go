@@ -7,10 +7,9 @@ import (
 )
 
 type context struct {
-	Index  string   `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	Port   string   `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
-	Args   []string `json:"args"`
-	RcFile bool     `json:"rcFile"`
+	Index string   `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	Port  string   `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
+	Args  []string `json:"args"`
 }
 
 type pythonRequestBody struct {
@@ -24,6 +23,8 @@ type pythonRequestBody struct {
 	Django         bool                       `json:"django"`
 	Env            types.M                    `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
+	BuilCommands   []string                   `json:"buildCommands"`
+	RunCommands    []string                   `json:"runCommands"`
 }
 
 // Validator validates the request body for python applications

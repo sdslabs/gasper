@@ -7,9 +7,8 @@ import (
 )
 
 type context struct {
-	Index  string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
-	Port   string `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
-	RcFile bool   `json:"rcFile"`
+	Index string `json:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
+	Port  string `json:"port" valid:"required~Field 'port' inside field 'context' was required but was not provided,port~Field 'port' inside field 'context' is not a valid port"`
 }
 
 type nodejsRequestBody struct {
@@ -18,9 +17,10 @@ type nodejsRequestBody struct {
 	URL            string                     `json:"url" valid:"required~Field 'url' is required but was not provided,url~Field 'url' is not a valid URL"`
 	Context        context                    `json:"context"`
 	Resources      types.ApplicationResources `json:"resources"`
-	NPM            bool                       `json:"npm"`
 	Env            types.M                    `json:"env"`
 	GitAccessToken string                     `json:"git_access_token"`
+	BuilCommands   []string                   `json:"buildCommands"`
+	RunCommands    string                     `json:"runCommand"`
 }
 
 // Validator validates the request body for nodejs applications
