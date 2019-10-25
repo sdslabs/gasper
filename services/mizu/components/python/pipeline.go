@@ -26,7 +26,7 @@ func bootstrap(requirementsPath, index string, args []string, env *types.Applica
 		serveCmd = fmt.Sprintf(`pip install -r %s &> /proc/1/fd/1; python %s %s &> /proc/1/fd/1`, requirementsPath, index, arguments)
 	}
 	cmd := []string{"sh", "-c", serveCmd}
-	execID, err := docker.ExecDetachedProcess(env.Context, env.Client, env.ContainerID, cmd)
+	execID, err := docker.ExecDetachedProcess(env.ContainerID, cmd)
 	if err != nil {
 		return execID, types.NewResErr(500, "failed to start the server", err)
 	}

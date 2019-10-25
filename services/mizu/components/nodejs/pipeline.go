@@ -13,7 +13,7 @@ import (
 // startApp function starts the app using pm2
 func bootstrap(index string, appEnv *types.ApplicationEnv) (string, types.ResponseError) {
 	cmd := []string{"sh", "-c", fmt.Sprintf(`npm install &> /proc/1/fd/1; node %s &> /proc/1/fd/1`, index)}
-	execID, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
+	execID, err := docker.ExecDetachedProcess(appEnv.ContainerID, cmd)
 	if err != nil {
 		return "", types.NewResErr(500, "Failed to launch application in the container", err)
 	}

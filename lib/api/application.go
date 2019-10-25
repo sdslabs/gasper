@@ -51,7 +51,7 @@ func setupContainer(
 
 	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, containerPort, workdir, storedir, name, resources, env)
+	appEnv.ContainerID, err = docker.CreateContainer(appConf.DockerImage, httpPort, containerPort, workdir, storedir, name, resources, env)
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
@@ -65,7 +65,7 @@ func setupContainer(
 			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
 			return
 		}
-		err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
+		err = docker.CopyToContainer(appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
 		if err != nil {
 			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
 			return
@@ -226,8 +226,6 @@ func SetupApplication(appConf *types.ApplicationConfig, data types.M) (*types.Ap
 	if runCommands {
 		cmd := []string{"sh", "-c", fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`, configs.GasperConfig.RcFile, configs.GasperConfig.RcFile)}
 		_, err = docker.ExecDetachedProcess(
-			appEnv.Context,
-			appEnv.Client,
 			appEnv.ContainerID,
 			cmd)
 		if err != nil {

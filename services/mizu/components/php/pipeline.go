@@ -11,7 +11,7 @@ import (
 // installPackages installs dependancies for the specific microservice
 func installPackages(path string, appEnv *types.ApplicationEnv) (string, types.ResponseError) {
 	cmd := []string{"sh", "-c", `composer install -d ` + path + ` &> /proc/1/fd/1`}
-	execID, err := docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, appEnv.ContainerID, cmd)
+	execID, err := docker.ExecDetachedProcess(appEnv.ContainerID, cmd)
 	if err != nil {
 		return "", types.NewResErr(500, "Failed to perform composer install in the container", err)
 	}

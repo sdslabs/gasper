@@ -5,7 +5,6 @@ import (
 
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -15,12 +14,11 @@ import (
 
 // CreateContainer creates a new container of the given container options, returns id of the container created
 func CreateContainer(
-	ctx context.Context,
-	cli *client.Client,
 	image, httpPort, containerPort, workdir, storedir, name string,
 	resources container.Resources,
 	env types.M) (string, error) {
 
+	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	// convert map to list of strings
@@ -63,7 +61,8 @@ func CreateContainer(
 }
 
 // CreateMysqlContainer function sets up a mysql instance for managing databases
-func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlPort, workdir, storedir string, env types.M) (string, error) {
+func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.M) (string, error) {
+	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	envArr := []string{}
@@ -102,7 +101,8 @@ func CreateMysqlContainer(ctx context.Context, cli *client.Client, image, mysqlP
 }
 
 // CreateMongoDBContainer function sets up a mongoDB instance for managing databases
-func CreateMongoDBContainer(ctx context.Context, cli *client.Client, image, mongodbPort, workdir, storedir string, env types.M) (string, error) {
+func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env types.M) (string, error) {
+	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	envArr := []string{}
@@ -142,34 +142,19 @@ func CreateMongoDBContainer(ctx context.Context, cli *client.Client, image, mong
 // StartContainer starts the container corresponding to given containerID
 func StartContainer(containerID string) error {
 	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		utils.LogError(err)
-		return err
-	}
 	return cli.ContainerStart(ctx, containerID, dockerTypes.ContainerStartOptions{})
 }
 
 // StopContainer stops the container corresponding to given containerID
 func StopContainer(containerID string) error {
 	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		utils.LogError(err)
-		return err
-	}
 	return cli.ContainerStop(ctx, containerID, nil)
 }
 
 // ListContainers lists all containers
 func ListContainers() []string {
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		utils.LogError(err)
-		panic(err)
-	}
-
-	containers, err := cli.ContainerList(context.Background(), dockerTypes.ContainerListOptions{All: true})
+	ctx := context.Background()
+	containers, err := cli.ContainerList(ctx, dockerTypes.ContainerListOptions{All: true})
 	if err != nil {
 		utils.LogError(err)
 		panic(err)

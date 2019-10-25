@@ -1,12 +1,10 @@
 package gin
 
 import (
-	"github.com/docker/docker/client"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
-	"golang.org/x/net/context"
 )
 
 // FetchLogs returns the container logs in a JSON format
@@ -19,14 +17,7 @@ func FetchLogs(c *gin.Context) {
 		filter["tail"] = "-1"
 	}
 
-	appEnv, err := types.NewAppEnv()
-
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
-
-	data, err := docker.ReadLogs(appEnv.Context, appEnv.Client, app, filter["tail"].(string))
+	data, err := docker.ReadLogs(app, filter["tail"].(string))
 
 	if err != nil && err.Error() != "EOF" {
 		utils.SendServerErrorResponse(c, err)
@@ -48,14 +39,7 @@ func FetchMysqlContainerLogs(c *gin.Context) {
 		filter["tail"] = "-1"
 	}
 
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
-
-	data, err := docker.ReadLogs(ctx, cli, types.MySQL, filter["tail"].(string))
+	data, err := docker.ReadLogs(types.MySQL, filter["tail"].(string))
 
 	if err != nil && err.Error() != "EOF" {
 		utils.SendServerErrorResponse(c, err)
@@ -77,14 +61,7 @@ func FetchMongoDBContainerLogs(c *gin.Context) {
 		filter["tail"] = "-1"
 	}
 
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
-
-	data, err := docker.ReadLogs(ctx, cli, types.MongoDB, filter["tail"].(string))
+	data, err := docker.ReadLogs(types.MongoDB, filter["tail"].(string))
 
 	if err != nil && err.Error() != "EOF" {
 		utils.SendServerErrorResponse(c, err)
@@ -100,15 +77,9 @@ func FetchMongoDBContainerLogs(c *gin.Context) {
 // ReloadServer reloads the nginx server
 func ReloadServer(c *gin.Context) {
 	app := c.Param("app")
-	appEnv, err := types.NewAppEnv()
-
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
 
 	cmd := []string{"nginx", "-s", "reload"}
-	_, err = docker.ExecDetachedProcess(appEnv.Context, appEnv.Client, app, cmd)
+	_, err := docker.ExecDetachedProcess(app, cmd)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
@@ -120,15 +91,8 @@ func ReloadServer(c *gin.Context) {
 
 // ReloadMysqlService reloads the Mysql service in the container
 func ReloadMysqlService(c *gin.Context) {
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
-
 	cmd := []string{"service", "mysql", "start"}
-	_, err = docker.ExecDetachedProcess(ctx, cli, types.MySQL, cmd)
+	_, err := docker.ExecDetachedProcess(types.MySQL, cmd)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
@@ -140,15 +104,8 @@ func ReloadMysqlService(c *gin.Context) {
 
 // ReloadMongoDBService reloads the Mysql service in the container
 func ReloadMongoDBService(c *gin.Context) {
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
-
 	cmd := []string{"service", "monogdb", "restart"}
-	_, err = docker.ExecDetachedProcess(ctx, cli, types.MongoDB, cmd)
+	_, err := docker.ExecDetachedProcess(types.MongoDB, cmd)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return

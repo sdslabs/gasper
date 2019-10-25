@@ -5,24 +5,17 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/docker/docker/client"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/types"
-	"golang.org/x/net/context"
 )
 
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(dbtype string) (string, types.ResponseError) {
-	ctx := context.Background()
-	cli, err := client.NewEnvClient()
-	if err != nil {
-		return "", types.NewResErr(500, "cannot setup client", err)
-	}
-
 	storepath, _ := os.Getwd()
 
 	var containerID string
+	var err error
 
 	switch dbtype {
 	case types.MongoDB:
@@ -33,8 +26,6 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 			workdir := "/data/db"
 			storedir := filepath.Join(storepath, "mongodb-storage")
 			containerID, err = docker.CreateMongoDBContainer(
-				ctx,
-				cli,
 				dockerImage,
 				port,
 				workdir,
@@ -49,8 +40,6 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 			workdir := "/var/lib/mysql"
 			storedir := filepath.Join(storepath, "mysql-storage")
 			containerID, err = docker.CreateMysqlContainer(
-				ctx,
-				cli,
 				dockerImage,
 				port,
 				workdir,
@@ -58,6 +47,11 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 				env)
 		}
 	}
+
+	if err != nil {
+		return "", types.NewResErr(500, "container not created", err)
+	}
+
 	err = docker.StartContainer(containerID)
 
 	if err != nil {
