@@ -170,17 +170,17 @@ func SetupApplication(appConf *types.ApplicationConfig, data types.M) (*types.Ap
 	var resources container.Resources
 
 	if data["resources"] == nil {
-		data["resources"] = types.M{
+		data["resources"] = map[string]interface{}{
 			"memory": docker.DefaultMemory,
 			"cpu":    docker.DefaultCPUs,
 		}
 	}
 
-	if data["resources"].(types.M)["memory"] != nil {
-		resources.Memory = int64(data["resources"].(types.M)["memory"].(float64) * math.Pow(1024, 3))
+	if data["resources"].(map[string]interface{})["memory"] != nil {
+		resources.Memory = int64(data["resources"].(map[string]interface{})["memory"].(float64) * math.Pow(1024, 3))
 	}
-	if data["resources"].(types.M)["cpu"] != nil {
-		resources.NanoCPUs = int64(data["resources"].(types.M)["cpu"].(float64) * math.Pow(10, 9))
+	if data["resources"].(map[string]interface{})["cpu"] != nil {
+		resources.NanoCPUs = int64(data["resources"].(map[string]interface{})["cpu"].(float64) * math.Pow(10, 9))
 	}
 
 	accessToken := ""

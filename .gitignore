@@ -1,7 +1,7 @@
 # Temp build by fresh
 tmp/
 # Config file
-config.json
+config.toml
 # storage
 storage/
 # mysql-storage

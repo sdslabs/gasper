@@ -5,6 +5,7 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/dominus"
 	"github.com/sdslabs/gasper/services/enrai"
+	"github.com/sdslabs/gasper/services/hikari"
 	"github.com/sdslabs/gasper/services/mizu"
 	"github.com/sdslabs/gasper/services/mongodb"
 	"github.com/sdslabs/gasper/services/mysql"
@@ -23,7 +24,7 @@ var launcherBindings = map[string]*serviceLauncher{
 		Start:  ssh.NewDefaultService().ListenAndServe,
 	},
 	ssh.ProxyServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.SSHProxy.Deploy,
+		Deploy: configs.ServiceConfig.SSH.Proxy.PlugIn,
 		Start:  ssh.NewProxyService().ListenAndServe,
 	},
 	mysql.ServiceName: &serviceLauncher{
@@ -37,6 +38,10 @@ var launcherBindings = map[string]*serviceLauncher{
 	dominus.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Dominus.Deploy,
 		Start:  startDominusService,
+	},
+	hikari.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Hikari.Deploy,
+		Start:  hikari.NewService().ListenAndServe,
 	},
 	enrai.DefaultServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Enrai.Deploy,

@@ -18,3 +18,12 @@ func ToStringSlice(v interface{}) []string {
 	}
 	return strSlice
 }
+
+// GetMapKeys returns the keys present in a map
+func GetMapKeys(data map[string]string) []string {
+	keys := make([]string, 0)
+	for key := range data {
+		keys = append(keys, key)
+	}
+	return keys
+}

@@ -1,20 +1,16 @@
 package configs
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
+
+	"github.com/BurntSushi/toml"
 )
 
-func parseJSON(path string) *GasperCfg {
+func parseTOML(path string) *GasperCfg {
 	config := &GasperCfg{}
-	file, err := ioutil.ReadFile(path)
-	if err != nil {
-		panic(fmt.Sprintf("File %s does not exist", path))
-	}
-	err = json.Unmarshal(file, config)
-	if err != nil {
-		panic(fmt.Sprintf("Invalid %s file", path))
+	if _, err := toml.DecodeFile(path, config); err != nil {
+		fmt.Println(err)
+		panic(err)
 	}
 	return config
 }

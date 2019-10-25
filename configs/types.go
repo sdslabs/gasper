@@ -1,130 +1,147 @@
 package configs
 
-import "github.com/sdslabs/gasper/types"
+import (
+	"time"
+
+	"github.com/sdslabs/gasper/types"
+)
 
 // Admin is the configuration for the default Admin
 type Admin struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Username string `json:"username"`
+	Email    string `toml:"email"`
+	Password string `toml:"password"`
+	Username string `toml:"username"`
 }
 
 // Cloudflare is the configuration for cloudflare API
 type Cloudflare struct {
-	PlugIn   bool   `json:"plugIn"`
-	PublicIP string `json:"publicIP"`
-	Token    string `json:"token"`
-}
-
-// Cron is the configuration for cronjobs
-type Cron struct {
-	CleanupInterval  int `json:"cleanupInterval"`
-	ExposureInterval int `json:"exposureInterval"`
+	PlugIn   bool   `toml:"plugin"`
+	PublicIP string `toml:"public_ip"`
+	Token    string `toml:"api_token"`
 }
 
 // Mongo is the configuration for mongodb storage
 type Mongo struct {
-	URL string `json:"url"`
+	URL string `toml:"url"`
 }
 
 // Redis is the configuration for redis storage
 type Redis struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	Password string `json:"password"`
-	DB       int    `json:"DB"`
+	Host     string `toml:"host"`
+	Port     int    `toml:"port"`
+	Password string `toml:"password"`
+	DB       int    `toml:"db"`
 }
 
 // Falcon is the configuration for SDSLabs oauth2
 type Falcon struct {
-	PlugIn                        bool   `json:"plugIn"`
-	FalconClientID                string `json:"falconClientId"`
-	FalconClientSecret            string `json:"falconClientSecret"`
-	FalconURLAccessToken          string `json:"falconUrlAccessToken"`
-	FalconURLResourceOwnerDetails string `json:"falconUrlResourceOwnerDetails"`
-	FalconAccountsURL             string `json:"falconAccountsUrl"`
-	RedirectURI                   string `json:"redirectUri"`
+	PlugIn                        bool   `toml:"plugin"`
+	FalconClientID                string `toml:"falcon_client_id"`
+	FalconClientSecret            string `toml:"falcon_client_secret"`
+	FalconURLAccessToken          string `toml:"falcon_access_token_url"`
+	FalconURLResourceOwnerDetails string `toml:"falcon_resource_owner_url"`
+	FalconAccountsURL             string `toml:"falcon_accounts_url"`
+	RedirectURI                   string `toml:"redirect_uri"`
 }
 
 // GenericService is the default configuration for all services
 type GenericService struct {
-	Deploy bool `json:"deploy"`
-	Port   int  `json:"port"`
+	Deploy bool `toml:"deploy"`
+	Port   int  `toml:"port"`
 }
 
-// SSHService is the configuration for SSH and SSH_Proxy microservices
+// DominusService is the default configuration for Dominus microservice
+type DominusService struct {
+	GenericService
+	CleanupInterval time.Duration `toml:"cleanup_interval"`
+}
+
+// SSHProxyCfg is the configuration for SSH_Proxy plugin
+type SSHProxyCfg struct {
+	PlugIn bool `toml:"plugin"`
+	Port   int  `toml:"port"`
+}
+
+// SSHService is the configuration for SSH microservice
 type SSHService struct {
 	GenericService
-	HostSigners     []string `json:"host_signers"`
-	UsingPassphrase bool     `json:"using_passphrase"`
-	Passphrase      string   `json:"passphrase"`
+	HostSigners     []string    `toml:"host_signers"`
+	UsingPassphrase bool        `toml:"using_passphrase"`
+	Passphrase      string      `toml:"passphrase"`
+	Proxy           SSHProxyCfg `toml:"proxy"`
 }
 
 // SSLConfig is the configuration for SSL in Enrai microservice
 type SSLConfig struct {
-	PlugIn      bool   `json:"plugIn"`
-	Port        int    `json:"port"`
-	Certificate string `json:"certificate"`
-	PrivateKey  string `json:"privateKey"`
+	PlugIn      bool   `toml:"plugin"`
+	Port        int    `toml:"port"`
+	Certificate string `toml:"certificate"`
+	PrivateKey  string `toml:"private_key"`
 }
 
 // EnraiService is the configuration for Enrai microservice
 type EnraiService struct {
 	GenericService
-	SSL SSLConfig `json:"ssl"`
+	SSL SSLConfig `toml:"ssl"`
+}
+
+// HikariService is the configuration for Hikari microservice
+type HikariService struct {
+	GenericService
+	RecordUpdateInterval time.Duration `toml:"record_update_interval"`
 }
 
 // MysqlService is the configuration for Mysql microservice
 type MysqlService struct {
 	GenericService
-	ContainerPort int     `json:"container_port"`
-	Env           types.M `json:"env"`
+	ContainerPort int     `toml:"container_port"`
+	Env           types.M `toml:"env"`
 }
 
 // MongodbService is the configuration for Mongodb microservice
 type MongodbService struct {
 	GenericService
-	ContainerPort int     `json:"container_port"`
-	Env           types.M `json:"env"`
+	ContainerPort int     `toml:"container_port"`
+	Env           types.M `toml:"env"`
 }
 
 // Images is the configuration for the docker images in use
 type Images struct {
-	Static  string `json:"static"`
-	Php     string `json:"php"`
-	Nodejs  string `json:"nodejs"`
-	Python2 string `json:"python2"`
-	Python3 string `json:"python3"`
-	Mysql   string `json:"mysql"`
-	Mongodb string `json:"mongodb"`
+	Static  string `toml:"static"`
+	Php     string `toml:"php"`
+	Nodejs  string `toml:"nodejs"`
+	Python2 string `toml:"python2"`
+	Python3 string `toml:"python3"`
+	Mysql   string `toml:"mysql"`
+	Mongodb string `toml:"mongodb"`
 }
 
 // Services is the configuration for all Services
 type Services struct {
-	Dominus  GenericService `json:"dominus"`
-	Mizu     GenericService `json:"mizu"`
-	SSH      SSHService     `json:"ssh"`
-	SSHProxy SSHService     `json:"ssh_proxy"`
-	Enrai    EnraiService   `json:"enrai"`
-	Mysql    MysqlService   `json:"mysql"`
-	Mongodb  MongodbService `json:"mongodb"`
+	ExposureInterval time.Duration  `toml:"exposure_interval"`
+	Dominus          DominusService `toml:"dominus"`
+	Mizu             GenericService `toml:"mizu"`
+	SSH              SSHService     `toml:"ssh"`
+	Enrai            EnraiService   `toml:"enrai"`
+	Hikari           HikariService  `toml:"hikari"`
+	Mysql            MysqlService   `toml:"mysql"`
+	Mongodb          MongodbService `toml:"mongodb"`
 }
 
 // GasperCfg is the configuration for the entire project
 type GasperCfg struct {
-	Debug       bool       `json:"debug"`
-	Domain      string     `json:"domain"`
-	Secret      string     `json:"secret"`
-	ProjectRoot string     `json:"projectRoot"`
-	RcFile      string     `json:"rcFile"`
-	OfflineMode bool       `json:"offlineMode"`
-	DNSServers  []string   `json:"dnsServers"`
-	Admin       Admin      `json:"admin"`
-	Cloudflare  Cloudflare `json:"cloudflare"`
-	Cron        Cron       `json:"cron"`
-	Mongo       Mongo      `json:"mongo"`
-	Redis       Redis      `json:"redis"`
-	Falcon      Falcon     `json:"falcon"`
-	Images      Images     `json:"images"`
-	Services    Services   `json:"services"`
+	Debug       bool       `toml:"debug"`
+	Domain      string     `toml:"domain"`
+	Secret      string     `toml:"secret"`
+	ProjectRoot string     `toml:"project_root"`
+	RcFile      string     `toml:"rc_file"`
+	OfflineMode bool       `toml:"offline_mode"`
+	DNSServers  []string   `toml:"dns_servers"`
+	Admin       Admin      `toml:"admin"`
+	Cloudflare  Cloudflare `toml:"cloudflare"`
+	Mongo       Mongo      `toml:"mongo"`
+	Redis       Redis      `toml:"redis"`
+	Falcon      Falcon     `toml:"falcon"`
+	Images      Images     `toml:"images"`
+	Services    Services   `toml:"services"`
 }

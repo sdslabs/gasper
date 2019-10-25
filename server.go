@@ -7,6 +7,7 @@ import (
 	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/dominus"
+	"github.com/sdslabs/gasper/services/hikari"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -14,6 +15,12 @@ func initDominus() {
 	dominus.ScheduleServiceExposure()
 	if configs.ServiceConfig.Dominus.Deploy {
 		dominus.ScheduleCleanup()
+	}
+}
+
+func initHikari() {
+	if configs.ServiceConfig.Hikari.Deploy {
+		hikari.ScheduleUpdate()
 	}
 }
 
@@ -41,6 +48,7 @@ func initServices() {
 func main() {
 	checkAndPullImages()
 	initDominus()
+	initHikari()
 	initFalcon()
 	initServices()
 }
