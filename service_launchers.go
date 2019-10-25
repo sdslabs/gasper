@@ -24,7 +24,7 @@ var launcherBindings = map[string]*serviceLauncher{
 		Start:  ssh.NewDefaultService().ListenAndServe,
 	},
 	ssh.ProxyServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.SSHProxy.Deploy,
+		Deploy: configs.ServiceConfig.SSH.Proxy.PlugIn,
 		Start:  ssh.NewProxyService().ListenAndServe,
 	},
 	mysql.ServiceName: &serviceLauncher{

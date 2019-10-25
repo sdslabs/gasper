@@ -155,7 +155,7 @@ func NewDefaultService() *ssh.Server {
 
 // NewProxyService returns a new proxy instance of SSH microservice
 func NewProxyService() *ssh.Server {
-	server, err := serviceBuilder(ProxyServiceName, configs.ServiceConfig.SSHProxy.HostSigners, configs.ServiceConfig.SSHProxy.Port)
+	server, err := serviceBuilder(ProxyServiceName, configs.ServiceConfig.SSH.HostSigners, configs.ServiceConfig.SSH.Proxy.Port)
 	if err != nil {
 		handleError(err)
 	}

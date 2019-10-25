@@ -116,7 +116,7 @@ func exposeServices() {
 
 // ScheduleServiceExposure exposes the application services at regular intervals
 func ScheduleServiceExposure() {
-	interval := time.Duration(configs.CronConfig.ExposureInterval) * time.Second
+	interval := configs.ServiceConfig.ExposureInterval * time.Second
 	scheduler := utils.NewScheduler(interval, exposeServices)
 	scheduler.RunAsync()
 }
