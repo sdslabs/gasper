@@ -1,6 +1,7 @@
 module github.com/sdslabs/gasper
 
 require (
+	github.com/BurntSushi/toml v0.3.1
 	github.com/Microsoft/go-winio v0.4.11 // indirect
 	github.com/appleboy/gin-jwt v2.5.0+incompatible
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
