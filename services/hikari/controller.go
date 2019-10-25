@@ -17,12 +17,11 @@ type handler struct{}
 func (h *handler) ServeDNS(w dns.ResponseWriter, r *dns.Msg) {
 	msg := dns.Msg{}
 	msg.SetReply(r)
-	switch r.Question[0].Qtype {
-	case dns.TypeA:
+	// Only serve A records
+	if r.Question[0].Qtype == dns.TypeA {
 		msg.Authoritative = true
 		domain := msg.Question[0].Name
-		address, ok := storage.Get(domain)
-		if ok {
+		if address, ok := storage.Get(domain); ok {
 			msg.Answer = append(msg.Answer, &dns.A{
 				Hdr: dns.RR_Header{Name: domain, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 				A:   net.ParseIP(address),
