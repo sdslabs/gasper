@@ -79,8 +79,8 @@ func fetchInstancesByUser(instanceType string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userStr := middlewares.ExtractClaims(c)
 		filter := types.M{
-			"instanceType": instanceType,
-			"owner":        userStr.Email,
+			mongo.InstanceTypeKey: instanceType,
+			"owner":               userStr.Email,
 		}
 		c.JSON(200, gin.H{
 			"success": true,

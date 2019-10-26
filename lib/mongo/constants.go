@@ -23,6 +23,15 @@ const (
 
 	// UserCollection is the collection for all users
 	UserCollection = "users"
+
+	// InstanceTypeKey is the key holding the instance type of an instance
+	InstanceTypeKey = "instance_type"
+
+	// HostIPKey is the key holding the host IP address of an instance
+	HostIPKey = "host_ip"
+
+	// ContainerPortKey is the key holding the port of the container in which an application is deployed
+	ContainerPortKey = "container_port"
 )
 
 // ErrNoDocuments is the error when no matching documents are found

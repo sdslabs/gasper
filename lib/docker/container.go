@@ -13,26 +13,21 @@ import (
 )
 
 // CreateContainer creates a new container of the given container options, returns id of the container created
-func CreateContainer(
-	image, httpPort, containerPort, workdir, storedir, name string,
-	resources container.Resources,
-	env types.M) (string, error) {
-
+func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 	ctx := context.Background()
-	volume := fmt.Sprintf("%s:%s", storedir, workdir)
+	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
 	// convert map to list of strings
 	envArr := []string{}
-	for key, value := range env {
-		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
+	for key, value := range containerCfg.Env {
+		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
 	}
 
-	var containerPortRule nat.Port
-	containerPortRule = nat.Port(fmt.Sprintf(`%s/tcp`, containerPort))
+	containerPortRule := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.ApplicationPort))
 
 	containerConfig := &container.Config{
-		WorkingDir: workdir,
-		Image:      image,
+		WorkingDir: containerCfg.WorkDir,
+		Image:      containerCfg.Image,
 		ExposedPorts: nat.PortSet{
 			containerPortRule: struct{}{},
 		},
@@ -48,12 +43,17 @@ func CreateContainer(
 		},
 		DNS: configs.GasperConfig.DNSServers,
 		PortBindings: nat.PortMap{
-			nat.Port(containerPortRule): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: httpPort}},
+			nat.Port(containerPortRule): []nat.PortBinding{{
+				HostIP:   "0.0.0.0",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort)}},
 		},
-		Resources: resources,
+		Resources: container.Resources{
+			NanoCPUs: containerCfg.CPU,
+			Memory:   containerCfg.Memory,
+		},
 	}
 
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, name)
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
 	if err != nil {
 		return "", err
 	}

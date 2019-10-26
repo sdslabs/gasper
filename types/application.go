@@ -66,6 +66,7 @@ type ApplicationConfig struct {
 	CloudflareID   string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
 	AppURL         string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
 	HostIP         string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
+	Owner          string                      `json:"owner,omitempty" bson:"owner,omitempty"`
 	Success        bool                        `json:"success,omitempty"`
 }
 

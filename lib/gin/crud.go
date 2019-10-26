@@ -33,8 +33,8 @@ func FetchDBInfo(c *gin.Context) {
 func UpdateAppByName(c *gin.Context) {
 	app := c.Param("app")
 	filter := types.M{
-		"name":         app,
-		"instanceType": mongo.AppInstance,
+		"name":                app,
+		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
 	var data types.M
 	c.BindJSON(&data)
@@ -74,7 +74,7 @@ func FetchUserInfo(c *gin.Context) {
 func fetchAllInstances(instance string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		filter := types.M{
-			"instanceType": instance,
+			mongo.InstanceTypeKey: instance,
 		}
 		ctx.JSON(200, gin.H{
 			"data": mongo.FetchDocs(mongo.InstanceCollection, filter),
@@ -141,7 +141,7 @@ func UpdateAppInfo(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
 	filter["name"] = app
-	filter["instanceType"] = mongo.AppInstance
+	filter[mongo.InstanceTypeKey] = mongo.AppInstance
 
 	var data types.M
 	c.BindJSON(&data)

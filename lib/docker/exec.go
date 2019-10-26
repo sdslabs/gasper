@@ -30,3 +30,29 @@ func ExecDetachedProcess(containerID string, command []string) (string, error) {
 	}
 	return execID, nil
 }
+
+// ExecProcess executes a command in a blocing manner and returns the id of the process
+func ExecProcess(containerID string, command []string) (string, error) {
+	ctx := context.Background()
+	config := types.ExecConfig{
+		Detach:       false,
+		Tty:          true,
+		Cmd:          command,
+		AttachStdin:  true,
+		AttachStderr: true,
+		AttachStdout: true,
+	}
+	execProcess, err := cli.ContainerExecCreate(ctx, containerID, config)
+	if err != nil {
+		return "", err
+	}
+	execID := execProcess.ID
+	if execID == "" {
+		return "", errors.New("empty exec ID")
+	}
+	err = cli.ContainerExecStart(ctx, execID, types.ExecStartCheck{Detach: false, Tty: true})
+	if err != nil {
+		return "", err
+	}
+	return execID, nil
+}

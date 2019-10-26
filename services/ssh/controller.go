@@ -101,9 +101,9 @@ func publicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
 func passwordHandler(ctx ssh.Context, password string) bool {
 	eventLog := "SSH login attempt `%s` on application container %s deployed at %s from IP %s"
 	count, err := mongo.CountInstances(types.M{
-		"name":         ctx.User(),
-		"password":     password,
-		"instanceType": mongo.AppInstance,
+		"name":                ctx.User(),
+		"password":            password,
+		mongo.InstanceTypeKey: mongo.AppInstance,
 	})
 	if err != nil {
 		utils.LogInfo("SSH login attempt failed due to unavailability of mongoDB service on host %s from IP %s", ctx.LocalAddr(), ctx.RemoteAddr())

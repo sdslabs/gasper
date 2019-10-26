@@ -27,7 +27,7 @@ var instanceServiceBindings = map[string]func(currentIP, service string) []types
 func fetchBoundApps(currentIP, service string) []types.M {
 	return mongo.FetchAppInfo(
 		types.M{
-			"hostIP": currentIP,
+			mongo.HostIPKey: currentIP,
 		},
 	)
 }
@@ -35,8 +35,8 @@ func fetchBoundApps(currentIP, service string) []types.M {
 func fetchBoundDatabases(currentIP, service string) []types.M {
 	return mongo.FetchDBInfo(
 		types.M{
-			"hostIP":   currentIP,
-			"language": service,
+			mongo.HostIPKey: currentIP,
+			"language":      service,
 		},
 	)
 }
@@ -47,7 +47,7 @@ func registerApps(instances []types.M, currentIP string, config *configs.Generic
 	for _, instance := range instances {
 		appBind := &types.AppBindings{
 			Node:   fmt.Sprintf("%s:%d", currentIP, config.Port),
-			Server: fmt.Sprintf("%s:%d", currentIP, instance["httpPort"].(int32)),
+			Server: fmt.Sprintf("%s:%d", currentIP, instance[mongo.ContainerPortKey].(int32)),
 		}
 		appBindingJSON, err := json.Marshal(appBind)
 

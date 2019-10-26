@@ -12,59 +12,59 @@ import (
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // createApp creates an application for a given language
 func createApp(c *gin.Context) {
 	language := c.Param("language")
-	var data types.M
-	c.BindJSON(&data)
+	app := &types.ApplicationConfig{}
+	c.BindJSON(app)
 
-	delete(data, "rebuild")
-	data["language"] = language
-	data["instanceType"] = mongo.AppInstance
+	app.DisableRebuild()
+	app.SetLanguage(language)
+	app.SetInstanceType(mongo.AppInstance)
+	app.SetHostIP(utils.HostIP)
 
-	resErr := componentMap[language].pipeline(data)
+	resErr := pipeline[language](app)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})
 		return
 	}
 
 	if configs.CloudflareConfig.PlugIn {
-		resp, err := cloudflare.CreateRecord(data["name"].(string), mongo.AppInstance)
+		resp, err := cloudflare.CreateRecord(app.GetName(), mongo.AppInstance)
 		if err != nil {
-			go commons.AppFullCleanup(data["name"].(string))
-			go commons.AppStateCleanup(data["name"].(string))
+			go commons.AppFullCleanup(app.GetName())
+			go commons.AppStateCleanup(app.GetName())
 			utils.SendServerErrorResponse(c, err)
 			return
 		}
-		data["cloudflareID"] = resp.Result.ID
-		data["domainURL"] = fmt.Sprintf("%s.%s.%s", data["name"].(string), mongo.AppInstance, configs.GasperConfig.Domain)
+		app.SetCloudflareID(resp.Result.ID)
+		app.SetAppURL(fmt.Sprintf("%s.%s.%s", app.GetName(), mongo.AppInstance, configs.GasperConfig.Domain))
 	}
 
 	err := mongo.UpsertInstance(
 		types.M{
-			"name":         data["name"],
-			"instanceType": data["instanceType"],
-		}, data)
+			"name":          app.GetName(),
+			"instance_type": mongo.AppInstance,
+		}, app)
 
 	if err != nil && err != mongo.ErrNoDocuments {
-		go commons.AppFullCleanup(data["name"].(string))
-		go commons.AppStateCleanup(data["name"].(string))
+		go commons.AppFullCleanup(app.GetName())
+		go commons.AppStateCleanup(app.GetName())
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	err = redis.RegisterApp(
-		data["name"].(string),
+		app.GetName(),
 		fmt.Sprintf("%s:%d", utils.HostIP, configs.ServiceConfig.Mizu.Port),
-		fmt.Sprintf("%s:%d", utils.HostIP, data["httpPort"].(int)),
+		fmt.Sprintf("%s:%d", utils.HostIP, app.GetContainerPort()),
 	)
 
 	if err != nil {
-		go commons.AppFullCleanup(data["name"].(string))
-		go commons.AppStateCleanup(data["name"].(string))
+		go commons.AppFullCleanup(app.GetName())
+		go commons.AppStateCleanup(app.GetName())
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
@@ -75,47 +75,41 @@ func createApp(c *gin.Context) {
 	)
 
 	if err != nil {
-		go commons.AppFullCleanup(data["name"].(string))
-		go commons.AppStateCleanup(data["name"].(string))
+		go commons.AppFullCleanup(app.GetName())
+		go commons.AppStateCleanup(app.GetName())
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	data["success"] = true
-	c.JSON(200, data)
+	app.SetSuccess(true)
+	c.JSON(200, app)
 }
 
 func rebuildApp(c *gin.Context) {
 	appName := c.Param("app")
-	filter := types.M{
-		"name": appName,
-	}
 
-	dataList := mongo.FetchAppInfo(filter)
-	if len(dataList) == 0 {
+	app, err := mongo.FetchSingleApp(appName)
+	if err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
-			"error":   "No such application exists",
+			"error":   err.Error(),
 		})
 		return
 	}
-	data := dataList[0]
-	data["context"] = types.M(data["context"].(primitive.M))
-	data["resources"] = types.M(data["resources"].(primitive.M))
 
 	commons.AppFullCleanup(appName)
 
-	if componentMap[data["language"].(string)] == nil {
-		utils.SendServerErrorResponse(c, fmt.Errorf("Non-supported language `%s` specified for `%s`", data["language"].(string), appName))
+	if pipeline[app.Language] == nil {
+		utils.SendServerErrorResponse(c, fmt.Errorf("Non-supported language `%s` specified for `%s`", app.Language, appName))
 		return
 	}
-	resErr := componentMap[data["language"].(string)].pipeline(data)
+	resErr := pipeline[app.Language](app)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})
 		return
 	}
 
-	err := mongo.UpdateInstance(filter, data)
+	err = mongo.UpdateInstance(types.M{"name": appName}, app)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
@@ -130,8 +124,8 @@ func rebuildApp(c *gin.Context) {
 func deleteApp(c *gin.Context) {
 	app := c.Param("app")
 	filter := types.M{
-		"name":         app,
-		"instanceType": mongo.AppInstance,
+		"name":                app,
+		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
 
 	node, _ := redis.FetchAppNode(app)

@@ -44,13 +44,28 @@ func FetchInstances(filter types.M) []types.M {
 
 // FetchAppInfo is an abstraction over FetchDocs for retrieving application related documents
 func FetchAppInfo(filter types.M) []types.M {
-	filter["instanceType"] = AppInstance
+	filter[InstanceTypeKey] = AppInstance
 	return FetchInstances(filter)
+}
+
+// FetchSingleApp returns an application based on a name based filter
+func FetchSingleApp(name string) (*types.ApplicationConfig, error) {
+	collection := link.Collection(InstanceCollection)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	appCfg := &types.ApplicationConfig{}
+
+	err := collection.FindOne(ctx, types.M{"name": name}).Decode(appCfg)
+	if err != nil {
+		return nil, err
+	}
+	return appCfg, nil
 }
 
 // FetchDBInfo is an abstraction over FetchDocs for retrieving database related documents
 func FetchDBInfo(filter types.M) []types.M {
-	filter["instanceType"] = DBInstance
+	filter[InstanceTypeKey] = DBInstance
 	return FetchInstances(filter)
 }
 
@@ -79,7 +94,7 @@ func CountInstances(filter types.M) (int64, error) {
 func CountServiceInstances(service, hostIP string) (int64, error) {
 	filter := types.M{
 		"language": service,
-		"hostIP":   hostIP,
+		HostIPKey:  hostIP,
 	}
 	return CountDocs(InstanceCollection, filter)
 }

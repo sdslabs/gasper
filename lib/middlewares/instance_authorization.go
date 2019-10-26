@@ -32,9 +32,9 @@ func isInstanceOwner(instanceType string) gin.HandlerFunc {
 		}
 
 		count, err := mongo.CountInstances(types.M{
-			"name":         instance,
-			"instanceType": instanceType,
-			"owner":        userStr.Email,
+			"name":                instance,
+			mongo.InstanceTypeKey: instanceType,
+			"owner":               userStr.Email,
 		})
 		if err != nil {
 			utils.SendServerErrorResponse(ctx, err)

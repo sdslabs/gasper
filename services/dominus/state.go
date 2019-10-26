@@ -10,10 +10,10 @@ import (
 func updateHostIP(oldIP, currentIP string) (interface{}, error) {
 	return mongo.UpdateInstances(
 		types.M{
-			"hostIP": oldIP,
+			mongo.HostIPKey: oldIP,
 		},
 		types.M{
-			"hostIP": currentIP,
+			mongo.HostIPKey: currentIP,
 		},
 	)
 }
