@@ -15,7 +15,6 @@ import (
 )
 
 func cloneRepo(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
-
 	err := os.MkdirAll(storedir, 0755)
 	if err != nil {
 		mutex["clone"] <- types.NewResErr(500, "storage directory not created", err)
@@ -40,7 +39,6 @@ func cloneRepo(app types.Application, storedir string, mutex map[string]chan typ
 }
 
 func setupContainer(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
-
 	var (
 		confFileName = fmt.Sprintf("%s.gasper.conf", app.GetName())
 		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, app.GetName())
@@ -93,7 +91,6 @@ func setupContainer(app types.Application, storedir string, mutex map[string]cha
 
 // CreateBasicApplication spawns a new container with the application of a particular service
 func CreateBasicApplication(app types.Application) []types.ResponseError {
-
 	var (
 		storepath, _ = os.Getwd()
 		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))

@@ -21,7 +21,7 @@ func createDB(c *gin.Context) {
 	data["language"] = mongo.MongoDB
 	data[mongo.InstanceTypeKey] = mongo.DBInstance
 	data[mongo.HostIPKey] = utils.HostIP
-	data["containerPort"] = configs.ServiceConfig.Mongodb.ContainerPort
+	data["container_port"] = configs.ServiceConfig.Mongodb.ContainerPort
 
 	data["user"] = data["name"].(string)
 
