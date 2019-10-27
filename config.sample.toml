@@ -146,10 +146,6 @@ port = 2222
 host_signers = ["/home/user/.ssh/id_rsa"]
 using_passphrase = false   # Private Key is passphrase protected?
 passphrase = ""   # Passphrase for decrypting the Private Key
-# Configuration for `SSH Proxy` service
-[services.ssh.proxy]
-plugin = false   # Deploy SSH Proxy Server?
-port = 3222
 
 
 # Configuration for `MySQL` service, a REST API for managing

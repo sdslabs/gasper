@@ -56,19 +56,12 @@ type DominusService struct {
 	CleanupInterval time.Duration `toml:"cleanup_interval"`
 }
 
-// SSHProxyCfg is the configuration for SSH_Proxy plugin
-type SSHProxyCfg struct {
-	PlugIn bool `toml:"plugin"`
-	Port   int  `toml:"port"`
-}
-
 // SSHService is the configuration for SSH microservice
 type SSHService struct {
 	GenericService
-	HostSigners     []string    `toml:"host_signers"`
-	UsingPassphrase bool        `toml:"using_passphrase"`
-	Passphrase      string      `toml:"passphrase"`
-	Proxy           SSHProxyCfg `toml:"proxy"`
+	HostSigners     []string `toml:"host_signers"`
+	UsingPassphrase bool     `toml:"using_passphrase"`
+	Passphrase      string   `toml:"passphrase"`
 }
 
 // SSLConfig is the configuration for SSL in Enrai microservice

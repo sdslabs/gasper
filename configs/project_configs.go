@@ -42,10 +42,6 @@ var (
 			Deploy: ServiceConfig.SSH.Deploy,
 			Port:   ServiceConfig.SSH.Port,
 		},
-		types.SSHProxy: &GenericService{
-			Deploy: ServiceConfig.SSH.Proxy.PlugIn,
-			Port:   ServiceConfig.SSH.Proxy.Port,
-		},
 		types.Enrai: &GenericService{
 			Deploy: ServiceConfig.Enrai.Deploy,
 			Port:   ServiceConfig.Enrai.Port,
