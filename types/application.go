@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -66,6 +67,7 @@ type ApplicationConfig struct {
 	CloudflareID   string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
 	AppURL         string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
 	HostIP         string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
+	SSHCmd         string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
 	Owner          string                      `json:"owner,omitempty" bson:"owner,omitempty"`
 	Success        bool                        `json:"success,omitempty"`
 }
@@ -235,4 +237,10 @@ func (app *ApplicationConfig) SetSuccess(success bool) {
 // in its context
 func (app *ApplicationConfig) SetHostIP(IP string) {
 	app.HostIP = IP
+}
+
+// SetSSHCmd generates the command to SSH into an application's docker container
+// for the information of the client
+func (app *ApplicationConfig) SetSSHCmd(port int, appName, IP string) {
+	app.SSHCmd = fmt.Sprintf("ssh -p %d %s@%s", port, appName, IP)
 }

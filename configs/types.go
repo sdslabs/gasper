@@ -62,6 +62,7 @@ type SSHService struct {
 	HostSigners     []string `toml:"host_signers"`
 	UsingPassphrase bool     `toml:"using_passphrase"`
 	Passphrase      string   `toml:"passphrase"`
+	EntrypointIP    string   `toml:"entrypoint_ip"`
 }
 
 // SSLConfig is the configuration for SSL in Enrai microservice

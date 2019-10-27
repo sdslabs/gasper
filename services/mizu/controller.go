@@ -31,6 +31,12 @@ func createApp(c *gin.Context) {
 		return
 	}
 
+	sshEntrypointIP := configs.ServiceConfig.SSH.EntrypointIP
+	if len(sshEntrypointIP) == 0 {
+		sshEntrypointIP = utils.HostIP
+	}
+	app.SetSSHCmd(configs.ServiceConfig.SSH.Port, app.GetName(), sshEntrypointIP)
+
 	if configs.CloudflareConfig.PlugIn {
 		resp, err := cloudflare.CreateRecord(app.GetName(), mongo.AppInstance)
 		if err != nil {
@@ -45,8 +51,8 @@ func createApp(c *gin.Context) {
 
 	err := mongo.UpsertInstance(
 		types.M{
-			"name":          app.GetName(),
-			"instance_type": mongo.AppInstance,
+			"name":                app.GetName(),
+			mongo.InstanceTypeKey: mongo.AppInstance,
 		}, app)
 
 	if err != nil && err != mongo.ErrNoDocuments {
