@@ -26,9 +26,9 @@ func (h *handler) ServeDNS(w dns.ResponseWriter, r *dns.Msg) {
 				Hdr: dns.RR_Header{Name: domain, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
 				A:   net.ParseIP(address),
 			})
+			w.WriteMsg(&msg)
 		}
 	}
-	w.WriteMsg(&msg)
 }
 
 // NewService returns a new instance of the current microservice

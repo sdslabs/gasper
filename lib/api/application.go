@@ -55,6 +55,7 @@ func setupContainer(app types.Application, storedir string, mutex map[string]cha
 		Env:             app.GetEnvVars(),
 		Memory:          app.GetMemoryLimit(),
 		CPU:             app.GetCPULimit(),
+		NameServers:     app.GetNameServers(),
 	})
 
 	if err != nil {

@@ -12,4 +12,5 @@ type ApplicationContainer struct {
 	Env             M
 	Memory          int64
 	CPU             int64
+	NameServers     []string
 }

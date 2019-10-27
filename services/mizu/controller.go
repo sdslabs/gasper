@@ -2,6 +2,7 @@ package mizu
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
@@ -24,6 +25,16 @@ func createApp(c *gin.Context) {
 	app.SetLanguage(language)
 	app.SetInstanceType(mongo.AppInstance)
 	app.SetHostIP(utils.HostIP)
+	app.SetNameServers(configs.GasperConfig.DNSServers)
+
+	hikariNameServers, _ := redis.FetchServiceInstances(types.Hikari)
+	for _, nameServer := range hikariNameServers {
+		if strings.Contains(nameServer, ":") {
+			app.AddNameServers(strings.Split(nameServer, ":")[0])
+		} else {
+			utils.LogError(fmt.Errorf("Hikari instance %s is of invalid format", nameServer))
+		}
+	}
 
 	resErr := pipeline[language](app)
 	if resErr != nil {
