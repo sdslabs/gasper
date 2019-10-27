@@ -19,13 +19,12 @@ type Application interface {
 	GetCPULimit() int64
 	GetMemoryLimit() int64
 	GetEnvVars() map[string]interface{}
-	SetDockerImage(image string)
+	GetNameServers() []string
 	GetDockerImage() string
 	SetContainerID(id string)
 	GetContainerID() string
 	SetContainerPort(port int)
 	GetContainerPort() int
-	SetConfGenerator(gen func(string, string) string)
 	HasConfGenerator() bool
 	InvokeConfGenerator(name, index string) string
 }
@@ -57,6 +56,7 @@ type ApplicationConfig struct {
 	Context        Context                     `json:"context" bson:"context"`
 	Resources      Resources                   `json:"resources,omitempty" bson:"resources,omitempty"`
 	Env            M                           `json:"env,omitempty" bson:"env,omitempty"`
+	NameServers    []string                    `json:"name_servers,omitempty" bson:"name_servers,omitempty"`
 	DockerImage    string                      `json:"docker_image" bson:"docker_image"`
 	ContainerID    string                      `json:"container_id" bson:"container_id"`
 	ContainerPort  int                         `json:"container_port" bson:"container_port"`
@@ -144,6 +144,23 @@ func (app *ApplicationConfig) GetMemoryLimit() int64 {
 // GetEnvVars returns the environment variables to be used inside the docker container
 func (app *ApplicationConfig) GetEnvVars() map[string]interface{} {
 	return app.Env
+}
+
+// SetNameServers sets the DNS NameServers to be used by the application's docker container
+// in the application's context
+func (app *ApplicationConfig) SetNameServers(servers []string) {
+	app.NameServers = servers
+}
+
+// AddNameServers adds a DNS NameServer to be used by the application's docker container
+// in the application's context
+func (app *ApplicationConfig) AddNameServers(servers ...string) {
+	app.NameServers = append(app.NameServers, servers...)
+}
+
+// GetNameServers returns the DNS NameServers to be used by the application's docker container
+func (app *ApplicationConfig) GetNameServers() []string {
+	return app.NameServers
 }
 
 // SetDockerImage defines the docker image to be used for creating the container

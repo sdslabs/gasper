@@ -6,7 +6,6 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
-	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
@@ -41,7 +40,7 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 			"/var/run/docker.sock:/var/run/docker.sock",
 			volume,
 		},
-		DNS: configs.GasperConfig.DNSServers,
+		DNS: containerCfg.NameServers,
 		PortBindings: nat.PortMap{
 			nat.Port(containerPortRule): []nat.PortBinding{{
 				HostIP:   "0.0.0.0",
