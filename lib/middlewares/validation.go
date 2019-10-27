@@ -38,8 +38,8 @@ func isUniqueInstance(instanceType, failureMessage string) gin.HandlerFunc {
 			return
 		}
 		count, err := mongo.CountInstances(types.M{
-			"name":         data["name"].(string),
-			"instanceType": instanceType,
+			"name":                data["name"].(string),
+			mongo.InstanceTypeKey: instanceType,
 		})
 		if err != nil {
 			c.AbortWithStatusJSON(500, gin.H{

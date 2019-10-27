@@ -1,6 +1,7 @@
 package dominus
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -37,9 +38,13 @@ func inspectInstance(service, instance string) {
 			utils.LogError(err)
 		}
 		if service == "mizu" {
-			instanceIP := strings.Split(instance, ":")
+			if !strings.Contains(instance, ":") {
+				utils.LogError(fmt.Errorf("Instance %s is in invalid format", instance))
+				return
+			}
+			instanceIP := strings.Split(instance, ":")[0]
 			apps := mongo.FetchAppInfo(types.M{
-				"hostIP": instanceIP[0],
+				mongo.HostIPKey: instanceIP,
 			},
 			)
 			go rescheduleInstance(apps, service)

@@ -2,12 +2,9 @@ package api
 
 import (
 	"fmt"
-	"math"
 	"os"
 	"path/filepath"
-	"strconv"
 
-	"github.com/docker/docker/api/types/container"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
@@ -17,17 +14,17 @@ import (
 	gogit "gopkg.in/src-d/go-git.v4"
 )
 
-func cloneRepo(url, storedir, accessToken string, mutex map[string]chan types.ResponseError) {
+func cloneRepo(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
 	err := os.MkdirAll(storedir, 0755)
 	if err != nil {
 		mutex["clone"] <- types.NewResErr(500, "storage directory not created", err)
 		return
 	}
 
-	if accessToken == "" {
-		err = git.Clone(url, storedir)
+	if app.HasGitAccessToken() {
+		err = git.CloneWithToken(app.GetGitRepositoryURL(), storedir, app.GetGitAccessToken())
 	} else {
-		err = git.CloneWithToken(url, storedir, accessToken)
+		err = git.Clone(app.GetGitRepositoryURL(), storedir)
 	}
 
 	if err != nil {
@@ -41,31 +38,42 @@ func cloneRepo(url, storedir, accessToken string, mutex map[string]chan types.Re
 	mutex["clone"] <- nil
 }
 
-func setupContainer(
-	appEnv *types.ApplicationEnv,
-	storePath, confFileName, workdir, storedir, name, url, httpPort, containerPort string,
-	env, appContext types.M,
-	appConf *types.ApplicationConfig,
-	resources container.Resources,
-	mutex map[string]chan types.ResponseError) {
+func setupContainer(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
+	var (
+		confFileName = fmt.Sprintf("%s.gasper.conf", app.GetName())
+		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, app.GetName())
+	)
 
-	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, containerPort, workdir, storedir, name, resources, env)
+	containerID, err := docker.CreateContainer(&types.ApplicationContainer{
+		Name:            app.GetName(),
+		Image:           app.GetDockerImage(),
+		ApplicationPort: app.GetApplicationPort(),
+		ContainerPort:   app.GetContainerPort(),
+		WorkDir:         workdir,
+		StoreDir:        storedir,
+		Env:             app.GetEnvVars(),
+		Memory:          app.GetMemoryLimit(),
+		CPU:             app.GetCPULimit(),
+	})
+
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
 	}
 
-	if appContext["port"] == nil {
+	app.SetContainerID(containerID)
+
+	// For PHP and Static applications, a nginx configuration is necessary
+	if app.HasConfGenerator() {
 		// write config to the container
-		confFile := []byte(appConf.ConfFunction(name, appContext))
+		confFile := []byte(app.InvokeConfGenerator(app.GetName(), app.GetIndex()))
 		archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 		if err != nil {
 			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
 			return
 		}
-		err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
+		err = docker.CopyToContainer(app.GetContainerID(), "/etc/nginx/conf.d/", archive)
 		if err != nil {
 			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
 			return
@@ -73,7 +81,7 @@ func setupContainer(
 	}
 
 	// start the container
-	err = docker.StartContainer(appEnv.ContainerID)
+	err = docker.StartContainer(app.GetContainerID())
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not started", err)
 		return
@@ -82,22 +90,10 @@ func setupContainer(
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(
-	name, url, accessToken, httpPort, containerPort string,
-	env, appContext types.M,
-	appConf *types.ApplicationConfig,
-	resources container.Resources) (*types.ApplicationEnv, []types.ResponseError) {
-
-	appEnv, err := types.NewAppEnv()
-	if err != nil {
-		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
-	}
-
+func CreateBasicApplication(app types.Application) []types.ResponseError {
 	var (
 		storepath, _ = os.Getwd()
-		confFileName = fmt.Sprintf("%s.gasper.conf", name)
-		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, name)
-		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
+		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
 	)
 
 	var mutex = map[string]chan types.ResponseError{
@@ -106,24 +102,10 @@ func CreateBasicApplication(
 	}
 
 	// Step 1: clone the repo in the storage
-	go cloneRepo(url, storedir, accessToken, mutex)
+	go cloneRepo(app, storedir, mutex)
 
 	// Step 2: setup the container
-	go setupContainer(
-		appEnv,
-		storepath,
-		confFileName,
-		workdir,
-		storedir,
-		name,
-		url,
-		httpPort,
-		containerPort,
-		env,
-		appContext,
-		appConf,
-		resources,
-		mutex)
+	go setupContainer(app, storedir, mutex)
 
 	setupErr := <-mutex["setup"]
 	cloneErr := <-mutex["clone"]
@@ -144,105 +126,46 @@ func CreateBasicApplication(
 	}
 
 	if setupFlag || cloneFlag {
-		go commons.AppFullCleanup(name)
+		go commons.AppFullCleanup(app.GetName())
 	}
 
-	return appEnv, []types.ResponseError{setupErr, cloneErr}
+	return []types.ResponseError{setupErr, cloneErr}
 }
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
-func SetupApplication(appConf *types.ApplicationConfig, data types.M) (*types.ApplicationEnv, types.ResponseError) {
-	ports, err := utils.GetFreePorts(1)
+func SetupApplication(app types.Application) types.ResponseError {
+	containerPort, err := utils.GetFreePort()
 	if err != nil {
-		return nil, types.NewResErr(500, "free ports unavailable", err)
-	}
-	if len(ports) < 1 {
-		return nil, types.NewResErr(500, "not enough free ports available", nil)
-	}
-	httpPort := ports[0]
-
-	var env types.M
-
-	if data["env"] != nil {
-		env = data["env"].(types.M)
+		return types.NewResErr(500, "No free port available", err)
 	}
 
-	var resources container.Resources
+	app.SetContainerPort(containerPort)
 
-	if data["resources"] == nil {
-		data["resources"] = map[string]interface{}{
-			"memory": docker.DefaultMemory,
-			"cpu":    docker.DefaultCPUs,
-		}
-	}
-
-	if data["resources"].(map[string]interface{})["memory"] != nil {
-		resources.Memory = int64(data["resources"].(map[string]interface{})["memory"].(float64) * math.Pow(1024, 3))
-	}
-	if data["resources"].(map[string]interface{})["cpu"] != nil {
-		resources.NanoCPUs = int64(data["resources"].(map[string]interface{})["cpu"].(float64) * math.Pow(10, 9))
-	}
-
-	accessToken := ""
-
-	if data["git_access_token"] != nil {
-		accessToken = data["git_access_token"].(string)
-	}
-
-	context := data["context"].(map[string]interface{})
-
-	var containerPort string
-
-	if context["port"] != nil {
-		containerPort = context["port"].(string)
-	} else {
-		containerPort = "80"
-	}
-
-	appEnv, errList := CreateBasicApplication(
-		data["name"].(string),
-		data["url"].(string),
-		accessToken,
-		strconv.Itoa(httpPort),
-		containerPort,
-		env,
-		data["context"].(map[string]interface{}),
-		appConf,
-		resources)
+	errList := CreateBasicApplication(app)
 
 	for _, e := range errList {
 		if e != nil {
-			return nil, e
+			return e
 		}
 	}
 
-	runCommands := false
-	rcFile := data["context"].(map[string]interface{})["rcFile"]
-	if rcFile != nil {
-		runCommands = rcFile.(bool)
-	}
-	data["context"].(map[string]interface{})["rcFile"] = runCommands
+	if app.HasRcFile() {
+		cmd := []string{"sh", "-c",
+			fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`,
+				configs.GasperConfig.RcFile, configs.GasperConfig.RcFile)}
 
-	if runCommands {
-		cmd := []string{"sh", "-c", fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`, configs.GasperConfig.RcFile, configs.GasperConfig.RcFile)}
-		_, err = docker.ExecDetachedProcess(
-			appEnv.Context,
-			appEnv.Client,
-			appEnv.ContainerID,
-			cmd)
+		_, err = docker.ExecDetachedProcess(app.GetContainerID(), cmd)
 		if err != nil {
 			// this error cannot be ignored; the chances of error here are very less
 			// but if an error arises, this means there's some issue with "execing"
 			// any process in the container => there's a problem with the container
 			// hence we also run the cleanup here so that nothing else goes wrong
-			go commons.AppFullCleanup(data["name"].(string))
-			return nil, types.NewResErr(500, "cannot exec rc file", err)
+			go commons.AppFullCleanup(app.GetName())
+			return types.NewResErr(500, "cannot exec rc file", err)
 		}
+	} else {
+		go buildAndRun(app)
 	}
 
-	data["httpPort"] = httpPort
-	data["containerID"] = appEnv.ContainerID
-	data["hostIP"] = utils.HostIP
-
-	return appEnv, nil
+	return nil
 }

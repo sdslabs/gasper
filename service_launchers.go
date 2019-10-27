@@ -19,13 +19,9 @@ type serviceLauncher struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]*serviceLauncher{
-	ssh.DefaultServiceName: &serviceLauncher{
+	ssh.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.SSH.Deploy,
-		Start:  ssh.NewDefaultService().ListenAndServe,
-	},
-	ssh.ProxyServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.SSH.Proxy.PlugIn,
-		Start:  ssh.NewProxyService().ListenAndServe,
+		Start:  ssh.NewService().ListenAndServe,
 	},
 	mysql.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mysql.Deploy,

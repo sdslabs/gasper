@@ -10,9 +10,6 @@ const (
 	// SSH holds the name of `ssh` microservice
 	SSH = "ssh"
 
-	// SSHProxy holds the name of `ssh_proxy` microservice
-	SSHProxy = "ssh_proxy"
-
 	// Enrai holds the name of `enrai` microservice
 	Enrai = "enrai"
 
@@ -27,4 +24,10 @@ const (
 
 	// MongoDB holds the name of `mongodb` microservice
 	MongoDB = "mongodb"
+
+	// DefaultMemory is the default memory allotted to a container
+	DefaultMemory = 0.5
+
+	// DefaultCPUs is the default number of CPUs allotted to a container
+	DefaultCPUs = 0.25
 )

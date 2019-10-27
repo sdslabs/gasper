@@ -4,13 +4,13 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
 )
 
 // CopyToContainer copies the file from source path to the destination path inside the container
 // Reader must be a tar archive
-func CopyToContainer(ctx context.Context, cli *client.Client, containerID, destination string, reader io.Reader) error {
+func CopyToContainer(containerID, destination string, reader io.Reader) error {
+	ctx := context.Background()
 	config := types.CopyToContainerOptions{
 		AllowOverwriteDirWithFile: true,
 	}

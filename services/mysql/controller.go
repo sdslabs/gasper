@@ -19,9 +19,9 @@ func createDB(c *gin.Context) {
 
 	delete(data, "rebuild")
 	data["language"] = mongo.Mysql
-	data["instanceType"] = mongo.DBInstance
-	data["hostIP"] = utils.HostIP
-	data["containerPort"] = configs.ServiceConfig.Mysql.ContainerPort
+	data[mongo.InstanceTypeKey] = mongo.DBInstance
+	data[mongo.HostIPKey] = utils.HostIP
+	data["container_port"] = configs.ServiceConfig.Mysql.ContainerPort
 
 	data["user"] = data["name"].(string)
 
@@ -42,8 +42,8 @@ func createDB(c *gin.Context) {
 
 	err = mongo.UpsertInstance(
 		types.M{
-			"name":         data["name"],
-			"instanceType": data["instanceType"],
+			"name":                data["name"],
+			mongo.InstanceTypeKey: data[mongo.InstanceTypeKey],
 		}, data)
 
 	if err != nil && err != mongo.ErrNoDocuments {
@@ -107,9 +107,9 @@ func deleteDB(c *gin.Context) {
 	}
 
 	filter := types.M{
-		"name":         db,
-		"language":     ServiceName,
-		"instanceType": mongo.DBInstance,
+		"name":                db,
+		"language":            ServiceName,
+		mongo.InstanceTypeKey: mongo.DBInstance,
 	}
 
 	_, err = mongo.DeleteInstance(filter)
