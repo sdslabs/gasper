@@ -20,7 +20,6 @@ func NewService() http.Handler {
 	router.GET("", gin.FetchDocs)
 	router.GET("/:app", gin.FetchAppInfo)
 	router.GET("/:app/logs", gin.FetchLogs)
-	router.GET("/:app/restart", gin.ReloadServer)
 	router.GET("/:app/rebuild", rebuildApp)
 	router.PUT("/:app", gin.UpdateAppInfo)
 	router.DELETE("/:app", deleteApp)

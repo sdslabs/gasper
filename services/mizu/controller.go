@@ -132,9 +132,8 @@ func rebuildApp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"success": true,
-	})
+	app.SetSuccess(true)
+	c.JSON(200, app)
 }
 
 // deleteApp deletes an application in a worker node

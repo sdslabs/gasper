@@ -2,6 +2,7 @@ package dominus
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/sdslabs/gasper/lib/gin"
@@ -17,7 +18,15 @@ const ServiceName = types.Dominus
 func NewService() http.Handler {
 	// router is the main routes handler for the current microservice package
 	router := gin.NewEngine()
-	router.Use(cors.Default(), middlewares.FalconGuard())
+
+	corsConfig := cors.Config{
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Cookie"},
+		AllowCredentials: false,
+		AllowAllOrigins:  true,
+		MaxAge:           12 * time.Hour,
+	}
+	router.Use(cors.New(corsConfig), middlewares.FalconGuard())
 
 	auth := router.Group("/auth")
 	{
@@ -70,7 +79,7 @@ func NewService() http.Handler {
 		nodes := admin.Group("/nodes")
 		{
 			nodes.GET("", adminHandlers.GetAllNodes)
-			nodes.GET("/:node", adminHandlers.GetNodesByName)
+			nodes.GET("/:type", adminHandlers.GetNodesByName)
 		}
 	}
 

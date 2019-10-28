@@ -52,13 +52,14 @@ func GetAllNodes(ctx *gogin.Context) {
 		}
 		res[service] = instances
 	}
+	res["success"] = true
 	ctx.JSON(200, res)
 }
 
 // GetNodesByName fetches dominus nodes for 'master' and others for 'workers'
 // Rest specific service nodes are returned
 func GetNodesByName(ctx *gogin.Context) {
-	node := ctx.Param("node")
+	node := ctx.Param("type")
 	res := gogin.H{}
 	switch node {
 	case WorkerNode:
@@ -75,6 +76,7 @@ func GetNodesByName(ctx *gogin.Context) {
 			}
 			res[service] = instances
 		}
+		res["success"] = true
 		ctx.JSON(200, res)
 		return
 	case MasterNode:
@@ -100,6 +102,7 @@ func GetNodesByName(ctx *gogin.Context) {
 		return
 	}
 	res[node] = instances
+	res["success"] = true
 	ctx.JSON(200, res)
 }
 

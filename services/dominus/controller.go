@@ -72,6 +72,7 @@ func deleteDB(c *gin.Context) {
 		})
 		return
 	}
+	c.Request.URL.Path = "/db" + c.Request.URL.Path
 	reverseProxy(c, instanceURL)
 }
 
