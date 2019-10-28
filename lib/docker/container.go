@@ -37,7 +37,6 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 	}
 	hostConfig := &container.HostConfig{
 		Binds: []string{
-			"/var/run/docker.sock:/var/run/docker.sock",
 			volume,
 		},
 		DNS: containerCfg.NameServers,
