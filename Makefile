@@ -19,18 +19,21 @@ default: help
 
 ## install: Install missing dependencies
 install:
-	@$(SPINNER) "Installing project dependencies to vendor" "GOBIN=$(GOBIN) go get ./... && go mod vendor"
-	@printf "\n👍 Done\n"
+	@printf "🔨 Installing project dependencies to vendor\n" 
+	@GOBIN=$(GOBIN) go get ./... && go mod vendor
+	@printf "👍 Done\n"
 
 ## build: Build the project binary
 build:
-	@$(SPINNER) "Building binary $(GOBIN)/$(PROJECTNAME)" "go build -o $(GOBIN)/$(PROJECTNAME) $(GOFILES)"
-	@printf "\n👍 Done\n"
+	@printf "🔨 Building binary $(GOBIN)/$(PROJECTNAME)\n" 
+	@go build -o $(GOBIN)/$(PROJECTNAME) $(GOFILES)
+	@printf "👍 Done\n"
 
 ## tools: Install development tools
 tools:
-	@$(SPINNER) "Installing fresh" $(BUILDIR)/install_fresh.sh
-	@printf "\n👍 Done\n"
+	@printf "🔨 Installing fresh\n" 
+	@$(BUILDIR)/install_fresh.sh
+	@printf "👍 Done\n"
 
 ## start: Start in development mode with hot-reload enabled
 start: tools
@@ -38,24 +41,28 @@ start: tools
 
 ## clean: Clean build files
 clean:
-	@$(SPINNER) "Cleaning build cache" "go clean $(PACKAGES)"
-	@printf "\n👍 Done\n"
+	@printf "🔨 Cleaning build cache\n" 
+	@go clean $(PACKAGES)
+	@printf "👍 Done\n"
 	@-rm $(GOBIN)/$(PROJECTNAME) 2>/dev/null
 
 ## fmt: Format entire codebase
 fmt:
-	@$(SPINNER) "Formatting" "go fmt $(PACKAGES)"
-	@printf "\n👍 Done\n"
+	@printf "🔨 Formatting\n" 
+	@go fmt $(PACKAGES)
+	@printf "👍 Done\n"
 
 ## vet: Vet entire codebase
 vet:
-	@$(SPINNER) "Vetting" "go vet $(PACKAGES)"
-	@printf "\n👍 Done\n"
+	@printf "🔨 Vetting\n" 
+	@go vet $(PACKAGES)
+	@printf "👍 Done\n"
 
 ## lint: Check codebase for style mistakes
 lint:
-	@$(SPINNER) "Linting" "golint $(PACKAGES)"
-	@printf "\n👍 Done\n"
+	@printf "🔨 Linting\n"
+	@golint $(PACKAGES)
+	@printf "👍 Done\n"
 
 ## help: Display this help
 help: Makefile

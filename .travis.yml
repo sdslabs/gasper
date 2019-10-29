@@ -10,6 +10,9 @@ matrix:
 git:
   depth: 10
 
+install:
+  - go get -u golang.org/x/lint/golint
+
 script:
   - make vet
   - make lint
