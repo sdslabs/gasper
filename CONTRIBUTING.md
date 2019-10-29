@@ -1,10 +1,43 @@
-# Git Commit Guidelines
+# Contribution Guidelines
+
+## Contents
+- [Coding Style Guide](#coding-style-guide)
+- [Pre-Commit](#pre-commit)
+- [Git Commit Message Format](#git-commit-message-format)
+
+## Coding Style Guide
+
+Gasper follows standard effective go guidelines. You can refer to [this guide](https://github.com/golang/go/wiki/CodeReviewComments)
+for more information.
+
+## Pre-Commit
+
+Before committing any changes, make sure you perform the following tasks:-
+
+1. Formatting the codebase
+```bash
+$ make fmt
+🔨 Formatting
+👍 Done
+```
+
+2. Vetting the codebase and resolving any errors if found
+```bash
+$ make vet
+🔨 Vetting
+👍 Done
+```
+
+3. Linting the codebase
+```bash
+$ make lint
+🔨 Linting
+👍 Done
+```
+
+## Git Commit Message Format
 
 Taken from https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md and modified as required.
-**If something is missing here and exists in original guidelines and we should use it, please update this page too with that.**
-
-## Commit Message Format
-
 Each commit message consists of a **header**, a **body** and a **footer**. The header has a special
 format that includes a **type**, a **scope** and a **subject**:
 

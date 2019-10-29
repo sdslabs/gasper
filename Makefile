@@ -31,12 +31,8 @@ build:
 
 ## tools: Install development tools
 tools:
-	@printf "🔨 Installing fresh\n" 
 	@$(BUILDIR)/install_fresh.sh
-	@printf "👍 Done\n"
-	@printf "🔨 Installing golint\n" 
-	@go get -u golang.org/x/lint/golint
-	@printf "👍 Done\n"
+	@$(BUILDIR)/install_golint.sh
 
 ## start: Start in development mode with hot-reload enabled
 start: tools
