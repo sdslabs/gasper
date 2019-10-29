@@ -75,6 +75,8 @@ func NewService() http.Handler {
 			users.GET("", adminHandlers.GetAllUsers)
 			users.GET("/:user", adminHandlers.GetUserInfo)
 			users.DELETE("/:user", adminHandlers.DeleteUser)
+			users.POST("/:user/grant", adminHandlers.GrantSuperuserPrivilege)
+			users.POST("/:user/revoke", adminHandlers.RevokeSuperuserPrivilege)
 		}
 		nodes := admin.Group("/nodes")
 		{

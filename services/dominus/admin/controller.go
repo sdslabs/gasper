@@ -4,7 +4,9 @@ import (
 	gogin "github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/gin"
+	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -36,6 +38,37 @@ func GetDatabaseInfo(ctx *gogin.Context) {
 // GetUserInfo gets info regarding particular user
 func GetUserInfo(ctx *gogin.Context) {
 	gin.FetchUserInfo(ctx)
+}
+
+func changeUserPrivilege(admin bool) func(*gogin.Context) {
+	return func(ctx *gogin.Context) {
+		user := ctx.Param("user")
+		filter := types.M{
+			"email": user,
+		}
+		update := types.M{
+			"is_admin": admin,
+		}
+
+		err := mongo.UpdateUser(filter, update)
+		if err != nil {
+			utils.SendServerErrorResponse(ctx, err)
+			return
+		}
+		ctx.JSON(200, gogin.H{
+			"success": true,
+		})
+	}
+}
+
+// GrantSuperuserPrivilege grants superuser access to a user
+func GrantSuperuserPrivilege(ctx *gogin.Context) {
+	changeUserPrivilege(true)(ctx)
+}
+
+// RevokeSuperuserPrivilege revokes superuser access from a user
+func RevokeSuperuserPrivilege(ctx *gogin.Context) {
+	changeUserPrivilege(false)(ctx)
 }
 
 // GetAllNodes fetches all the nodes registered on redis corresponding to their service
