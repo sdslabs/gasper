@@ -15,3 +15,6 @@ install:
 script:
   - make vet
   - make lint
+ 
+after_success:
+  - bash <(curl -s https://codecov.io/bash) 
