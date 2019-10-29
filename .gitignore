@@ -9,3 +9,4 @@ __debug_bin
 bin/
 .vscode/
 site/
+.DS_Store
