@@ -1,0 +1,15 @@
+language: go
+
+matrix:
+  fast_finish: true
+  include:
+  - go: 1.12.x
+  - go: 1.13.x
+  - go: master
+
+git:
+  depth: 10
+
+script:
+  - make vet
+  - make lint

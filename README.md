@@ -1,26 +1,50 @@
 # Gasper
 
-> SDS Web Services
+> Your Cloud in a Binary
 
-## Prerequisites
+<img align="right" width="300px" src="./docs/assets/logo-11.svg">
 
-1. [GoLang](https://golang.org/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sdslabs/gasper/blob/develop/LICENSE.md)
 
-   [Download](https://golang.org/dl/)
+Gasper is an intelligent Platform as a Service (PaaS) used for deploying and managing 
+applications and databases in any cloud topology.
 
-2. [Docker](https://www.docker.com/)
+## Overview
 
-   [Download / Get Started](https://www.docker.com/get-started)
 
-3. [MongoDB](https://www.mongodb.com/)
+## Development
 
-   [Download](https://www.mongodb.com/download-center/community)
-   
-4. [Redis](https://redis.io/)
+The following softwares are required for running Gasper:-
 
-   [Download](https://redis.io/download)
+* [Golang 1.12.x](https://golang.org/dl/)
+* [Docker](https://www.docker.com/)
+    * [For Linux](https://runnable.com/docker/install-docker-on-linux)
+    * [For MacOS](https://docs.docker.com/docker-for-mac/install/)
+    * [For Windows](https://docs.docker.com/docker-for-windows/install/)
+* [MongoDB](https://www.mongodb.com/download-center/community)
+* [Redis](https://redis.io/download)
 
-5. [Nginx](https://nginx.org/en/download.html) or [Apache](https://httpd.apache.org/download.cgi) on your machine
+Once you are done installing the pre-requisites, open a terminal and start typing the following
+```bash
+$ go version
+go version go1.12.7 darwin/amd64
+
+$ git clone https://github.com/sdslabs/gasper
+
+$ cd gasper && make help
+
+ Gasper: Your cloud in a binary
+
+  install   Install missing dependencies
+  build     Build the project binary
+  tools     Install development tools
+  start     Start in development mode with hot-reload enabled
+  clean     Clean build files
+  fmt       Format entire codebase
+  vet       Vet entire codebase
+  help      Display this help
+```
+
 
 ## Setup
 
@@ -30,7 +54,6 @@
 
 **Note:** The vendor is committed, to add another package as dependency, `go get ...` the package in your gopath and then run the command `go mod vendor` to add the dependency in the gasper package.
 
-*To use go-modules you must have Golang version 1.11 or later. Also remember to set the environment variable `GO111MODULE=on`. For reference see - [https://github.com/golang/go/wiki/Modules](https://github.com/golang/go/wiki/Modules).*
 
 ### Development
 
