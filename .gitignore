@@ -10,3 +10,4 @@ bin/
 .vscode/
 site/
 .DS_Store
+coverage.txt

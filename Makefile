@@ -34,6 +34,9 @@ tools:
 	@printf "🔨 Installing fresh\n" 
 	@$(BUILDIR)/install_fresh.sh
 	@printf "👍 Done\n"
+	@printf "🔨 Installing golint\n" 
+	@go get -u golang.org/x/lint/golint
+	@printf "👍 Done\n"
 
 ## start: Start in development mode with hot-reload enabled
 start: tools
@@ -62,6 +65,12 @@ vet:
 lint:
 	@printf "🔨 Linting\n"
 	@golint $(PACKAGES)
+	@printf "👍 Done\n"
+
+## test: Run tests
+test:
+	@printf "🔨 Testing\n"
+	@go test -race -coverprofile=coverage.txt -covermode=atomic
 	@printf "👍 Done\n"
 
 ## help: Display this help
