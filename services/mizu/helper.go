@@ -8,6 +8,17 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
+var disallowedNames = []string{
+	types.Dominus,
+	types.Mizu,
+	types.Hikari,
+	types.Enrai,
+	types.EnraiSSL,
+	types.MySQL,
+	types.MongoDB,
+	types.SSH,
+}
+
 func validateRequestBody(c *gin.Context) {
 	language := c.Param("language")
 	if pipeline[language] == nil {
