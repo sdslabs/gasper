@@ -15,25 +15,25 @@ for more information.
 Before committing any changes, make sure you perform the following tasks:-
 
 1. Formatting the codebase
-```bash
-$ make fmt
-🔨 Formatting
-👍 Done
-```
+    ```bash
+    $ make fmt
+    🔨 Formatting
+    👍 Done
+    ```
 
 2. Vetting the codebase and resolving any errors if found
-```bash
-$ make vet
-🔨 Vetting
-👍 Done
-```
+    ```bash
+    $ make vet
+    🔨 Vetting
+    👍 Done
+    ```
 
 3. Linting the codebase
-```bash
-$ make lint
-🔨 Linting
-👍 Done
-```
+    ```bash
+    $ make lint
+    🔨 Linting
+    👍 Done
+    ```
 
 ## Git Commit Message Format
 
