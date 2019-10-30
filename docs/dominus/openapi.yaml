@@ -551,7 +551,7 @@ paths:
                     type: boolean
 
   '/apps/{app}/rebuild':   
-    get:
+    patch:
       tags:
         - apps
       summary: Rebuild an application
@@ -594,7 +594,13 @@ paths:
           required: true
           description: The name of the application 
           schema:
-            type: string        
+            type: string  
+        - in: query
+          name: tail
+          description: Fetch the last **n** logs (Fetches all logs if not specified)
+          schema:
+            type: integer
+            example: 3
       security:
         - bearerAuth: []
       responses:
@@ -1112,7 +1118,7 @@ paths:
                     type: boolean
 
   '/admin/users/{userEmail}/grant':
-    put:
+    patch:
       tags:
         - admin
       summary: Grant superuser privileges to a single user
@@ -1142,7 +1148,7 @@ paths:
                     type: boolean   
                     
   '/admin/users/{userEmail}/revoke':
-    put:
+    patch:
       tags:
         - admin
       summary: Revoke superuser privileges from a single user

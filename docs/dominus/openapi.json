@@ -1444,7 +1444,7 @@
       }
     },
     "/apps/{app}/rebuild": {
-      "get": {
+      "patch": {
         "tags": [
           "apps"
         ],
@@ -1686,6 +1686,15 @@
             "description": "The name of the application",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tail",
+            "description": "Fetch the last **n** logs (Fetches all logs if not specified)",
+            "schema": {
+              "type": "integer",
+              "example": 3
             }
           }
         ],
@@ -3427,7 +3436,7 @@
       }
     },
     "/admin/users/{userEmail}/grant": {
-      "put": {
+      "patch": {
         "tags": [
           "admin"
         ],
@@ -3538,7 +3547,7 @@
       }
     },
     "/admin/users/{userEmail}/revoke": {
-      "put": {
+      "patch": {
         "tags": [
           "admin"
         ],

@@ -43,7 +43,8 @@ func NewService() http.Handler {
 		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
 		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
 		app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
-		app.GET("/:app/:action", middlewares.IsAppOwner(), trimURLPath(2), execute)
+		app.GET("/:app/logs", middlewares.IsAppOwner(), trimURLPath(2), execute)
+		app.PATCH("/:app/rebuild", middlewares.IsAppOwner(), trimURLPath(2), execute)
 	}
 
 	db := router.Group("/dbs")
@@ -75,8 +76,8 @@ func NewService() http.Handler {
 			users.GET("", adminHandlers.GetAllUsers)
 			users.GET("/:user", adminHandlers.GetUserInfo)
 			users.DELETE("/:user", adminHandlers.DeleteUser)
-			users.PUT("/:user/grant", adminHandlers.GrantSuperuserPrivilege)
-			users.PUT("/:user/revoke", adminHandlers.RevokeSuperuserPrivilege)
+			users.PATCH("/:user/grant", adminHandlers.GrantSuperuserPrivilege)
+			users.PATCH("/:user/revoke", adminHandlers.RevokeSuperuserPrivilege)
 		}
 		nodes := admin.Group("/nodes")
 		{
