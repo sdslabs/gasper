@@ -2,7 +2,7 @@
 
 > Your Cloud in a Binary
 
-<img align="right" width="500px" height="400px" src="./docs/assets/gasperlogo.svg">
+<img align="right" width="350px" height="400px" src="./docs/assets/gasperlogo.svg">
 
 [![Build Status](https://api.travis-ci.org/sdslabs/gasper.svg)](https://travis-ci.org/sdslabs/gasper)
 [![codecov](https://codecov.io/gh/sdslabs/gasper/branch/develop/graph/badge.svg)](https://codecov.io/gh/sdslabs/gasper)
