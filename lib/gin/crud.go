@@ -73,11 +73,12 @@ func FetchUserInfo(c *gin.Context) {
 
 func fetchAllInstances(instance string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		filter := types.M{
-			mongo.InstanceTypeKey: instance,
-		}
+		queries := ctx.Request.URL.Query()
+		filter := utils.QueryToFilter(queries)
+		filter[mongo.InstanceTypeKey] = instance
 		ctx.JSON(200, gin.H{
-			"data": mongo.FetchDocs(mongo.InstanceCollection, filter),
+			"success": true,
+			"data":    mongo.FetchDocs(mongo.InstanceCollection, filter),
 		})
 	}
 }
@@ -94,9 +95,17 @@ func FetchAllDBs(c *gin.Context) {
 
 // FetchAllUsers gets information for all applications deployed
 func FetchAllUsers(c *gin.Context) {
+	queries := c.Request.URL.Query()
+	filter := utils.QueryToFilter(queries)
+	// Convert `is_admin` field from string to boolean
+	if filter["is_admin"] == "true" {
+		filter["is_admin"] = true
+	} else if filter["is_admin"] == "false" {
+		filter["is_admin"] = false
+	}
 	c.JSON(200, gin.H{
 		"success": true,
-		"data":    mongo.FetchUserInfo(types.M{}),
+		"data":    mongo.FetchUserInfo(filter),
 	})
 }
 
@@ -161,7 +170,6 @@ func UpdateAppInfo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"success": true,
-	})
+	data["success"] = true
+	c.JSON(200, data)
 }

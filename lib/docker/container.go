@@ -37,7 +37,6 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 	}
 	hostConfig := &container.HostConfig{
 		Binds: []string{
-			"/var/run/docker.sock:/var/run/docker.sock",
 			volume,
 		},
 		DNS: containerCfg.NameServers,
@@ -82,7 +81,6 @@ func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.
 
 	hostConfig := &container.HostConfig{
 		Binds: []string{
-			"/var/run/docker.sock:/var/run/docker.sock",
 			volume,
 		},
 		PortBindings: nat.PortMap{
@@ -122,7 +120,6 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 
 	hostConfig := &container.HostConfig{
 		Binds: []string{
-			"/var/run/docker.sock:/var/run/docker.sock",
 			volume,
 		},
 		PortBindings: nat.PortMap{

@@ -41,7 +41,7 @@ func FalconGuard() gin.HandlerFunc {
 			cookie := c.GetHeader("Cookie")
 			user, err := getUser(cookie)
 			if user == "" {
-				c.JSON(403, gin.H{
+				c.JSON(401, gin.H{
 					"success": false,
 					"error":   err.Error(),
 				})

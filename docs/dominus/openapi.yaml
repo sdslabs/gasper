@@ -1,0 +1,1284 @@
+openapi: 3.0.1
+info:
+  title: Gasper Dominus API
+  description: >-
+    API documentation for Gasper Dominus, the ecosystem's master. Handles authentication, creation/management of applications,
+    databases, users and also provides a superuser API. <br><br>
+    Only a superuser can avail the superuser API. A superuser can **grant/revoke** superuser privileges to other users. A default 
+    superuser is created every time a Gasper instance is launched whose credentials are defined in the `admin` section of `config.toml`,
+    the main configuration file. A sample configuration file is available in the [Gasper GitHub Repository](https://github.com/sdslabs/gasper) 
+    under the name of `config.sample.toml`.<br><br>
+    
+    **Note:-** Normally the applications and databases can only be managed by their owners but the superuser can bypass that check.
+  contact:
+    name: SDSLabs
+    url: https://chat.sdslabs.co
+    email: contact@sdslabs.co.in
+  license:
+    name: MIT
+    url: 'https://github.com/sdslabs/gasper/blob/develop/LICENSE.md'
+  version: '1.0'
+externalDocs:
+  description: Find out more about Gasper
+  url: 'https://github.com/sdslabs/gasper'
+servers:
+  - url: 'http://localhost:3000'
+
+tags:
+  - name: auth
+    description: Authentication for all endpoints
+  - name: apps
+    description: Application management
+  - name: dbs
+    description: Database management
+  - name: admin
+    description: Operations with superuser privileges
+
+components:
+  schemas:
+    Context:
+      type: object
+      required:
+        - index
+      properties:
+        index:
+          type: string
+          description:  Entrypoint for an application
+          example: "index.js"
+        port:
+          type: integer
+          format: int64
+          description:  Port on which the application runs
+          example: 3000
+          default: 80
+        rc_file:
+          type: boolean
+          description: Is a Run Commands file present in the application's git repository's root directory?
+          default: false
+        build:
+          type: array
+          description: Commands for installing application dependencies
+          items:
+            type: string
+          example: ["npm install", "grunt build"]
+        run:
+          type: array
+          description: Commands for running the application
+          items:
+            type: string
+          example: ["node index.js"]
+
+    Application:
+      type: object
+      required:
+        - name
+        - password
+        - git_url
+        - context
+      properties: &applicationProperties
+        name:
+          type: string
+          description: Name of the application
+        password:
+          type: string
+          description: Password required for SSH access to the application's docker container
+        git_url:
+          type: string
+          example: https://github.com/sdslabs/gasper
+          description: Git Repository URL of the application
+        git_access_token:
+          type: string
+          description: Access token for cloning the application's git repository
+        context:
+          $ref: '#/components/schemas/Context'
+        env:
+          type: object
+          description: Environment variables required by the application
+          additionalProperties:
+            type: string    
+        resources:
+          type: object
+          description: Resources required by the application
+          properties:
+            cpu:
+              type: number
+              format: float
+              example: 0.25
+              description: Number of virtual CPUs
+            memory:
+              type: number
+              format: float
+              example: 0.5
+              description: Memory in GigaBytes (GB)
+
+    CreatedApplication:
+      type: object
+      properties: &createdApplicationProperties
+        <<: *applicationProperties
+        container_id:
+          type: string
+          description: ID of the application's docker container
+        container_port:
+          type: integer
+          format: int64
+          example: 35000
+          description: Port alloted by the host machine to the application's docker container
+        docker_image:
+          type: string
+          description: Docker image used in building the application's container
+          example: sdsws/node:2.0
+        host_ip:
+          type: string
+          example: 192.168.208.206
+          description: IPv4 address of the host machine
+        name_servers:
+          type: array
+          description: The DNS NameServers used by the application's docker container
+          items:
+            type: string
+          example: ["8.8.8.8", "8.8.4.4"]
+        instance_type:
+          type: string
+          description: The kind of instance this application belongs to
+          example: app
+        language:
+          type: string
+          description: The programming language in which the application is written
+          example: nodejs
+          enum:
+            - php
+            - nodejs
+            - static
+            - python2
+            - python3
+        owner:
+          type: string
+          description: Owner of the application
+          example: anish.mukherjee1996@gmail.com
+        ssh_cmd:
+          type: string
+          description: Command to SSH into the application's docker container
+          example: ssh -p 2222 alphadose@192.168.208.206
+        _id:
+          type: string
+          description: Application's identifier assigned by MongoDB
+
+    User:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+
+    CreatedUser:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string  
+        is_admin:
+          type: boolean
+          description: Field denoting superuser privileges
+          example: true
+        _id:
+          type: string
+          description: User's identifier assigned by MongoDB          
+
+    Login:
+      type: object
+      required:
+        - password
+        - email
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        
+    LoginResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 200
+        expire:
+          type: string
+          format: date-time
+          example: "2019-10-28T00:58:11+05:30"
+        token:
+          type: string
+          description: The token required for authentication via bearer scheme
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+
+    Database:
+      type: object
+      required:
+        - name
+        - password
+      properties: &databaseProperties
+        name:
+          type: string
+          description: Name of the database
+        password:
+          type: string
+          description: Password of the database
+
+    CreatedDatabase:
+      type: object
+      properties: &createdDatabaseProperties
+        <<: *databaseProperties
+        user:
+          type: string
+          description: Username of the database
+        owner:
+          type: string
+          description: Owner of the database
+        host_ip:
+          type: string
+          description: IPv4 address of the database
+          example: 192.168.208.208
+        container_port:
+          type: string
+          description: Port on which the database server is running
+          example: 35000
+        instance_type:
+          type: string
+          description: The kind of instance the database belongs to
+        language:
+          type: string
+          description: The type of database
+          example: mysql
+          enum:
+            - mysql
+            - mongodb       
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /auth/login:
+    post:
+      tags:
+        - auth
+      summary: Login to get a Bearer token
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':  &error400
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string     
+        '500':  &error500
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: INTERNAL_SERVER_ERROR                               
+
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register a user
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '400': *error400     
+        '500': *error500
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: "User created"
+        
+
+  /auth/refresh:
+    get:
+      tags:
+        - auth
+      summary: Refresh JWT token using existing token
+      operationId: refresh
+      parameters: &authHeaderParams
+        - in: header
+          name: Authorization
+          required: true
+          description: Bearer Token Authentication
+          schema:
+            type: string
+            example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401':  &error401
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  error:
+                    type: string
+                    example: Token is expired        
+        '200':
+          description: Refresh successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        
+              
+  '/apps/{language}':
+    post:
+      tags:
+        - apps
+      summary: Create an application
+      operationId: createApp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Application'
+        required: true      
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: language
+          required: true
+          description: The programming language in which the application is written
+          schema:
+            type: string
+            enum:
+              - static
+              - php
+              - nodejs
+              - python2
+              - python3
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  <<: *createdApplicationProperties
+               
+  /apps:
+    get:
+      tags:
+        - apps
+      summary: Fetch all applications owned by a user
+      operationId: fetchAppsByUser
+      parameters:
+        - <<: *authHeaderParams
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedApplication'     
+                      
+  '/apps/{app}':
+    get:
+      tags:
+        - apps
+      summary: Fetch a single application owned by a user
+      operationId: fetchAppByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application
+          schema:
+            type: string          
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedApplication' 
+    put:
+      tags:
+        - apps
+      summary: Update an application owned by a user
+      operationId: updateAppByUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Application'      
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application
+          schema:
+            type: string          
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  <<: *createdApplicationProperties
+    delete:
+      tags:
+        - apps
+      summary: Delete an application owned by a user
+      operationId: deleteAppByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application
+          schema:
+            type: string          
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  '/apps/{app}/rebuild':   
+    patch:
+      tags:
+        - apps
+      summary: Rebuild an application
+      operationId: rebuildAppByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application 
+          schema:
+            type: string                  
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  <<: *createdApplicationProperties
+
+  '/apps/{app}/logs':   
+    get:
+      tags:
+        - apps
+      summary: Fetch logs of an application
+      operationId: fetchLogsByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application 
+          schema:
+            type: string  
+        - in: query
+          name: tail
+          description: Fetch the last **n** logs (Fetches all logs if not specified)
+          schema:
+            type: integer
+            example: 3
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      type: string
+                    example: ["2019-10-28T05:46:19.012861400Z Server listening on port 3000"]
+
+  '/dbs/{databaseType}':
+    post:
+      tags:
+        - dbs
+      summary: Create a database
+      operationId: createDB
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Database'      
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: databaseType
+          required: true
+          description: The type of database
+          schema:
+            type: string
+            enum:
+              - mysql
+              - mongodb
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  <<: *createdDatabaseProperties
+
+  /dbs:
+    get:
+      tags:
+        - dbs
+      summary: Fetch all databases owned by a user
+      operationId: fetchDbsByUser
+      parameters:
+        - <<: *authHeaderParams
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedDatabase'     
+                      
+  '/dbs/{db}':
+    get:
+      tags:
+        - dbs
+      summary: Fetch a single database owned by a user
+      operationId: fetchDbByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: db
+          required: true
+          description: Name of the database
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedDatabase' 
+    delete:
+      tags:
+        - dbs
+      summary: Delete a single database owned by a user
+      operationId: deleteDbByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: db
+          required: true
+          description: Name of the database
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean     
+
+  /admin/apps:
+    get:
+      tags:
+        - admin
+      summary: Fetch all applications with/without a filter defined by query params
+      operationId: fetchAppsByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: query
+          name: name
+          description: Name of the application
+          schema:
+            type: string
+        - in: query
+          name: owner
+          description: Owner of the application
+          schema:
+            type: string
+        - in: query
+          name: language
+          description: Language in which the application is written
+          schema:
+            type: string
+            example: nodejs
+            enum:
+              - php
+              - static
+              - nodejs
+              - python2
+              - python3
+        - in: query
+          name: docker_image
+          description: Docker Image used in building the application's container
+          schema:
+            type: string
+            example: sdsws/node:2.0
+        - in: query
+          name: host_ip
+          description: IPv4 address of the host machine in which the application is deployed
+          schema:
+            type: string
+            example: 192.168.208.208
+        - in: query
+          name: git_url
+          description: Application's Git Repository URL
+          schema:
+            type: string
+        - in: query
+          name: container_port
+          description: Port assigned by the host machine to the application's docker container
+          schema:
+            type: string
+            example: 35000
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedApplication'       
+                      
+  '/admin/apps/{app}':
+    get:
+      tags:
+        - admin
+      summary: Fetch a single application
+      operationId: fetchAppByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application
+          schema:
+            type: string          
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedApplication' 
+    delete:
+      tags:
+        - admin
+      summary: Delete an application
+      operationId: deleteAppByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application
+          schema:
+            type: string          
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean     
+                    
+  /admin/dbs:
+    get:
+      tags:
+        - admin
+      summary: Fetch all databases with/without a filter defined by query params
+      operationId: fetchDbsByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: query
+          name: name
+          description: Name of the database
+          schema:
+            type: string
+        - in: query
+          name: user
+          description: User of the database
+          schema:
+            type: string
+        - in: query
+          name: owner
+          description: Owner of the database
+          schema:
+            type: string
+        - in: query
+          name: language
+          description: Type of the database
+          schema:
+            type: string
+            example: mysql
+            enum:
+              - mysql
+              - mongodb
+        - in: query
+          name: host_ip
+          description: IPv4 address of the host machine in which the database is deployed
+          schema:
+            type: string
+            example: 192.168.208.208
+        - in: query
+          name: container_port
+          description: Port assigned by the host machine to the database's docker container
+          schema:
+            type: string
+            example: 35000
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedDatabase'                         
+
+  '/admin/dbs/{db}':
+    get:
+      tags:
+        - admin
+      summary: Fetch a single database
+      operationId: fetchDbByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: db
+          required: true
+          description: Name of the database
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedDatabase'                     
+    delete:
+      tags:
+        - admin
+      summary: Delete a single database
+      operationId: deleteDbByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: db
+          required: true
+          description: Name of the database
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean  
+                    
+  /admin/users:
+    get:
+      tags:
+        - admin
+      summary: Fetch all users with/without a filter defined by query params
+      operationId: fetchUsersByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: query
+          name: username
+          description: Name of the user
+          schema:
+            type: string
+        - in: query
+          name: email
+          description: Email of the user
+          schema:
+            type: string
+        - in: query
+          name: is_admin
+          description: Field denoting superuser privileges
+          schema:
+            type: boolean
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedUser'                         
+
+  '/admin/users/{userEmail}':
+    get:
+      tags:
+        - admin
+      summary: Fetch a single user
+      operationId: fetchUserByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: userEmail
+          required: true
+          description: Email ID of the user
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CreatedUser' 
+    delete:
+      tags:
+        - admin
+      summary: Delete a single user
+      operationId: deleteUserByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: userEmail
+          required: true
+          description: Email ID of the user
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  '/admin/users/{userEmail}/grant':
+    patch:
+      tags:
+        - admin
+      summary: Grant superuser privileges to a single user
+      operationId: grantSuperuserPrivilege
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: userEmail
+          required: true
+          description: Email ID of the user
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean   
+                    
+  '/admin/users/{userEmail}/revoke':
+    patch:
+      tags:
+        - admin
+      summary: Revoke superuser privileges from a single user
+      operationId: revokeSuperuserPrivilege
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: userEmail
+          required: true
+          description: Email ID of the user
+          schema:
+            type: string     
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean                      
+
+  /admin/nodes:
+    get:
+      tags:
+        - admin
+      summary: Fetch bind addresses(IP:Port) of all microservices on all nodes
+      operationId: fetchNodesByAdmin
+      parameters:
+        - <<: *authHeaderParams
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  dominus:
+                    type: array
+                    example: [192.168.208.206:3000]
+                    items:
+                      type: string 
+                  enrai:
+                    type: array
+                    example: [192.168.208.206:80]
+                    items:
+                      type: string  
+                  hikari:
+                    type: array
+                    example: [192.168.208.206:53]
+                    items:
+                      type: string  
+                  mizu:
+                    type: array
+                    example: [192.168.208.206:4000]
+                    items:
+                      type: string  
+                  mongodb:
+                    type: array
+                    example: [192.168.208.206:9001]
+                    items:
+                      type: string  
+                  mysql:
+                    type: array
+                    example: [192.168.208.206:9000]
+                    items:
+                      type: string  
+                  ssh:
+                    type: array
+                    example: [192.168.208.206:2222]
+                    items:
+                      type: string    
+
+  '/admin/nodes/{type}':
+    get:
+      tags:
+        - admin
+      summary: Fetch bind addresses(IP:Port) of a single microservice on all nodes
+      operationId: fetchNodeByAdmin
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: type
+          required: true
+          description: Type of microservice
+          schema:
+            type: string 
+            example: master
+            enum:
+              - master
+              - workers
+              - dominus
+              - enrai
+              - mizu
+              - ssh
+              - hikari
+              - mysql
+              - mongodb
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  dominus:
+                    type: array
+                    example: [192.168.208.206:3000]
+                    items:
+                      type: string 
+                

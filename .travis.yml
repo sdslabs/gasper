@@ -1,0 +1,21 @@
+language: go
+
+matrix:
+  fast_finish: true
+  include:
+  - go: 1.12.x
+  - go: 1.13.x
+
+git:
+  depth: 10
+
+install:
+  - go get -u golang.org/x/lint/golint
+
+script:
+  - make vet
+  - make lint
+  - make test
+ 
+after_success:
+  - bash <(curl -s https://codecov.io/bash) 

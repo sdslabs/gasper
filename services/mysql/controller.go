@@ -27,10 +27,10 @@ func createDB(c *gin.Context) {
 
 	db := data["name"].(string)
 
-	if db == "root" {
+	if db == "root" || db == "mysql" {
 		c.JSON(400, gin.H{
 			"success": false,
-			"error":   "Database name cannot be `root`",
+			"error":   fmt.Sprintf("Database name cannot be `%s`", db),
 		})
 		return
 	}

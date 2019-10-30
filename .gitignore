@@ -2,11 +2,12 @@
 tmp/
 # Config file
 config.toml
-# storage
 storage/
-# mysql-storage
 mysql-storage/
-mongodb-storage
+mongodb-storage/
 __debug_bin
 bin/
 .vscode/
+site/
+.DS_Store
+coverage.txt

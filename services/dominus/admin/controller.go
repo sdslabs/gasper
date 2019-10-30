@@ -4,7 +4,9 @@ import (
 	gogin "github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/gin"
+	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
+	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -38,6 +40,37 @@ func GetUserInfo(ctx *gogin.Context) {
 	gin.FetchUserInfo(ctx)
 }
 
+func changeUserPrivilege(admin bool) func(*gogin.Context) {
+	return func(ctx *gogin.Context) {
+		user := ctx.Param("user")
+		filter := types.M{
+			"email": user,
+		}
+		update := types.M{
+			"is_admin": admin,
+		}
+
+		err := mongo.UpdateUser(filter, update)
+		if err != nil {
+			utils.SendServerErrorResponse(ctx, err)
+			return
+		}
+		ctx.JSON(200, gogin.H{
+			"success": true,
+		})
+	}
+}
+
+// GrantSuperuserPrivilege grants superuser access to a user
+func GrantSuperuserPrivilege(ctx *gogin.Context) {
+	changeUserPrivilege(true)(ctx)
+}
+
+// RevokeSuperuserPrivilege revokes superuser access from a user
+func RevokeSuperuserPrivilege(ctx *gogin.Context) {
+	changeUserPrivilege(false)(ctx)
+}
+
 // GetAllNodes fetches all the nodes registered on redis corresponding to their service
 func GetAllNodes(ctx *gogin.Context) {
 	services := configs.ServiceMap
@@ -52,13 +85,14 @@ func GetAllNodes(ctx *gogin.Context) {
 		}
 		res[service] = instances
 	}
+	res["success"] = true
 	ctx.JSON(200, res)
 }
 
 // GetNodesByName fetches dominus nodes for 'master' and others for 'workers'
 // Rest specific service nodes are returned
 func GetNodesByName(ctx *gogin.Context) {
-	node := ctx.Param("node")
+	node := ctx.Param("type")
 	res := gogin.H{}
 	switch node {
 	case WorkerNode:
@@ -75,6 +109,7 @@ func GetNodesByName(ctx *gogin.Context) {
 			}
 			res[service] = instances
 		}
+		res["success"] = true
 		ctx.JSON(200, res)
 		return
 	case MasterNode:
@@ -100,6 +135,7 @@ func GetNodesByName(ctx *gogin.Context) {
 		return
 	}
 	res[node] = instances
+	res["success"] = true
 	ctx.JSON(200, res)
 }
 

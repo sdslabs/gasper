@@ -83,6 +83,7 @@ mongodb = "mongo:4.2.1"
 
 # Configuration for the microservices comprising Gasper.
 [services]
+
 # Time Interval (in seconds) in which the current node updates
 # the central registry-server with the status of its microservices.
 exposure_interval = 30

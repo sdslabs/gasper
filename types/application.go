@@ -69,7 +69,7 @@ type ApplicationConfig struct {
 	HostIP         string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
 	SSHCmd         string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
 	Owner          string                      `json:"owner,omitempty" bson:"owner,omitempty"`
-	Success        bool                        `json:"success,omitempty"`
+	Success        bool                        `json:"success,omitempty" bson:"-"`
 }
 
 // GetName returns the application's name

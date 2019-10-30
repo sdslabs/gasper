@@ -18,6 +18,7 @@ var immutableFields = []string{
 	"language",
 	"cloudflare_id",
 	"app_url",
+	"docker_image",
 }
 
 func validateUpdatePayload(data types.M) error {

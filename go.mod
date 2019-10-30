@@ -33,11 +33,13 @@ require (
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	go.mongodb.org/mongo-driver v1.1.0
-	golang.org/x/crypto v0.0.0-20191002192127-34f69633bfdc
-	golang.org/x/net v0.0.0-20191003171128-d98b1b443823
+	golang.org/x/crypto v0.0.0-20191029031824-8986dd9e96cf
+	golang.org/x/lint v0.0.0-20190930215403-16217165b5de // indirect
+	golang.org/x/net v0.0.0-20191028085509-fe3aa8a45271
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20191003212358-c178f38b412c // indirect
-	golang.org/x/tools v0.0.0-20191005014404-c9f9432ec4b2 // indirect
+	golang.org/x/sys v0.0.0-20191028164358-195ce5e7f934 // indirect
+	golang.org/x/tools v0.0.0-20191029041327-9cc4af7d6b2c // indirect
+	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
 	gopkg.in/src-d/go-git.v4 v4.8.1

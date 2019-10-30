@@ -50,14 +50,16 @@ func Register(ctx *gin.Context) {
 	userInfo := mongo.FetchUserInfo(filter)
 	if len(userInfo) > 0 {
 		ctx.JSON(400, gin.H{
-			"error": "email already registered",
+			"success": false,
+			"error":   "email already registered",
 		})
 		return
 	}
 	hashedPass, err := utils.HashPassword(register.Password)
 	if err != nil {
 		ctx.JSON(500, gin.H{
-			"error": err,
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
@@ -70,7 +72,8 @@ func Register(ctx *gin.Context) {
 	_, err = mongo.RegisterUser(createUser)
 	if err != nil {
 		ctx.JSON(500, gin.H{
-			"error": err,
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}
@@ -136,7 +139,8 @@ var JWT = &jwt.GinJWTMiddleware{
 	},
 	Unauthorized: func(ctx *gin.Context, code int, message string) {
 		ctx.JSON(code, gin.H{
-			"error": message,
+			"success": false,
+			"error":   message,
 		})
 	},
 }
