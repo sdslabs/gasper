@@ -151,6 +151,7 @@ components:
             - static
             - python2
             - python3
+            - golang
         owner:
           type: string
           description: Owner of the application
@@ -408,6 +409,7 @@ paths:
               - nodejs
               - python2
               - python3
+              - golang
       security:
         - bearerAuth: []
       responses:
@@ -781,6 +783,7 @@ paths:
               - nodejs
               - python2
               - python3
+              - golang
         - in: query
           name: docker_image
           description: Docker Image used in building the application's container

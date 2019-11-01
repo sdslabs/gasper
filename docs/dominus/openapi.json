@@ -238,7 +238,8 @@
               "nodejs",
               "static",
               "python2",
-              "python3"
+              "python3",
+              "golang"
             ]
           },
           "owner": {
@@ -688,7 +689,8 @@
                 "php",
                 "nodejs",
                 "python2",
-                "python3"
+                "python3",
+                "golang"
               ]
             }
           }
@@ -799,7 +801,8 @@
                         "nodejs",
                         "static",
                         "python2",
-                        "python3"
+                        "python3",
+                        "golang"
                       ]
                     },
                     "owner": {
@@ -1250,7 +1253,8 @@
                         "nodejs",
                         "static",
                         "python2",
-                        "python3"
+                        "python3",
+                        "golang"
                       ]
                     },
                     "owner": {
@@ -1577,7 +1581,8 @@
                         "nodejs",
                         "static",
                         "python2",
-                        "python3"
+                        "python3",
+                        "golang"
                       ]
                     },
                     "owner": {
@@ -2333,7 +2338,8 @@
                 "static",
                 "nodejs",
                 "python2",
-                "python3"
+                "python3",
+                "golang"
               ]
             }
           },
