@@ -106,6 +106,7 @@ type Images struct {
 	Nodejs  string `toml:"nodejs"`
 	Python2 string `toml:"python2"`
 	Python3 string `toml:"python3"`
+	Golang  string `toml:"golang"`
 	Mysql   string `toml:"mysql"`
 	Mongodb string `toml:"mongodb"`
 }
