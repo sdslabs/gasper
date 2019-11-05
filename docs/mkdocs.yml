@@ -1,0 +1,41 @@
+site_name: Gasper
+site_description: Gasper Documentation
+site_author: sdslabs
+# site_url: https://github.com/sdslabs/gasper
+dev_addr: 0.0.0.0:8000
+
+repo_name: 'GitHub'
+repo_url: 'https://github.com/sdslabs/gasper'
+
+docs_dir: 'content'
+
+theme:
+  name: 'material'
+  custom_dir: 'theme'
+  language: en
+  include_sidebar: true
+  favicon: assets/img/traefik.icon.png
+  logo: assets/img/traefik.logo.png
+  feature:
+    tabs: false
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  i18n:
+    prev: 'Previous'
+    next: 'Next'
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - codehilite
+  - footnotes
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist
+  - pymdownx.snippets:
+      check_paths: true
+  - toc:
+      permalink: true
