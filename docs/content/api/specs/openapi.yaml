@@ -10,6 +10,7 @@ info:
     **Note:-** Normally the applications and databases can only be managed by their owners but the superuser can bypass that check.<br><br>
 
     **PS:-** If you want to programmatically generate a client for this API, you can find the corresponding OpenAPI specifications [here](https://github.com/sdslabs/gasper/tree/develop/docs/content/api/specs/openapi.yaml).
+    We recommend using [OpenAPI-Generator](https://openapi-generator.tech/) for generating clients.
   contact:
     name: SDSLabs
     url: https://chat.sdslabs.co
