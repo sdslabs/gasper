@@ -21,14 +21,6 @@ func createApp(c *gin.Context) {
 	app := &types.ApplicationConfig{}
 	c.BindJSON(app)
 
-	if utils.Contains(disallowedNames, app.GetName()) {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   fmt.Sprintf("Name of application cannot be `%s`", app.GetName()),
-		})
-		return
-	}
-
 	app.DisableRebuild()
 	app.SetLanguage(language)
 	app.SetInstanceType(mongo.AppInstance)
@@ -44,6 +36,13 @@ func createApp(c *gin.Context) {
 		}
 	}
 
+	if pipeline[language] == nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("Language `%s` is not supported", language),
+		})
+		return
+	}
 	resErr := pipeline[language](app)
 	if resErr != nil {
 		g.SendResponse(c, resErr, gin.H{})

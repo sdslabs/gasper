@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/sdslabs/gasper/lib/gin"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -16,7 +15,7 @@ func NewService() http.Handler {
 	// router is the main routes handler for the current microservice package
 	router := gin.NewServiceEngine()
 
-	router.POST("/mongodb", validateRequestBody, middlewares.IsUniqueDB(), createDB)
+	router.POST("/mongodb", createDB)
 	router.GET("", fetchDBs)
 	router.GET("/logs", gin.FetchMongoDBContainerLogs)
 	router.GET("/restart", gin.ReloadMongoDBService)

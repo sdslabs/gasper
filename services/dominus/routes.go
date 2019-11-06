@@ -38,7 +38,7 @@ func NewService() http.Handler {
 	app := router.Group("/apps")
 	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		app.POST("/:language", middlewares.InsertOwner, trimURLPath(2), createApp)
+		app.POST("/:language", middlewares.InsertOwner, middlewares.ValidateApplicationRequest, trimURLPath(2), createApp)
 		app.GET("", fetchAppsByUser())
 		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
 		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
@@ -50,7 +50,7 @@ func NewService() http.Handler {
 	db := router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		db.POST("/:database", middlewares.InsertOwner, trimURLPath(2), createDatabase)
+		db.POST("/:database", middlewares.InsertOwner, middlewares.ValidateDatabaseRequest, trimURLPath(2), createDatabase)
 		db.GET("", fetchDBsByUser())
 		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
 		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
@@ -59,6 +59,7 @@ func NewService() http.Handler {
 	admin := router.Group("/admin")
 	admin.Use(middlewares.JWT.MiddlewareFunc(), middlewares.VerifyAdmin)
 	{
+		admin.GET("", gin.FetchDocs)
 		apps := admin.Group("/apps")
 		{
 			apps.GET("", adminHandlers.GetAllApplications)

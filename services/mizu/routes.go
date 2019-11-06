@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/sdslabs/gasper/lib/gin"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -16,7 +15,7 @@ func NewService() http.Handler {
 	// router is the main routes handler for the current microservice package
 	router := gin.NewServiceEngine()
 
-	router.POST("/:language", validateRequestBody, middlewares.IsUniqueApp(), createApp)
+	router.POST("/:language", createApp)
 	router.GET("", gin.FetchDocs)
 	router.GET("/:app", gin.FetchAppInfo)
 	router.GET("/:app/logs", gin.FetchLogs)

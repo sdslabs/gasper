@@ -1,9 +1,11 @@
 package middlewares
 
 import (
+	"encoding/json"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt"
+	validator "github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -39,7 +41,26 @@ type registerBody struct {
 
 // RegisterValidator validates the user registration request
 func RegisterValidator(ctx *gin.Context) {
-	ValidateRequestBody(ctx, &registerBody{})
+	requestBody := getBodyFromContext(ctx)
+	user := &registerBody{}
+	err := json.Unmarshal(requestBody, user)
+
+	if err != nil {
+		ctx.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if result, err := validator.ValidateStruct(user); !result {
+		ctx.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	ctx.Next()
 }
 
 // Register handles registration of new users
