@@ -169,8 +169,11 @@ var JWT = &jwt.GinJWTMiddleware{
 // ExtractClaims takes the gin context and returns the User
 func ExtractClaims(ctx *gin.Context) *User {
 	claimsMap := jwt.ExtractClaims(ctx)
-	getUser := JWT.IdentityHandler
-	return getUser(claimsMap).(*User)
+	user, success := JWT.IdentityHandler(claimsMap).(*User)
+	if !success {
+		return nil
+	}
+	return user
 }
 
 func init() {

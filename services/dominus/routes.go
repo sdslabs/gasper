@@ -59,7 +59,6 @@ func NewService() http.Handler {
 	admin := router.Group("/admin")
 	admin.Use(middlewares.JWT.MiddlewareFunc(), middlewares.VerifyAdmin)
 	{
-		admin.GET("", gin.FetchDocs)
 		apps := admin.Group("/apps")
 		{
 			apps.GET("", adminHandlers.GetAllApplications)

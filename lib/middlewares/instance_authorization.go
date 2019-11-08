@@ -12,8 +12,12 @@ import (
 
 // VerifyAdmin allows the request to proceed only if the user has admin privileges
 func VerifyAdmin(ctx *gin.Context) {
-	userStr := ExtractClaims(ctx)
-	if userStr.IsAdmin {
+	claims := ExtractClaims(ctx)
+	if claims == nil {
+		utils.SendServerErrorResponse(ctx, errors.New("Failed to extract JWT claims"))
+		return
+	}
+	if claims.IsAdmin {
 		ctx.Next()
 		return
 	}
@@ -26,21 +30,19 @@ func VerifyAdmin(ctx *gin.Context) {
 func isInstanceOwner(instanceType string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		instance := ctx.Param(instanceType)
-		userStr := ExtractClaims(ctx)
-		if userStr == nil {
+		claims := ExtractClaims(ctx)
+		if claims == nil {
 			utils.SendServerErrorResponse(ctx, errors.New("Failed to extract JWT claims"))
 			return
 		}
-
-		if userStr.IsAdmin {
+		if claims.IsAdmin {
 			ctx.Next()
 			return
 		}
-
 		count, err := mongo.CountInstances(types.M{
 			"name":                instance,
 			mongo.InstanceTypeKey: instanceType,
-			"owner":               userStr.Email,
+			"owner":               claims.Email,
 		})
 		if err != nil {
 			utils.SendServerErrorResponse(ctx, err)
@@ -50,7 +52,7 @@ func isInstanceOwner(instanceType string) gin.HandlerFunc {
 		if count == 0 {
 			ctx.AbortWithStatusJSON(401, gin.H{
 				"success": false,
-				"error":   fmt.Sprintf("User %s is not entitled to perform operations on %s %s", userStr.Email, instanceType, instance),
+				"error":   fmt.Sprintf("User %s is not entitled to perform operations on %s %s", claims.Email, instanceType, instance),
 			})
 			return
 		}

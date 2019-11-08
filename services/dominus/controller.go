@@ -10,7 +10,6 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
-	"github.com/sdslabs/gasper/types"
 )
 
 func createApp(c *gin.Context) {
@@ -158,11 +157,16 @@ func deleteDB(c *gin.Context) {
 
 func fetchInstancesByUser(instanceType string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		userStr := middlewares.ExtractClaims(c)
-		filter := types.M{
-			mongo.InstanceTypeKey: instanceType,
-			"owner":               userStr.Email,
+		filter := utils.QueryToFilter(c.Request.URL.Query())
+		filter[mongo.InstanceTypeKey] = instanceType
+
+		claims := middlewares.ExtractClaims(c)
+		if claims == nil {
+			utils.SendServerErrorResponse(c, errors.New("Failed to extract JWT claims"))
+			return
 		}
+
+		filter["owner"] = claims.Email
 		c.AbortWithStatusJSON(200, gin.H{
 			"success": true,
 			"data":    mongo.FetchInstances(filter),
