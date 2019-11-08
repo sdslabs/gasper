@@ -38,19 +38,19 @@ func NewService() http.Handler {
 	app := router.Group("/apps")
 	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		app.POST("/:language", middlewares.InsertOwner, middlewares.ValidateApplicationRequest, trimURLPath(2), createApp)
+		app.POST("/:language", middlewares.ValidateApplicationRequest, createApp)
 		app.GET("", fetchAppsByUser())
 		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
 		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
-		app.DELETE("/:app", middlewares.IsAppOwner(), trimURLPath(2), execute)
-		app.GET("/:app/logs", middlewares.IsAppOwner(), trimURLPath(2), execute)
-		app.PATCH("/:app/rebuild", middlewares.IsAppOwner(), trimURLPath(2), execute)
+		app.DELETE("/:app", middlewares.IsAppOwner(), deleteApp)
+		app.GET("/:app/logs", middlewares.IsAppOwner(), fetchAppLogs)
+		app.PATCH("/:app/rebuild", middlewares.IsAppOwner(), rebuildApp)
 	}
 
 	db := router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		db.POST("/:database", middlewares.InsertOwner, middlewares.ValidateDatabaseRequest, trimURLPath(2), createDatabase)
+		db.POST("/:database", middlewares.ValidateDatabaseRequest, trimURLPath(2), createDatabase)
 		db.GET("", fetchDBsByUser())
 		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
 		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
@@ -64,7 +64,7 @@ func NewService() http.Handler {
 		{
 			apps.GET("", adminHandlers.GetAllApplications)
 			apps.GET("/:app", adminHandlers.GetApplicationInfo)
-			apps.DELETE("/:app", trimURLPath(3), execute)
+			apps.DELETE("/:app", deleteApp)
 		}
 		dbs := admin.Group("/dbs")
 		{
@@ -77,8 +77,8 @@ func NewService() http.Handler {
 			users.GET("", adminHandlers.GetAllUsers)
 			users.GET("/:user", adminHandlers.GetUserInfo)
 			users.DELETE("/:user", adminHandlers.DeleteUser)
-			users.PATCH("/:user/grant", adminHandlers.GrantSuperuserPrivilege)
-			users.PATCH("/:user/revoke", adminHandlers.RevokeSuperuserPrivilege)
+			users.PATCH("/:user/grant", adminHandlers.GrantSuperuserPrivilege())
+			users.PATCH("/:user/revoke", adminHandlers.RevokeSuperuserPrivilege())
 		}
 		nodes := admin.Group("/nodes")
 		{

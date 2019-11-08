@@ -17,14 +17,18 @@ import (
 func StorageCleanup(path string) error {
 	err := os.RemoveAll(path)
 	if err != nil {
-		return err
+		utils.LogError(err)
 	}
-	return nil
+	return err
 }
 
 // ContainerCleanup removes the application's container
 func ContainerCleanup(appName string) error {
-	return docker.DeleteContainer(appName)
+	err := docker.DeleteContainer(appName)
+	if err != nil {
+		utils.LogError(err)
+	}
+	return err
 }
 
 // MysqlDatabaseCleanup cleans the database's space in the container
@@ -43,15 +47,16 @@ func AppFullCleanup(instanceName string) {
 		path, _ = os.Getwd()
 		appDir  = filepath.Join(path, fmt.Sprintf("storage/%s", instanceName))
 	)
-	err := StorageCleanup(appDir)
-	if err != nil {
-		utils.LogError(err)
-	}
-
-	err = ContainerCleanup(instanceName)
-	if err != nil {
-		utils.LogError(err)
-	}
+	storeCleanupChan := make(chan error)
+	containerCleanupChan := make(chan error)
+	go func() {
+		storeCleanupChan <- StorageCleanup(appDir)
+	}()
+	go func() {
+		containerCleanupChan <- ContainerCleanup(instanceName)
+	}()
+	<-storeCleanupChan
+	<-containerCleanupChan
 }
 
 // AppStateCleanup removes the application's data from MongoDB and Redis

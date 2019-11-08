@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,11 @@ func isInstanceOwner(instanceType string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		instance := ctx.Param(instanceType)
 		userStr := ExtractClaims(ctx)
+		if userStr == nil {
+			utils.SendServerErrorResponse(ctx, errors.New("Failed to extract JWT claims"))
+			return
+		}
+
 		if userStr.IsAdmin {
 			ctx.Next()
 			return

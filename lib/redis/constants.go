@@ -1,8 +1,8 @@
 package redis
 
 const (
-	// AppKey is the key name for the HashMap containing application instances
-	AppKey string = "apps"
+	// ApplicationKey is the key name for the HashMap containing application instances
+	ApplicationKey string = "applications"
 
 	// DatabaseKey is the key name for the HashMap containing database instances
 	DatabaseKey string = "databases"

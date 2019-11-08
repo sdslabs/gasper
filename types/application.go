@@ -63,7 +63,6 @@ type ApplicationConfig struct {
 	ConfGenerator  func(string, string) string `json:"-" bson:"-"`
 	Language       string                      `json:"language" bson:"language"`
 	InstanceType   string                      `json:"instance_type" bson:"instance_type"`
-	Rebuild        bool                        `json:"rebuild,omitempty" bson:"-"`
 	CloudflareID   string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
 	AppURL         string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
 	HostIP         string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
@@ -225,16 +224,6 @@ func (app *ApplicationConfig) SetInstanceType(instanceType string) {
 	app.InstanceType = instanceType
 }
 
-// HasRebuildEnabled checks whether to rebuild the application in the current host
-func (app *ApplicationConfig) HasRebuildEnabled() bool {
-	return app.Rebuild
-}
-
-// DisableRebuild disables the rebuild procedure of an application
-func (app *ApplicationConfig) DisableRebuild() {
-	app.Rebuild = false
-}
-
 // SetCloudflareID sets the application's cloudflare record ID in its context
 func (app *ApplicationConfig) SetCloudflareID(cloudflareID string) {
 	app.CloudflareID = cloudflareID
@@ -260,4 +249,10 @@ func (app *ApplicationConfig) SetHostIP(IP string) {
 // for the information of the client
 func (app *ApplicationConfig) SetSSHCmd(port int, appName, IP string) {
 	app.SSHCmd = fmt.Sprintf("ssh -p %d %s@%s", port, appName, IP)
+}
+
+// SetOwner sets the owner of the application in its context
+// The owner is referenced by his/her email ID
+func (app *ApplicationConfig) SetOwner(owner string) {
+	app.Owner = owner
 }

@@ -62,13 +62,13 @@ func changeUserPrivilege(admin bool) func(*gogin.Context) {
 }
 
 // GrantSuperuserPrivilege grants superuser access to a user
-func GrantSuperuserPrivilege(ctx *gogin.Context) {
-	changeUserPrivilege(true)(ctx)
+func GrantSuperuserPrivilege() func(ctx *gogin.Context) {
+	return changeUserPrivilege(true)
 }
 
 // RevokeSuperuserPrivilege revokes superuser access from a user
-func RevokeSuperuserPrivilege(ctx *gogin.Context) {
-	changeUserPrivilege(false)(ctx)
+func RevokeSuperuserPrivilege() func(ctx *gogin.Context) {
+	return changeUserPrivilege(false)
 }
 
 // GetAllNodes fetches all the nodes registered on redis corresponding to their service

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"net"
+
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/dominus"
@@ -64,7 +67,14 @@ func startMongoDBService() error {
 }
 
 func startMizuService() error {
-	return buildHTTPServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port).ListenAndServe()
+	port := configs.ServiceConfig.Mizu.Port
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	if err != nil {
+		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
+		utils.Log(msg, utils.ErrorTAG)
+		panic(msg)
+	}
+	return mizu.NewService().Serve(lis)
 }
 
 func startDominusService() error {

@@ -16,7 +16,7 @@ func RegisterApp(appName, nodeURL, serverURL string) error {
 	if err != nil {
 		return err
 	}
-	_, regerr := client.HSet(AppKey, appName, appBindingJSON).Result()
+	_, regerr := client.HSet(ApplicationKey, appName, appBindingJSON).Result()
 	return regerr
 }
 
@@ -25,13 +25,13 @@ func BulkRegisterApps(data types.M) error {
 	if len(data) == 0 {
 		return nil
 	}
-	_, err := client.HMSet(AppKey, data).Result()
+	_, err := client.HMSet(ApplicationKey, data).Result()
 	return err
 }
 
 // fetchAppBindings returns a struct containing both the server and node URL
 func fetchAppBindings(appName string) (*types.AppBindings, error) {
-	result, err := client.HGet(AppKey, appName).Result()
+	result, err := client.HGet(ApplicationKey, appName).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func FetchAppServer(appName string) (string, error) {
 
 // FetchAppURL returns the URL of the machine where the app in query is deployed
 func FetchAppURL(app string) (string, error) {
-	result, err := client.HGet(AppKey, app).Result()
+	result, err := client.HGet(ApplicationKey, app).Result()
 	if err != nil {
 		return "", err
 	}
@@ -74,7 +74,7 @@ func FetchAppNode(appName string) (string, error) {
 
 // RemoveApp removes the application's entry from Redis
 func RemoveApp(appName string) error {
-	_, err := client.HDel(AppKey, appName).Result()
+	_, err := client.HDel(ApplicationKey, appName).Result()
 	if err != nil {
 		return err
 	}
@@ -83,5 +83,5 @@ func RemoveApp(appName string) error {
 
 // FetchAllApps gets all the apps with their URL (IP of the node and port)
 func FetchAllApps() (map[string]string, error) {
-	return client.HGetAll(AppKey).Result()
+	return client.HGetAll(ApplicationKey).Result()
 }

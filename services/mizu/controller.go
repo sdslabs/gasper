@@ -1,28 +1,38 @@
 package mizu
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/cloudflare"
 	"github.com/sdslabs/gasper/lib/commons"
-	g "github.com/sdslabs/gasper/lib/gin"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/factory"
+	pb "github.com/sdslabs/gasper/lib/factory/protos/application"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
+	"google.golang.org/grpc"
 )
 
-// createApp creates an application for a given language
-func createApp(c *gin.Context) {
-	language := c.Param("language")
-	app := &types.ApplicationConfig{}
-	c.BindJSON(app)
+// ServiceName is the name of the current microservice
+const ServiceName = types.Mizu
 
-	app.DisableRebuild()
+type server struct{}
+
+// Create creates an application
+func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.ResponseBody, error) {
+	language := body.GetLanguage()
+	app := &types.ApplicationConfig{}
+
+	err := json.Unmarshal(body.GetData(), app)
+
 	app.SetLanguage(language)
+	app.SetOwner(body.GetOwner())
 	app.SetInstanceType(mongo.AppInstance)
 	app.SetHostIP(utils.HostIP)
 	app.SetNameServers(configs.GasperConfig.DNSServers)
@@ -37,16 +47,11 @@ func createApp(c *gin.Context) {
 	}
 
 	if pipeline[language] == nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   fmt.Sprintf("Language `%s` is not supported", language),
-		})
-		return
+		return nil, fmt.Errorf("Language `%s` is not supported", language)
 	}
 	resErr := pipeline[language](app)
 	if resErr != nil {
-		g.SendResponse(c, resErr, gin.H{})
-		return
+		return nil, fmt.Errorf(resErr.Error())
 	}
 
 	sshEntrypointIP := configs.ServiceConfig.SSH.EntrypointIP
@@ -60,14 +65,13 @@ func createApp(c *gin.Context) {
 		if err != nil {
 			go commons.AppFullCleanup(app.GetName())
 			go commons.AppStateCleanup(app.GetName())
-			utils.SendServerErrorResponse(c, err)
-			return
+			return nil, err
 		}
 		app.SetCloudflareID(resp.Result.ID)
 		app.SetAppURL(fmt.Sprintf("%s.%s.%s", app.GetName(), mongo.AppInstance, configs.GasperConfig.Domain))
 	}
 
-	err := mongo.UpsertInstance(
+	err = mongo.UpsertInstance(
 		types.M{
 			"name":                app.GetName(),
 			mongo.InstanceTypeKey: mongo.AppInstance,
@@ -76,8 +80,7 @@ func createApp(c *gin.Context) {
 	if err != nil && err != mongo.ErrNoDocuments {
 		go commons.AppFullCleanup(app.GetName())
 		go commons.AppStateCleanup(app.GetName())
-		utils.SendServerErrorResponse(c, err)
-		return
+		return nil, err
 	}
 
 	err = redis.RegisterApp(
@@ -89,8 +92,7 @@ func createApp(c *gin.Context) {
 	if err != nil {
 		go commons.AppFullCleanup(app.GetName())
 		go commons.AppStateCleanup(app.GetName())
-		utils.SendServerErrorResponse(c, err)
-		return
+		return nil, err
 	}
 
 	err = redis.IncrementServiceLoad(
@@ -101,71 +103,86 @@ func createApp(c *gin.Context) {
 	if err != nil {
 		go commons.AppFullCleanup(app.GetName())
 		go commons.AppStateCleanup(app.GetName())
-		utils.SendServerErrorResponse(c, err)
-		return
+		return nil, err
 	}
 
 	app.SetSuccess(true)
-	c.JSON(200, app)
+
+	response, err := json.Marshal(app)
+	return &pb.ResponseBody{Data: response}, err
 }
 
-func rebuildApp(c *gin.Context) {
-	appName := c.Param("app")
+// Rebuild rebuilds an application
+func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.ResponseBody, error) {
+	appName := body.GetName()
 
 	app, err := mongo.FetchSingleApp(appName)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
-		return
+		return nil, err
 	}
 
 	commons.AppFullCleanup(appName)
 
 	if pipeline[app.Language] == nil {
-		utils.SendServerErrorResponse(c, fmt.Errorf("Non-supported language `%s` specified for `%s`", app.Language, appName))
-		return
+		return nil, fmt.Errorf("Non-supported language `%s` specified for `%s`", app.Language, appName)
 	}
 	resErr := pipeline[app.Language](app)
 	if resErr != nil {
-		g.SendResponse(c, resErr, gin.H{})
-		return
+		return nil, fmt.Errorf(resErr.Error())
 	}
 
 	err = mongo.UpdateInstance(types.M{"name": appName}, app)
 	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
+		return nil, err
 	}
 
 	app.SetSuccess(true)
-	c.JSON(200, app)
+
+	response, err := json.Marshal(app)
+	return &pb.ResponseBody{Data: response}, err
 }
 
-// deleteApp deletes an application in a worker node
-func deleteApp(c *gin.Context) {
-	app := c.Param("app")
+// Delete deletes an application
+func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.DeletionResponse, error) {
+	appName := body.GetName()
 	filter := types.M{
-		"name":                app,
+		"name":                appName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
 
-	node, _ := redis.FetchAppNode(app)
+	node, _ := redis.FetchAppNode(appName)
 	go redis.DecrementServiceLoad(ServiceName, node)
-	go redis.RemoveApp(app)
-	go commons.AppFullCleanup(app)
+	go redis.RemoveApp(appName)
+	go commons.AppFullCleanup(appName)
+
 	if configs.CloudflareConfig.PlugIn {
-		go cloudflare.DeleteRecord(app, mongo.AppInstance)
+		go cloudflare.DeleteRecord(appName, mongo.AppInstance)
 	}
 
 	_, err := mongo.DeleteInstance(filter)
 	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
+		return nil, err
 	}
+	return &pb.DeletionResponse{Success: true}, nil
+}
 
-	c.JSON(200, gin.H{
-		"success": true,
-	})
+// FetchLogs returns the docker container logs of an application
+func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogResponse, error) {
+	appName := body.GetName()
+	tail := body.GetTail()
+
+	data, err := docker.ReadLogs(appName, tail)
+
+	if err != nil && err.Error() != "EOF" {
+		return nil, err
+	}
+	return &pb.LogResponse{
+		Success: true,
+		Data:    data,
+	}, nil
+}
+
+// NewService returns a new instance of the current microservice
+func NewService() *grpc.Server {
+	return factory.NewApplicationFactory(&server{})
 }

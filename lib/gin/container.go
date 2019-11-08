@@ -7,29 +7,6 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
-// FetchLogs returns the container logs in a JSON format
-func FetchLogs(c *gin.Context) {
-	app := c.Param("app")
-	queries := c.Request.URL.Query()
-	filter := utils.QueryToFilter(queries)
-
-	if filter["tail"] == nil {
-		filter["tail"] = "-1"
-	}
-
-	data, err := docker.ReadLogs(app, filter["tail"].(string))
-
-	if err != nil && err.Error() != "EOF" {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
-
-	c.JSON(200, gin.H{
-		"success": true,
-		"data":    data,
-	})
-}
-
 // FetchMysqlContainerLogs returns the mysql container logs in a JSON format
 func FetchMysqlContainerLogs(c *gin.Context) {
 	queries := c.Request.URL.Query()
