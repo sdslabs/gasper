@@ -30,6 +30,9 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	app := &types.ApplicationConfig{}
 
 	err := json.Unmarshal(body.GetData(), app)
+	if err != nil {
+		return nil, err
+	}
 
 	app.SetLanguage(language)
 	app.SetOwner(body.GetOwner())
