@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -11,13 +12,13 @@ import (
 )
 
 // SetupDBInstance sets up containers for database
-func SetupDBInstance(dbtype string) (string, types.ResponseError) {
+func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 	storepath, _ := os.Getwd()
 
 	var containerID string
 	var err error
 
-	switch dbtype {
+	switch databaseType {
 	case types.MongoDB:
 		{
 			dockerImage := configs.ImageConfig.Mongodb
@@ -46,6 +47,8 @@ func SetupDBInstance(dbtype string) (string, types.ResponseError) {
 				storedir,
 				env)
 		}
+	default:
+		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))
 	}
 
 	if err != nil {

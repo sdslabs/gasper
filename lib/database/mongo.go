@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -17,12 +18,12 @@ var (
 )
 
 // CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
-func CreateMongoDB(database, username, password string) error {
+func CreateMongoDB(db types.Database) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	_, err := configDB(ctx, database, username, password)
+	_, err := configDB(ctx, db)
 
 	if err != nil {
 		return fmt.Errorf("database configuration failed: %v", err)
@@ -31,52 +32,50 @@ func CreateMongoDB(database, username, password string) error {
 	return nil
 }
 
-func configDB(ctx context.Context, database, username, password string) (*mongo.Database, error) {
+func configDB(ctx context.Context, db types.Database) (*mongo.Database, error) {
 	client, err := createConnection(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	dbs, errg := client.ListDatabaseNames(ctx, bson.M{})
+	dbs, err := client.ListDatabaseNames(ctx, bson.M{})
 
-	if errg != nil {
-		return nil, fmt.Errorf("Error while creating the database : %s", errg)
+	if err != nil {
+		return nil, fmt.Errorf("Error while creating the database : %s", err)
 	}
 
 	for i := 0; i < len(dbs); i++ {
-		if strings.Compare(dbs[i], database) == 0 {
+		if strings.Compare(dbs[i], db.GetName()) == 0 {
 			return nil, fmt.Errorf("Error while creating the database : Database already Exists")
 		}
 	}
 
-	db := client.Database(database)
+	conn := client.Database(db.GetName())
 
-	commandData := bson.M{"createUser": username,
-		"pwd": password,
+	commandData := bson.M{"createUser": db.GetUser(),
+		"pwd": db.GetPassword(),
 		"roles": bson.A{
 			bson.M{"role": "dbOwner",
-				"db": database},
+				"db": db.GetName()},
 			"readWrite",
 		},
 	}
 
 	var v interface{}
 	v = &(mongo.SingleResult{})
-	result := db.RunCommand(ctx, commandData)
-	err = (*result).Decode(v)
+	result := conn.RunCommand(ctx, commandData)
 
-	if err != nil {
-		errs := refreshMongoDBUser(ctx, database, username, password, client)
-		if errs != nil {
-			return nil, fmt.Errorf("Error while creating the database : %s", errs)
+	if err = (*result).Decode(v); err != nil {
+		if err = refreshMongoDBUser(ctx, db, client); err != nil {
+			return nil, fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
 
-	return db, nil
+	return conn, nil
 }
 
 // DeleteMongoDB deletes a mongo database
-func DeleteMongoDB(database string) error {
+func DeleteMongoDB(databaseName string) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -86,13 +85,13 @@ func DeleteMongoDB(database string) error {
 		return err
 	}
 
-	db := client.Database(database)
+	conn := client.Database(databaseName)
 
 	commandData := bson.M{"dropDatabase": 1}
 
 	var v interface{}
 	v = &(mongo.SingleResult{})
-	result := db.RunCommand(ctx, commandData)
+	result := conn.RunCommand(ctx, commandData)
 	err = (*result).Decode(v)
 
 	if err != nil {
@@ -115,30 +114,30 @@ func createConnection(ctx context.Context) (*mongo.Client, error) {
 	return client, nil
 }
 
-func refreshMongoDBUser(ctx context.Context, database, username, password string, client *mongo.Client) error {
-	db := client.Database(database)
+func refreshMongoDBUser(ctx context.Context, db types.Database, client *mongo.Client) error {
+	conn := client.Database(db.GetName())
 	var v interface{}
 	v = &(mongo.SingleResult{})
-	dropUser := db.RunCommand(ctx, bson.M{"dropUser": username})
+	dropUser := conn.RunCommand(ctx, bson.M{"dropUser": db.GetUser()})
 	err := (*dropUser).Decode(v)
 	if err != nil {
 		return fmt.Errorf("Error while deleting the user : %s", err)
 	}
 
-	commandData := bson.M{"createUser": username,
-		"pwd": password,
+	commandData := bson.M{"createUser": db.GetUser(),
+		"pwd": db.GetPassword(),
 		"roles": bson.A{
 			bson.M{"role": "dbOwner",
-				"db": database},
+				"db": db.GetName()},
 			"readWrite",
 		},
 	}
 
-	reCreateUser := db.RunCommand(ctx, commandData)
-	errc := (*reCreateUser).Decode(v)
+	reCreateUser := conn.RunCommand(ctx, commandData)
+	err = (*reCreateUser).Decode(v)
 
-	if errc != nil {
-		return fmt.Errorf("Error while creating the database : %s", errc)
+	if err != nil {
+		return fmt.Errorf("Error while creating the database : %s", err.Error())
 	}
 
 	return nil

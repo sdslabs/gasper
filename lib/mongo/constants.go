@@ -7,7 +7,7 @@ import (
 
 const (
 	// DBInstance is db instance type name in the instances collection
-	DBInstance = "db"
+	DBInstance = "database"
 
 	// Mysql is db instance type name for mysql database in the instances collection
 	Mysql = types.MySQL
@@ -16,7 +16,7 @@ const (
 	MongoDB = types.MongoDB
 
 	// AppInstance is app instance type name in the instances collection
-	AppInstance = "app"
+	AppInstance = "application"
 
 	// InstanceCollection is the collection for all the instances
 	InstanceCollection = "instances"
