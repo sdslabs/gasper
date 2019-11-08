@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	mongoRootUser     = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
-	mongoRootPassword = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
+	mongoRootUser     = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
+	mongoRootPassword = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
 )
 
 // CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
@@ -101,7 +101,7 @@ func DeleteMongoDB(databaseName string) error {
 }
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
-	port := configs.ServiceConfig.Mongodb.ContainerPort
+	port := configs.ServiceConfig.Kaen.MongoDB.ContainerPort
 	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, port)
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {

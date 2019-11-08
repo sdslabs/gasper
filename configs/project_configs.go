@@ -51,12 +51,12 @@ var (
 			Port:   ServiceConfig.Hikari.Port,
 		},
 		types.MySQL: &GenericService{
-			Deploy: ServiceConfig.Mysql.Deploy,
-			Port:   ServiceConfig.Mysql.Port,
+			Deploy: ServiceConfig.Kaen.MySQL.PlugIn && ServiceConfig.Kaen.Deploy,
+			Port:   ServiceConfig.Kaen.Port,
 		},
 		types.MongoDB: &GenericService{
-			Deploy: ServiceConfig.Mongodb.Deploy,
-			Port:   ServiceConfig.Mongodb.Port,
+			Deploy: ServiceConfig.Kaen.MongoDB.PlugIn && ServiceConfig.Kaen.Deploy,
+			Port:   ServiceConfig.Kaen.Port,
 		},
 	}
 )

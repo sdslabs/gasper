@@ -15,7 +15,7 @@ type DatabaseConfig struct {
 	InstanceType  string `json:"instance_type,omitempty" bson:"instance_type,omitempty"`
 	Language      string `json:"language,omitempty" bson:"language,omitempty"`
 	HostIP        string `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
-	ContainerPort int    `json:"container_port,omitempty" bson:"container_port,omitempty"`
+	ContainerPort int    `json:"port,omitempty" bson:"port,omitempty"`
 	Owner         string `json:"owner,omitempty" bson:"owner,omitempty"`
 	Success       bool   `json:"success,omitempty" bson:"-"`
 }

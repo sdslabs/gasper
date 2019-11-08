@@ -1,4 +1,4 @@
-# Configuration file for Gasper
+# Configuration sample for Gasper
 
 # Terminology:-
 #   Node: A Virtual Machine or a Bare-Metal Server
@@ -112,6 +112,7 @@ port = 3000
 [services.enrai]
 deploy = false  # Deploy Enrai?
 port = 80
+
 # Configuration for using SSL with `Enrai`.
 [services.enrai.ssl]
 plugin = false  # Use SSL with Enrai?
@@ -120,7 +121,7 @@ certificate = "/home/user/fullchain.pem"  # Certificate Location
 private_key = "/home/user/privkey.pem"  # Private Key Location
 
 
-# Configuration for `Mizu`, a REST API for deploying applications
+# Configuration for `Mizu`, a gRPC server for deploying applications
 # inside docker containers and managing them.
 # A node with `Mizu` deployed is a worker node.
 [services.mizu]
@@ -128,8 +129,32 @@ deploy = true   # Deploy Mizu?
 port = 4000
 
 
-# Configuration for `Hikari`, a DNS Server holding `A` records of
-# all deployed applications.
+# Configuration for `Kaen` service, a gRPC server for managing containerized database servers.
+# Currently supports MySQL and MongoDB database servers.
+# A node with `Kaen` service deployed is a worker node.
+[services.kaen]
+deploy = true   # Deploy Kaen Service?
+port = 9000
+
+# Configuration for MySQL database server managed by `Kaen`
+[services.kaen.mysql]
+plugin = false  # Deploy MySQL server and let `Kaen` manage it?
+container_port = 33061  # Port on which the MySQL container will run
+# Environment variables for MySQL docker container.
+[services.kaen.mysql.env]
+MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server inside the container
+
+# Configuration for MongoDB database server managed by `Kaen`
+[services.kaen.mongodb]
+plugin = false  # Deploy MongoDB server and let `Kaen` manage it?
+container_port = 27018  # Port on which the MongoDB container will run
+# Environment variables for MongoDB docker container.
+[services.kaen.mongodb.env]
+MONGO_INITDB_ROOT_USERNAME = "YOUR_ROOT_NAME"   # Root user of MongoDB server inside the container
+MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB server inside the container
+
+
+# Configuration for `Hikari`, a DNS Server holding `A` records of all deployed applications.
 [services.hikari]
 # Time Interval (in seconds) in which `Hikari` updates its
 # `Record Storage` by polling the central registry-server.
@@ -155,28 +180,3 @@ passphrase = ""   # Passphrase for decrypting the Private Key
 # To be used when the current node is only accessible by a jump host or 
 # behind some network forwarding rule.
 entrypoint_ip = ""
-
-
-# Configuration for `MySQL` service, a REST API for managing
-# MySQL databases using a single docker container.
-# A node with `MySQL` service deployed is a worker node.
-[services.mysql]
-deploy = true   # Deploy MySQL Service?
-port = 9000
-container_port = 33060  # Port on which the MySQL container will run
-# Environment variables for MySQL docker container.
-[services.mysql.env]
-MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server inside the container
-
-
-# Configuration for `MongoDB` service, a REST API for managing
-# MongoDB databases using a single docker container.
-# A node with `MongoDB` service deployed is a worker node.
-[services.mongodb]
-deploy = true   # Deploy MongoDB Service?
-port = 9001
-container_port = 27018  # Port on which the MongoDB container will run
-# Environment variables for MongoDB docker container.
-[services.mongodb.env]
-MONGO_INITDB_ROOT_USERNAME = "YOUR_ROOT_NAME"   # Root user of MongoDB server inside the container
-MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB server inside the container

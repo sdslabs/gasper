@@ -13,12 +13,12 @@ var (
 	mysqlDriver       = "mysql"
 	mysqlHost         = `%`
 	mysqlRootUser     = "root"
-	mysqlRootPassword = configs.ServiceConfig.Mysql.Env["MYSQL_ROOT_PASSWORD"].(string)
+	mysqlRootPassword = configs.ServiceConfig.Kaen.MySQL.Env["MYSQL_ROOT_PASSWORD"].(string)
 )
 
 // CreateMysqlDB creates a database in the Mysql instance with the given database name, user and password
 func CreateMysqlDB(db types.Database) error {
-	port := configs.ServiceConfig.Mysql.ContainerPort
+	port := configs.ServiceConfig.Kaen.MySQL.ContainerPort
 
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", port)
 	connection := fmt.Sprintf("%s:%s@%s/", mysqlRootUser, mysqlRootPassword, agentAddress)
@@ -61,7 +61,7 @@ func CreateMysqlDB(db types.Database) error {
 // DeleteMysqlDB deletes the database given by the database name and username
 func DeleteMysqlDB(databaseName string) error {
 	username := databaseName
-	port := configs.ServiceConfig.Mysql.ContainerPort
+	port := configs.ServiceConfig.Kaen.MySQL.ContainerPort
 
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", port)
 	connection := fmt.Sprintf("%s:%s@%s/", mysqlRootUser, mysqlRootPassword, agentAddress)

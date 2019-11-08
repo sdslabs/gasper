@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"reflect"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
+	"google.golang.org/grpc"
 )
 
 func checkAndPullImages() {
@@ -23,6 +25,16 @@ func checkAndPullImages() {
 			docker.Pull(image)
 		}
 	}
+}
+
+func startGrpcServer(server *grpc.Server, port int) error {
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
+	if err != nil {
+		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
+		utils.Log(msg, utils.ErrorTAG)
+		panic(msg)
+	}
+	return server.Serve(lis)
 }
 
 func buildHTTPServer(handler http.Handler, port int) *http.Server {

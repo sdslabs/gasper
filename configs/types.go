@@ -85,18 +85,18 @@ type HikariService struct {
 	RecordUpdateInterval time.Duration `toml:"record_update_interval"`
 }
 
-// MysqlService is the configuration for Mysql microservice
-type MysqlService struct {
-	GenericService
+// DatabaseService is the configuration for database servers
+type DatabaseService struct {
+	PlugIn        bool    `toml:"plugin"`
 	ContainerPort int     `toml:"container_port"`
 	Env           types.M `toml:"env"`
 }
 
-// MongodbService is the configuration for Mongodb microservice
-type MongodbService struct {
+// KaenService is the configuration for Kaen microservice
+type KaenService struct {
 	GenericService
-	ContainerPort int     `toml:"container_port"`
-	Env           types.M `toml:"env"`
+	MySQL   DatabaseService `toml:"mysql"`
+	MongoDB DatabaseService `toml:"mongodb"`
 }
 
 // Images is the configuration for the docker images in use
@@ -119,8 +119,7 @@ type Services struct {
 	SSH              SSHService     `toml:"ssh"`
 	Enrai            EnraiService   `toml:"enrai"`
 	Hikari           HikariService  `toml:"hikari"`
-	Mysql            MysqlService   `toml:"mysql"`
-	Mongodb          MongodbService `toml:"mongodb"`
+	Kaen             KaenService    `toml:"kaen"`
 }
 
 // GasperCfg is the configuration for the entire project

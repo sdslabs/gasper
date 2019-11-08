@@ -7,6 +7,15 @@ const (
 	// Mizu holds the name of `mizu` microservice
 	Mizu = "mizu"
 
+	// Kaen holds the name of `kaen` microservice
+	Kaen = "kaen"
+
+	// MySQL holds the name of `mysql` component under `kaen`
+	MySQL = "mysql"
+
+	// MongoDB holds the name of `mongodb` mongo component under `kaen`
+	MongoDB = "mongodb"
+
 	// SSH holds the name of `ssh` microservice
 	SSH = "ssh"
 
@@ -18,12 +27,6 @@ const (
 
 	// EnraiSSL holds the name of `enrai` microservice with SSL support
 	EnraiSSL = "enrai_ssl"
-
-	// MySQL holds the name of `mysql` microservice
-	MySQL = "mysql"
-
-	// MongoDB holds the name of `mongodb` microservice
-	MongoDB = "mongodb"
 
 	// DefaultMemory is the default memory allotted to a container
 	DefaultMemory = 0.5

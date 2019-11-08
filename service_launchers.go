@@ -1,18 +1,15 @@
 package main
 
 import (
-	"fmt"
-	"net"
-
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/dominus"
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
+	"github.com/sdslabs/gasper/services/kaen"
 	"github.com/sdslabs/gasper/services/mizu"
-	"github.com/sdslabs/gasper/services/mongodb"
-	"github.com/sdslabs/gasper/services/mysql"
 	"github.com/sdslabs/gasper/services/ssh"
+	"github.com/sdslabs/gasper/types"
 )
 
 type serviceLauncher struct {
@@ -25,10 +22,6 @@ var launcherBindings = map[string]*serviceLauncher{
 	ssh.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.SSH.Deploy,
 		Start:  ssh.NewService().ListenAndServe,
-	},
-	mysql.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.Mysql.Deploy,
-		Start:  startMySQLService,
 	},
 	mizu.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mizu.Deploy,
@@ -50,31 +43,24 @@ var launcherBindings = map[string]*serviceLauncher{
 		Deploy: configs.ServiceConfig.Enrai.SSL.PlugIn,
 		Start:  startEnraiServiceWithSSL,
 	},
-	mongodb.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.Mongodb.Deploy,
-		Start:  startMongoDBService,
+	kaen.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Kaen.Deploy,
+		Start:  startKaenService,
 	},
 }
 
-func startMySQLService() error {
-	setupDatabaseContainer(mysql.ServiceName)
-	return buildHTTPServer(mysql.NewService(), configs.ServiceConfig.Mysql.Port).ListenAndServe()
-}
-
-func startMongoDBService() error {
-	setupDatabaseContainer(mongodb.ServiceName)
-	return buildHTTPServer(mongodb.NewService(), configs.ServiceConfig.Mongodb.Port).ListenAndServe()
+func startKaenService() error {
+	if configs.ServiceConfig.Kaen.MySQL.PlugIn {
+		setupDatabaseContainer(types.MySQL)
+	}
+	if configs.ServiceConfig.Kaen.MongoDB.PlugIn {
+		setupDatabaseContainer(types.MongoDB)
+	}
+	return startGrpcServer(kaen.NewService(), configs.ServiceConfig.Kaen.Port)
 }
 
 func startMizuService() error {
-	port := configs.ServiceConfig.Mizu.Port
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
-	if err != nil {
-		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
-		utils.Log(msg, utils.ErrorTAG)
-		panic(msg)
-	}
-	return mizu.NewService().Serve(lis)
+	return startGrpcServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port)
 }
 
 func startDominusService() error {
