@@ -43,11 +43,10 @@ func fetchBoundDatabases(currentIP, service string) []types.M {
 
 func registerApps(instances []types.M, currentIP string, config *configs.GenericService) {
 	payload := make(types.M)
-
 	for _, instance := range instances {
 		appBind := &types.AppBindings{
 			Node:   fmt.Sprintf("%s:%d", currentIP, config.Port),
-			Server: fmt.Sprintf("%s:%d", currentIP, instance[mongo.ContainerPortKey].(int32)),
+			Server: fmt.Sprintf("%s:%v", currentIP, instance[mongo.ContainerPortKey]),
 		}
 		appBindingJSON, err := json.Marshal(appBind)
 
@@ -66,10 +65,8 @@ func registerApps(instances []types.M, currentIP string, config *configs.Generic
 
 func registerDatabases(instances []types.M, currentIP string, config *configs.GenericService) {
 	payload := make(types.M)
-
 	for _, instance := range instances {
-		key := fmt.Sprintf("%s:%s", instance["user"].(string), instance["name"].(string))
-		payload[key] = fmt.Sprintf("%s:%d", currentIP, config.Port)
+		payload[instance["name"].(string)] = fmt.Sprintf("%s:%d", currentIP, config.Port)
 	}
 	err := redis.BulkRegisterDatabases(payload)
 	if err != nil {
