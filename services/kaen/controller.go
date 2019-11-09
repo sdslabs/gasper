@@ -98,7 +98,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.GenericRe
 		return nil, err
 	}
 	filter := types.M{
-		"name":                db,
+		"name":                db.GetName(),
 		mongo.InstanceTypeKey: mongo.DBInstance,
 	}
 	_, err = mongo.DeleteInstance(filter)
