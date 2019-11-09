@@ -45,7 +45,7 @@ func NewResErr(code int, msg string, err error) ResponseError {
 
 // Error is the method to implement error interface of Golang
 func (err *rerror) Error() string {
-	return fmt.Sprintf("%d: %s\n%s", err.Code, err.Msg, err.Err.Error())
+	return fmt.Sprintf("%d: %s: %s", err.Code, err.Msg, err.Err.Error())
 }
 
 // Message returns the message accompanying the error

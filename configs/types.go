@@ -50,14 +50,14 @@ type GenericService struct {
 	Port   int  `toml:"port"`
 }
 
-// DominusService is the default configuration for Dominus microservice
-type DominusService struct {
+// KazeService is the default configuration for Kaze microservice
+type KazeService struct {
 	GenericService
 	CleanupInterval time.Duration `toml:"cleanup_interval"`
 }
 
-// SSHService is the configuration for SSH microservice
-type SSHService struct {
+// IwaService is the configuration for Iwa microservice
+type IwaService struct {
 	GenericService
 	HostSigners     []string `toml:"host_signers"`
 	UsingPassphrase bool     `toml:"using_passphrase"`
@@ -85,18 +85,18 @@ type HikariService struct {
 	RecordUpdateInterval time.Duration `toml:"record_update_interval"`
 }
 
-// MysqlService is the configuration for Mysql microservice
-type MysqlService struct {
-	GenericService
+// DatabaseService is the configuration for database servers
+type DatabaseService struct {
+	PlugIn        bool    `toml:"plugin"`
 	ContainerPort int     `toml:"container_port"`
 	Env           types.M `toml:"env"`
 }
 
-// MongodbService is the configuration for Mongodb microservice
-type MongodbService struct {
+// KaenService is the configuration for Kaen microservice
+type KaenService struct {
 	GenericService
-	ContainerPort int     `toml:"container_port"`
-	Env           types.M `toml:"env"`
+	MySQL   DatabaseService `toml:"mysql"`
+	MongoDB DatabaseService `toml:"mongodb"`
 }
 
 // Images is the configuration for the docker images in use
@@ -114,13 +114,12 @@ type Images struct {
 // Services is the configuration for all Services
 type Services struct {
 	ExposureInterval time.Duration  `toml:"exposure_interval"`
-	Dominus          DominusService `toml:"dominus"`
+	Kaze             KazeService    `toml:"kaze"`
 	Mizu             GenericService `toml:"mizu"`
-	SSH              SSHService     `toml:"ssh"`
+	Iwa              IwaService     `toml:"iwa"`
 	Enrai            EnraiService   `toml:"enrai"`
 	Hikari           HikariService  `toml:"hikari"`
-	Mysql            MysqlService   `toml:"mysql"`
-	Mongodb          MongodbService `toml:"mongodb"`
+	Kaen             KaenService    `toml:"kaen"`
 }
 
 // GasperCfg is the configuration for the entire project

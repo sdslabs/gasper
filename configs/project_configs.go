@@ -1,6 +1,9 @@
 package configs
 
-import "github.com/sdslabs/gasper/types"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/types"
+)
 
 // configFile is the main configuration file for gasper
 const configFile = "config.toml"
@@ -33,14 +36,14 @@ var (
 	// ServiceMap is the configuration binding the service name to its
 	// deployment status and port
 	ServiceMap = map[string]*GenericService{
-		types.Dominus: &GenericService{
-			Deploy: ServiceConfig.Dominus.Deploy,
-			Port:   ServiceConfig.Dominus.Port,
+		types.Kaze: &GenericService{
+			Deploy: ServiceConfig.Kaze.Deploy,
+			Port:   ServiceConfig.Kaze.Port,
 		},
 		types.Mizu: &ServiceConfig.Mizu,
-		types.SSH: &GenericService{
-			Deploy: ServiceConfig.SSH.Deploy,
-			Port:   ServiceConfig.SSH.Port,
+		types.Iwa: &GenericService{
+			Deploy: ServiceConfig.Iwa.Deploy,
+			Port:   ServiceConfig.Iwa.Port,
 		},
 		types.Enrai: &GenericService{
 			Deploy: ServiceConfig.Enrai.Deploy,
@@ -51,12 +54,20 @@ var (
 			Port:   ServiceConfig.Hikari.Port,
 		},
 		types.MySQL: &GenericService{
-			Deploy: ServiceConfig.Mysql.Deploy,
-			Port:   ServiceConfig.Mysql.Port,
+			Deploy: ServiceConfig.Kaen.MySQL.PlugIn && ServiceConfig.Kaen.Deploy,
+			Port:   ServiceConfig.Kaen.Port,
 		},
 		types.MongoDB: &GenericService{
-			Deploy: ServiceConfig.Mongodb.Deploy,
-			Port:   ServiceConfig.Mongodb.Port,
+			Deploy: ServiceConfig.Kaen.MongoDB.PlugIn && ServiceConfig.Kaen.Deploy,
+			Port:   ServiceConfig.Kaen.Port,
 		},
 	}
 )
+
+func init() {
+	if GasperConfig.Debug {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+}

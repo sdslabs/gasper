@@ -1,24 +1,32 @@
 package git
 
 import (
+	"fmt"
+
 	gogit "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
 // Clone clones the repo from the url into the destination
-func Clone(url, destination string) error {
+func Clone(url, branch, destination string) error {
 	_, err := gogit.PlainClone(destination, false, &gogit.CloneOptions{
-		URL: url,
+		URL:           url,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", branch)),
+		SingleBranch:  true,
+		Depth:         1,
 	})
 	return err
 }
 
 // CloneWithToken clones the repo from the url using access token
 // which is an alternative for auth to clone private repositories
-func CloneWithToken(url, destination, token string) error {
+func CloneWithToken(url, branch, destination, token string) error {
 	_, err := gogit.PlainClone(destination, false, &gogit.CloneOptions{
-		URL: url,
+		URL:           url,
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/heads/%s", branch)),
+		SingleBranch:  true,
+		Depth:         1,
 		Auth: &http.BasicAuth{
 			// Since cloning through token username can be anything but not an empty string
 			Username: "random_string",

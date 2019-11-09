@@ -3,13 +3,13 @@ package main
 import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
-	"github.com/sdslabs/gasper/services/dominus"
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
+	"github.com/sdslabs/gasper/services/iwa"
+	"github.com/sdslabs/gasper/services/kaen"
+	"github.com/sdslabs/gasper/services/kaze"
 	"github.com/sdslabs/gasper/services/mizu"
-	"github.com/sdslabs/gasper/services/mongodb"
-	"github.com/sdslabs/gasper/services/mysql"
-	"github.com/sdslabs/gasper/services/ssh"
+	"github.com/sdslabs/gasper/types"
 )
 
 type serviceLauncher struct {
@@ -19,21 +19,17 @@ type serviceLauncher struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]*serviceLauncher{
-	ssh.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.SSH.Deploy,
-		Start:  ssh.NewService().ListenAndServe,
-	},
-	mysql.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.Mysql.Deploy,
-		Start:  startMySQLService,
+	kaze.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Kaze.Deploy,
+		Start:  startKazeService,
 	},
 	mizu.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mizu.Deploy,
 		Start:  startMizuService,
 	},
-	dominus.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.Dominus.Deploy,
-		Start:  startDominusService,
+	iwa.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Iwa.Deploy,
+		Start:  iwa.NewService().ListenAndServe,
 	},
 	hikari.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Hikari.Deploy,
@@ -47,28 +43,28 @@ var launcherBindings = map[string]*serviceLauncher{
 		Deploy: configs.ServiceConfig.Enrai.SSL.PlugIn,
 		Start:  startEnraiServiceWithSSL,
 	},
-	mongodb.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.Mongodb.Deploy,
-		Start:  startMongoDBService,
+	kaen.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Kaen.Deploy,
+		Start:  startKaenService,
 	},
 }
 
-func startMySQLService() error {
-	setupDatabaseContainer(mysql.ServiceName)
-	return buildHTTPServer(mysql.NewService(), configs.ServiceConfig.Mysql.Port).ListenAndServe()
-}
-
-func startMongoDBService() error {
-	setupDatabaseContainer(mongodb.ServiceName)
-	return buildHTTPServer(mongodb.NewService(), configs.ServiceConfig.Mongodb.Port).ListenAndServe()
+func startKaenService() error {
+	if configs.ServiceConfig.Kaen.MySQL.PlugIn {
+		setupDatabaseContainer(types.MySQL)
+	}
+	if configs.ServiceConfig.Kaen.MongoDB.PlugIn {
+		setupDatabaseContainer(types.MongoDB)
+	}
+	return startGrpcServer(kaen.NewService(), configs.ServiceConfig.Kaen.Port)
 }
 
 func startMizuService() error {
-	return buildHTTPServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port).ListenAndServe()
+	return startGrpcServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port)
 }
 
-func startDominusService() error {
-	return buildHTTPServer(dominus.NewService(), configs.ServiceConfig.Dominus.Port).ListenAndServe()
+func startKazeService() error {
+	return buildHTTPServer(kaze.NewService(), configs.ServiceConfig.Kaze.Port).ListenAndServe()
 }
 
 func startEnraiService() error {
@@ -82,7 +78,7 @@ func startEnraiServiceWithSSL() error {
 	err := buildHTTPServer(enrai.NewService(), port).ListenAndServeTLS(certificate, privateKey)
 	if err != nil {
 		utils.Log("There was a problem deploying Enrai Service with SSL", utils.ErrorTAG)
-		utils.Log("Make sure the paths of certificate and private key are correct in `config.json`", utils.ErrorTAG)
+		utils.Log("Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
 		utils.LogError(err)
 		panic(err)
 	}

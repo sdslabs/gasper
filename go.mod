@@ -17,6 +17,7 @@ require (
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/example v0.0.0-20170904185048-46695d81d1fa // indirect
+	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/howeyc/fsnotify v0.9.0 // indirect
@@ -41,6 +42,8 @@ require (
 	golang.org/x/tools v0.0.0-20191029041327-9cc4af7d6b2c // indirect
 	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
+	google.golang.org/grpc v1.25.0
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
 	gopkg.in/src-d/go-git.v4 v4.8.1
+	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )

@@ -3,80 +3,81 @@ package database
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var (
-	mongoRootUser     = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
-	mongoRootPassword = configs.ServiceConfig.Mongodb.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
+	mongoRootUser     = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
+	mongoRootPassword = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
 )
 
-// CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
-func CreateMongoDB(database, username, password string) error {
-	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-
-	_, err := configDB(ctx, database, username, password)
-
+func createConnection(ctx context.Context) (*mongo.Client, error) {
+	port := configs.ServiceConfig.Kaen.MongoDB.ContainerPort
+	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, port)
+	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {
-		return fmt.Errorf("database configuration failed: %v", err)
+		return nil, fmt.Errorf("couldn't connect to mongo: %s", err.Error())
+	}
+	err = client.Connect(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("mongo client couldn't connect with background context: %s", err.Error())
+	}
+	return client, nil
+}
+
+func exec(ctx context.Context, conn *mongo.Database, command bson.M) error {
+	v := &(mongo.SingleResult{})
+	result := conn.RunCommand(ctx, command)
+	err := (*result).Decode(v)
+	return err
+}
+
+func createUser(ctx context.Context, conn *mongo.Database, db types.Database) error {
+	return exec(
+		ctx,
+		conn,
+		bson.M{
+			"createUser": db.GetUser(),
+			"pwd":        db.GetPassword(),
+			"roles": bson.A{
+				bson.M{
+					"role": "dbOwner",
+					"db":   db.GetName(),
+				},
+				"readWrite",
+			},
+		})
+}
+
+func dropUser(ctx context.Context, conn *mongo.Database, user string) error {
+	return exec(ctx, conn, bson.M{"dropUser": user})
+}
+
+func dropDatabase(ctx context.Context, conn *mongo.Database) error {
+	return exec(ctx, conn, bson.M{"dropDatabase": 1})
+}
+
+func refreshMongoDBUser(ctx context.Context, conn *mongo.Database, db types.Database) error {
+	err := dropUser(ctx, conn, db.GetUser())
+	if err != nil {
+		return fmt.Errorf("Error while deleting the user : %s", err.Error())
 	}
 
+	err = createUser(ctx, conn, db)
+	if err != nil {
+		return fmt.Errorf("Error while creating the database : %s", err.Error())
+	}
 	return nil
 }
 
-func configDB(ctx context.Context, database, username, password string) (*mongo.Database, error) {
-	client, err := createConnection(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	dbs, errg := client.ListDatabaseNames(ctx, bson.M{})
-
-	if errg != nil {
-		return nil, fmt.Errorf("Error while creating the database : %s", errg)
-	}
-
-	for i := 0; i < len(dbs); i++ {
-		if strings.Compare(dbs[i], database) == 0 {
-			return nil, fmt.Errorf("Error while creating the database : Database already Exists")
-		}
-	}
-
-	db := client.Database(database)
-
-	commandData := bson.M{"createUser": username,
-		"pwd": password,
-		"roles": bson.A{
-			bson.M{"role": "dbOwner",
-				"db": database},
-			"readWrite",
-		},
-	}
-
-	var v interface{}
-	v = &(mongo.SingleResult{})
-	result := db.RunCommand(ctx, commandData)
-	err = (*result).Decode(v)
-
-	if err != nil {
-		errs := refreshMongoDBUser(ctx, database, username, password, client)
-		if errs != nil {
-			return nil, fmt.Errorf("Error while creating the database : %s", errs)
-		}
-	}
-
-	return db, nil
-}
-
-// DeleteMongoDB deletes a mongo database
-func DeleteMongoDB(database string) error {
+// CreateMongoDB creates a database in the mongodb instance with the given database name, user and password
+func CreateMongoDB(db types.Database) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -86,60 +87,48 @@ func DeleteMongoDB(database string) error {
 		return err
 	}
 
-	db := client.Database(database)
-
-	commandData := bson.M{"dropDatabase": 1}
-
-	var v interface{}
-	v = &(mongo.SingleResult{})
-	result := db.RunCommand(ctx, commandData)
-	err = (*result).Decode(v)
-
+	databases, err := client.ListDatabaseNames(ctx, bson.M{"name": db.GetName()})
 	if err != nil {
-		return fmt.Errorf("Error while deleting the database : %s", err)
+		return fmt.Errorf("Error while creating the database : %s", err.Error())
 	}
+
+	if utils.Contains(databases, db.GetName()) {
+		return fmt.Errorf("Error while creating the database : Database already Exists")
+	}
+
+	conn := client.Database(db.GetName())
+
+	err = createUser(ctx, conn, db)
+	if err != nil {
+		if err = refreshMongoDBUser(ctx, conn, db); err != nil {
+			return fmt.Errorf("Error while creating the database : %s", err.Error())
+		}
+	}
+
 	return nil
 }
 
-func createConnection(ctx context.Context) (*mongo.Client, error) {
-	port := configs.ServiceConfig.Mongodb.ContainerPort
-	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, port)
-	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
+// DeleteMongoDB deletes a mongo database
+func DeleteMongoDB(databaseName string) error {
+	ctx := context.Background()
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	client, err := createConnection(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("couldn't connect to mongo: %v", err)
+		return err
 	}
-	err = client.Connect(ctx)
+
+	conn := client.Database(databaseName)
+
+	err = dropDatabase(ctx, conn)
 	if err != nil {
-		return nil, fmt.Errorf("mongo client couldn't connect with background context: %v", err)
+		return fmt.Errorf("Error while deleting the database : %s", err.Error())
 	}
-	return client, nil
-}
 
-func refreshMongoDBUser(ctx context.Context, database, username, password string, client *mongo.Client) error {
-	db := client.Database(database)
-	var v interface{}
-	v = &(mongo.SingleResult{})
-	dropUser := db.RunCommand(ctx, bson.M{"dropUser": username})
-	err := (*dropUser).Decode(v)
+	err = dropUser(ctx, conn, databaseName)
 	if err != nil {
-		return fmt.Errorf("Error while deleting the user : %s", err)
+		return fmt.Errorf("Error while deleting the user : %s", err.Error())
 	}
-
-	commandData := bson.M{"createUser": username,
-		"pwd": password,
-		"roles": bson.A{
-			bson.M{"role": "dbOwner",
-				"db": database},
-			"readWrite",
-		},
-	}
-
-	reCreateUser := db.RunCommand(ctx, commandData)
-	errc := (*reCreateUser).Decode(v)
-
-	if errc != nil {
-		return fmt.Errorf("Error while creating the database : %s", errc)
-	}
-
 	return nil
 }

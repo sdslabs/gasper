@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package application;
+
+service ApplicationFactory {
+    rpc Create (RequestBody) returns (ResponseBody) {}
+    rpc Delete (NameHolder) returns (DeletionResponse) {}
+    rpc Rebuild (NameHolder) returns (ResponseBody) {}
+    rpc FetchLogs (LogRequest) returns (LogResponse) {}
+}
+
+message RequestBody {
+    string language = 1;
+    string owner = 2;
+    bytes data = 3;
+}
+
+message ResponseBody {
+    bytes data = 1;
+}
+
+message NameHolder {
+    string name = 1;
+}
+
+message DeletionResponse {
+    bool success = 1;
+}
+
+message LogRequest {
+    string name = 1;
+    string tail = 2;
+}
+
+message LogResponse {
+    bool success = 1;
+    repeated string data = 2;
+}
