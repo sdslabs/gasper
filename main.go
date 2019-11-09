@@ -4,9 +4,9 @@ import (
 	"strings"
 
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/middlewares"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/dominus"
+	"github.com/sdslabs/gasper/services/dominus/middlewares"
 	"github.com/sdslabs/gasper/services/hikari"
 	"golang.org/x/sync/errgroup"
 )
