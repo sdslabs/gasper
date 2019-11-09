@@ -19,6 +19,7 @@ var disallowedApplicationNames = []string{
 	types.EnraiSSL,
 	types.MySQL,
 	types.MongoDB,
+	types.Kaen,
 	types.SSH,
 }
 

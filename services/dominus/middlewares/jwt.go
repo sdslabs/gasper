@@ -40,13 +40,13 @@ type registerBody struct {
 }
 
 // RegisterValidator validates the user registration request
-func RegisterValidator(ctx *gin.Context) {
-	requestBody := getBodyFromContext(ctx)
+func RegisterValidator(c *gin.Context) {
+	requestBody := getBodyFromContext(c)
 	user := &registerBody{}
 	err := json.Unmarshal(requestBody, user)
 
 	if err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{
+		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
 			"error":   err.Error(),
 		})
@@ -54,23 +54,23 @@ func RegisterValidator(ctx *gin.Context) {
 	}
 
 	if result, err := validator.ValidateStruct(user); !result {
-		ctx.AbortWithStatusJSON(400, gin.H{
+		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
 			"error":   err.Error(),
 		})
 		return
 	}
-	ctx.Next()
+	c.Next()
 }
 
 // Register handles registration of new users
-func Register(ctx *gin.Context) {
+func Register(c *gin.Context) {
 	var register registerBody
-	ctx.BindJSON(&register)
+	c.BindJSON(&register)
 	filter := types.M{emailKey: register.Email}
 	userInfo := mongo.FetchUserInfo(filter)
 	if len(userInfo) > 0 {
-		ctx.JSON(400, gin.H{
+		c.JSON(400, gin.H{
 			"success": false,
 			"error":   "email already registered",
 		})
@@ -78,7 +78,7 @@ func Register(ctx *gin.Context) {
 	}
 	hashedPass, err := utils.HashPassword(register.Password)
 	if err != nil {
-		ctx.JSON(500, gin.H{
+		c.JSON(500, gin.H{
 			"success": false,
 			"error":   err.Error(),
 		})
@@ -92,13 +92,13 @@ func Register(ctx *gin.Context) {
 	}
 	_, err = mongo.RegisterUser(createUser)
 	if err != nil {
-		ctx.JSON(500, gin.H{
+		c.JSON(500, gin.H{
 			"success": false,
 			"error":   err.Error(),
 		})
 		return
 	}
-	ctx.JSON(200, gin.H{
+	c.JSON(200, gin.H{
 		"message": "User created",
 		"success": true,
 	})
@@ -113,9 +113,9 @@ var JWT = &jwt.GinJWTMiddleware{
 	TokenLookup:   "header: Authorization",
 	TokenHeadName: "Bearer",
 	TimeFunc:      time.Now,
-	Authenticator: func(ctx *gin.Context) (interface{}, error) {
+	Authenticator: func(c *gin.Context) (interface{}, error) {
 		var auth authBody
-		if err := ctx.ShouldBind(&auth); err != nil {
+		if err := c.ShouldBind(&auth); err != nil {
 			return nil, jwt.ErrMissingLoginValues
 		}
 		email := auth.Email
@@ -154,12 +154,12 @@ var JWT = &jwt.GinJWTMiddleware{
 			IsAdmin:  mapClaims[isAdminKey].(bool),
 		}
 	},
-	Authorizator: func(data interface{}, ctx *gin.Context) bool {
+	Authorizator: func(data interface{}, c *gin.Context) bool {
 		_, ok := data.(*User)
 		return ok
 	},
-	Unauthorized: func(ctx *gin.Context, code int, message string) {
-		ctx.JSON(code, gin.H{
+	Unauthorized: func(c *gin.Context, code int, message string) {
+		c.JSON(code, gin.H{
 			"success": false,
 			"error":   message,
 		})
@@ -167,8 +167,8 @@ var JWT = &jwt.GinJWTMiddleware{
 }
 
 // ExtractClaims takes the gin context and returns the User
-func ExtractClaims(ctx *gin.Context) *User {
-	claimsMap := jwt.ExtractClaims(ctx)
+func ExtractClaims(c *gin.Context) *User {
+	claimsMap := jwt.ExtractClaims(c)
 	user, success := JWT.IdentityHandler(claimsMap).(*User)
 	if !success {
 		return nil
