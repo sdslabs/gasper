@@ -1,4 +1,4 @@
-package admin
+package controllers
 
 const (
 	// WorkerNode is the reference to the worker nodes

@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/gin-contrib/cors"
-	"github.com/sdslabs/gasper/lib/gin"
+	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/middlewares"
-	adminHandlers "github.com/sdslabs/gasper/services/dominus/admin"
+	. "github.com/sdslabs/gasper/services/dominus/controllers"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -17,7 +17,7 @@ const ServiceName = types.Dominus
 // NewService returns a new instance of the current microservice
 func NewService() http.Handler {
 	// router is the main routes handler for the current microservice package
-	router := gin.NewEngine()
+	router := gin.Default()
 
 	corsConfig := cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
@@ -38,22 +38,22 @@ func NewService() http.Handler {
 	app := router.Group("/apps")
 	app.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		app.POST("/:language", middlewares.ValidateApplicationRequest, createApp)
-		app.GET("", fetchAppsByUser())
-		app.GET("/:app", middlewares.IsAppOwner(), gin.FetchAppInfo)
-		app.PUT("/:app", middlewares.IsAppOwner(), gin.UpdateAppByName)
-		app.DELETE("/:app", middlewares.IsAppOwner(), deleteApp)
-		app.GET("/:app/logs", middlewares.IsAppOwner(), fetchAppLogs)
-		app.PATCH("/:app/rebuild", middlewares.IsAppOwner(), rebuildApp)
+		app.POST("/:language", middlewares.ValidateApplicationRequest, CreateApp)
+		app.GET("", FetchAppsByUser)
+		app.GET("/:app", middlewares.IsAppOwner(), GetApplicationInfo)
+		app.PUT("/:app", middlewares.IsAppOwner(), UpdateAppByName)
+		app.DELETE("/:app", middlewares.IsAppOwner(), DeleteApp)
+		app.GET("/:app/logs", middlewares.IsAppOwner(), FetchAppLogs)
+		app.PATCH("/:app/rebuild", middlewares.IsAppOwner(), RebuildApp)
 	}
 
 	db := router.Group("/dbs")
 	db.Use(middlewares.JWT.MiddlewareFunc())
 	{
-		db.POST("/:database", middlewares.ValidateDatabaseRequest, trimURLPath(2), createDatabase)
-		db.GET("", fetchDBsByUser())
-		db.GET("/:db", middlewares.IsDbOwner(), gin.FetchDBInfo)
-		db.DELETE("/:db", middlewares.IsDbOwner(), trimURLPath(2), deleteDB)
+		db.POST("/:database", middlewares.ValidateDatabaseRequest, CreateDatabase)
+		db.GET("", FetchDatabasesByUser)
+		db.GET("/:db", middlewares.IsDbOwner(), GetDatabaseInfo)
+		db.DELETE("/:db", middlewares.IsDbOwner(), DeleteDatabase)
 	}
 
 	admin := router.Group("/admin")
@@ -61,28 +61,28 @@ func NewService() http.Handler {
 	{
 		apps := admin.Group("/apps")
 		{
-			apps.GET("", adminHandlers.GetAllApplications)
-			apps.GET("/:app", adminHandlers.GetApplicationInfo)
-			apps.DELETE("/:app", deleteApp)
+			apps.GET("", GetAllApplications)
+			apps.GET("/:app", GetApplicationInfo)
+			apps.DELETE("/:app", DeleteApp)
 		}
 		dbs := admin.Group("/dbs")
 		{
-			dbs.GET("", adminHandlers.GetAllDatabases)
-			dbs.GET("/:db", adminHandlers.GetDatabaseInfo)
-			dbs.DELETE("/:db", trimURLPath(3), deleteDB)
+			dbs.GET("", GetAllDatabases)
+			dbs.GET("/:db", GetDatabaseInfo)
+			dbs.DELETE("/:db", DeleteDatabase)
 		}
 		users := admin.Group("/users")
 		{
-			users.GET("", adminHandlers.GetAllUsers)
-			users.GET("/:user", adminHandlers.GetUserInfo)
-			users.DELETE("/:user", adminHandlers.DeleteUser)
-			users.PATCH("/:user/grant", adminHandlers.GrantSuperuserPrivilege())
-			users.PATCH("/:user/revoke", adminHandlers.RevokeSuperuserPrivilege())
+			users.GET("", GetAllUsers)
+			users.GET("/:user", GetUserInfo)
+			users.DELETE("/:user", DeleteUser)
+			users.PATCH("/:user/grant", GrantSuperuserPrivilege)
+			users.PATCH("/:user/revoke", RevokeSuperuserPrivilege)
 		}
 		nodes := admin.Group("/nodes")
 		{
-			nodes.GET("", adminHandlers.GetAllNodes)
-			nodes.GET("/:type", adminHandlers.GetNodesByName)
+			nodes.GET("", GetAllNodes)
+			nodes.GET("/:type", GetNodesByName)
 		}
 	}
 

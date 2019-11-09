@@ -56,7 +56,7 @@ func reverseProxy(c *gin.Context) {
 // NewService returns a new instance of the current microservice
 func NewService() http.Handler {
 	// router is the main routes handler for the current microservice package
-	router := gin.New()
+	router := gin.Default()
 	router.NoRoute(reverseProxy)
 	return router
 }

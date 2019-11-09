@@ -1,6 +1,9 @@
 package configs
 
-import "github.com/sdslabs/gasper/types"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/types"
+)
 
 // configFile is the main configuration file for gasper
 const configFile = "config.toml"
@@ -60,3 +63,11 @@ var (
 		},
 	}
 )
+
+func init() {
+	if GasperConfig.Debug {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+}

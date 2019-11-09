@@ -1,4 +1,4 @@
-package dominus
+package controllers
 
 import (
 	"errors"
@@ -10,9 +10,90 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 )
 
-func createApp(c *gin.Context) {
+// FetchAppsByUser returns all applications owned by a user
+func FetchAppsByUser(c *gin.Context) {
+	fetchInstancesByUser(c, mongo.AppInstance)
+}
+
+// GetAllApplications gets all the applications from DB
+func GetAllApplications(c *gin.Context) {
+	fetchInstances(c, mongo.AppInstance)
+}
+
+// GetApplicationInfo gets info regarding a particular application
+func GetApplicationInfo(c *gin.Context) {
+	app := c.Param("app")
+	filter := make(types.M)
+	filter["name"] = app
+	c.JSON(200, gin.H{
+		"success": true,
+		"data":    mongo.FetchAppInfo(filter),
+	})
+}
+
+// BulkUpdateApps updates multiple application documents in mongoDB
+func BulkUpdateApps(c *gin.Context) {
+	queries := c.Request.URL.Query()
+	filter := utils.QueryToFilter(queries)
+	filter[mongo.InstanceTypeKey] = mongo.AppInstance
+
+	var data types.M
+	c.BindJSON(&data)
+
+	err := validateUpdatePayload(data)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	_, err = mongo.UpdateInstances(filter, data)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	data["success"] = true
+	c.JSON(200, data)
+}
+
+// UpdateAppByName updates the app getting name from url params
+func UpdateAppByName(c *gin.Context) {
+	app := c.Param("app")
+	filter := types.M{
+		"name":                app,
+		mongo.InstanceTypeKey: mongo.AppInstance,
+	}
+	var data types.M
+	c.BindJSON(&data)
+
+	err := validateUpdatePayload(data)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	err = mongo.UpdateInstance(filter, data)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"success": true,
+	})
+}
+
+// CreateApp creates an application via gRPC
+func CreateApp(c *gin.Context) {
 	instanceURL, err := redis.GetLeastLoadedWorker()
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
@@ -46,7 +127,8 @@ func createApp(c *gin.Context) {
 	c.Data(200, "application/json", response)
 }
 
-func deleteApp(c *gin.Context) {
+// DeleteApp deletes an application via gRPC
+func DeleteApp(c *gin.Context) {
 	appName := c.Param("app")
 	instanceURL, err := redis.FetchAppNode(appName)
 	if err != nil {
@@ -65,7 +147,8 @@ func deleteApp(c *gin.Context) {
 	c.JSON(200, response)
 }
 
-func fetchAppLogs(c *gin.Context) {
+// FetchAppLogs returns the docker container logs of an application via gRPC
+func FetchAppLogs(c *gin.Context) {
 	appName := c.Param("app")
 	instanceURL, err := redis.FetchAppNode(appName)
 	if err != nil {
@@ -89,7 +172,8 @@ func fetchAppLogs(c *gin.Context) {
 	c.JSON(200, response)
 }
 
-func rebuildApp(c *gin.Context) {
+// RebuildApp rebuilds an application via gRPC
+func RebuildApp(c *gin.Context) {
 	appName := c.Param("app")
 	instanceURL, err := redis.FetchAppNode(appName)
 	if err != nil {
@@ -106,78 +190,4 @@ func rebuildApp(c *gin.Context) {
 		return
 	}
 	c.Data(200, "application/json", response)
-}
-
-func createDatabase(c *gin.Context) {
-	database := c.Param("database")
-	instanceURL, err := redis.GetLeastLoadedInstance(database)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
-		return
-	}
-	if instanceURL == redis.ErrEmptySet {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   "No worker instances available at the moment",
-		})
-		return
-	}
-	reverseProxy(c, instanceURL)
-}
-
-func execute(c *gin.Context) {
-	app := c.Param("app")
-	instanceURL, err := redis.FetchAppNode(app)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   fmt.Sprintf("Application %s is not deployed at the moment", app),
-		})
-		return
-	}
-	reverseProxy(c, instanceURL)
-}
-
-func deleteDB(c *gin.Context) {
-	db := c.Param("db")
-	instanceURL, err := redis.FetchDBURL(db)
-	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   "No such database exists",
-		})
-		return
-	}
-	c.Request.URL.Path = "/db" + c.Request.URL.Path
-	reverseProxy(c, instanceURL)
-}
-
-func fetchInstancesByUser(instanceType string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		filter := utils.QueryToFilter(c.Request.URL.Query())
-		filter[mongo.InstanceTypeKey] = instanceType
-
-		claims := middlewares.ExtractClaims(c)
-		if claims == nil {
-			utils.SendServerErrorResponse(c, errors.New("Failed to extract JWT claims"))
-			return
-		}
-
-		filter["owner"] = claims.Email
-		c.AbortWithStatusJSON(200, gin.H{
-			"success": true,
-			"data":    mongo.FetchInstances(filter),
-		})
-	}
-}
-
-func fetchAppsByUser() gin.HandlerFunc {
-	return fetchInstancesByUser(mongo.AppInstance)
-}
-
-func fetchDBsByUser() gin.HandlerFunc {
-	return fetchInstancesByUser(mongo.DBInstance)
 }
