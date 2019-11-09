@@ -78,7 +78,7 @@ func startEnraiServiceWithSSL() error {
 	err := buildHTTPServer(enrai.NewService(), port).ListenAndServeTLS(certificate, privateKey)
 	if err != nil {
 		utils.Log("There was a problem deploying Enrai Service with SSL", utils.ErrorTAG)
-		utils.Log("Make sure the paths of certificate and private key are correct in `config.json`", utils.ErrorTAG)
+		utils.Log("Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
 		utils.LogError(err)
 		panic(err)
 	}

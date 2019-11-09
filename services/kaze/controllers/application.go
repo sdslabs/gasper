@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/factory"
@@ -121,7 +122,20 @@ func CreateApp(c *gin.Context) {
 
 	response, err := factory.CreateApplication(c.Param("language"), claims.Email, instanceURL, data)
 	if err != nil {
-		utils.SendServerErrorResponse(c, err)
+		utils.LogError(err)
+		if strings.Contains(err.Error(), "authentication required") {
+			c.AbortWithStatusJSON(400, gin.H{
+				"success": false,
+				"error":   "Invalid git repository url or access token",
+			})
+		} else if strings.Contains(err.Error(), "couldn't find remote ref") {
+			c.AbortWithStatusJSON(400, gin.H{
+				"success": false,
+				"error":   "Invalid git branch provided",
+			})
+		} else {
+			utils.SendServerErrorResponse(c, err)
+		}
 		return
 	}
 	c.Data(200, "application/json", response)

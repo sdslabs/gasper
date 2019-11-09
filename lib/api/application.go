@@ -22,9 +22,18 @@ func cloneRepo(app types.Application, storedir string, mutex map[string]chan typ
 	}
 
 	if app.HasGitAccessToken() {
-		err = git.CloneWithToken(app.GetGitRepositoryURL(), storedir, app.GetGitAccessToken())
+		err = git.CloneWithToken(
+			app.GetGitRepositoryURL(),
+			app.GetGitRepositoryBranch(),
+			storedir,
+			app.GetGitAccessToken(),
+		)
 	} else {
-		err = git.Clone(app.GetGitRepositoryURL(), storedir)
+		err = git.Clone(
+			app.GetGitRepositoryURL(),
+			app.GetGitRepositoryBranch(),
+			storedir,
+		)
 	}
 
 	if err != nil {
