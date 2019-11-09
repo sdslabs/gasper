@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "Gasper API",
-    "description": "Handles authentication, creation/management of applications, databases, users and also provides a superuser API. <br><br> Only a superuser can avail the superuser API. A superuser can **grant/revoke** superuser privileges to other users. A default  superuser is created every time a Gasper instance is launched whose credentials are defined in the `admin` section of `config.toml`, the main configuration file. A sample configuration file is available [here](https://github.com/sdslabs/gasper/blob/develop/config.sample.toml#L37).<br><br>\n**Note:-** Normally the applications and databases can only be managed by their owners but the superuser can bypass that check.<br><br>\n**PS:-** If you want to programmatically generate a client for this API, you can find the corresponding OpenAPI specifications [here](https://github.com/sdslabs/gasper/tree/develop/docs/content/api/specs/openapi.yaml). We recommend using [OpenAPI-Generator](https://openapi-generator.tech/) for generating clients.",
+    "description": "Handles authentication, creation/management of applications, databases, users and also provides a superuser API. <br><br> Only a superuser can avail the superuser API. A superuser can **grant/revoke** superuser privileges to other users. A default  superuser is created every time a Gasper instance is launched whose credentials are defined in the `admin` section of `config.toml`, the main configuration file. A sample configuration file is available [here](https://github.com/sdslabs/gasper/blob/develop/config.sample.toml#L37).<br><br>\n**Note:-** Normally the applications and databases can only be managed by their owners but the superuser can bypass that check.<br><br>\n**PS:-** If you want to programmatically generate a client for this API, you can find the corresponding OpenAPI specifications [here](https://github.com/sdslabs/gasper/tree/develop/docs/content/api/specs). We recommend using [OpenAPI-Generator](https://openapi-generator.tech/) for generating clients.",
     "contact": {
       "name": "SDSLabs",
       "url": "https://chat.sdslabs.co",
@@ -89,12 +89,35 @@
           }
         }
       },
+      "Git": {
+        "type": "object",
+        "required": [
+          "repo_url"
+        ],
+        "properties": {
+          "repo_url": {
+            "type": "string",
+            "description": "Git Repository URL of the application",
+            "example": "https://github.com/sdslabs/gasper"
+          },
+          "access_token": {
+            "type": "string",
+            "description": "Access token for cloning the application's git repository"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Specific branch to clone",
+            "default": "master",
+            "example": "master"
+          }
+        }
+      },
       "Application": {
         "type": "object",
         "required": [
           "name",
           "password",
-          "git_url",
+          "git",
           "context"
         ],
         "properties": {
@@ -106,14 +129,8 @@
             "type": "string",
             "description": "Password required for SSH access to the application's docker container"
           },
-          "git_url": {
-            "type": "string",
-            "example": "https://github.com/sdslabs/gasper",
-            "description": "Git Repository URL of the application"
-          },
-          "git_access_token": {
-            "type": "string",
-            "description": "Access token for cloning the application's git repository"
+          "git": {
+            "$ref": "#/components/schemas/Git"
           },
           "context": {
             "$ref": "#/components/schemas/Context"
@@ -156,14 +173,8 @@
             "type": "string",
             "description": "Password required for SSH access to the application's docker container"
           },
-          "git_url": {
-            "type": "string",
-            "example": "https://github.com/sdslabs/gasper",
-            "description": "Git Repository URL of the application"
-          },
-          "git_access_token": {
-            "type": "string",
-            "description": "Access token for cloning the application's git repository"
+          "git": {
+            "$ref": "#/components/schemas/Git"
           },
           "context": {
             "$ref": "#/components/schemas/Context"
@@ -373,7 +384,7 @@
             "description": "IPv4 address of the database",
             "example": "192.168.208.208"
           },
-          "container_port": {
+          "port": {
             "type": "string",
             "description": "Port on which the database server is running",
             "example": 35000
@@ -719,14 +730,8 @@
                       "type": "string",
                       "description": "Password required for SSH access to the application's docker container"
                     },
-                    "git_url": {
-                      "type": "string",
-                      "example": "https://github.com/sdslabs/gasper",
-                      "description": "Git Repository URL of the application"
-                    },
-                    "git_access_token": {
-                      "type": "string",
-                      "description": "Access token for cloning the application's git repository"
+                    "git": {
+                      "$ref": "#/components/schemas/Git"
                     },
                     "context": {
                       "$ref": "#/components/schemas/Context"
@@ -1171,14 +1176,8 @@
                       "type": "string",
                       "description": "Password required for SSH access to the application's docker container"
                     },
-                    "git_url": {
-                      "type": "string",
-                      "example": "https://github.com/sdslabs/gasper",
-                      "description": "Git Repository URL of the application"
-                    },
-                    "git_access_token": {
-                      "type": "string",
-                      "description": "Access token for cloning the application's git repository"
+                    "git": {
+                      "$ref": "#/components/schemas/Git"
                     },
                     "context": {
                       "$ref": "#/components/schemas/Context"
@@ -1499,14 +1498,8 @@
                       "type": "string",
                       "description": "Password required for SSH access to the application's docker container"
                     },
-                    "git_url": {
-                      "type": "string",
-                      "example": "https://github.com/sdslabs/gasper",
-                      "description": "Git Repository URL of the application"
-                    },
-                    "git_access_token": {
-                      "type": "string",
-                      "description": "Access token for cloning the application's git repository"
+                    "git": {
+                      "$ref": "#/components/schemas/Git"
                     },
                     "context": {
                       "$ref": "#/components/schemas/Context"
@@ -1873,7 +1866,7 @@
                       "description": "IPv4 address of the database",
                       "example": "192.168.208.208"
                     },
-                    "container_port": {
+                    "port": {
                       "type": "string",
                       "description": "Port on which the database server is running",
                       "example": 35000
