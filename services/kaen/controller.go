@@ -43,6 +43,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 
 	err = pipeline[language].create(db)
 	if err != nil {
+		go pipeline[language].cleanup(db.GetName())
 		return nil, err
 	}
 
