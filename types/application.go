@@ -9,6 +9,7 @@ import (
 type Application interface {
 	GetName() string
 	GetGitRepositoryURL() string
+	GetGitRepositoryBranch() string
 	HasGitAccessToken() bool
 	GetGitAccessToken() string
 	GetIndex() string
@@ -27,6 +28,13 @@ type Application interface {
 	GetContainerPort() int
 	HasConfGenerator() bool
 	InvokeConfGenerator(name, index string) string
+}
+
+// Git stores the information related to the application's git repository
+type Git struct {
+	RepoURL     string `json:"repo_url" bson:"repo_url" valid:"required~Field 'repo_url' inside field 'git' is required but was not provided,url~Field 'repo_url' inside field 'git' is not a valid URL"`
+	AccessToken string `json:"access_token,omitempty" bson:"access_token,omitempty"`
+	Branch      string `json:"branch,omitempty" bson:"branch,omitempty"`
 }
 
 // Context stores the information related to building and running an application
@@ -49,26 +57,25 @@ type Resources struct {
 
 // ApplicationConfig is the configuration required for creating an application
 type ApplicationConfig struct {
-	Name           string                      `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
-	Password       string                      `json:"password" bson:"password" valid:"required~Field 'password' is required but was not provided"`
-	GitURL         string                      `json:"git_url" bson:"git_url" valid:"required~Field 'git_url' is required but was not provided,url~Field 'git_url' is not a valid URL"`
-	GitAccessToken string                      `json:"git_access_token,omitempty" bson:"git_access_token,omitempty"`
-	Context        Context                     `json:"context" bson:"context"`
-	Resources      Resources                   `json:"resources,omitempty" bson:"resources,omitempty"`
-	Env            M                           `json:"env,omitempty" bson:"env,omitempty"`
-	NameServers    []string                    `json:"name_servers,omitempty" bson:"name_servers,omitempty"`
-	DockerImage    string                      `json:"docker_image" bson:"docker_image"`
-	ContainerID    string                      `json:"container_id" bson:"container_id"`
-	ContainerPort  int                         `json:"container_port" bson:"container_port"`
-	ConfGenerator  func(string, string) string `json:"-" bson:"-"`
-	Language       string                      `json:"language" bson:"language"`
-	InstanceType   string                      `json:"instance_type" bson:"instance_type"`
-	CloudflareID   string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
-	AppURL         string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
-	HostIP         string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
-	SSHCmd         string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
-	Owner          string                      `json:"owner,omitempty" bson:"owner,omitempty"`
-	Success        bool                        `json:"success,omitempty" bson:"-"`
+	Name          string                      `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
+	Password      string                      `json:"password" bson:"password" valid:"required~Field 'password' is required but was not provided"`
+	Git           Git                         `json:"git" bson:"git"`
+	Context       Context                     `json:"context" bson:"context"`
+	Resources     Resources                   `json:"resources,omitempty" bson:"resources,omitempty"`
+	Env           M                           `json:"env,omitempty" bson:"env,omitempty"`
+	NameServers   []string                    `json:"name_servers,omitempty" bson:"name_servers,omitempty"`
+	DockerImage   string                      `json:"docker_image" bson:"docker_image"`
+	ContainerID   string                      `json:"container_id" bson:"container_id"`
+	ContainerPort int                         `json:"container_port" bson:"container_port"`
+	ConfGenerator func(string, string) string `json:"-" bson:"-"`
+	Language      string                      `json:"language" bson:"language"`
+	InstanceType  string                      `json:"instance_type" bson:"instance_type"`
+	CloudflareID  string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
+	AppURL        string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
+	HostIP        string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
+	SSHCmd        string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
+	Owner         string                      `json:"owner,omitempty" bson:"owner,omitempty"`
+	Success       bool                        `json:"success,omitempty" bson:"-"`
 }
 
 // GetName returns the application's name
@@ -78,13 +85,22 @@ func (app *ApplicationConfig) GetName() string {
 
 // GetGitRepositoryURL returns the application's git repository URL
 func (app *ApplicationConfig) GetGitRepositoryURL() string {
-	return app.GitURL
+	return app.Git.RepoURL
+}
+
+// GetGitRepositoryBranch returns the branch to clone from the application's git repository
+// Default branch is `master`
+func (app *ApplicationConfig) GetGitRepositoryBranch() string {
+	if app.Git.Branch == "" {
+		return "master"
+	}
+	return app.Git.Branch
 }
 
 // HasGitAccessToken checks whether access token is required for cloning
 // the application's git repository
 func (app *ApplicationConfig) HasGitAccessToken() bool {
-	if app.GitAccessToken == "" {
+	if app.Git.AccessToken == "" {
 		return false
 	}
 	return true
@@ -92,7 +108,7 @@ func (app *ApplicationConfig) HasGitAccessToken() bool {
 
 // GetGitAccessToken returns the application's git access token
 func (app *ApplicationConfig) GetGitAccessToken() string {
-	return app.GitAccessToken
+	return app.Git.AccessToken
 }
 
 // GetIndex returns the index file required for starting the application
