@@ -1,4 +1,4 @@
-package ssh
+package iwa
 
 import (
 	"errors"
@@ -18,7 +18,7 @@ import (
 )
 
 // ServiceName is the name of the current microservice
-const ServiceName = types.SSH
+const ServiceName = types.Iwa
 
 // sessionHandler manages the ssh session.
 func sessionHandler(s ssh.Session) {
@@ -112,20 +112,20 @@ func passwordHandler(ctx ssh.Context, password string) bool {
 
 // NewService returns a new instance of SSH microservice
 func NewService() *ssh.Server {
-	hostSigners, err := getHostSigners(configs.ServiceConfig.SSH.HostSigners)
+	hostSigners, err := getHostSigners(configs.ServiceConfig.Iwa.HostSigners)
 	if err != nil {
 		utils.Log("There was a problem deploying SSH service", utils.ErrorTAG)
 		utils.Log("Make sure the paths of Private Keys is correct in `config.json`", utils.ErrorTAG)
 		utils.LogError(err)
 		panic(err)
 	}
-	if !utils.IsValidPort(configs.ServiceConfig.SSH.Port) {
-		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", configs.ServiceConfig.SSH.Port)
+	if !utils.IsValidPort(configs.ServiceConfig.Iwa.Port) {
+		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", configs.ServiceConfig.Iwa.Port)
 		utils.Log(msg, utils.ErrorTAG)
 		panic(errors.New(msg))
 	}
 	return &ssh.Server{
-		Addr:             fmt.Sprintf(":%d", configs.ServiceConfig.SSH.Port),
+		Addr:             fmt.Sprintf(":%d", configs.ServiceConfig.Iwa.Port),
 		HostSigners:      hostSigners,
 		Handler:          sessionHandler,
 		PasswordHandler:  passwordHandler,

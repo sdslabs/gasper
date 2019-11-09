@@ -20,7 +20,7 @@ var disallowedApplicationNames = []string{
 	types.MySQL,
 	types.MongoDB,
 	types.Kaen,
-	types.SSH,
+	types.Iwa,
 }
 
 var disallowedDatabaseNames = []string{

@@ -56,8 +56,8 @@ type KazeService struct {
 	CleanupInterval time.Duration `toml:"cleanup_interval"`
 }
 
-// SSHService is the configuration for SSH microservice
-type SSHService struct {
+// IwaService is the configuration for Iwa microservice
+type IwaService struct {
 	GenericService
 	HostSigners     []string `toml:"host_signers"`
 	UsingPassphrase bool     `toml:"using_passphrase"`
@@ -116,7 +116,7 @@ type Services struct {
 	ExposureInterval time.Duration  `toml:"exposure_interval"`
 	Kaze             KazeService    `toml:"kaze"`
 	Mizu             GenericService `toml:"mizu"`
-	SSH              SSHService     `toml:"ssh"`
+	Iwa              IwaService     `toml:"iwa"`
 	Enrai            EnraiService   `toml:"enrai"`
 	Hikari           HikariService  `toml:"hikari"`
 	Kaen             KaenService    `toml:"kaen"`

@@ -57,11 +57,11 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		return nil, fmt.Errorf(resErr.Error())
 	}
 
-	sshEntrypointIP := configs.ServiceConfig.SSH.EntrypointIP
+	sshEntrypointIP := configs.ServiceConfig.Iwa.EntrypointIP
 	if len(sshEntrypointIP) == 0 {
 		sshEntrypointIP = utils.HostIP
 	}
-	app.SetSSHCmd(configs.ServiceConfig.SSH.Port, app.GetName(), sshEntrypointIP)
+	app.SetSSHCmd(configs.ServiceConfig.Iwa.Port, app.GetName(), sshEntrypointIP)
 
 	if configs.CloudflareConfig.PlugIn {
 		resp, err := cloudflare.CreateRecord(app.GetName(), mongo.AppInstance)

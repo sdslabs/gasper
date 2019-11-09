@@ -163,11 +163,11 @@ deploy = false  # Deploy Hikari?
 port = 53
 
 
-# Configuration for `SSH` service which provides SSH access
+# Configuration for `Iwa` service which provides SSH access
 # directly to an application's docker container.
 # It uses a password based authentication.
-[services.ssh]
-deploy = false   # Deploy SSH Server?
+[services.iwa]
+deploy = false   # Deploy Iwa?
 port = 2222
 # Location of Private Key for creating the SSH Signer.
 host_signers = ["/home/user/.ssh/id_rsa"]

@@ -41,9 +41,9 @@ var (
 			Port:   ServiceConfig.Kaze.Port,
 		},
 		types.Mizu: &ServiceConfig.Mizu,
-		types.SSH: &GenericService{
-			Deploy: ServiceConfig.SSH.Deploy,
-			Port:   ServiceConfig.SSH.Port,
+		types.Iwa: &GenericService{
+			Deploy: ServiceConfig.Iwa.Deploy,
+			Port:   ServiceConfig.Iwa.Port,
 		},
 		types.Enrai: &GenericService{
 			Deploy: ServiceConfig.Enrai.Deploy,

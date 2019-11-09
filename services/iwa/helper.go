@@ -1,4 +1,4 @@
-package ssh
+package iwa
 
 import (
 	"io/ioutil"
@@ -23,10 +23,10 @@ func getPrivateKey(filepath string) (ssh.Signer, error) {
 
 	var signer gossh.Signer
 
-	if configs.ServiceConfig.SSH.UsingPassphrase {
+	if configs.ServiceConfig.Iwa.UsingPassphrase {
 		signer, err = gossh.ParsePrivateKeyWithPassphrase(
 			key,
-			[]byte(configs.ServiceConfig.SSH.Passphrase),
+			[]byte(configs.ServiceConfig.Iwa.Passphrase),
 		)
 	} else {
 		signer, err = gossh.ParsePrivateKey(key)

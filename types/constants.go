@@ -16,8 +16,8 @@ const (
 	// MongoDB holds the name of `mongodb` mongo component under `kaen`
 	MongoDB = "mongodb"
 
-	// SSH holds the name of `ssh` microservice
-	SSH = "ssh"
+	// Iwa holds the name of `iwa` microservice
+	Iwa = "iwa"
 
 	// Enrai holds the name of `enrai` microservice
 	Enrai = "enrai"

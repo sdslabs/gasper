@@ -5,10 +5,10 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
+	"github.com/sdslabs/gasper/services/iwa"
 	"github.com/sdslabs/gasper/services/kaen"
 	"github.com/sdslabs/gasper/services/kaze"
 	"github.com/sdslabs/gasper/services/mizu"
-	"github.com/sdslabs/gasper/services/ssh"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -19,17 +19,17 @@ type serviceLauncher struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]*serviceLauncher{
-	ssh.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.SSH.Deploy,
-		Start:  ssh.NewService().ListenAndServe,
+	kaze.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Kaze.Deploy,
+		Start:  startKazeService,
 	},
 	mizu.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Mizu.Deploy,
 		Start:  startMizuService,
 	},
-	kaze.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.Kaze.Deploy,
-		Start:  startKazeService,
+	iwa.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Iwa.Deploy,
+		Start:  iwa.NewService().ListenAndServe,
 	},
 	hikari.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Hikari.Deploy,
