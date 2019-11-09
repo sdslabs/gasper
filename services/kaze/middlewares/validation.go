@@ -12,7 +12,7 @@ import (
 )
 
 var disallowedApplicationNames = []string{
-	types.Dominus,
+	types.Kaze,
 	types.Mizu,
 	types.Hikari,
 	types.Enrai,

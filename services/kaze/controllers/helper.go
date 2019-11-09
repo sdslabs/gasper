@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
-	"github.com/sdslabs/gasper/services/dominus/middlewares"
+	"github.com/sdslabs/gasper/services/kaze/middlewares"
 	"github.com/sdslabs/gasper/types"
 )
 

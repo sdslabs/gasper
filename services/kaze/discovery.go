@@ -1,4 +1,4 @@
-package dominus
+package kaze
 
 import (
 	"encoding/json"

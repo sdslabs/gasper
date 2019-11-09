@@ -83,7 +83,7 @@ func GetAllNodes(c *gin.Context) {
 	c.JSON(200, res)
 }
 
-// GetNodesByName fetches dominus nodes for 'master' and others for 'workers'
+// GetNodesByName fetches kaze nodes for 'master' and others for 'workers'
 // Rest specific service nodes are returned
 func GetNodesByName(c *gin.Context) {
 	node := c.Param("type")
@@ -92,7 +92,7 @@ func GetNodesByName(c *gin.Context) {
 	case WorkerNode:
 		services := configs.ServiceMap
 		for service := range services {
-			if service == "dominus" {
+			if service == types.Kaze {
 				continue
 			}
 			instances, err := redis.FetchServiceInstances(service)
@@ -106,7 +106,7 @@ func GetNodesByName(c *gin.Context) {
 		c.JSON(200, res)
 		return
 	case MasterNode:
-		node = "dominus"
+		node = types.Kaze
 	default:
 		services := configs.ServiceMap
 		serviceExists := false

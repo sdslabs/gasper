@@ -50,8 +50,8 @@ type GenericService struct {
 	Port   int  `toml:"port"`
 }
 
-// DominusService is the default configuration for Dominus microservice
-type DominusService struct {
+// KazeService is the default configuration for Kaze microservice
+type KazeService struct {
 	GenericService
 	CleanupInterval time.Duration `toml:"cleanup_interval"`
 }
@@ -114,7 +114,7 @@ type Images struct {
 // Services is the configuration for all Services
 type Services struct {
 	ExposureInterval time.Duration  `toml:"exposure_interval"`
-	Dominus          DominusService `toml:"dominus"`
+	Kaze             KazeService    `toml:"kaze"`
 	Mizu             GenericService `toml:"mizu"`
 	SSH              SSHService     `toml:"ssh"`
 	Enrai            EnraiService   `toml:"enrai"`

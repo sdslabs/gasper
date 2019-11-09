@@ -2,8 +2,8 @@
 
 # Terminology:-
 #   Node: A Virtual Machine or a Bare-Metal Server
-#   Master Node: A node which has `Dominus` service deployed
-#   Worker Node: A node which has `Mizu`/`MySQL`/`MongoDB` services deployed
+#   Master Node: A node which has `Kaze` service deployed
+#   Worker Node: A node which has `Mizu / Kaen` services deployed
 
 # Run Gasper in Debug mode.
 # Set this value to `false` in Production.
@@ -90,8 +90,8 @@ mongodb = "mongo:4.2.1"
 exposure_interval = 30
 
 
-# Configuration for `Dominus` which acts as a master controller.
-# A node with `Dominus` deployed is a master node.
+# Configuration for `Kaze` which acts as a master controller.
+# A node with `Kaze` deployed is a master node.
 # It performs the following tasks:-
 #   1. Equal distribution of applications and databases among worker nodes
 #   2. User API for performing operations on any application/database in any node (IAM is handled with JWT)
@@ -99,11 +99,11 @@ exposure_interval = 30
 #   4. Removal of inactive nodes from the cloud
 #   5. Authentication based on JWT (JSON Web Token)
 #   6. Re-scheduling of applications in case of node failure
-[services.dominus]
-# Time Interval (in seconds) in which `Dominus` sends health-check probes
+[services.kaze]
+# Time Interval (in seconds) in which `Kaze` sends health-check probes
 # to all worker nodes and removes inactive nodes from the central registry-server.
 cleanup_interval = 600
-deploy = true   # Deploy Dominus?
+deploy = true   # Deploy Kaze?
 port = 3000
 
 

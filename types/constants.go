@@ -1,8 +1,8 @@
 package types
 
 const (
-	// Dominus holds the name of `dominus` microservice
-	Dominus = "dominus"
+	// Kaze holds the name of `kaze` microservice
+	Kaze = "kaze"
 
 	// Mizu holds the name of `mizu` microservice
 	Mizu = "mizu"

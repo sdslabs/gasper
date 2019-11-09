@@ -1,4 +1,4 @@
-package dominus
+package kaze
 
 import (
 	"github.com/sdslabs/gasper/lib/mongo"

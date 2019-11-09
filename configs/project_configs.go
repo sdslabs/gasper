@@ -36,9 +36,9 @@ var (
 	// ServiceMap is the configuration binding the service name to its
 	// deployment status and port
 	ServiceMap = map[string]*GenericService{
-		types.Dominus: &GenericService{
-			Deploy: ServiceConfig.Dominus.Deploy,
-			Port:   ServiceConfig.Dominus.Port,
+		types.Kaze: &GenericService{
+			Deploy: ServiceConfig.Kaze.Deploy,
+			Port:   ServiceConfig.Kaze.Port,
 		},
 		types.Mizu: &ServiceConfig.Mizu,
 		types.SSH: &GenericService{

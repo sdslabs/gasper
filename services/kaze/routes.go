@@ -1,4 +1,4 @@
-package dominus
+package kaze
 
 import (
 	"net/http"
@@ -6,13 +6,13 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	c "github.com/sdslabs/gasper/services/dominus/controllers"
-	m "github.com/sdslabs/gasper/services/dominus/middlewares"
+	c "github.com/sdslabs/gasper/services/kaze/controllers"
+	m "github.com/sdslabs/gasper/services/kaze/middlewares"
 	"github.com/sdslabs/gasper/types"
 )
 
 // ServiceName is the name of the current microservice
-const ServiceName = types.Dominus
+const ServiceName = types.Kaze
 
 // NewService returns a new instance of the current microservice
 func NewService() http.Handler {

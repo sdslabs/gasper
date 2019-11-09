@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
-	"github.com/sdslabs/gasper/services/dominus"
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
 	"github.com/sdslabs/gasper/services/kaen"
+	"github.com/sdslabs/gasper/services/kaze"
 	"github.com/sdslabs/gasper/services/mizu"
 	"github.com/sdslabs/gasper/services/ssh"
 	"github.com/sdslabs/gasper/types"
@@ -27,9 +27,9 @@ var launcherBindings = map[string]*serviceLauncher{
 		Deploy: configs.ServiceConfig.Mizu.Deploy,
 		Start:  startMizuService,
 	},
-	dominus.ServiceName: &serviceLauncher{
-		Deploy: configs.ServiceConfig.Dominus.Deploy,
-		Start:  startDominusService,
+	kaze.ServiceName: &serviceLauncher{
+		Deploy: configs.ServiceConfig.Kaze.Deploy,
+		Start:  startKazeService,
 	},
 	hikari.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Hikari.Deploy,
@@ -63,8 +63,8 @@ func startMizuService() error {
 	return startGrpcServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port)
 }
 
-func startDominusService() error {
-	return buildHTTPServer(dominus.NewService(), configs.ServiceConfig.Dominus.Port).ListenAndServe()
+func startKazeService() error {
+	return buildHTTPServer(kaze.NewService(), configs.ServiceConfig.Kaze.Port).ListenAndServe()
 }
 
 func startEnraiService() error {

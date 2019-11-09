@@ -1,4 +1,4 @@
-package dominus
+package kaze
 
 import (
 	"fmt"
@@ -77,7 +77,7 @@ func removeDeadInstances() {
 
 // ScheduleCleanup runs removeDeadInstances on given intervals of time
 func ScheduleCleanup() {
-	interval := configs.ServiceConfig.Dominus.CleanupInterval * time.Second
+	interval := configs.ServiceConfig.Kaze.CleanupInterval * time.Second
 	scheduler := utils.NewScheduler(interval, removeDeadInstances)
 	scheduler.RunAsync()
 }
