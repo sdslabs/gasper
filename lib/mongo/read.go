@@ -56,11 +56,32 @@ func FetchSingleApp(name string) (*types.ApplicationConfig, error) {
 
 	appCfg := &types.ApplicationConfig{}
 
-	err := collection.FindOne(ctx, types.M{"name": name}).Decode(appCfg)
+	err := collection.FindOne(ctx, types.M{
+		"name":          name,
+		InstanceTypeKey: AppInstance,
+	}).Decode(appCfg)
 	if err != nil {
 		return nil, err
 	}
 	return appCfg, nil
+}
+
+// FetchSingleDatabase returns a database based on a name based filter
+func FetchSingleDatabase(name string) (*types.DatabaseConfig, error) {
+	collection := link.Collection(InstanceCollection)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	databaseCfg := &types.DatabaseConfig{}
+
+	err := collection.FindOne(ctx, types.M{
+		"name":          name,
+		InstanceTypeKey: DBInstance,
+	}).Decode(databaseCfg)
+	if err != nil {
+		return nil, err
+	}
+	return databaseCfg, nil
 }
 
 // FetchDBInfo is an abstraction over FetchDocs for retrieving database related documents
