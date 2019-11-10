@@ -16,7 +16,6 @@ var disallowedApplicationNames = []string{
 	types.Mizu,
 	types.Hikari,
 	types.Enrai,
-	types.EnraiSSL,
 	types.MySQL,
 	types.MongoDB,
 	types.Kaen,
@@ -25,8 +24,13 @@ var disallowedApplicationNames = []string{
 
 var disallowedDatabaseNames = []string{
 	"admin",
+	"config",
+	"local",
 	"root",
 	"mysql",
+	"information_schema",
+	"performance_schema",
+	"sys",
 }
 
 func isUniqueInstance(instanceName, instanceType string) (bool, error) {
