@@ -23,33 +23,28 @@ func CreateMysqlDB(db types.Database) error {
 	connection := fmt.Sprintf("%s:%s@%s/", mysqlRootUser, mysqlRootPassword, agentAddress)
 
 	conn, err := sql.Open(mysqlDriver, connection)
-
 	if err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
 	}
 	defer conn.Close()
 
-	_, err = conn.Exec("CREATE DATABASE " + db.GetName())
-	if err != nil {
+	if _, err = conn.Exec("CREATE DATABASE " + db.GetName()); err != nil {
 		return fmt.Errorf("Error while creating the database : Database Already Exists")
 	}
 
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", db.GetUser(), mysqlHost, db.GetPassword())
-	_, err = conn.Exec(query)
-	if err != nil {
+	if _, err = conn.Exec(query); err != nil {
 		if err = refreshDBUser(db, conn); err != nil {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
 
 	query = fmt.Sprintf("GRANT ALL ON %s.* TO '%s'@'%s'", db.GetName(), db.GetUser(), mysqlHost)
-	_, err = conn.Exec(query)
-	if err != nil {
+	if _, err = conn.Exec(query); err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
 	}
 
-	_, err = conn.Exec("FLUSH PRIVILEGES")
-	if err != nil {
+	if _, err = conn.Exec("FLUSH PRIVILEGES"); err != nil {
 		return fmt.Errorf("Error while flushing user priviliges : %s", err)
 	}
 
@@ -69,13 +64,11 @@ func DeleteMysqlDB(databaseName string) error {
 	}
 	defer conn.Close()
 
-	_, err = conn.Exec("DROP DATABASE IF EXISTS " + databaseName)
-	if err != nil {
+	if _, err = conn.Exec("DROP DATABASE IF EXISTS " + databaseName); err != nil {
 		return fmt.Errorf("Error while deleting the database : %s", err)
 	}
 
-	_, err = conn.Exec(fmt.Sprintf("DROP USER IF EXISTS '%s'@'%s'", username, mysqlHost))
-	if err != nil {
+	if _, err = conn.Exec(fmt.Sprintf("DROP USER IF EXISTS '%s'@'%s'", username, mysqlHost)); err != nil {
 		return fmt.Errorf("Error while deleting the user : %s", err)
 	}
 	return nil
@@ -88,10 +81,8 @@ func refreshDBUser(db types.Database, conn *sql.DB) error {
 	}
 
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", db.GetUser(), mysqlHost, db.GetPassword())
-	_, err = conn.Exec(query)
-	if err != nil {
+	if _, err = conn.Exec(query); err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
 	}
-
 	return nil
 }
