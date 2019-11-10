@@ -110,6 +110,9 @@ port = 3000
 # Configuration for `Enrai`, a reverse-proxy server proxying connections
 # to an application's docker container.
 [services.enrai]
+# Time Interval (in seconds) in which `Enrai` updates its
+# `Reverse-Proxy Record Storage` by polling the central registry-server.
+record_update_interval = 30
 deploy = false  # Deploy Enrai?
 port = 80
 
@@ -133,7 +136,7 @@ port = 4000
 # Currently supports MySQL and MongoDB database servers.
 # A node with `Kaen` service deployed is a worker node.
 [services.kaen]
-deploy = true   # Deploy Kaen Service?
+deploy = true   # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`
@@ -157,7 +160,7 @@ MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB s
 # Configuration for `Hikari`, a DNS Server holding `A` records of all deployed applications.
 [services.hikari]
 # Time Interval (in seconds) in which `Hikari` updates its
-# `Record Storage` by polling the central registry-server.
+# `DNS Record Storage` by polling the central registry-server.
 record_update_interval = 30
 deploy = false  # Deploy Hikari?
 port = 53

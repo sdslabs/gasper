@@ -13,14 +13,13 @@ var (
 	mysqlDriver       = "mysql"
 	mysqlHost         = `%`
 	mysqlRootUser     = "root"
+	mysqlPort         = configs.ServiceConfig.Kaen.MySQL.ContainerPort
 	mysqlRootPassword = configs.ServiceConfig.Kaen.MySQL.Env["MYSQL_ROOT_PASSWORD"].(string)
 )
 
 // CreateMysqlDB creates a database in the Mysql instance with the given database name, user and password
 func CreateMysqlDB(db types.Database) error {
-	port := configs.ServiceConfig.Kaen.MySQL.ContainerPort
-
-	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", port)
+	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", mysqlPort)
 	connection := fmt.Sprintf("%s:%s@%s/", mysqlRootUser, mysqlRootPassword, agentAddress)
 
 	conn, err := sql.Open(mysqlDriver, connection)
@@ -38,8 +37,7 @@ func CreateMysqlDB(db types.Database) error {
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", db.GetUser(), mysqlHost, db.GetPassword())
 	_, err = conn.Exec(query)
 	if err != nil {
-		errs := refreshDBUser(db, conn)
-		if errs != nil {
+		if err = refreshDBUser(db, conn); err != nil {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
@@ -61,9 +59,8 @@ func CreateMysqlDB(db types.Database) error {
 // DeleteMysqlDB deletes the database given by the database name and username
 func DeleteMysqlDB(databaseName string) error {
 	username := databaseName
-	port := configs.ServiceConfig.Kaen.MySQL.ContainerPort
 
-	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", port)
+	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", mysqlPort)
 	connection := fmt.Sprintf("%s:%s@%s/", mysqlRootUser, mysqlRootPassword, agentAddress)
 
 	conn, err := sql.Open(mysqlDriver, connection)
@@ -85,15 +82,15 @@ func DeleteMysqlDB(databaseName string) error {
 }
 
 func refreshDBUser(db types.Database, conn *sql.DB) error {
-	_, errf := conn.Exec(fmt.Sprintf("DROP USER IF EXISTS '%s'@'%s'", db.GetUser(), mysqlHost))
-	if errf != nil {
-		return fmt.Errorf("Error while deleting the user : %s", errf)
+	_, err := conn.Exec(fmt.Sprintf("DROP USER IF EXISTS '%s'@'%s'", db.GetUser(), mysqlHost))
+	if err != nil {
+		return fmt.Errorf("Error while deleting the user : %s", err)
 	}
 
 	query := fmt.Sprintf("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", db.GetUser(), mysqlHost, db.GetPassword())
-	_, errc := conn.Exec(query)
-	if errc != nil {
-		return fmt.Errorf("Error while creating the database : %s", errc)
+	_, err = conn.Exec(query)
+	if err != nil {
+		return fmt.Errorf("Error while creating the database : %s", err)
 	}
 
 	return nil
