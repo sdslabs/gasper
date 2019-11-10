@@ -5,6 +5,7 @@ import (
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
 	"github.com/sdslabs/gasper/services/kaze"
 	"github.com/sdslabs/gasper/services/kaze/middlewares"
@@ -12,22 +13,28 @@ import (
 )
 
 func initKaze() {
-	kaze.ScheduleServiceExposure()
+	go kaze.ScheduleServiceExposure()
 	if configs.ServiceConfig.Kaze.Deploy {
-		kaze.ScheduleCleanup()
+		go kaze.ScheduleCleanup()
 	}
 }
 
 func initHikari() {
 	if configs.ServiceConfig.Hikari.Deploy {
-		hikari.ScheduleUpdate()
+		go hikari.ScheduleUpdate()
+	}
+}
+
+func initEnrai() {
+	if configs.ServiceConfig.Enrai.Deploy {
+		go enrai.ScheduleUpdate()
 	}
 }
 
 func initFalcon() {
 	if configs.FalconConfig.PlugIn {
 		// Initialize the Falcon Config at startup
-		middlewares.InitializeFalconConfig()
+		go middlewares.InitializeFalconConfig()
 	}
 }
 
@@ -49,6 +56,7 @@ func main() {
 	checkAndPullImages()
 	initKaze()
 	initHikari()
+	initEnrai()
 	initFalcon()
 	initServices()
 }

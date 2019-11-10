@@ -77,6 +77,7 @@ func removeDeadInstances() {
 
 // ScheduleCleanup runs removeDeadInstances on given intervals of time
 func ScheduleCleanup() {
+	time.Sleep(10 * time.Second)
 	interval := configs.ServiceConfig.Kaze.CleanupInterval * time.Second
 	scheduler := utils.NewScheduler(interval, removeDeadInstances)
 	scheduler.RunAsync()

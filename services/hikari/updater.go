@@ -64,7 +64,7 @@ func updateStorage() {
 		address := strings.Split(reverseProxyInstances[index%instanceNum], ":")[0]
 		updateBody[fqdn] = address
 	}
-	storage.SetBulk(updateBody)
+	storage.Replace(updateBody)
 }
 
 // ScheduleUpdate runs updateStorage on given intervals of time

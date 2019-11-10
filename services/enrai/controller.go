@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -20,16 +19,18 @@ const (
 	SSLServiceName = types.EnraiSSL
 )
 
-// reverseProxy sets up the reverse proxy from the given domain
-// to the target IP
+// storage stores the reverse proxy records in the form of Key : Value pairs
+// with Application Name as the key and its URL(IP:Port) as the value
+var storage = types.NewRecordStorage()
+
+// reverseProxy sets up the reverse proxy from the given domain to the target IP
 func reverseProxy(c *gin.Context) {
 	rootDomain := fmt.Sprintf(".%s", configs.GasperConfig.Domain)
 	rootDomainWithPort := fmt.Sprintf("%s:%d", rootDomain, configs.ServiceConfig.Enrai.Port)
 
 	if strings.HasSuffix(c.Request.Host, rootDomain) || strings.HasSuffix(c.Request.Host, rootDomainWithPort) {
-		target, err := redis.FetchAppServer(strings.Split(c.Request.Host, ".")[0])
-
-		if err != nil {
+		target, success := storage.Get(strings.Split(c.Request.Host, ".")[0])
+		if !success {
 			c.AbortWithStatusJSON(503, gin.H{
 				"success": false,
 				"message": "No such application exists",

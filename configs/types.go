@@ -76,7 +76,8 @@ type SSLConfig struct {
 // EnraiService is the configuration for Enrai microservice
 type EnraiService struct {
 	GenericService
-	SSL SSLConfig `toml:"ssl"`
+	SSL                  SSLConfig     `toml:"ssl"`
+	RecordUpdateInterval time.Duration `toml:"record_update_interval"`
 }
 
 // HikariService is the configuration for Hikari microservice
