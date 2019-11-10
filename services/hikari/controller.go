@@ -12,6 +12,10 @@ import (
 // ServiceName is the name of the current microservice
 const ServiceName = types.Hikari
 
+// storage stores the DNS A records in the form of Key : Value pairs
+// with Domain Name as the key and the IPv4 Address as the value
+var storage = types.NewRecordStorage()
+
 type handler struct{}
 
 func (h *handler) ServeDNS(w dns.ResponseWriter, r *dns.Msg) {
