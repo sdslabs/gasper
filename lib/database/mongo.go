@@ -15,17 +15,17 @@ import (
 var (
 	mongoRootUser     = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
 	mongoRootPassword = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
+	mongoPort         = configs.ServiceConfig.Kaen.MongoDB.ContainerPort
 )
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
-	port := configs.ServiceConfig.Kaen.MongoDB.ContainerPort
-	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, port)
+	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, mongoPort)
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {
 		return nil, fmt.Errorf("couldn't connect to mongo: %s", err.Error())
 	}
-	err = client.Connect(ctx)
-	if err != nil {
+
+	if err = client.Connect(ctx); err != nil {
 		return nil, fmt.Errorf("mongo client couldn't connect with background context: %s", err.Error())
 	}
 	return client, nil
@@ -34,8 +34,7 @@ func createConnection(ctx context.Context) (*mongo.Client, error) {
 func exec(ctx context.Context, conn *mongo.Database, command bson.M) error {
 	v := &(mongo.SingleResult{})
 	result := conn.RunCommand(ctx, command)
-	err := (*result).Decode(v)
-	return err
+	return (*result).Decode(v)
 }
 
 func createUser(ctx context.Context, conn *mongo.Database, db types.Database) error {
@@ -69,8 +68,7 @@ func refreshMongoDBUser(ctx context.Context, conn *mongo.Database, db types.Data
 		return fmt.Errorf("Error while deleting the user : %s", err.Error())
 	}
 
-	err = createUser(ctx, conn, db)
-	if err != nil {
+	if err = createUser(ctx, conn, db); err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err.Error())
 	}
 	return nil
@@ -98,8 +96,7 @@ func CreateMongoDB(db types.Database) error {
 
 	conn := client.Database(db.GetName())
 
-	err = createUser(ctx, conn, db)
-	if err != nil {
+	if err = createUser(ctx, conn, db); err != nil {
 		if err = refreshMongoDBUser(ctx, conn, db); err != nil {
 			return fmt.Errorf("Error while creating the database : %s", err.Error())
 		}
@@ -121,13 +118,11 @@ func DeleteMongoDB(databaseName string) error {
 
 	conn := client.Database(databaseName)
 
-	err = dropDatabase(ctx, conn)
-	if err != nil {
+	if err = dropDatabase(ctx, conn); err != nil {
 		return fmt.Errorf("Error while deleting the database : %s", err.Error())
 	}
 
-	err = dropUser(ctx, conn, databaseName)
-	if err != nil {
+	if err = dropUser(ctx, conn, databaseName); err != nil {
 		return fmt.Errorf("Error while deleting the user : %s", err.Error())
 	}
 	return nil
