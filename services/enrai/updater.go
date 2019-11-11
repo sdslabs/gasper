@@ -28,8 +28,7 @@ func updateStorage() {
 
 	for name, data := range apps {
 		resultByte := []byte(data)
-		err = json.Unmarshal(resultByte, appInfoStruct)
-		if err != nil {
+		if err = json.Unmarshal(resultByte, appInfoStruct); err != nil {
 			handleError(err)
 			continue
 		}
@@ -40,7 +39,6 @@ func updateStorage() {
 
 // ScheduleUpdate runs updateStorage on given intervals of time
 func ScheduleUpdate() {
-	time.Sleep(10 * time.Second)
 	interval := configs.ServiceConfig.Enrai.RecordUpdateInterval * time.Second
 	scheduler := utils.NewScheduler(interval, updateStorage)
 	scheduler.RunAsync()

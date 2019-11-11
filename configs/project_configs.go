@@ -1,16 +1,18 @@
 package configs
 
 import (
+	"flag"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/types"
 )
 
-// configFile is the main configuration file for gasper
-const configFile = "config.toml"
-
 var (
+	// configFile is the main configuration file for gasper
+	configFile = flag.String("conf", "config.toml", "location of config file")
+
 	// GasperConfig is parsed data for `configFile`
-	GasperConfig = parseTOML(configFile)
+	GasperConfig = getConfiguration()
 
 	// MongoConfig is the configuration for MongoDB
 	MongoConfig = GasperConfig.Mongo

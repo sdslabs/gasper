@@ -45,7 +45,7 @@ func CreateMysqlDB(db types.Database) error {
 	}
 
 	if _, err = conn.Exec("FLUSH PRIVILEGES"); err != nil {
-		return fmt.Errorf("Error while flushing user priviliges : %s", err)
+		return fmt.Errorf("Error while flushing user privileges : %s", err)
 	}
 
 	return nil

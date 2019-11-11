@@ -1,14 +1,16 @@
 package configs
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/BurntSushi/toml"
 )
 
-func parseTOML(path string) *GasperCfg {
+func getConfiguration() *GasperCfg {
+	flag.Parse()
 	config := &GasperCfg{}
-	if _, err := toml.DecodeFile(path, config); err != nil {
+	if _, err := toml.DecodeFile(*configFile, config); err != nil {
 		fmt.Println(err)
 		panic(err)
 	}

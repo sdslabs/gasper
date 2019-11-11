@@ -34,7 +34,6 @@ func DeployRPC(app types.M, hostURL, service string) {
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
-
 	if err != nil {
 		utils.LogError(err)
 		return
@@ -42,8 +41,8 @@ func DeployRPC(app types.M, hostURL, service string) {
 
 	defer resp.Body.Close()
 
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
 	bodyString := string(bodyBytes)
-	utils.LogDebug("Application %s with type %s has been succesfully re-deployed to %s", app["name"], strings.Title(service), hostURL)
+	utils.LogDebug("Application %s with type %s has been successfully re-deployed to %s", app["name"], strings.Title(service), hostURL)
 	utils.LogDebug("Response: %s", bodyString)
 }

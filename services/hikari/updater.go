@@ -69,7 +69,6 @@ func updateStorage() {
 
 // ScheduleUpdate runs updateStorage on given intervals of time
 func ScheduleUpdate() {
-	time.Sleep(10 * time.Second)
 	interval := configs.ServiceConfig.Hikari.RecordUpdateInterval * time.Second
 	scheduler := utils.NewScheduler(interval, updateStorage)
 	scheduler.RunAsync()
