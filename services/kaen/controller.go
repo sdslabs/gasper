@@ -83,23 +83,23 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 
 // Delete deletes a database of the specified type
 func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.GenericResponse, error) {
-	db, err := mongo.FetchSingleDatabase(body.GetName())
+	language, err := mongo.FetchDatabaseLanguage(body.GetName())
 	if err != nil {
 		return nil, err
 	}
-	if pipeline[db.Language] == nil {
-		return nil, fmt.Errorf("Database type `%s` is not supported", db.Language)
+	if pipeline[language] == nil {
+		return nil, fmt.Errorf("Database type `%s` is not supported", language)
 	}
-	err = pipeline[db.Language].delete(db.GetName())
+	err = pipeline[language].delete(body.GetName())
 	if err != nil {
 		return nil, err
 	}
-	err = redis.RemoveDB(db.GetName())
+	err = redis.RemoveDB(body.GetName())
 	if err != nil {
 		return nil, err
 	}
 	filter := types.M{
-		mongo.NameKey:         db.GetName(),
+		mongo.NameKey:         body.GetName(),
 		mongo.InstanceTypeKey: mongo.DBInstance,
 	}
 	_, err = mongo.DeleteInstance(filter)

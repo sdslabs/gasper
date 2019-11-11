@@ -36,6 +36,9 @@ const (
 	// InstanceTypeKey is the key holding the instance type of an instance
 	InstanceTypeKey = "instance_type"
 
+	// LanguageKey is the key holding the language of an instance
+	LanguageKey = "language"
+
 	// HostIPKey is the key holding the host IP address of an instance
 	HostIPKey = "host_ip"
 

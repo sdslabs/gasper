@@ -200,7 +200,20 @@ func RebuildApp(c *gin.Context) {
 
 	response, err := factory.RebuildApplication(appName, instanceURL)
 	if err != nil {
-		utils.SendServerErrorResponse(c, err)
+		utils.LogError(err)
+		if strings.Contains(err.Error(), "authentication required") {
+			c.AbortWithStatusJSON(400, gin.H{
+				"success": false,
+				"error":   "Invalid git repository url or access token",
+			})
+		} else if strings.Contains(err.Error(), "couldn't find remote ref") {
+			c.AbortWithStatusJSON(400, gin.H{
+				"success": false,
+				"error":   "Invalid git branch provided",
+			})
+		} else {
+			utils.SendServerErrorResponse(c, err)
+		}
 		return
 	}
 	c.Data(200, "application/json", response)

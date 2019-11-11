@@ -36,7 +36,14 @@ func changeUserPrivilege(c *gin.Context, admin bool) {
 
 	err := mongo.UpdateUser(filter, update)
 	if err != nil {
-		utils.SendServerErrorResponse(c, err)
+		if err == mongo.ErrNoDocuments {
+			c.AbortWithStatusJSON(400, gin.H{
+				"success": false,
+				"error":   "No such user exists",
+			})
+		} else {
+			utils.SendServerErrorResponse(c, err)
+		}
 		return
 	}
 	c.JSON(200, gin.H{

@@ -18,7 +18,7 @@ var immutableFields = []string{
 	"container_id",
 	mongo.HostIPKey,
 	mongo.ContainerPortKey,
-	"language",
+	mongo.LanguageKey,
 	"cloudflare_id",
 	"app_url",
 	"docker_image",
@@ -43,7 +43,7 @@ func fetchInstances(c *gin.Context, instance string) {
 	filter[mongo.InstanceTypeKey] = instance
 	c.JSON(200, gin.H{
 		"success": true,
-		"data":    mongo.FetchDocs(mongo.InstanceCollection, filter),
+		"data":    mongo.FetchDocs(mongo.InstanceCollection, filter, nil),
 	})
 }
 

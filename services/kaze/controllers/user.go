@@ -52,12 +52,12 @@ func Register(c *gin.Context) {
 
 // GetUserInfo gets info regarding particular user
 func GetUserInfo(c *gin.Context) {
-	user, err := mongo.FetchSingleUser(c.Param("user"))
+	user, err := mongo.FetchSingleUserWithoutPassword(c.Param("user"))
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.AbortWithStatusJSON(400, gin.H{
 				"success": false,
-				"error":   "no such user exists",
+				"error":   "No such user exists",
 			})
 			return
 		}

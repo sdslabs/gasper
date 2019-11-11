@@ -35,8 +35,8 @@ func fetchBoundApps(currentIP, service string) []types.M {
 func fetchBoundDatabases(currentIP, service string) []types.M {
 	return mongo.FetchDBInfo(
 		types.M{
-			mongo.HostIPKey: currentIP,
-			"language":      service,
+			mongo.HostIPKey:   currentIP,
+			mongo.LanguageKey: service,
 		},
 	)
 }
