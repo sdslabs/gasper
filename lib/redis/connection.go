@@ -2,6 +2,7 @@ package redis
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/go-redis/redis"
 	"github.com/sdslabs/gasper/configs"
@@ -19,7 +20,7 @@ func init() {
 	if err != nil {
 		utils.Log("Redis connection was not established", utils.ErrorTAG)
 		utils.LogError(err)
-		panic(err)
+		os.Exit(1)
 	} else {
 		utils.LogInfo("Redis Connection Established")
 	}

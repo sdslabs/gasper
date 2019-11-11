@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+	"os"
 
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -153,7 +154,7 @@ func ListContainers() []string {
 	containers, err := cli.ContainerList(ctx, dockerTypes.ContainerListOptions{All: true})
 	if err != nil {
 		utils.LogError(err)
-		panic(err)
+		os.Exit(1)
 	}
 
 	list := make([]string, 1)

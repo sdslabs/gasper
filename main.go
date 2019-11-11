@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"strings"
 
 	"github.com/sdslabs/gasper/configs"
@@ -48,7 +49,7 @@ func initServices() {
 	}
 	if err := g.Wait(); err != nil {
 		utils.LogError(err)
-		panic(err)
+		os.Exit(1)
 	}
 }
 

@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/sdslabs/gasper/lib/utils"
@@ -21,7 +22,7 @@ func setupAdmin() {
 	pwd, err := utils.HashPassword(adminInfo.Password)
 	if err != nil {
 		utils.LogError(err)
-		panic(err)
+		os.Exit(1)
 	}
 	admin := types.M{
 		"email":    adminInfo.Email,
@@ -41,7 +42,7 @@ func init() {
 	if err != nil {
 		utils.Log("MongoDB connection was not established", utils.ErrorTAG)
 		utils.LogError(err)
-		panic(err)
+		os.Exit(1)
 	} else {
 		utils.LogInfo("MongoDB Connection Established")
 		setupAdmin()

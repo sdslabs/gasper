@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 	"reflect"
 	"strings"
 	"time"
@@ -16,13 +17,19 @@ import (
 )
 
 func checkAndPullImages() {
-	images := docker.ListImages()
+	images, err := docker.ListImages()
+	if err != nil {
+		utils.LogError(err)
+		os.Exit(1)
+	}
 	v := reflect.ValueOf(configs.ImageConfig)
 	for i := 0; i < v.NumField(); i++ {
 		image := v.Field(i).String()
 		if !utils.Contains(images, image) {
 			utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
-			docker.Pull(image)
+			if err = docker.Pull(image); err != nil {
+				utils.LogError(err)
+			}
 		}
 	}
 }
@@ -32,7 +39,7 @@ func startGrpcServer(server *grpc.Server, port int) error {
 	if err != nil {
 		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
 		utils.Log(msg, utils.ErrorTAG)
-		panic(msg)
+		os.Exit(1)
 	}
 	return server.Serve(lis)
 }
@@ -41,7 +48,7 @@ func buildHTTPServer(handler http.Handler, port int) *http.Server {
 	if !utils.IsValidPort(port) {
 		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", port)
 		utils.Log(msg, utils.ErrorTAG)
-		panic(msg)
+		os.Exit(1)
 	}
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),

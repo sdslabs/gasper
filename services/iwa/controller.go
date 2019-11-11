@@ -1,9 +1,9 @@
 package iwa
 
 import (
-	"errors"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -117,12 +117,12 @@ func NewService() *ssh.Server {
 		utils.Log("There was a problem deploying SSH service", utils.ErrorTAG)
 		utils.Log("Make sure the paths of Private Keys is correct in `config.toml`", utils.ErrorTAG)
 		utils.LogError(err)
-		panic(err)
+		os.Exit(1)
 	}
 	if !utils.IsValidPort(configs.ServiceConfig.Iwa.Port) {
 		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", configs.ServiceConfig.Iwa.Port)
 		utils.Log(msg, utils.ErrorTAG)
-		panic(errors.New(msg))
+		os.Exit(1)
 	}
 	return &ssh.Server{
 		Addr:             fmt.Sprintf(":%d", configs.ServiceConfig.Iwa.Port),

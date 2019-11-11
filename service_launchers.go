@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/enrai"
@@ -80,7 +82,7 @@ func startEnraiServiceWithSSL() error {
 		utils.Log("There was a problem deploying Enrai Service with SSL", utils.ErrorTAG)
 		utils.Log("Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
 		utils.LogError(err)
-		panic(err)
+		os.Exit(1)
 	}
 	return nil
 }
