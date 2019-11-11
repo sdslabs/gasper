@@ -37,7 +37,7 @@ func CloneWithToken(url, branch, destination, token string) error {
 }
 
 // Pull pulls the latest branch from "origin"
-// 'dotgitPath' is the absolue path to .git directory
+// 'dotgitPath' is the absolute path to .git directory
 // 'branch' is the branch name which is to be pulled
 func Pull(dotgitPath, branch string) error {
 	repo, err := gogit.PlainOpen(dotgitPath)

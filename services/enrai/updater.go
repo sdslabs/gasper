@@ -28,8 +28,7 @@ func updateStorage() {
 
 	for name, data := range apps {
 		resultByte := []byte(data)
-		err = json.Unmarshal(resultByte, appInfoStruct)
-		if err != nil {
+		if err = json.Unmarshal(resultByte, appInfoStruct); err != nil {
 			handleError(err)
 			continue
 		}
