@@ -13,13 +13,13 @@ import (
 )
 
 var (
-	mongoRootUser     = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"].(string)
-	mongoRootPassword = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"].(string)
+	mongoRootUser     = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"]
+	mongoRootPassword = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"]
 	mongoPort         = configs.ServiceConfig.Kaen.MongoDB.ContainerPort
 )
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
-	connectionURI := fmt.Sprintf("mongodb://%s:%s@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, mongoPort)
+	connectionURI := fmt.Sprintf("mongodb://%v:%v@127.0.0.1:%d/admin", mongoRootUser, mongoRootPassword, mongoPort)
 	client, err := mongo.NewClient(options.Client().ApplyURI(connectionURI))
 	if err != nil {
 		return nil, fmt.Errorf("couldn't connect to mongo: %s", err.Error())

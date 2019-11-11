@@ -14,13 +14,13 @@ var (
 	mysqlHost         = `%`
 	mysqlRootUser     = "root"
 	mysqlPort         = configs.ServiceConfig.Kaen.MySQL.ContainerPort
-	mysqlRootPassword = configs.ServiceConfig.Kaen.MySQL.Env["MYSQL_ROOT_PASSWORD"].(string)
+	mysqlRootPassword = configs.ServiceConfig.Kaen.MySQL.Env["MYSQL_ROOT_PASSWORD"]
 )
 
 // CreateMysqlDB creates a database in the Mysql instance with the given database name, user and password
 func CreateMysqlDB(db types.Database) error {
 	agentAddress := fmt.Sprintf("tcp(127.0.0.1:%d)", mysqlPort)
-	connection := fmt.Sprintf("%s:%s@%s/", mysqlRootUser, mysqlRootPassword, agentAddress)
+	connection := fmt.Sprintf("%s:%v@%s/", mysqlRootUser, mysqlRootPassword, agentAddress)
 
 	conn, err := sql.Open(mysqlDriver, connection)
 	if err != nil {
