@@ -2,20 +2,22 @@ package mongo
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // FetchDocs is a generic function which takes a collection name and mongoDB filter as input and returns documents
-func FetchDocs(collectionName string, filter types.M) []types.M {
+func FetchDocs(collectionName string, filter types.M, opts ...*options.FindOptions) []types.M {
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	var data []types.M
 
-	cur, err := collection.Find(ctx, filter)
+	cur, err := collection.Find(ctx, filter, opts...)
 	if err != nil {
 		utils.LogError(err)
 		return nil
@@ -85,17 +87,57 @@ func FetchSingleDatabase(name string) (*types.DatabaseConfig, error) {
 }
 
 // FetchSingleUser returns a user based on a email based filter
-func FetchSingleUser(email string) (*types.User, error) {
+func FetchSingleUser(email string, opts ...*options.FindOneOptions) (*types.User, error) {
 	collection := link.Collection(UserCollection)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	user := &types.User{}
-	err := collection.FindOne(ctx, types.M{EmailKey: email}).Decode(user)
+	err := collection.FindOne(ctx, types.M{EmailKey: email}, opts...).Decode(user)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
+}
+
+// FetchSingleUserWithoutPassword returns a user based on a email based filter without his/her password
+func FetchSingleUserWithoutPassword(email string) (*types.User, error) {
+	return FetchSingleUser(
+		email,
+		&options.FindOneOptions{
+			Projection: types.M{PasswordKey: 0},
+		})
+}
+
+// FetchInstanceField returns the value of a given field from an instance
+func FetchInstanceField(name, instanceType, field string) (interface{}, error) {
+	collection := link.Collection(InstanceCollection)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var data types.M
+	err := collection.FindOne(
+		ctx,
+		types.M{NameKey: name, InstanceTypeKey: instanceType},
+		&options.FindOneOptions{
+			Projection: types.M{field: 1},
+		}).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+	return data[field], nil
+}
+
+// FetchDatabaseLanguage returns the language of a database
+func FetchDatabaseLanguage(name string) (string, error) {
+	data, err := FetchInstanceField(name, DBInstance, LanguageKey)
+	if err != nil || data == nil {
+		return "", err
+	}
+	if res, ok := data.(string); ok {
+		return res, nil
+	}
+	return "", errors.New("Failed fetching database language")
 }
 
 // FetchDBInfo is an abstraction over FetchDocs for retrieving database related documents
@@ -106,7 +148,12 @@ func FetchDBInfo(filter types.M) []types.M {
 
 // FetchUserInfo is an abstraction over FetchDocs for retrieving user details
 func FetchUserInfo(filter types.M) []types.M {
-	return FetchDocs(UserCollection, filter)
+	return FetchDocs(
+		UserCollection,
+		filter,
+		&options.FindOptions{
+			Projection: types.M{PasswordKey: 0},
+		})
 }
 
 // CountDocs returns the number of documents matching a filter
@@ -133,8 +180,8 @@ func CountUsers(filter types.M) (int64, error) {
 // in a host machine
 func CountServiceInstances(service, hostIP string) (int64, error) {
 	filter := types.M{
-		"language": service,
-		HostIPKey:  hostIP,
+		LanguageKey: service,
+		HostIPKey:   hostIP,
 	}
 	return CountDocs(InstanceCollection, filter)
 }
