@@ -12,7 +12,7 @@ import (
 )
 
 var immutableFields = []string{
-	"name",
+	mongo.NameKey,
 	"_id",
 	mongo.InstanceTypeKey,
 	"container_id",
@@ -57,7 +57,7 @@ func fetchInstancesByUser(c *gin.Context, instanceType string) {
 		return
 	}
 
-	filter["owner"] = claims.Email
+	filter[mongo.OwnerKey] = claims.Email
 	c.AbortWithStatusJSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchInstances(filter),

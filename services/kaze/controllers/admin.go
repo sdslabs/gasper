@@ -13,23 +13,11 @@ import (
 func GetAllUsers(c *gin.Context) {
 	queries := c.Request.URL.Query()
 	filter := utils.QueryToFilter(queries)
-	// Convert `is_admin` field from string to boolean
-	if filter["is_admin"] == "true" {
-		filter["is_admin"] = true
-	} else if filter["is_admin"] == "false" {
-		filter["is_admin"] = false
-	}
-	c.JSON(200, gin.H{
-		"success": true,
-		"data":    mongo.FetchUserInfo(filter),
-	})
-}
-
-// GetUserInfo gets info regarding particular user
-func GetUserInfo(c *gin.Context) {
-	user := c.Param("user")
-	filter := types.M{
-		"email": user,
+	// Convert `admin` field from string to boolean
+	if filter[mongo.AdminKey] == "true" {
+		filter[mongo.AdminKey] = true
+	} else if filter[mongo.AdminKey] == "false" {
+		filter[mongo.AdminKey] = false
 	}
 	c.JSON(200, gin.H{
 		"success": true,
@@ -40,10 +28,10 @@ func GetUserInfo(c *gin.Context) {
 func changeUserPrivilege(c *gin.Context, admin bool) {
 	user := c.Param("user")
 	filter := types.M{
-		"email": user,
+		mongo.EmailKey: user,
 	}
 	update := types.M{
-		"is_admin": admin,
+		mongo.AdminKey: admin,
 	}
 
 	err := mongo.UpdateUser(filter, update)
@@ -137,10 +125,10 @@ func GetNodesByName(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 	user := c.Param("user")
 	filter := types.M{
-		"email": user,
+		mongo.EmailKey: user,
 	}
 	instanceFilter := types.M{
-		"owner": user,
+		mongo.OwnerKey: user,
 	}
 	update := types.M{
 		"deleted": true,

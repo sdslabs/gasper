@@ -15,7 +15,7 @@ import (
 
 var ctx, _ = context.WithTimeout(context.Background(), 10*time.Second)
 var client, err = mongo.Connect(ctx, options.Client().ApplyURI(configs.MongoConfig.URL))
-var link = client.Database("gasper")
+var link = client.Database(projectDatabase)
 
 func setupAdmin() {
 	adminInfo := configs.AdminConfig
@@ -24,13 +24,13 @@ func setupAdmin() {
 		utils.LogError(err)
 		os.Exit(1)
 	}
-	admin := types.M{
-		"email":    adminInfo.Email,
-		"username": adminInfo.Username,
-		"password": pwd,
-		"is_admin": true,
+	admin := &types.User{
+		Username: adminInfo.Username,
+		Email:    adminInfo.Email,
+		Password: pwd,
+		Admin:    true,
 	}
-	filter := types.M{"email": adminInfo.Email}
+	filter := types.M{EmailKey: adminInfo.Email}
 	UpsertUser(filter, admin)
 	utils.LogInfo("%s (%s) has been given admin privileges", adminInfo.Username, adminInfo.Email)
 }

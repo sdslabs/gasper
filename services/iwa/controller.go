@@ -93,8 +93,8 @@ func publicKeyHandler(ctx ssh.Context, key ssh.PublicKey) bool {
 func passwordHandler(ctx ssh.Context, password string) bool {
 	eventLog := "SSH login attempt `%s` on application container %s deployed at %s from IP %s"
 	count, err := mongo.CountInstances(types.M{
-		"name":                ctx.User(),
-		"password":            password,
+		mongo.NameKey:         ctx.User(),
+		mongo.PasswordKey:     password,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	})
 	if err != nil {

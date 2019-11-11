@@ -26,7 +26,7 @@ func GetAllDatabases(c *gin.Context) {
 func GetDatabaseInfo(c *gin.Context) {
 	db := c.Param("db")
 	filter := make(types.M)
-	filter["name"] = db
+	filter[mongo.NameKey] = db
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchDBInfo(filter),

@@ -62,7 +62,7 @@ func AppFullCleanup(instanceName string) {
 // AppStateCleanup removes the application's data from MongoDB and Redis
 func AppStateCleanup(instanceName string) {
 	mongo.DeleteInstance(types.M{
-		"name":                instanceName,
+		mongo.NameKey:         instanceName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	})
 	redis.RemoveApp(instanceName)
@@ -91,7 +91,7 @@ func DatabaseFullCleanup(db, databaseType string) {
 // DatabaseStateCleanup removes the database's data from MongoDB and Redis
 func DatabaseStateCleanup(db string) {
 	mongo.DeleteInstance(types.M{
-		"name":                db,
+		mongo.NameKey:         db,
 		"user":                db,
 		mongo.InstanceTypeKey: mongo.DBInstance,
 	})

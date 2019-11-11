@@ -54,7 +54,7 @@ func registerApps(instances []types.M, currentIP string, config *configs.Generic
 			utils.LogError(err)
 			return
 		}
-		payload[instance["name"].(string)] = appBindingJSON
+		payload[instance[mongo.NameKey].(string)] = appBindingJSON
 	}
 	err := redis.BulkRegisterApps(payload)
 	if err != nil {
@@ -66,7 +66,7 @@ func registerApps(instances []types.M, currentIP string, config *configs.Generic
 func registerDatabases(instances []types.M, currentIP string, config *configs.GenericService) {
 	payload := make(types.M)
 	for _, instance := range instances {
-		payload[instance["name"].(string)] = fmt.Sprintf("%s:%d", currentIP, config.Port)
+		payload[instance[mongo.NameKey].(string)] = fmt.Sprintf("%s:%d", currentIP, config.Port)
 	}
 	err := redis.BulkRegisterDatabases(payload)
 	if err != nil {

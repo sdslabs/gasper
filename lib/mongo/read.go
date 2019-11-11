@@ -57,7 +57,7 @@ func FetchSingleApp(name string) (*types.ApplicationConfig, error) {
 	appCfg := &types.ApplicationConfig{}
 
 	err := collection.FindOne(ctx, types.M{
-		"name":          name,
+		NameKey:         name,
 		InstanceTypeKey: AppInstance,
 	}).Decode(appCfg)
 	if err != nil {
@@ -75,13 +75,27 @@ func FetchSingleDatabase(name string) (*types.DatabaseConfig, error) {
 	databaseCfg := &types.DatabaseConfig{}
 
 	err := collection.FindOne(ctx, types.M{
-		"name":          name,
+		NameKey:         name,
 		InstanceTypeKey: DBInstance,
 	}).Decode(databaseCfg)
 	if err != nil {
 		return nil, err
 	}
 	return databaseCfg, nil
+}
+
+// FetchSingleUser returns a user based on a email based filter
+func FetchSingleUser(email string) (*types.User, error) {
+	collection := link.Collection(UserCollection)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	user := &types.User{}
+	err := collection.FindOne(ctx, types.M{EmailKey: email}).Decode(user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 // FetchDBInfo is an abstraction over FetchDocs for retrieving database related documents
@@ -108,6 +122,11 @@ func CountDocs(collectionName string, filter types.M) (int64, error) {
 // CountInstances returns the number of instances matching a filter
 func CountInstances(filter types.M) (int64, error) {
 	return CountDocs(InstanceCollection, filter)
+}
+
+// CountUsers returns the number of users matching a filter
+func CountUsers(filter types.M) (int64, error) {
+	return CountDocs(UserCollection, filter)
 }
 
 // CountServiceInstances returns the number of applications of a given service deployed

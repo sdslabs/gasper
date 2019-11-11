@@ -76,7 +76,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 
 	err = mongo.UpsertInstance(
 		types.M{
-			"name":                app.GetName(),
+			mongo.NameKey:         app.GetName(),
 			mongo.InstanceTypeKey: mongo.AppInstance,
 		}, app)
 
@@ -134,7 +134,7 @@ func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.Response
 		return nil, fmt.Errorf(resErr.Error())
 	}
 
-	err = mongo.UpdateInstance(types.M{"name": appName}, app)
+	err = mongo.UpdateInstance(types.M{mongo.NameKey: appName}, app)
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +149,7 @@ func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.Response
 func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.DeletionResponse, error) {
 	appName := body.GetName()
 	filter := types.M{
-		"name":                appName,
+		mongo.NameKey:         appName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
 

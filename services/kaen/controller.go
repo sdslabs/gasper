@@ -49,7 +49,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 
 	err = mongo.UpsertInstance(
 		types.M{
-			"name":                db.GetName(),
+			mongo.NameKey:         db.GetName(),
 			mongo.InstanceTypeKey: mongo.DBInstance,
 		}, db)
 	if err != nil && err != mongo.ErrNoDocuments {
@@ -99,7 +99,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.GenericRe
 		return nil, err
 	}
 	filter := types.M{
-		"name":                db.GetName(),
+		mongo.NameKey:         db.GetName(),
 		mongo.InstanceTypeKey: mongo.DBInstance,
 	}
 	_, err = mongo.DeleteInstance(filter)

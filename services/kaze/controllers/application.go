@@ -28,7 +28,7 @@ func GetAllApplications(c *gin.Context) {
 func GetApplicationInfo(c *gin.Context) {
 	app := c.Param("app")
 	filter := make(types.M)
-	filter["name"] = app
+	filter[mongo.NameKey] = app
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchAppInfo(filter),
@@ -67,7 +67,7 @@ func BulkUpdateApps(c *gin.Context) {
 func UpdateAppByName(c *gin.Context) {
 	app := c.Param("app")
 	filter := types.M{
-		"name":                app,
+		mongo.NameKey:         app,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
 	var data types.M

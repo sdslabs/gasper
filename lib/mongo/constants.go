@@ -6,6 +6,9 @@ import (
 )
 
 const (
+	// projectDatabase is the name of the database used for storing all of gasper's information
+	projectDatabase = "gasper"
+
 	// DBInstance is db instance type name in the instances collection
 	DBInstance = "database"
 
@@ -24,6 +27,12 @@ const (
 	// UserCollection is the collection for all users
 	UserCollection = "users"
 
+	// NameKey is the key holding the name of an instance
+	NameKey = "name"
+
+	// OwnerKey is the key holding the owner of an instance
+	OwnerKey = "owner"
+
 	// InstanceTypeKey is the key holding the instance type of an instance
 	InstanceTypeKey = "instance_type"
 
@@ -32,6 +41,18 @@ const (
 
 	// ContainerPortKey is the key holding the port of the container in which an application is deployed
 	ContainerPortKey = "container_port"
+
+	// EmailKey is the key holding the email of a user
+	EmailKey = "email"
+
+	// UsernameKey is the key holding the username of a user
+	UsernameKey = "username"
+
+	// PasswordKey is the key holding the password of a user/instance
+	PasswordKey = "password"
+
+	// AdminKey is the key denoting whether a user has superuser privileges or not
+	AdminKey = "admin"
 )
 
 // ErrNoDocuments is the error when no matching documents are found

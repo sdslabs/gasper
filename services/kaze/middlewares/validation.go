@@ -35,7 +35,7 @@ var disallowedDatabaseNames = []string{
 
 func isUniqueInstance(instanceName, instanceType string) (bool, error) {
 	count, err := mongo.CountInstances(types.M{
-		"name":                instanceName,
+		mongo.NameKey:         instanceName,
 		mongo.InstanceTypeKey: instanceType,
 	})
 	if err != nil || count != 0 {
@@ -130,6 +130,28 @@ func ValidateDatabaseRequest(c *gin.Context) {
 		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
 			"error":   "Database with that name already exists",
+		})
+		return
+	}
+	c.Next()
+}
+
+// ValidateRegistration validates the user registration request
+func ValidateRegistration(c *gin.Context) {
+	requestBody := getBodyFromContext(c)
+	user := &types.User{}
+	if err := json.Unmarshal(requestBody, user); err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if result, err := validator.ValidateStruct(user); !result {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
 		})
 		return
 	}

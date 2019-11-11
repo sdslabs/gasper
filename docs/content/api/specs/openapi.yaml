@@ -199,7 +199,7 @@ components:
           type: string
         email:
           type: string  
-        is_admin:
+        admin:
           type: boolean
           description: Field denoting superuser privileges
           example: true
@@ -1048,7 +1048,7 @@ paths:
           schema:
             type: string
         - in: query
-          name: is_admin
+          name: admin
           description: Field denoting superuser privileges
           schema:
             type: boolean
