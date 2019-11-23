@@ -58,9 +58,28 @@ func fetchInstancesByUser(c *gin.Context, instanceType string) {
 	}
 
 	filter[mongo.OwnerKey] = claims.Email
-	c.AbortWithStatusJSON(200, gin.H{
+	c.JSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchInstances(filter),
+	})
+}
+
+func transferOwnership(c *gin.Context, instanceName, instanceType, newOwner string) {
+	err := mongo.UpdateInstance(
+		types.M{
+			mongo.NameKey:         instanceName,
+			mongo.InstanceTypeKey: instanceType,
+		},
+		types.M{
+			mongo.OwnerKey: newOwner,
+		},
+	)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
 	})
 }
 

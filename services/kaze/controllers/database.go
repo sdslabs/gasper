@@ -91,3 +91,8 @@ func DeleteDatabase(c *gin.Context) {
 	}
 	c.JSON(200, response)
 }
+
+// TransferDatabaseOwnership transfers the ownership of a database to another user
+func TransferDatabaseOwnership(c *gin.Context) {
+	transferOwnership(c, c.Param("db"), mongo.DBInstance, c.Param("user"))
+}
