@@ -32,12 +32,21 @@ func rescheduleInstance(apps []types.M, service string) {
 // inspectInstance checks whether a given instance is alive or not and deletes that instance
 // if it is dead
 func inspectInstance(service, instance string) {
+	// Handle Hikari's health-check by sending a UDP probe instead of TCP
+	if service == types.Hikari {
+		if !utils.IsHikariAlive(instance) {
+			if err := redis.RemoveServiceInstance(service, instance); err != nil {
+				utils.LogError(err)
+			}
+		}
+		return
+	}
 	if utils.NotAlive(instance) {
-		err := redis.RemoveServiceInstance(service, instance)
-		if err != nil {
+		if err := redis.RemoveServiceInstance(service, instance); err != nil {
 			utils.LogError(err)
 		}
-		if service == "mizu" {
+		// Re-schedule applications for Mizu microservice
+		if service == types.Mizu {
 			if !strings.Contains(instance, ":") {
 				utils.LogError(fmt.Errorf("Instance %s is in invalid format", instance))
 				return
@@ -67,10 +76,6 @@ func removeDeadServiceInstances(service string) {
 func removeDeadInstances() {
 	time.Sleep(5 * time.Second)
 	for service := range configs.ServiceMap {
-		// No need to send TCP health-check probe to DNS microservice (Hikari)
-		if service == types.Hikari {
-			continue
-		}
 		go removeDeadServiceInstances(service)
 	}
 }
