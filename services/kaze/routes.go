@@ -33,7 +33,7 @@ func NewService() http.Handler {
 	{
 		auth.POST("/login", m.JWT.LoginHandler)
 		auth.POST("/register", m.ValidateRegistration, c.Register)
-		auth.GET("/refresh", m.JWT.MiddlewareFunc(), m.JWT.RefreshHandler)
+		auth.GET("/refresh", m.JWT.RefreshHandler)
 	}
 
 	app := router.Group("/apps")

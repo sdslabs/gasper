@@ -70,7 +70,7 @@ var JWT = &jwt.GinJWTMiddleware{
 	Realm:           "Gasper",
 	Key:             []byte(configs.GasperConfig.Secret),
 	Timeout:         time.Hour,
-	MaxRefresh:      time.Hour,
+	MaxRefresh:      28 * 24 * time.Hour,
 	TokenLookup:     "header: Authorization",
 	TokenHeadName:   "Bearer",
 	TimeFunc:        time.Now,
