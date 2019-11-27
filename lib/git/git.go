@@ -29,7 +29,7 @@ func CloneWithToken(url, branch, destination, token string) error {
 		Depth:         1,
 		Auth: &http.BasicAuth{
 			// Since cloning through token username can be anything but not an empty string
-			Username: "random_string",
+			Username: "gasper",
 			Password: token,
 		},
 	})

@@ -166,6 +166,7 @@ components:
             - python2
             - python3
             - golang
+            - ruby
         owner:
           type: string
           description: Owner of the application
@@ -424,6 +425,7 @@ paths:
               - python2
               - python3
               - golang
+              - ruby
       security:
         - bearerAuth: []
       responses:
@@ -597,6 +599,42 @@ paths:
                     type: boolean
                   <<: *createdApplicationProperties
 
+  '/apps/{app}/transfer/{userEmail}':   
+    patch:
+      tags:
+        - apps
+      summary: Transfer ownership of an application to another user
+      operationId: transferAppByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application 
+          schema:
+            type: string  
+        - in: path
+          name: userEmail
+          required: true
+          description: Email ID of the user
+          schema:
+            type: string                              
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean                
+
   '/apps/{app}/logs':   
     get:
       tags:
@@ -765,7 +803,43 @@ paths:
                 type: object
                 properties:
                   success:
-                    type: boolean     
+                    type: boolean    
+                    
+  '/dbs/{db}/transfer/{userEmail}':   
+    patch:
+      tags:
+        - dbs
+      summary: Transfer ownership of a database to another user
+      operationId: transferDbByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: db
+          required: true
+          description: Name of the database 
+          schema:
+            type: string  
+        - in: path
+          name: userEmail
+          required: true
+          description: Email ID of the user
+          schema:
+            type: string                              
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400     
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean                      
 
   /admin/apps:
     get:
@@ -798,6 +872,7 @@ paths:
               - python2
               - python3
               - golang
+              - ruby
         - in: query
           name: docker_image
           description: Docker Image used in building the application's container
@@ -1217,7 +1292,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  dominus:
+                  kaze:
                     type: array
                     example: [192.168.208.206:3000]
                     items:
@@ -1247,7 +1322,7 @@ paths:
                     example: [192.168.208.206:9000]
                     items:
                       type: string  
-                  ssh:
+                  iwa:
                     type: array
                     example: [192.168.208.206:2222]
                     items:
@@ -1271,10 +1346,10 @@ paths:
             enum:
               - master
               - workers
-              - dominus
+              - kaze
               - enrai
               - mizu
-              - ssh
+              - iwa
               - hikari
               - mysql
               - mongodb
@@ -1293,7 +1368,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  dominus:
+                  kaze:
                     type: array
                     example: [192.168.208.206:3000]
                     items:

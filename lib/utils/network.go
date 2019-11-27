@@ -5,7 +5,9 @@ import (
 	"net"
 	"time"
 
+	"github.com/miekg/dns"
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/types"
 )
 
 // HostIP variable stores the IPv4 address of the host machine
@@ -33,11 +35,26 @@ func NotAlive(url string) bool {
 	d := net.Dialer{Timeout: 5 * time.Second}
 	conn, err := d.Dial("tcp", url)
 	if err != nil {
+		Log("Health-Check failed for instance "+url, ErrorTAG)
 		LogError(err)
 		return true
 	}
-	conn.Close()
+	defer conn.Close()
 	return false
+}
+
+// IsHikariAlive checks if a Hikari instance is alive or not
+func IsHikariAlive(url string) bool {
+	target := fmt.Sprintf("%s.%s", types.Kaze, configs.GasperConfig.Domain)
+	c := dns.Client{}
+	m := dns.Msg{}
+	m.SetQuestion(target+".", dns.TypeA)
+	if _, _, err := c.Exchange(&m, url); err != nil {
+		Log("Health-Check failed for Hikari instance "+url, ErrorTAG)
+		LogError(err)
+		return false
+	}
+	return true
 }
 
 // GetFreePort asks the kernel for a free open port that is ready to use.

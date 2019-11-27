@@ -2,6 +2,7 @@ package hikari
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 	"strings"
 	"time"
@@ -17,7 +18,7 @@ func handleError(err error) {
 	utils.LogError(err)
 }
 
-// filterValidInstances filters the reverse proxy instances and returns
+// filterValidInstances filters the instances and returns
 // valid instances i.e which is in the form of IP:Port
 func filterValidInstances(reverseProxyInstances []string) []string {
 	filteredInstances := make([]string, 0)
@@ -25,7 +26,7 @@ func filterValidInstances(reverseProxyInstances []string) []string {
 		if strings.Contains(instance, ":") {
 			filteredInstances = append(filteredInstances, instance)
 		} else {
-			utils.LogError(fmt.Errorf("Instance %s in Enrai instances is of invalid format", instance))
+			utils.LogError(fmt.Errorf("Instance %s is of invalid format", instance))
 		}
 	}
 	return filteredInstances
@@ -64,6 +65,19 @@ func updateStorage() {
 		address := strings.Split(reverseProxyInstances[index%instanceNum], ":")[0]
 		updateBody[fqdn] = address
 	}
+
+	kazeInstances, err := redis.FetchServiceInstances(types.Kaze)
+	if err != nil || len(kazeInstances) == 0 {
+		utils.Log(utils.InfoTAG, "No Kaze instances available. Failed to create a record for the same.")
+	} else {
+		fqdn := fmt.Sprintf("%s.%s.", types.Kaze, configs.GasperConfig.Domain)
+		kazeInstances = filterValidInstances(kazeInstances)
+		if len(kazeInstances) > 0 {
+			rand.Seed(time.Now().Unix())
+			updateBody[fqdn] = strings.Split(kazeInstances[rand.Intn(len(kazeInstances))], ":")[0]
+		}
+	}
+
 	storage.Replace(updateBody)
 }
 

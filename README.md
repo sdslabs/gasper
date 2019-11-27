@@ -68,6 +68,7 @@ Gasper currently supports applications of the following types:-
 * Python 3
 * Node.js
 * Golang
+* Ruby
 
 It ain't much but it's honest work 🥳
 

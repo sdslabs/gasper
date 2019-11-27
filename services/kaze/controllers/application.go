@@ -218,3 +218,8 @@ func RebuildApp(c *gin.Context) {
 	}
 	c.Data(200, "application/json", response)
 }
+
+// TransferApplicationOwnership transfers the ownership of an application to another user
+func TransferApplicationOwnership(c *gin.Context) {
+	transferOwnership(c, c.Param("app"), mongo.AppInstance, c.Param("user"))
+}

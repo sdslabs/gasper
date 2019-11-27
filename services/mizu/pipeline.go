@@ -20,5 +20,6 @@ var pipeline = map[string]func(*types.ApplicationConfig) types.ResponseError{
 	"python2": buildPipeline(configs.ImageConfig.Python2, nil),
 	"python3": buildPipeline(configs.ImageConfig.Python3, nil),
 	"golang":  buildPipeline(configs.ImageConfig.Golang, nil),
+	"ruby":    buildPipeline(configs.ImageConfig.Ruby, nil),
 	"static":  buildPipeline(configs.ImageConfig.Static, configs.CreateStaticContainerConfig),
 }

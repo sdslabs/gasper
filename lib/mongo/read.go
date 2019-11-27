@@ -161,9 +161,7 @@ func CountDocs(collectionName string, filter types.M) (int64, error) {
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	count, err := collection.CountDocuments(ctx, filter)
-	return count, err
+	return collection.CountDocuments(ctx, filter)
 }
 
 // CountInstances returns the number of instances matching a filter

@@ -46,6 +46,7 @@ func NewService() http.Handler {
 		app.DELETE("/:app", m.IsAppOwner, c.DeleteApp)
 		app.GET("/:app/logs", m.IsAppOwner, c.FetchAppLogs)
 		app.PATCH("/:app/rebuild", m.IsAppOwner, c.RebuildApp)
+		app.PATCH("/:app/transfer/:user", m.IsAppOwner, c.TransferApplicationOwnership)
 	}
 
 	db := router.Group("/dbs")
@@ -55,6 +56,7 @@ func NewService() http.Handler {
 		db.GET("", c.FetchDatabasesByUser)
 		db.GET("/:db", m.IsDatabaseOwner, c.GetDatabaseInfo)
 		db.DELETE("/:db", m.IsDatabaseOwner, c.DeleteDatabase)
+		db.PATCH("/:db/transfer/:user", m.IsDatabaseOwner, c.TransferDatabaseOwnership)
 	}
 
 	admin := router.Group("/admin")
