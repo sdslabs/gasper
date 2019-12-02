@@ -1,49 +1,41 @@
 package kaze
 
 import (
+	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/commons"
+	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 )
 
-// rescheduleInstance redeploys down instances on least loaded servers
-func rescheduleInstance(apps []types.M, service string) {
+// rescheduleApplications re-deploys applications present on lost nodes to other least loaded nodes
+func rescheduleApplications(apps []types.M) {
 	if len(apps) == 0 {
 		return
 	}
 
-	// distributionArray stores the number of more apps each instance can hold
+	// distributionArray stores the number of extra apps each instance can hold
 	// scoreArray and URLArray stores the urls of the instances and the corresponding urls
 	var distributionArray, scoreArray []int
 	var URLArray []string
 
 	// fetch n least loaded mizu instances
-	n := len(apps)
-	instances, err := redis.GetLeastLoadedInstancesWithScores(redis.WorkerInstanceKey, int64(n))
+	n := int64(len(apps))
+	instances, err := redis.GetLeastLoadedInstancesWithScores(redis.WorkerInstanceKey, n)
 	if err != nil {
 		utils.LogError(err)
+		return
 	}
 
 	for _, instance := range instances {
-		if instance != redis.ErrEmptySet {
-			instanceUnits := strings.Split(instance, ":")
-			score, err := strconv.Atoi(instanceUnits[2])
-			if err != nil {
-				utils.LogError(err)
-			}
-			scoreArray = append(scoreArray, score)
-
-			url := instanceUnits[0] + ":" + instanceUnits[1]
-			URLArray = append(URLArray, url)
-		}
+		scoreArray = append(scoreArray, int(instance.Score))
+		URLArray = append(URLArray, fmt.Sprintf("%v", instance.Member))
 	}
 
 	deployedApps := n
@@ -72,8 +64,20 @@ func rescheduleInstance(apps []types.M, service string) {
 		if scoreArray[index] <= 0 {
 			index++
 		}
-
-		commons.DeployRPC(app, instanceURL, service)
+		dataBytes, err := json.Marshal(app)
+		if err != nil {
+			utils.LogError(err)
+			continue
+		}
+		language, ok := app[mongo.LanguageKey].(string)
+		if !ok {
+			continue
+		}
+		owner, ok := app[mongo.OwnerKey].(string)
+		if !ok {
+			continue
+		}
+		factory.CreateApplication(language, owner, instanceURL, dataBytes)
 	}
 }
 
@@ -102,9 +106,8 @@ func inspectInstance(service, instance string) {
 			instanceIP := strings.Split(instance, ":")[0]
 			apps := mongo.FetchAppInfo(types.M{
 				mongo.HostIPKey: instanceIP,
-			},
-			)
-			go rescheduleInstance(apps, service)
+			})
+			go rescheduleApplications(apps)
 		}
 	}
 }
