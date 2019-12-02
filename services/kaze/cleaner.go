@@ -69,6 +69,10 @@ func rescheduleApplications(apps []types.M) {
 			utils.LogError(err)
 			continue
 		}
+		name, ok := app[mongo.NameKey].(string)
+		if !ok {
+			continue
+		}
 		language, ok := app[mongo.LanguageKey].(string)
 		if !ok {
 			continue
@@ -77,6 +81,7 @@ func rescheduleApplications(apps []types.M) {
 		if !ok {
 			continue
 		}
+		utils.LogInfo("Rescheduling application %s to %s", name, instanceURL)
 		factory.CreateApplication(language, owner, instanceURL, dataBytes)
 	}
 }
