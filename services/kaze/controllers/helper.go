@@ -65,7 +65,19 @@ func fetchInstancesByUser(c *gin.Context, instanceType string) {
 }
 
 func transferOwnership(c *gin.Context, instanceName, instanceType, newOwner string) {
-	err := mongo.UpdateInstance(
+	count, err := mongo.CountUsers(types.M{mongo.EmailKey: newOwner})
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	if count == 0 {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   "Recipent's email address is invalid",
+		})
+		return
+	}
+	err = mongo.UpdateInstance(
 		types.M{
 			mongo.NameKey:         instanceName,
 			mongo.InstanceTypeKey: instanceType,
