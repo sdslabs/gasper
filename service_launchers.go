@@ -31,7 +31,7 @@ var launcherBindings = map[string]*serviceLauncher{
 	},
 	iwa.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Iwa.Deploy,
-		Start:  iwa.NewService().ListenAndServe,
+		Start:  startIwaService,
 	},
 	hikari.ServiceName: &serviceLauncher{
 		Deploy: configs.ServiceConfig.Hikari.Deploy,
@@ -71,6 +71,13 @@ func startKazeService() error {
 
 func startEnraiService() error {
 	return buildHTTPServer(enrai.NewService(), configs.ServiceConfig.Enrai.Port).ListenAndServe()
+}
+
+func startIwaService() error {
+	if !configs.ServiceConfig.Iwa.Deploy {
+		return nil
+	}
+	return iwa.NewService().ListenAndServe()
 }
 
 func startEnraiServiceWithSSL() error {

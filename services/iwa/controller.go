@@ -114,7 +114,7 @@ func passwordHandler(ctx ssh.Context, password string) bool {
 func NewService() *ssh.Server {
 	hostSigners, err := getHostSigners(configs.ServiceConfig.Iwa.HostSigners)
 	if err != nil {
-		utils.Log("There was a problem deploying SSH service", utils.ErrorTAG)
+		utils.Log("There was a problem deploying Iwa SSH service", utils.ErrorTAG)
 		utils.Log("Make sure the paths of Private Keys is correct in `config.toml`", utils.ErrorTAG)
 		utils.LogError(err)
 		os.Exit(1)
