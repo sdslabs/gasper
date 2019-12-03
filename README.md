@@ -31,7 +31,7 @@ Imagine you have a couple of *Bare Metal Servers* and/or *Virtual Machines* (col
 Your 1st option is to manually decide which application goes to which node, then use ssh/telnet to manually
 setup all of your applications in each node one by one.<br>
 
-But you are smarter than that, hence you go for the 2nd option which is Kubernetes. You setup Kubernetes in all of your
+But you are smarter than that, hence you go for the 2nd option which is [Kubernetes](https://kubernetes.io/). You setup Kubernetes in all of your
 nodes which forms a cluster, and now you can deploy your applications without worrying about load distribution. But
 Kubernetes requires a lot of configuration for each application(deployments, services, stateful-sets etc) not to mention
 pipelines for creating the corresponding docker image.<br>
@@ -51,7 +51,7 @@ Gasper has:-
     * Intelligently distributing applications/databases among them
     * Transferring applications from one worker node to another in case of node failure
     * Removing dead worker nodes from the cloud
-* REST APIs for master and worker services 
+* REST API interface for the entire ecosystem
 * Reverse-proxy service with HTTPS, HTTP/2 and Websocket support for creating bridge connections to an application
 * DNS service which automatically creates DNS entries for all applications which in turn are resolved inside containers
 * SSH service for providing ssh access directly to an application's docker container
