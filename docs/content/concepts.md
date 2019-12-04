@@ -4,7 +4,7 @@
 
 * **Node**: A Virtual Machine or a Bare-Metal Server
 * **Worker Node**: A node which handles creation/management of applications and databases
-* **Miscellaneous Node**: A node which handles Reverse-Proxy to other nodes or DNS entries or SSH access
+* **Miscellaneous Node**: A node which handles Reverse-Proxy to other nodes or DNS entries or SSH access to docker containers
 * **Master Node**: A node which manages all other nodes and keeps them in check
 
 ## Components

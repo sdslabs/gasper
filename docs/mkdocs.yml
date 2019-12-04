@@ -60,5 +60,16 @@ nav:
   - 'Features': 'features.md'
   - 'Concepts': 'concepts.md'
   - 'Getting Started':
+    - 'Dependencies': 'getting-started/dependencies.md'
     - 'Quick Start': 'getting-started/quick-start.md'
+  - 'Configurations':
+    - 'Overview': 'configurations/overview.md'
+    - 'Global': 'configurations/global.md'
+    - 'Admin': 'configurations/admin.md'
+    - 'MongoDB': 'configurations/mongodb.md'
+    - 'Redis': 'configurations/redis.md'
+    - 'Docker Images': 'configurations/docker-images.md'
   - 'API Docs': 'api/index.html'
+  - 'Examples':
+    - 'Deploying Static Web Page': 'examples/static.md'
+    - 'Deploying Ruby on Rails': 'examples/ruby-on-rails.md'

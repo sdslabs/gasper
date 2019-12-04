@@ -1,3 +1,13 @@
+# Overview
+
+This section of documentation deals with configuring Gasper to suit your needs
+
+All configurations are present in a file named **config.toml** which is packaged with every [release](https://github.com/sdslabs/gasper/releases)
+
+## Sample
+Here is a [sample config.toml](https://github.com/sdslabs/gasper/blob/develop/config.sample.toml) and we are going to discuss each and every section of this file in detail in the next parts
+
+```toml
 # Configuration sample for Gasper
 
 ############################
@@ -206,3 +216,4 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 # To be used when the current node is only accessible by a jump host or 
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""
+```
