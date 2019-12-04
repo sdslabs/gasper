@@ -23,9 +23,6 @@ var (
 	// ServiceConfig is the configuration for all services
 	ServiceConfig = GasperConfig.Services
 
-	// FalconConfig is the configuration for all the falcon client services
-	FalconConfig = GasperConfig.Falcon
-
 	// CloudflareConfig is the configuration for cloudflare services used by gasper
 	CloudflareConfig = GasperConfig.Cloudflare
 

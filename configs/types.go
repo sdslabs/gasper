@@ -33,17 +33,6 @@ type Redis struct {
 	DB       int    `toml:"db"`
 }
 
-// Falcon is the configuration for SDSLabs oauth2
-type Falcon struct {
-	PlugIn                        bool   `toml:"plugin"`
-	FalconClientID                string `toml:"falcon_client_id"`
-	FalconClientSecret            string `toml:"falcon_client_secret"`
-	FalconURLAccessToken          string `toml:"falcon_access_token_url"`
-	FalconURLResourceOwnerDetails string `toml:"falcon_resource_owner_url"`
-	FalconAccountsURL             string `toml:"falcon_accounts_url"`
-	RedirectURI                   string `toml:"redirect_uri"`
-}
-
 // GenericService is the default configuration for all services
 type GenericService struct {
 	Deploy bool `toml:"deploy"`
@@ -137,7 +126,6 @@ type GasperCfg struct {
 	Cloudflare  Cloudflare `toml:"cloudflare"`
 	Mongo       Mongo      `toml:"mongo"`
 	Redis       Redis      `toml:"redis"`
-	Falcon      Falcon     `toml:"falcon"`
 	Images      Images     `toml:"images"`
 	Services    Services   `toml:"services"`
 }
