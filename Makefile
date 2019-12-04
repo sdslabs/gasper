@@ -34,6 +34,12 @@ tools:
 	@$(BUILDIR)/install_fresh.sh
 	@$(BUILDIR)/install_golint.sh
 
+## release: Build release binaries
+release:
+	@printf "🔨 Building Release Binaries\n" 
+	@go run $(BUILDIR)/release.go
+	@printf "👍 Done\n"
+
 ## start: Start in development mode with hot-reload enabled
 start: tools
 	@$(PROJECTROOT)/bin/fresh
