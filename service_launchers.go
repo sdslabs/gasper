@@ -53,15 +53,27 @@ var launcherBindings = map[string]*serviceLauncher{
 
 func startKaenService() error {
 	if configs.ServiceConfig.Kaen.MySQL.PlugIn {
+		checkAndPullImages(configs.ImageConfig.Mysql)
 		setupDatabaseContainer(types.MySQL)
 	}
 	if configs.ServiceConfig.Kaen.MongoDB.PlugIn {
+		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDB)
 	}
 	return startGrpcServer(kaen.NewService(), configs.ServiceConfig.Kaen.Port)
 }
 
 func startMizuService() error {
+	images := []string{
+		configs.ImageConfig.Static,
+		configs.ImageConfig.Php,
+		configs.ImageConfig.Nodejs,
+		configs.ImageConfig.Python2,
+		configs.ImageConfig.Python3,
+		configs.ImageConfig.Golang,
+		configs.ImageConfig.Ruby,
+	}
+	checkAndPullImages(images...)
 	return startGrpcServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port)
 }
 

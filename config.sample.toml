@@ -4,13 +4,14 @@
 #   Main Configuration   #
 ##########################
 
-# Run Gasper in Debug mode.
+# Run Gasper in Debug mode ?
 # Set this value to `false` in Production.
 debug = true
 
 # Root domain for all deployed applications.
 domain = "sdslabs.local"
 
+# Secret Key used for internal communication in the Gasper ecosystem.
 secret = "YOUR_SECRET_KEY"
 
 # Root of the deployed application in the docker container's filesystem.
@@ -150,7 +151,7 @@ port = 4000
 ##########################
 
 [services.kaen]
-deploy = true   # Deploy Kaen?
+deploy = false   # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`

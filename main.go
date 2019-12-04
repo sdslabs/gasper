@@ -9,7 +9,6 @@ import (
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
 	"github.com/sdslabs/gasper/services/kaze"
-	"github.com/sdslabs/gasper/services/kaze/middlewares"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -32,13 +31,6 @@ func initEnrai() {
 	}
 }
 
-func initFalcon() {
-	if configs.FalconConfig.PlugIn {
-		// Initialize the Falcon Config at startup
-		go middlewares.InitializeFalconConfig()
-	}
-}
-
 func initServices() {
 	var g errgroup.Group
 	for service, launcher := range launcherBindings {
@@ -54,10 +46,8 @@ func initServices() {
 }
 
 func main() {
-	checkAndPullImages()
 	initKaze()
 	initHikari()
 	initEnrai()
-	initFalcon()
 	initServices()
 }

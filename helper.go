@@ -5,27 +5,23 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"reflect"
 	"strings"
 	"time"
 
-	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
 	"google.golang.org/grpc"
 )
 
-func checkAndPullImages() {
-	images, err := docker.ListImages()
+func checkAndPullImages(imageList ...string) {
+	availableImages, err := docker.ListImages()
 	if err != nil {
 		utils.LogError(err)
 		os.Exit(1)
 	}
-	v := reflect.ValueOf(configs.ImageConfig)
-	for i := 0; i < v.NumField(); i++ {
-		image := v.Field(i).String()
-		if !utils.Contains(images, image) {
+	for _, image := range imageList {
+		if !utils.Contains(availableImages, image) {
 			utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
 			if err = docker.Pull(image); err != nil {
 				utils.LogError(err)
