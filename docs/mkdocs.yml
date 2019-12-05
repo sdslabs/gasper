@@ -69,6 +69,12 @@ nav:
     - 'MongoDB': 'configurations/mongodb.md'
     - 'Redis': 'configurations/redis.md'
     - 'Docker Images': 'configurations/docker-images.md'
+    - 'Mizu 💧': 'configurations/mizu.md'
+    - 'Kaen 🔥': 'configurations/kaen.md'
+    - 'Enrai ⚡': 'configurations/enrai.md'
+    - 'Hikari 💡': 'configurations/hikari.md'
+    - 'Iwa 🗿': 'configurations/iwa.md'
+    - 'Kaze 🌪': 'configurations/kaze.md'
   - 'API Docs': 'api/index.html'
   - 'Examples':
     - 'Deploying Static Web Page': 'examples/static.md'
