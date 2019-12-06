@@ -52,7 +52,7 @@ Gasper has:-
     * Transferring applications from one worker node to another in case of node failure
     * Removing dead worker nodes from the cloud
 * REST API interface for the entire ecosystem
-* Reverse-proxy service with HTTPS, HTTP/2 and Websocket support for accessing deployed application
+* Reverse-proxy service with HTTPS, HTTP/2 and Websocket support for accessing deployed applications
 * DNS service which automatically creates DNS entries for all applications which in turn are resolved inside containers
 * SSH service for providing ssh access directly to an application's docker container
 * Dynamic addition/deletion of nodes and services without configuration changes or restarts
