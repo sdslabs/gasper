@@ -2,7 +2,6 @@ package hikari
 
 import (
 	"fmt"
-	"math/rand"
 	"sort"
 	"strings"
 	"time"
@@ -60,21 +59,23 @@ func updateStorage() {
 	updateBody := make(map[string]string)
 	instanceNum := len(reverseProxyInstances)
 
+	// Create enrties for applications
 	for index, app := range apps {
 		fqdn := fmt.Sprintf("%s.app.%s.", app, configs.GasperConfig.Domain)
 		address := strings.Split(reverseProxyInstances[index%instanceNum], ":")[0]
 		updateBody[fqdn] = address
 	}
 
+	// Create entry for Kaze
 	kazeInstances, err := redis.FetchServiceInstances(types.Kaze)
 	if err != nil || len(kazeInstances) == 0 {
 		utils.Log(utils.InfoTAG, "No Kaze instances available. Failed to create a record for the same.")
 	} else {
-		fqdn := fmt.Sprintf("%s.%s.", types.Kaze, configs.GasperConfig.Domain)
 		kazeInstances = filterValidInstances(kazeInstances)
-		if len(kazeInstances) > 0 {
-			rand.Seed(time.Now().Unix())
-			updateBody[fqdn] = strings.Split(kazeInstances[rand.Intn(len(kazeInstances))], ":")[0]
+		for index := range kazeInstances {
+			fqdn := fmt.Sprintf("%s.%s.", types.Kaze, configs.GasperConfig.Domain)
+			address := strings.Split(reverseProxyInstances[index%instanceNum], ":")[0]
+			updateBody[fqdn] = address
 		}
 	}
 
