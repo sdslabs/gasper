@@ -49,7 +49,7 @@ $ curl -X POST \
 }
 ```
 
-!!!warning
+!!!note
     If you have made any changes in the [admin section](https://github.com/sdslabs/gasper/blob/develop/config.sample.toml#L36) of `config.toml` then change the payload (email and password) of the above request accordingly
 
 ## Application Deployment

@@ -88,3 +88,6 @@ nav:
       - 'Python Django': 'examples/applications/python-django.md'
       - 'Go': 'examples/applications/golang.md'
       - 'Ruby on Rails': 'examples/applications/ruby-on-rails.md'
+    - 'Creating Databases':
+      - 'MySQL': 'examples/databases/mysql.md'
+      - 'MongoDB': 'examples/databases/mongodb.md'

@@ -14,7 +14,7 @@ deploy = false   # Deploy Kaen?
 port = 9000
 ```
 
-!!!info
+!!!warning
     The node where **Kaen** is to be deployed should have **Docker** installed and running
 
 ## MySQL Configuration

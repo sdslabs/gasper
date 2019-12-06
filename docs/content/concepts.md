@@ -55,7 +55,7 @@ Enrai service deals with reverse-proxying HTTP, HTTPS, HTTP/2, Websocket and gRP
 
 Hikari service deals with creating and managing DNS records of all deployed applications. All DNS records point to the IPv4 addresses of Enrai ⚡ instances which in turn reverse-proxies the request to the desired application's IPv4 address and port.
 
-!!!info
+!!!note
     **Hikari** stores DNS records in such a manner that all requests are equally distributed among all available **Enrai** instances. The records dynamically change with the addition/deletion of **Enrai** instances.
 
 !!!info

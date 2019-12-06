@@ -14,5 +14,5 @@ deploy = true   # Deploy Mizu?
 port = 4000
 ```
 
-!!!info
+!!!warning
     The node where **Mizu** is to be deployed should have **Docker** installed and running

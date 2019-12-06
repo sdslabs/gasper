@@ -31,8 +31,11 @@ entrypoint_ip = ""
 
 The **host_signers** field stores the location of your private key
 
-!!!info
+!!!note
     If your private key is passphrase protected then set the **using_passphrase** field to `true` and insert your passphrase as the value of the **passphrase** field
 
 !!!info
     The password required for SSH access is provided by the user during application creation 
+
+!!!bug
+    **Iwa 🗿** doesn't work on [Windows](https://www.microsoft.com/en-in/windows)

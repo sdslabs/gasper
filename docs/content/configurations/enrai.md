@@ -2,6 +2,9 @@
 
 Enrai service deals with reverse-proxying HTTP, HTTPS, HTTP/2, Websocket and gRPC requests to the desired application's IPv4 address and port based on the hostname
 
+!!!info
+    **Enrai ⚡** automatically creates a reverse-proxy entry for **Kaze 🌪** (if deployed) pointing to its IPv4 address and port
+
 ## Default
 The following section deals with the configuration of Enrai
 
@@ -18,7 +21,7 @@ deploy = false  # Deploy Enrai?
 port = 80
 ```
 
-!!!warning
+!!!tip
     You can reduce the value of **record_update_interval** parameter in the above configuration if you need changes in your ecosystem to propagate faster but this will in turn increase the load on the Redis central registry server so *choose wisely*
 
 !!!warning
@@ -39,7 +42,7 @@ private_key = "/home/user/privkey.pem"  # Private Key Location
 
 The **certificate** and **private key** in the above configuration should be configured for all sub-domains based on the [domain parameter](/configurations/global/#domain) in the configuration file
 
-!!!info
+!!!example "Configuration Example"
     If the **domain** parameter is **sdslabs.co** then the certificate and private key should be configured for the following subdomains `*.sdslabs.co` and `*.*.sdslabs.co`
 
 !!!warning

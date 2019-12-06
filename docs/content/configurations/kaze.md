@@ -26,5 +26,5 @@ deploy = true   # Deploy Kaze?
 port = 3000
 ```
 
-!!!warning
+!!!tip
     You can reduce the value of **cleanup_interval** parameter in the above configuration if you need changes in your ecosystem to propagate faster but this will in turn increase the load on the Redis central registry server so *choose wisely*

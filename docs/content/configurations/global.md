@@ -63,8 +63,8 @@ This section determines the root domain of all deployed applications
 
 The corresponding DNS entry for the application will be automatically created in **Hikari 💡** and resolved by **Enrai ⚡** during reverse-proxy
 
-??? example
-    If you create an application named **foo** then a DNS entry of **foo.sdslabs.local** will be created based on the above root domain setting pointing to the IPv4 address of an **Enrai** instance
+!!! example
+    If you create an application named **foo** then a DNS entry of **foo.app.sdslabs.local** will be created based on the above root domain setting pointing to the IPv4 address of an **Enrai** instance
 
 ## Secret Key
 
@@ -75,11 +75,11 @@ secret = "YOUR_SECRET_KEY"
 
 Secret Key is used to encrypt the internal communications between **Kaze** 🌪 , **Mizu** 💧 and **Kaen** 🔥
 
-!!!info
+!!!tip
     We recommend setting a strong **secret key** for securing your cloud ecosystem
 
-!!!warning "Note"
-    Make sure that the **secret key** is the same across all Gasper instances in your entire cloud ecosystem 
+!!!warning
+    Make sure that the **secret key** is the same across all Gasper instances in your entire cloud ecosystem
 
 ## Project Root
 
@@ -127,7 +127,7 @@ Gasper requires network connectivity for booting but with this parameter Gasper 
 
 Used for development purposes when the developer doesn't have an internet connectivity
 
-!!!warning
+!!!danger
     This functionality should be used strictly for development purposes
 
 ## DNS Nameservers
@@ -140,7 +140,7 @@ dns_servers = [
 ]
 ```
 
-This field defines the DNS Nameservers that would be used inside all deployed application's docker containers for domain name resolutions
+This field defines the DNS Nameservers that would be used inside all deployed application's docker containers for domain name resolution
 
 Change it according to your network infrastructure if required
 
