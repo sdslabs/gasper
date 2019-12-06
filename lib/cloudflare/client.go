@@ -80,9 +80,8 @@ func FetchRecords(queryParams ...types.M) (*MultiResponse, error) {
 	return data, nil
 }
 
-// CreateRecord creates a new DNS record for the given zone
-// and returns its ID
-func CreateRecord(name, instanceType string) (*SingleResponse, error) {
+// createRecord creates a new DNS record for the given zone and returns its ID
+func createRecord(name, instanceType string) (*SingleResponse, error) {
 	zoneID, err := getZoneID()
 	if err != nil {
 		return nil, err
@@ -118,13 +117,26 @@ func CreateRecord(name, instanceType string) (*SingleResponse, error) {
 	}
 
 	if !data.Success {
-		return nil, formatErrorResponse(data.Errors)
+		// If entry already exists then update the record
+		res, err := updateRecord(name, instanceType, payload)
+		if err != nil {
+			return nil, err
+		}
+		if !res.Success {
+			return nil, formatErrorResponse(append(data.Errors, res.Errors...))
+		}
+		return res, nil
 	}
 	return data, nil
 }
 
-// UpdateRecord updates the DNS record for an application in the given zone
-func UpdateRecord(name, instanceType string, payload *singlePayload) (*SingleResponse, error) {
+// CreateApplicationRecord creates a new DNS record for an application
+func CreateApplicationRecord(name string) (*SingleResponse, error) {
+	return createRecord(name, ApplicationInstance)
+}
+
+// updateRecord updates the DNS record for an application in the given zone
+func updateRecord(name, instanceType string, payload *singlePayload) (*SingleResponse, error) {
 	zoneID, err := getZoneID()
 	if err != nil {
 		return nil, err

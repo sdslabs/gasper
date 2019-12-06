@@ -59,6 +59,9 @@ func LogDebug(f string, v ...interface{}) {
 
 // LogError logs type error to console
 func LogError(e error) {
+	if e == nil {
+		return
+	}
 	s := e.Error()
 	out(s, ErrorTAG)
 }

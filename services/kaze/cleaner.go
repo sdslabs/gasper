@@ -2,6 +2,7 @@ package kaze
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -29,8 +30,13 @@ func rescheduleApplications(apps []types.M) {
 
 	// fetch n least loaded mizu instances
 	instances, err := redis.GetLeastLoadedInstancesWithScores(redis.WorkerInstanceKey, n)
-	if err != nil || len(instances) == 0 {
+	if err != nil {
 		utils.LogError(err)
+		return
+	}
+
+	if len(instances) == 0 {
+		utils.LogError(errors.New("No instances available for re-scheduling"))
 		return
 	}
 
