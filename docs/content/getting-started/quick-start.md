@@ -10,19 +10,19 @@ After downloading, unzip the tar file
 $ tar -xf gasper_platform_arch.tar.gz
 ```
 
-After extraction, the extracted directory should have the gasper `binary` and `config.toml`, the configuration file
+After extraction, the extracted directory should have the `gasper binary` and `config.toml`, the configuration file
 
 ```bash
 $ cd gasper_platform_arch
 $ ls
-gasper_platform_arch
+gasper
 config.toml
 ```
 
 ## Run Gasper
 Run Gasper by executing the binary with the provided configuration
 ```bash
-$ ./gasper_platform_arch --conf ./config.toml
+$ ./gasper --conf ./config.toml
 ```
 
 !!!warning
@@ -112,7 +112,7 @@ You can now can access the deployed application by hitting the URL **host_ip:con
 
 For the above case it will be `10.43.3.24:64128`
 
-You should get the message `Hello World` in your browser which also marks the end of this tutorial
+You should get the message `Hello World` in your browser marking the end of this tutorial
 
 !!!question "Where to go next?"
-    You can either have a look at more examples or how to configure and setup Gasper to your liking
+    You can either have a look at more [examples](/examples/login) or how to [configure and setup](/configurations/overview) Gasper to your liking

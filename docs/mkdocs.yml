@@ -75,7 +75,9 @@ nav:
     - 'Hikari 💡': 'configurations/hikari.md'
     - 'Iwa 🗿': 'configurations/iwa.md'
     - 'Kaze 🌪': 'configurations/kaze.md'
+    - 'Cloudflare': 'configurations/cloudflare.md'
   - 'API Docs': 'api/index.html'
   - 'Examples':
+    - 'Login': 'examples/login.md'
     - 'Deploying Static Web Page': 'examples/static.md'
     - 'Deploying Ruby on Rails': 'examples/ruby-on-rails.md'

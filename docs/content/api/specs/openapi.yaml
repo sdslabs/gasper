@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Gasper API
+  title: Gasper Kaze API
   description: >-
     Handles authentication, creation/management of applications, databases, users and also provides a superuser API. <br><br>
     Only a superuser can avail the superuser API. A superuser can **grant/revoke** superuser privileges to other users. A default 
