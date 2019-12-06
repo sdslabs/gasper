@@ -144,7 +144,7 @@ won't have a hard time looking around.
 
 ## Contributing
 
-If you'd like to contribute to the project, refer to the [contributing documentation](./CONTRIBUTING.md).
+If you'd like to contribute to this project, refer to the [contributing documentation](./CONTRIBUTING.md).
 
 ## Meet the A-Team
 

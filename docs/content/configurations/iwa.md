@@ -33,3 +33,6 @@ The **host_signers** field stores the location of your private key
 
 !!!info
     If your private key is passphrase protected then set the **using_passphrase** field to `true` and insert your passphrase as the value of the **passphrase** field
+
+!!!info
+    The password required for SSH access is provided by the user during application creation 

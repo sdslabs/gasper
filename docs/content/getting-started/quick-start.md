@@ -108,7 +108,7 @@ $ curl -X POST \
 
 Note the **host_ip** and **container_port** fields in the above JSON response
 
-You can now can access the deployed application by hitting the URL **host_ip:container_port** from your browser
+You can now access the deployed application by hitting the URL **host_ip:container_port** from your browser
 
 For the above case it will be `10.43.3.24:64128`
 

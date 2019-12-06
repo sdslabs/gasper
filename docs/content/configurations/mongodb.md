@@ -16,4 +16,4 @@ url = "mongodb://localhost:27017"
 ```
 
 !!!warning
-    There should be only a single instance of MongoDB running in your entire cloud ecosystem and all instances of Gasper should connect only to that single MongoDB instance i.e the above configuration must be same across all Gasper instances
+    There should be only a single instance of MongoDB running in your entire cloud ecosystem and all instances of Gasper should connect only to that single MongoDB instance i.e the above configuration must be **same** across all Gasper instances in all nodes

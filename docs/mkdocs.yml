@@ -79,5 +79,12 @@ nav:
   - 'API Docs': 'api/index.html'
   - 'Examples':
     - 'Login': 'examples/login.md'
-    - 'Deploying Static Web Page': 'examples/static.md'
-    - 'Deploying Ruby on Rails': 'examples/ruby-on-rails.md'
+    - 'Deploying Applications':
+      - 'Static Website': 'examples/applications/static.md'
+      - 'Simple PHP': 'examples/applications/simple-php.md'
+      - 'Advanced PHP': 'examples/applications/advanced-php.md'
+      - 'Node.js': 'examples/applications/nodejs.md'
+      - 'Python Flask': 'examples/applications/python-flask.md'
+      - 'Python Django': 'examples/applications/python-django.md'
+      - 'Go': 'examples/applications/golang.md'
+      - 'Ruby on Rails': 'examples/applications/ruby-on-rails.md'
