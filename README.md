@@ -56,6 +56,7 @@ Gasper has:-
 * DNS service which automatically creates DNS entries for all applications which in turn are resolved inside containers
 * SSH service for providing ssh access directly to an application's docker container
 * Dynamic addition/deletion of nodes and services without configuration changes or restarts
+* Compatibility with Linux, Windows, MacOS, FreeBSD and OpenBSD
 * All of the above packaged with ❤️ in a **single binary**
 
 ## Supported Languages

@@ -1,5 +1,19 @@
 # Documentation
 
+## Building
+
+To view the documentation locally create a virtual environment and install [requirements](./requirements.txt)
+
+```bash
+$ virtualenv ~/docs && source ~/docs/bin/activate
+
+$ pip install -r requirements.txt
+
+$ mkdocs serve
+
+Serving on http://127.0.0.1:8000
+```
+
 ## Tooling
 
 | Tool              | Documentation                       | Sources                           |
