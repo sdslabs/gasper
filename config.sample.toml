@@ -125,7 +125,7 @@ port = 3000
 [services.enrai]
 # Time Interval (in seconds) in which `Enrai` updates its
 # `Reverse-Proxy Record Storage` by polling the central registry-server.
-record_update_interval = 30
+record_update_interval = 15
 deploy = false  # Deploy Enrai?
 port = 80
 
@@ -181,7 +181,7 @@ MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB s
 [services.hikari]
 # Time Interval (in seconds) in which `Hikari` updates its
 # `DNS Record Storage` by polling the central registry-server.
-record_update_interval = 30
+record_update_interval = 15
 deploy = false  # Deploy Hikari?
 port = 53
 
