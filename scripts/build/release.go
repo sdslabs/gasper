@@ -10,6 +10,7 @@ var releaseMap = map[string][]string{
 	"linux":   []string{"386", "amd64", "arm", "arm64", "ppc64le"},
 	"freebsd": []string{"386", "amd64"},
 	"openbsd": []string{"amd64"},
+	"windows": []string{"386", "amd64"},
 }
 
 func build(platform, architecture string, errChan chan error) {

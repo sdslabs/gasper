@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"runtime"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -87,6 +88,10 @@ func startEnraiService() error {
 
 func startIwaService() error {
 	if !configs.ServiceConfig.Iwa.Deploy {
+		return nil
+	}
+	if runtime.GOOS == "windows" {
+		utils.LogInfo("Iwa doesn't work on Windows, skipping its deployment")
 		return nil
 	}
 	return iwa.NewService().ListenAndServe()
