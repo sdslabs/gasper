@@ -37,5 +37,5 @@ The **host_signers** field stores the location of your private key
 !!!info
     The password required for SSH access is provided by the user during application creation 
 
-!!!bug
-    **Iwa 🗿** doesn't work on [Windows](https://www.microsoft.com/en-in/windows)
+!!!bug "Compatibility Issues"
+    **Iwa 🗿** is not compatible with [Windows](https://www.microsoft.com/en-in/windows), hence its deployment will be skipped on Windows systems
