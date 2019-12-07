@@ -12,6 +12,7 @@ import (
 	gotty "github.com/alphadose/gotty/server"
 	gottyUtils "github.com/alphadose/gotty/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
@@ -282,28 +283,26 @@ func DeployWebTerminal(c *gin.Context) {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
-	command := fmt.Sprintf("ssh -p %s %s@%s", sshPort, appName, instanceURL)
 
-	_factory, err := localcommand.NewFactory(command, []string{}, backendOptions) //empty array passed as second argument to replace cli arguments
+	termFactory, err := localcommand.NewFactory(
+		"ssh", []string{"-p", sshPort, fmt.Sprintf("%s@%s", appName, instanceURL)}, backendOptions)
+
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
-	srv, err := gotty.New(_factory, terminalOptions)
+
+	srv, err := gotty.New(termFactory, terminalOptions)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	ctx, _ := context.WithCancel(context.Background())
-	gCtx, _ := context.WithCancel(context.Background())
-
-	go srv.Run(ctx, server.WithGracefullContext(gCtx))
-
-	terminalURL := fmt.Sprintf("kaze.sdslabs.co:%d", port)
+	go srv.Run(context.Background(), server.WithGracefullContext(context.Background()))
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"url":     terminalURL,
+		"url":     fmt.Sprintf("%s.%s:%d", types.Kaze, configs.GasperConfig.Domain, port),
+		"raw_url": fmt.Sprintf("%s:%d", utils.HostIP, port),
 	})
 }
