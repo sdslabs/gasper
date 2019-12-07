@@ -47,6 +47,7 @@ func NewService() http.Handler {
 		app.GET("/:app/logs", m.IsAppOwner, c.FetchAppLogs)
 		app.PATCH("/:app/rebuild", m.IsAppOwner, c.RebuildApp)
 		app.PATCH("/:app/transfer/:user", m.IsAppOwner, c.TransferApplicationOwnership)
+		app.GET("/:app/term", m.IsAppOwner, c.DeployWebTerminal)
 	}
 
 	db := router.Group("/dbs")

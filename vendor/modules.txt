@@ -2,12 +2,23 @@
 github.com/BurntSushi/toml
 # github.com/Microsoft/go-winio v0.4.11
 github.com/Microsoft/go-winio
+# github.com/NYTimes/gziphandler v0.0.0-20170804200234-967539e5e271
+github.com/NYTimes/gziphandler
+# github.com/alphadose/gotty v0.0.0-20191207122653-c132afbf14d8
+github.com/alphadose/gotty/backend/localcommand
+github.com/alphadose/gotty/server
+github.com/alphadose/gotty/utils
+github.com/alphadose/gotty/pkg/homedir
+github.com/alphadose/gotty/pkg/randomstring
+github.com/alphadose/gotty/webtty
 # github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239
 github.com/anmitsu/go-shlex
 # github.com/appleboy/gin-jwt v2.5.0+incompatible
 github.com/appleboy/gin-jwt
 # github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 github.com/asaskevich/govalidator
+# github.com/codegangsta/cli v1.19.1
+github.com/codegangsta/cli
 # github.com/docker/distribution v2.6.2+incompatible
 github.com/docker/distribution/reference
 github.com/docker/distribution/digest
@@ -34,6 +45,8 @@ github.com/docker/go-connections/sockets
 github.com/docker/go-connections/tlsconfig
 # github.com/docker/go-units v0.3.3
 github.com/docker/go-units
+# github.com/elazarl/go-bindata-assetfs v0.0.0-20150813044622-d5cac425555c
+github.com/elazarl/go-bindata-assetfs
 # github.com/emirpasic/gods v1.9.0
 github.com/emirpasic/gods/trees/binaryheap
 github.com/emirpasic/gods/containers
@@ -41,6 +54,8 @@ github.com/emirpasic/gods/lists/arraylist
 github.com/emirpasic/gods/trees
 github.com/emirpasic/gods/utils
 github.com/emirpasic/gods/lists
+# github.com/fatih/structs v0.0.0-20150526064352-a9f7daa9c272
+github.com/fatih/structs
 # github.com/gin-contrib/cors v1.3.0
 github.com/gin-contrib/cors
 # github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3
@@ -73,6 +88,10 @@ github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
 # github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
 github.com/golang/snappy
+# github.com/gorilla/websocket v0.0.0-20150811171432-b6ab76f1fe98
+github.com/gorilla/websocket
+# github.com/hashicorp/go-multierror v0.0.0-20150608033521-56912fb08d85
+github.com/hashicorp/go-multierror
 # github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 github.com/jbenet/go-context/io
 # github.com/json-iterator/go v1.1.6
@@ -110,6 +129,10 @@ github.com/xanzy/ssh-agent
 github.com/xdg/scram
 # github.com/xdg/stringprep v1.0.0
 github.com/xdg/stringprep
+# github.com/yudai/hcl v0.0.0-20151013225006-5fa2393b3552
+github.com/yudai/hcl
+github.com/yudai/hcl/hcl
+github.com/yudai/hcl/json
 # go.mongodb.org/mongo-driver v1.1.0
 go.mongodb.org/mongo-driver/bson
 go.mongodb.org/mongo-driver/mongo

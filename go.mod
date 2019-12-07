@@ -3,6 +3,7 @@ module github.com/sdslabs/gasper
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Microsoft/go-winio v0.4.11 // indirect
+	github.com/alphadose/gotty v0.0.0-20191207122653-c132afbf14d8
 	github.com/appleboy/gin-jwt v2.5.0+incompatible
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/docker/distribution v2.6.2+incompatible // indirect
@@ -47,3 +48,5 @@ require (
 	gopkg.in/src-d/go-git.v4 v4.8.1
 	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )
+
+go 1.13

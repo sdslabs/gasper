@@ -635,6 +635,44 @@ paths:
                   success:
                     type: boolean                
 
+  '/apps/{app}/term':
+    get:
+      tags:
+        - apps
+      summary: Fetch a browser terminal instance for an application owned by a user
+      operationId: fetchTerminalByUser
+      parameters:
+        - <<: *authHeaderParams
+        - in: path
+          name: app
+          required: true
+          description: The name of the application
+          schema:
+            type: string
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  url:
+                    type: string
+                    description: The URL endpoint for accessing the browser terminal instance in the form of domain_name:port
+                    example: kaze.sdslabs.co:51000
+                  raw_url:
+                    type: string
+                    description: The URL endpoint for accessing the browser terminal instance in the form of ip_address:port
+                    example: 10.43.3.24:51000
+
   '/apps/{app}/logs':   
     get:
       tags:
