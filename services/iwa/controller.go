@@ -1,4 +1,4 @@
-// +build linux darwin freebsd openbsd
+// +build !windows
 
 package iwa
 
