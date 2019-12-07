@@ -7,13 +7,13 @@ Assuming you have the [dependencies](/getting-started/dependencies) installed, h
 After downloading, unzip the tar file
 
 ```bash
-$ tar -xf gasper_platform_arch.tar.gz
+$ tar -xf gasper_version_platform_arch.tar.gz
 ```
 
 After extraction, the extracted directory should have the `gasper binary` and `config.toml`, the configuration file
 
 ```bash
-$ cd gasper_platform_arch
+$ cd gasper_version_platform_arch
 $ ls
 gasper
 config.toml
