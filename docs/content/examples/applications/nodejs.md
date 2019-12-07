@@ -2,7 +2,7 @@
 
 This example shows how to deploy a [node.js](https://nodejs.org/en/) application
 
-Lets use a [sample application](https://github.com/sdslabs/sample-nodejs) for demonstration which runs on **port 3000** 
+Lets use a [sample application](https://github.com/sdslabs/gasper-sample-nodejs) for demonstration which runs on **port 3000** 
 
 !!!warning "Prerequisites"
     * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
@@ -20,7 +20,7 @@ $ curl -X POST \
 "name":"samplenode",
 "password":"samplenode",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-nodejs"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-nodejs"
 },
 "context":{
     "index":"main.js",
@@ -34,7 +34,7 @@ $ curl -X POST \
     "name": "samplenode",
     "password": "samplenode",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-nodejs"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-nodejs"
     },
     "context": {
         "index": "main.js",
@@ -76,7 +76,7 @@ For the above case it will be `10.43.3.24:51952`
 
 ## Deploy using [Run Commands File](/configurations/global/#run-commands-file)
 
-Have a look at the [run commands file](https://github.com/sdslabs/sample-nodejs/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/sample-nodejs)
+Have a look at the [run commands file](https://github.com/sdslabs/gasper-sample-nodejs/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/gasper-sample-nodejs)
 
 ```bash
 $ curl -X POST \
@@ -87,7 +87,7 @@ $ curl -X POST \
 "name":"samplenode",
 "password":"samplenode",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-nodejs"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-nodejs"
 },
 "context":{
     "index":"main.js",
@@ -100,7 +100,7 @@ $ curl -X POST \
     "name": "samplenode",
     "password": "samplenode",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-nodejs"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-nodejs"
     },
     "context": {
         "index": "main.js",

@@ -2,7 +2,7 @@
 
 This example shows how to deploy a [python flask](https://www.palletsprojects.com/p/flask/) application
 
-Lets use a [sample application](https://github.com/sdslabs/sample-flask) for demonstration which runs on **port 5000** 
+Lets use a [sample application](https://github.com/sdslabs/gasper-sample-flask) for demonstration which runs on **port 5000** 
 
 !!!warning "Prerequisites"
     * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
@@ -20,7 +20,7 @@ $ curl -X POST \
 "name":"sampleflask",
 "password":"sampleflask",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-flask"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-flask"
 },
 "context":{
     "index":"run.py",
@@ -34,7 +34,7 @@ $ curl -X POST \
     "name": "sampleflask",
     "password": "sampleflask",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-flask"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-flask"
     },
     "context": {
         "index": "run.py",
@@ -76,7 +76,7 @@ For the above case it will be `10.43.3.24:52687`
 
 ## Deploy using [Run Commands File](/configurations/global/#run-commands-file)
 
-Have a look at the [run commands file](https://github.com/sdslabs/sample-flask/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/sample-flask)
+Have a look at the [run commands file](https://github.com/sdslabs/gasper-sample-flask/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/gasper-sample-flask)
 
 ```bash
 $ curl -X POST \
@@ -87,7 +87,7 @@ $ curl -X POST \
 "name":"sampleflask",
 "password":"sampleflask",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-flask"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-flask"
 },
 "context":{
     "index":"run.py",
@@ -100,7 +100,7 @@ $ curl -X POST \
     "name": "sampleflask",
     "password": "sampleflask",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-flask"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-flask"
     },
     "context": {
         "index": "run.py",

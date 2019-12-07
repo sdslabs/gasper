@@ -2,7 +2,7 @@
 
 This example shows how to deploy a [python django](https://www.djangoproject.com/) application
 
-Lets use a [sample application](https://github.com/sdslabs/sample-django) for demonstration which runs on **port 8000** 
+Lets use a [sample application](https://github.com/sdslabs/gasper-sample-django) for demonstration which runs on **port 8000** 
 
 !!!warning "Prerequisites"
     * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
@@ -20,7 +20,7 @@ $ curl -X POST \
 "name":"sampledjango",
 "password":"sampledjango",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-django"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-django"
 },
 "context":{
     "index":"todo/manage.py",
@@ -34,7 +34,7 @@ $ curl -X POST \
     "name": "sampledjango",
     "password": "sampledjango",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-django"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-django"
     },
     "context": {
         "index": "todo/manage.py",
@@ -77,7 +77,7 @@ For the above case it will be `10.43.3.24:53358`
 
 ## Deploy using [Run Commands File](/configurations/global/#run-commands-file)
 
-Have a look at the [run commands file](https://github.com/sdslabs/sample-django/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/sample-django)
+Have a look at the [run commands file](https://github.com/sdslabs/gasper-sample-django/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/gasper-sample-django)
 
 ```bash
 $ curl -X POST \
@@ -88,7 +88,7 @@ $ curl -X POST \
 "name":"sampledjango2",
 "password":"sampledjango2",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-django"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-django"
 },
 "context":{
     "index":"todo/manage.py",
@@ -101,7 +101,7 @@ $ curl -X POST \
     "name": "sampledjango",
     "password": "sampledjango",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-django"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-django"
     },
     "context": {
         "index": "todo/manage.py",

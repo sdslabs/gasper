@@ -2,7 +2,7 @@
 
 This example shows how to deploy a [golang](https://golang.org/) application
 
-Lets use a [sample application](https://github.com/sdslabs/sample-golang) for demonstration which runs on **port 8000** 
+Lets use a [sample application](https://github.com/sdslabs/gasper-sample-golang) for demonstration which runs on **port 8000** 
 
 !!!warning "Prerequisites"
     * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
@@ -20,7 +20,7 @@ $ curl -X POST \
 "name":"samplego",
 "password":"samplego",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-golang"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-golang"
 },
 "context":{
     "index":"main.go",
@@ -33,7 +33,7 @@ $ curl -X POST \
     "name": "samplego",
     "password": "samplego",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-golang"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-golang"
     },
     "context": {
         "index": "main.go",
@@ -72,7 +72,7 @@ For the above case it will be `10.43.3.24:55147`
 
 ## Deploy using [Run Commands File](/configurations/global/#run-commands-file)
 
-Have a look at the [run commands file](https://github.com/sdslabs/sample-golang/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/sample-golang)
+Have a look at the [run commands file](https://github.com/sdslabs/gasper-sample-golang/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/gasper-sample-golang)
 
 ```bash
 $ curl -X POST \
@@ -83,7 +83,7 @@ $ curl -X POST \
 "name":"samplego",
 "password":"samplego",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-golang"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-golang"
 },
 "context":{
     "index":"main.go",
@@ -96,7 +96,7 @@ $ curl -X POST \
     "name": "samplego",
     "password": "samplego",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-golang"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-golang"
     },
     "context": {
         "index": "main.go",

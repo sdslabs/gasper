@@ -55,7 +55,7 @@ $ curl -X POST \
 ## Application Deployment
 The **token** obtained from the above JSON response is our required JWT
 
-We will now use that **token** in the **Authorization Header** to deploy a [Sample PHP application](https://github.com/sdslabs/sample-php)
+We will now use that **token** in the **Authorization Header** to deploy a [Sample PHP application](https://github.com/sdslabs/gasper-sample-php)
 The format for using the token in the request header is `Authorization: Bearer {{token}}`
 
 ```bash
@@ -67,7 +67,7 @@ $ curl -X POST \
 "name":"test",
 "password":"test",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-php"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-php"
 },
 "context":{
     "index":"index.php"
@@ -78,7 +78,7 @@ $ curl -X POST \
     "name": "test",
     "password": "test",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-php"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-php"
     },
     "context": {
         "index": "index.php",

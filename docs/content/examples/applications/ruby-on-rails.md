@@ -2,7 +2,7 @@
 
 This example shows how to deploy a [ruby on rails](https://rubyonrails.org/) application
 
-Lets use a [sample application](https://github.com/sdslabs/ruby-on-rails-sample-app) for demonstration which runs on **port 3000** 
+Lets use a [sample application](https://github.com/sdslabs/gasper-sample-ruby-on-rails) for demonstration which runs on **port 3000** 
 
 !!!warning "Prerequisites"
     * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
@@ -20,7 +20,7 @@ $ curl -X POST \
 "name":"sampleruby",
 "password":"sampleruby",
 "git": {
-	"repo_url": "https://github.com/sdslabs/ruby-on-rails-sample-app"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
 },
 "context":{
     "index":"bin/rails",
@@ -38,7 +38,7 @@ $ curl -X POST \
     "name": "sampleruby",
     "password": "sampleruby",
     "git": {
-        "repo_url": "https://github.com/sdslabs/ruby-on-rails-sample-app"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
     },
     "context": {
         "index": "bin/rails",
@@ -80,11 +80,11 @@ You can now access the deployed application by hitting the URL **host_ip:contain
 For the above case it will be `10.43.3.24:55673`
 
 !!!warning
-    The above [sample application](https://github.com/sdslabs/ruby-on-rails-sample-app) takes around 6 minutes to start hence you need to wait for that duration before hitting the URL in your browser
+    The above [sample application](https://github.com/sdslabs/gasper-sample-ruby-on-rails) takes around 6 minutes to start hence you need to wait for that duration before hitting the URL in your browser
 
 ## Deploy using [Run Commands File](/configurations/global/#run-commands-file)
 
-Have a look at the [run commands file](https://github.com/sdslabs/ruby-on-rails-sample-app/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/ruby-on-rails-sample-app)
+Have a look at the [run commands file](https://github.com/sdslabs/gasper-sample-ruby-on-rails/blob/master/Gasperfile.txt) for the above [sample application](https://github.com/sdslabs/gasper-sample-ruby-on-rails)
 
 ```bash
 $ curl -X POST \
@@ -95,7 +95,7 @@ $ curl -X POST \
 "name":"sampleruby",
 "password":"sampleruby",
 "git": {
-	"repo_url": "https://github.com/sdslabs/ruby-on-rails-sample-app"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
 },
 "context":{
     "index":"bin/rails",
@@ -112,7 +112,7 @@ $ curl -X POST \
     "name": "sampleruby",
     "password": "sampleruby",
     "git": {
-        "repo_url": "https://github.com/sdslabs/ruby-on-rails-sample-app"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
     },
     "context": {
         "index": "bin/rails",
@@ -147,4 +147,4 @@ You can now access the deployed application by hitting the URL **host_ip:contain
 For the above case it will be `10.43.3.24:56041`
 
 !!!warning
-    The above [sample application](https://github.com/sdslabs/ruby-on-rails-sample-app) takes around 6 minutes to start hence you need to wait for that duration before hitting the URL in your browser
+    The above [sample application](https://github.com/sdslabs/gasper-sample-ruby-on-rails) takes around 6 minutes to start hence you need to wait for that duration before hitting the URL in your browser

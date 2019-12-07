@@ -2,7 +2,7 @@
 
 This example shows how to deploy a simple PHP application
 
-Lets use a [sample PHP application](https://github.com/sdslabs/sample-php) for demonstration
+Lets use a [sample PHP application](https://github.com/sdslabs/gasper-sample-php) for demonstration
 
 !!!warning "Prerequisites"
     * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
@@ -17,7 +17,7 @@ $ curl -X POST \
 "name":"simplephp",
 "password":"simplephp",
 "git": {
-	"repo_url": "https://github.com/sdslabs/sample-php"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-php"
 },
 "context":{
     "index":"index.php"
@@ -28,7 +28,7 @@ $ curl -X POST \
     "name": "simplephp",
     "password": "simplephp",
     "git": {
-        "repo_url": "https://github.com/sdslabs/sample-php"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-php"
     },
     "context": {
         "index": "index.php",
