@@ -1,10 +1,16 @@
 package controllers
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
+	"github.com/alphadose/gotty/backend/localcommand"
+	"github.com/alphadose/gotty/server"
+	gotty "github.com/alphadose/gotty/server"
+	gottyUtils "github.com/alphadose/gotty/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -12,9 +18,6 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/kaze/middlewares"
 	"github.com/sdslabs/gasper/types"
-	gotty "github.com/yudai/gotty/server"
-	gottyUtils "github.com/yudai/gotty/utils"
-	"github.com/yudai/gotty/backend/localcommand"
 )
 
 // FetchAppsByUser returns all applications owned by a user
@@ -227,33 +230,45 @@ func TransferApplicationOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("app"), mongo.AppInstance, c.Param("user"))
 }
 
+// DeployWebTerminal shares an application container's shell over web using `gotty`
 func DeployWebTerminal(c *gin.Context) {
-	appName := c.param("app")
-	terminalPort, err1 := utils.GetFreePort()
-	instanceURL, err2 := redis.FetchAppNode(appName)
-
-	if err1 != nill {
-		utils.LogError(err)
-		c.AbortWithStatusJSON(500, gin.H{
-			"success" : false,
-			"error" : fmt.Sprintf("Server error, unable to identify a free port",appName)
-		})
-
+	appName := c.Param("app")
+	port, err := utils.GetFreePort()
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	if err2 != nil {
-		utils.LogError(err2)
-		//TODO : make error message
+	instanceURL, err := redis.FetchAppNode(appName)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("Application %s is not deployed at the moment", appName),
+		})
+		return
+	}
+
+	if !strings.Contains(instanceURL, ":") {
+		utils.SendServerErrorResponse(c,
+			fmt.Errorf("Instance URL of given application is of malformed format %s", instanceURL))
+		return
+	}
+
+	instanceURL = strings.Split(instanceURL, ":")[0]
+	sshPort, err := redis.GetSSHPort(instanceURL)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
 	}
 
 	terminalOptions := &gotty.Options{}
 	if err := gottyUtils.ApplyDefaultValues(terminalOptions); err != nil {
-		//TODO : make error message
+		utils.SendServerErrorResponse(c, err)
+		return
 	}
 
 	terminalOptions.PermitWrite = true
-	terminalOptions.Port = terminalPort
+	terminalOptions.Port = strconv.Itoa(port)
 	terminalOptions.Once = true
 	terminalOptions.Timeout = 120
 	terminalOptions.TitleVariables = map[string]interface{}{
@@ -264,31 +279,31 @@ func DeployWebTerminal(c *gin.Context) {
 
 	backendOptions := &localcommand.Options{}
 	if err := gottyUtils.ApplyDefaultValues(backendOptions); err != nil {
-		//TODO : make error message
+		utils.SendServerErrorResponse(c, err)
+		return
 	}
-	command := "ssh -p 2222 " + appName + "@" + instanceURL
+	command := fmt.Sprintf("ssh -p %s %s@%s", sshPort, appName, instanceURL)
 
-	_factory, err := localcommand.NewFactory(command, [], backendOptions) //empty array passed as second argument to replace cli arguments
+	_factory, err := localcommand.NewFactory(command, []string{}, backendOptions) //empty array passed as second argument to replace cli arguments
 	if err != nil {
-		utils.LogError(err)
-		//TODO : make error message
+		utils.SendServerErrorResponse(c, err)
+		return
 	}
-	srv, err := gotty.New(_factory,terminalOptions)
+	srv, err := gotty.New(_factory, terminalOptions)
 	if err != nil {
-		utils.LogError(err)
-		//TODO : make error message
+		utils.SendServerErrorResponse(c, err)
+		return
 	}
-	ctx, cancel := context.WithCancel(context.Background())
-	gCtx, gCancel := context.WithCancel(context.Background())
 
-	go func() {
-		errs <- srv.Run(ctx, server.WithGracefullContext(gCtx))
-	}()
-	
-	terminalURL := fmt.Sprint("kaze.sdslabs.co:",terminalPort)
+	ctx, _ := context.WithCancel(context.Background())
+	gCtx, _ := context.WithCancel(context.Background())
+
+	go srv.Run(ctx, server.WithGracefullContext(gCtx))
+
+	terminalURL := fmt.Sprintf("kaze.sdslabs.co:%d", port)
 
 	c.JSON(200, gin.H{
-		"success" : true,
-		"url" : terminalURL
+		"success": true,
+		"url":     terminalURL,
 	})
 }
