@@ -5,6 +5,7 @@
 <img align="right" width="350px" height="400px" src="./docs/content/assets/logo/gasperlogo.svg">
 
 [![Build Status](https://api.travis-ci.org/sdslabs/gasper.svg)](https://travis-ci.org/sdslabs/gasper)
+[![Docs](https://img.shields.io/badge/docs-current-brightgreen.svg)](https://gasper-docs.netlify.com/)
 [![codecov](https://codecov.io/gh/sdslabs/gasper/branch/develop/graph/badge.svg)](https://codecov.io/gh/sdslabs/gasper)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sdslabs/gasper)](https://goreportcard.com/report/github.com/sdslabs/gasper)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sdslabs/gasper/blob/develop/LICENSE.md)
@@ -18,8 +19,10 @@ applications and databases in any cloud topology.
 * [Features](#features)
 * [Supported Languages](#supported-languages)
 * [Supported Databases](#supported-databases)
+* [Documentation](#documentation)
 * [Dependencies](#dependencies)
-* [Quickstart](#quickstart)
+* [Download](#download)
+* [Development](#development)
 * [Contributing](#contributing)
 * [Meet the A-Team](#meet-the-a-team)
 * [Contact](#contact)
@@ -82,11 +85,14 @@ The following databases are supported by Gasper:-
 
 It ain't.... (complete the rest yourself)
 
+## Documentation
+
+You can find the complete documentation of Gasper at [https://gasper-docs.netlify.com/](https://gasper-docs.netlify.com/)
+
 ## Dependencies
 
 The following softwares are required for running Gasper:-
 
-* [Golang 1.12.x](https://golang.org/dl/)
 * [Docker](https://www.docker.com/)
     * [For Linux](https://runnable.com/docker/install-docker-on-linux)
     * [For MacOS](https://docs.docker.com/docker-for-mac/install/)
@@ -94,7 +100,19 @@ The following softwares are required for running Gasper:-
 * [MongoDB](https://www.mongodb.com/download-center/community)
 * [Redis](https://redis.io/download)
 
-## Quickstart
+## Download
+
+Assuming you have the [dependencies](#dependencies) installed, head over to Gasper's [releases](https://github.com/sdslabs/gasper/releases) page and grab the latest binary according to your operating system and system architecture
+
+Run the downloaded binary with the [sample configuration file](./config.sample.toml)
+
+```bash
+$ ./gasper --conf ./config.toml
+```
+
+## Development
+
+You need to have [Golang 1.12.x](https://golang.org/dl/) or higher installed along with the mentioned [dependencies](#dependencies)
 
 Open your favourite terminal and perform the following tasks:-
 
@@ -121,6 +139,7 @@ Open your favourite terminal and perform the following tasks:-
     install   Install missing dependencies
     build     Build the project binary
     tools     Install development tools
+    release   Build release binaries
     start     Start in development mode with hot-reload enabled
     clean     Clean build files
     fmt       Format entire codebase
@@ -135,7 +154,6 @@ won't have a hard time looking around.
 
     ```bash
     $ cp config.sample.toml config.toml
-    $ vim config.toml
     ```
 
 5. Start the development server.
