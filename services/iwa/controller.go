@@ -1,3 +1,5 @@
+// +build linux darwin freebsd openbsd
+
 package iwa
 
 import (
