@@ -12,6 +12,9 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/kaze/middlewares"
 	"github.com/sdslabs/gasper/types"
+	gotty "github.com/yudai/gotty/server"
+	gottyUtils "github.com/yudai/gotty/utils"
+	"github.com/yudai/gotty/backend/localcommand"
 )
 
 // FetchAppsByUser returns all applications owned by a user
@@ -222,4 +225,70 @@ func RebuildApp(c *gin.Context) {
 // TransferApplicationOwnership transfers the ownership of an application to another user
 func TransferApplicationOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("app"), mongo.AppInstance, c.Param("user"))
+}
+
+func DeployWebTerminal(c *gin.Context) {
+	appName := c.param("app")
+	terminalPort, err1 := utils.GetFreePort()
+	instanceURL, err2 := redis.FetchAppNode(appName)
+
+	if err1 != nill {
+		utils.LogError(err)
+		c.AbortWithStatusJSON(500, gin.H{
+			"success" : false,
+			"error" : fmt.Sprintf("Server error, unable to identify a free port",appName)
+		})
+
+		return
+	}
+
+	if err2 != nil {
+		utils.LogError(err2)
+		//TODO : make error message
+	}
+
+	terminalOptions := &gotty.Options{}
+	if err := gottyUtils.ApplyDefaultValues(terminalOptions); err != nil {
+		//TODO : make error message
+	}
+
+	terminalOptions.PermitWrite = true
+	terminalOptions.Port = terminalPort
+	terminalOptions.Once = true
+	terminalOptions.Timeout = 120
+	terminalOptions.TitleVariables = map[string]interface{}{
+		"command":  appName,
+		"argv":     "",
+		"hostname": "Gasper",
+	}
+
+	backendOptions := &localcommand.Options{}
+	if err := gottyUtils.ApplyDefaultValues(backendOptions); err != nil {
+		//TODO : make error message
+	}
+	command := "ssh -p 2222 " + appName + "@" + instanceURL
+
+	_factory, err := localcommand.NewFactory(command, [], backendOptions) //empty array passed as second argument to replace cli arguments
+	if err != nil {
+		utils.LogError(err)
+		//TODO : make error message
+	}
+	srv, err := gotty.New(_factory,terminalOptions)
+	if err != nil {
+		utils.LogError(err)
+		//TODO : make error message
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	gCtx, gCancel := context.WithCancel(context.Background())
+
+	go func() {
+		errs <- srv.Run(ctx, server.WithGracefullContext(gCtx))
+	}()
+	
+	terminalURL := fmt.Sprint("kaze.sdslabs.co:",terminalPort)
+
+	c.JSON(200, gin.H{
+		"success" : true,
+		"url" : terminalURL
+	})
 }

@@ -47,3 +47,5 @@ require (
 	gopkg.in/src-d/go-git.v4 v4.8.1
 	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )
+
+go 1.13
