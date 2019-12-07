@@ -37,6 +37,7 @@ tools:
 ## release: Build release binaries
 release:
 	@printf "🔨 Building Release Binaries\n" 
+	@rm -rf releases/
 	go run $(BUILDIR)/release.go $(VERSION)
 	@printf "👍 Done\n"
 
