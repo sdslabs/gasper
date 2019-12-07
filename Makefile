@@ -37,7 +37,7 @@ tools:
 ## release: Build release binaries
 release:
 	@printf "🔨 Building Release Binaries\n" 
-	@go run $(BUILDIR)/release.go
+	go run $(BUILDIR)/release.go $(VERSION)
 	@printf "👍 Done\n"
 
 ## start: Start in development mode with hot-reload enabled
