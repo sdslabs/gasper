@@ -3,13 +3,18 @@ module github.com/sdslabs/gasper
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Microsoft/go-winio v0.4.11 // indirect
-	github.com/alphadose/gotty v0.0.0-20191207122653-c132afbf14d8
+	github.com/NYTimes/gziphandler v1.1.1 // indirect
+	github.com/alphadose/gotty v0.0.0-20191208194000-a33c4414c39e
 	github.com/appleboy/gin-jwt v2.5.0+incompatible
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/creack/pty v1.1.9 // indirect
 	github.com/docker/distribution v2.6.2+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0
 	github.com/docker/go-units v0.3.3 // indirect
+	github.com/elazarl/go-bindata-assetfs v1.0.0 // indirect
+	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/gliderlabs/ssh v0.1.1
@@ -21,8 +26,10 @@ require (
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
+	github.com/gorilla/websocket v1.4.1 // indirect
+	github.com/hashicorp/go-multierror v1.0.0 // indirect
 	github.com/howeyc/fsnotify v0.9.0 // indirect
-	github.com/kr/pty v1.1.1
+	github.com/kr/pty v1.1.8
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/miekg/dns v1.1.22
 	github.com/mongodb/mongo-go-driver v0.1.0 // indirect
@@ -30,6 +37,9 @@ require (
 	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
+	github.com/pkg/errors v0.8.1 // indirect
+	github.com/stretchr/objx v0.2.0 // indirect
+	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/supra08/falcon-client-golang v0.0.0-20190414092728-f26fc22bd399 // indirect
 	github.com/tidwall/gjson v1.3.2 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
@@ -44,8 +54,10 @@ require (
 	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
 	google.golang.org/grpc v1.25.0
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/dgrijalva/jwt-go.v3 v3.2.0
 	gopkg.in/src-d/go-git.v4 v4.8.1
+	gopkg.in/yaml.v2 v2.2.7 // indirect
 	honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc // indirect
 )
 

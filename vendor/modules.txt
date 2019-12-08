@@ -2,9 +2,9 @@
 github.com/BurntSushi/toml
 # github.com/Microsoft/go-winio v0.4.11
 github.com/Microsoft/go-winio
-# github.com/NYTimes/gziphandler v0.0.0-20170804200234-967539e5e271
+# github.com/NYTimes/gziphandler v1.1.1
 github.com/NYTimes/gziphandler
-# github.com/alphadose/gotty v0.0.0-20191207122653-c132afbf14d8
+# github.com/alphadose/gotty v0.0.0-20191208194000-a33c4414c39e
 github.com/alphadose/gotty/backend/localcommand
 github.com/alphadose/gotty/server
 github.com/alphadose/gotty/utils
@@ -17,8 +17,10 @@ github.com/anmitsu/go-shlex
 github.com/appleboy/gin-jwt
 # github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 github.com/asaskevich/govalidator
-# github.com/codegangsta/cli v1.19.1
-github.com/codegangsta/cli
+# github.com/cpuguy83/go-md2man/v2 v2.0.0
+github.com/cpuguy83/go-md2man/v2/md2man
+# github.com/creack/pty v1.1.9
+github.com/creack/pty
 # github.com/docker/distribution v2.6.2+incompatible
 github.com/docker/distribution/reference
 github.com/docker/distribution/digest
@@ -45,7 +47,7 @@ github.com/docker/go-connections/sockets
 github.com/docker/go-connections/tlsconfig
 # github.com/docker/go-units v0.3.3
 github.com/docker/go-units
-# github.com/elazarl/go-bindata-assetfs v0.0.0-20150813044622-d5cac425555c
+# github.com/elazarl/go-bindata-assetfs v1.0.0
 github.com/elazarl/go-bindata-assetfs
 # github.com/emirpasic/gods v1.9.0
 github.com/emirpasic/gods/trees/binaryheap
@@ -54,7 +56,7 @@ github.com/emirpasic/gods/lists/arraylist
 github.com/emirpasic/gods/trees
 github.com/emirpasic/gods/utils
 github.com/emirpasic/gods/lists
-# github.com/fatih/structs v0.0.0-20150526064352-a9f7daa9c272
+# github.com/fatih/structs v1.1.0
 github.com/fatih/structs
 # github.com/gin-contrib/cors v1.3.0
 github.com/gin-contrib/cors
@@ -88,9 +90,11 @@ github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
 # github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db
 github.com/golang/snappy
-# github.com/gorilla/websocket v0.0.0-20150811171432-b6ab76f1fe98
+# github.com/gorilla/websocket v1.4.1
 github.com/gorilla/websocket
-# github.com/hashicorp/go-multierror v0.0.0-20150608033521-56912fb08d85
+# github.com/hashicorp/errwrap v1.0.0
+github.com/hashicorp/errwrap
+# github.com/hashicorp/go-multierror v1.0.0
 github.com/hashicorp/go-multierror
 # github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99
 github.com/jbenet/go-context/io
@@ -98,7 +102,7 @@ github.com/jbenet/go-context/io
 github.com/json-iterator/go
 # github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e
 github.com/kevinburke/ssh_config
-# github.com/kr/pty v1.1.1
+# github.com/kr/pty v1.1.8
 github.com/kr/pty
 # github.com/mattn/go-isatty v0.0.7
 github.com/mattn/go-isatty
@@ -112,10 +116,14 @@ github.com/modern-go/concurrent
 github.com/modern-go/reflect2
 # github.com/pelletier/go-buffruneio v0.2.0
 github.com/pelletier/go-buffruneio
-# github.com/pkg/errors v0.8.0
+# github.com/pkg/errors v0.8.1
 github.com/pkg/errors
+# github.com/russross/blackfriday/v2 v2.0.1
+github.com/russross/blackfriday/v2
 # github.com/sergi/go-diff v1.0.0
 github.com/sergi/go-diff/diffmatchpatch
+# github.com/shurcooL/sanitized_anchor_name v1.0.0
+github.com/shurcooL/sanitized_anchor_name
 # github.com/src-d/gcfg v1.4.0
 github.com/src-d/gcfg
 github.com/src-d/gcfg/scanner
@@ -123,6 +131,8 @@ github.com/src-d/gcfg/token
 github.com/src-d/gcfg/types
 # github.com/ugorji/go v1.1.4
 github.com/ugorji/go/codec
+# github.com/urfave/cli v1.22.2
+github.com/urfave/cli
 # github.com/xanzy/ssh-agent v0.2.0
 github.com/xanzy/ssh-agent
 # github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c
@@ -303,5 +313,5 @@ gopkg.in/src-d/go-git.v4/utils/merkletrie/internal/frame
 gopkg.in/src-d/go-git.v4/plumbing/transport/server
 # gopkg.in/warnings.v0 v0.1.2
 gopkg.in/warnings.v0
-# gopkg.in/yaml.v2 v2.2.2
+# gopkg.in/yaml.v2 v2.2.7
 gopkg.in/yaml.v2
