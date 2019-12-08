@@ -3,7 +3,6 @@ package enrai
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"strings"
 	"time"
 
@@ -58,11 +57,7 @@ func updateStorage() {
 	if err != nil || len(kazeInstances) == 0 {
 		utils.Log(utils.InfoTAG, "No Kaze instances available. Failed to create an entry for the same.")
 	} else {
-		kazeInstances = filterValidInstances(kazeInstances)
-		if len(kazeInstances) > 0 {
-			rand.Seed(time.Now().Unix())
-			updateBody[types.Kaze] = kazeInstances[rand.Intn(len(kazeInstances))]
-		}
+		kazeBalancer.Update(filterValidInstances(kazeInstances))
 	}
 	storage.Replace(updateBody)
 }
