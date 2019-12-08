@@ -10,10 +10,10 @@ import (
 const releaseDir = "releases"
 
 var releaseMap = map[string][]string{
-	"darwin":  []string{"amd64"},
-	"linux":   []string{"386", "amd64", "arm", "arm64", "ppc64le"},
+	"darwin":  []string{"386", "amd64"},
+	"linux":   []string{"386", "amd64", "arm64", "ppc64le"},
 	"freebsd": []string{"386", "amd64"},
-	"openbsd": []string{"amd64"},
+	"openbsd": []string{"386", "amd64"},
 	"windows": []string{"386", "amd64"},
 }
 
