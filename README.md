@@ -10,8 +10,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/sdslabs/gasper)](https://goreportcard.com/report/github.com/sdslabs/gasper)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sdslabs/gasper/blob/develop/LICENSE.md)
 
-Gasper is an intelligent Platform as a Service (PaaS) used for deploying and managing 
-applications and databases in any cloud topology.
+Gasper is an intelligent Platform as a Service (PaaS) used for deploying and managing applications and databases in any cloud topology.
 
 ## Contents
 
@@ -49,8 +48,7 @@ It requires minimal parameters for deploying an application, so minimal that you
 
 ## Features
 
-Fear not because the reduction in complexity doesn't imply the reduction in features. You can rest assured because
-Gasper has:-
+Fear not because the reduction in complexity doesn't imply the reduction in features. You can rest assured because Gasper has:-
 
 * Worker services for creating/managing databases and applications
 * Master service for:-
