@@ -32,6 +32,9 @@ var (
 	// AdminConfig is the configuration for default Gasper admin
 	AdminConfig = GasperConfig.Admin
 
+	// JWTConfig is the configuration for json web auth token
+	JWTConfig = GasperConfig.JWT
+
 	// ServiceMap is the configuration binding the service name to its
 	// deployment status and port
 	ServiceMap = map[string]*GenericService{

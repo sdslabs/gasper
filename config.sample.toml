@@ -33,6 +33,19 @@ dns_servers = [
 ]
 
 
+#########################
+#   JWT Configuration   #
+#########################
+
+# Both timeout and max_refresh in seconds
+# Total refresh time = max_refresh + timeout
+# Since, max_refresh >> timeout
+# total refresh ~ max_refresh
+[jwt]
+timeout = 3600 # 1 hour
+max_refresh = 2419200 # 28 days
+
+
 ###########################
 #   Admin Configuration   #
 ###########################
@@ -73,7 +86,7 @@ db = 0
 [cloudflare]
 # API Token used for creating/updating Cloudflare's DNS records.
 # This token must have the scopes ZONE:ZONE:EDIT and ZONE:DNS:EDIT.
-api_token = "" 
+api_token = ""
 plugin = false  # Use Cloudflare Plugin?
 public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 
@@ -201,8 +214,8 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 
 # IP address to establish a SSH connection to.
 # Equal to the current node's IP address if left blank.
-# This field is only for information of the client who will create applications 
+# This field is only for information of the client who will create applications
 # and this field's value will not affect Iwa's functioning in any manner.
-# To be used when the current node is only accessible by a jump host or 
+# To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""

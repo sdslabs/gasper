@@ -69,8 +69,8 @@ func unauthorized(c *gin.Context, code int, message string) {
 var JWT = &jwt.GinJWTMiddleware{
 	Realm:           "Gasper",
 	Key:             []byte(configs.GasperConfig.Secret),
-	Timeout:         time.Hour,
-	MaxRefresh:      28 * 24 * time.Hour,
+	Timeout:         configs.JWTConfig.Timeout * time.Second,
+	MaxRefresh:      configs.JWTConfig.MaxRefresh * time.Second,
 	TokenLookup:     "header: Authorization",
 	TokenHeadName:   "Bearer",
 	TimeFunc:        time.Now,

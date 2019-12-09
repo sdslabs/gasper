@@ -6,6 +6,12 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
+// JWT is the configuration for auth token
+type JWT struct {
+	Timeout    time.Duration `toml:"timeout"`
+	MaxRefresh time.Duration `toml:"max_refresh"`
+}
+
 // Admin is the configuration for the default Admin
 type Admin struct {
 	Email    string `toml:"email"`
@@ -122,6 +128,7 @@ type GasperCfg struct {
 	RcFile      string     `toml:"rc_file"`
 	OfflineMode bool       `toml:"offline_mode"`
 	DNSServers  []string   `toml:"dns_servers"`
+	JWT         JWT        `toml:"jwt"`
 	Admin       Admin      `toml:"admin"`
 	Cloudflare  Cloudflare `toml:"cloudflare"`
 	Mongo       Mongo      `toml:"mongo"`
