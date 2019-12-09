@@ -5,13 +5,12 @@ import (
 	"os"
 	"time"
 
-	jwt "github.com/appleboy/gin-jwt"
+	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
-	gojwt "gopkg.in/dgrijalva/jwt-go.v3"
 )
 
 var (
@@ -45,11 +44,12 @@ func payloadFunc(data interface{}) jwt.MapClaims {
 	return jwt.MapClaims{}
 }
 
-func identityHandler(mapClaims gojwt.MapClaims) interface{} {
+func identityHandler(c *gin.Context) interface{} {
+	claims := jwt.ExtractClaims(c)
 	return &types.User{
-		Email:    mapClaims[mongo.EmailKey].(string),
-		Username: mapClaims[mongo.UsernameKey].(string),
-		Admin:    mapClaims[mongo.AdminKey].(bool),
+		Email:    claims[mongo.EmailKey].(string),
+		Username: claims[mongo.UsernameKey].(string),
+		Admin:    claims[mongo.AdminKey].(bool),
 	}
 }
 
@@ -69,8 +69,8 @@ func unauthorized(c *gin.Context, code int, message string) {
 var JWT = &jwt.GinJWTMiddleware{
 	Realm:           "Gasper",
 	Key:             []byte(configs.GasperConfig.Secret),
-	Timeout:         time.Hour,
-	MaxRefresh:      28 * 24 * time.Hour,
+	Timeout:         configs.JWTConfig.Timeout * time.Second,
+	MaxRefresh:      configs.JWTConfig.MaxRefresh * time.Second,
 	TokenLookup:     "header: Authorization",
 	TokenHeadName:   "Bearer",
 	TimeFunc:        time.Now,
@@ -83,8 +83,7 @@ var JWT = &jwt.GinJWTMiddleware{
 
 // ExtractClaims takes the gin context and returns the User
 func ExtractClaims(c *gin.Context) *types.User {
-	claimsMap := jwt.ExtractClaims(c)
-	user, success := JWT.IdentityHandler(claimsMap).(*types.User)
+	user, success := JWT.IdentityHandler(c).(*types.User)
 	if !success {
 		return nil
 	}

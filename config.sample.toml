@@ -58,12 +58,28 @@ url = "mongodb://localhost:27017"
 #   Redis Configuration   #
 ###########################
 
-# Acts as a central-registry for the Gasper ecosystem
+# Acts as a central-registry for the Gasper ecosystem.
 [redis]
 host = "localhost"
 port = 6379
 password = ""
 db = 0
+
+
+#########################
+#   JWT Configuration   #
+#########################
+
+# Configuration for the JSON Web Token (JWT) authentication mechanism.
+[jwt]
+
+# timeout refers to the duration in which the JWT is valid.
+# max_refresh refers to the duration in which the JWT can be refreshed after its expiry.
+
+# Both timeout and max_refresh are in seconds
+# Total refresh time = max_refresh + timeout
+timeout = 3600 # 1 hour
+max_refresh = 2419200 # 28 days
 
 
 ################################
@@ -73,7 +89,7 @@ db = 0
 [cloudflare]
 # API Token used for creating/updating Cloudflare's DNS records.
 # This token must have the scopes ZONE:ZONE:EDIT and ZONE:DNS:EDIT.
-api_token = "" 
+api_token = ""
 plugin = false  # Use Cloudflare Plugin?
 public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 
@@ -98,7 +114,7 @@ mongodb = "mongo:4.2.1"
 #   Services Configuration   #
 ##############################
 
-# Configuration for the various microservices comprising the Gasper ecosystem
+# Configuration for the various microservices comprising the Gasper ecosystem.
 [services]
 
 # Time Interval (in seconds) in which the current node updates
@@ -201,8 +217,8 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 
 # IP address to establish a SSH connection to.
 # Equal to the current node's IP address if left blank.
-# This field is only for information of the client who will create applications 
+# This field is only for information of the client who will create applications
 # and this field's value will not affect Iwa's functioning in any manner.
-# To be used when the current node is only accessible by a jump host or 
+# To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""

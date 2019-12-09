@@ -117,7 +117,7 @@ $ ./gasper --conf ./config.toml
 
 ## Development
 
-You need to have [Golang 1.12.x](https://golang.org/dl/) or higher installed along with the mentioned [dependencies](#dependencies)
+You need to have [Golang 1.13.x](https://golang.org/dl/) or higher installed along with the mentioned [dependencies](#dependencies)
 
 Open your favourite terminal and perform the following tasks:-
 
@@ -125,7 +125,7 @@ Open your favourite terminal and perform the following tasks:-
 
     ```bash
     $ go version
-    go version go1.12.7 darwin/amd64
+    go version go1.13.5 darwin/amd64
     ```
 
 2. Clone this repository.

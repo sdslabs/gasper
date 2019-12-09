@@ -76,6 +76,22 @@ password = ""
 db = 0
 
 
+#########################
+#   JWT Configuration   #
+#########################
+
+# Configuration for the JSON Web Token (JWT) authentication mechanism.
+[jwt]
+
+# timeout refers to the duration in which the JWT is valid.
+# max_refresh refers to the duration in which the JWT can be refreshed after its expiry.
+
+# Both timeout and max_refresh are in seconds
+# Total refresh time = max_refresh + timeout
+timeout = 3600 # 1 hour
+max_refresh = 2419200 # 28 days
+
+
 ################################
 #   CloudFlare Configuration   #
 ################################

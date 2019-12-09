@@ -3,7 +3,6 @@ package enrai
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"strings"
 	"time"
 
@@ -53,16 +52,12 @@ func updateStorage() {
 		updateBody[name] = appInfoStruct.Server
 	}
 
-	// Create enrty for Kaze
+	// Create enrties for Kaze in the load balancer
 	kazeInstances, err := redis.FetchServiceInstances(types.Kaze)
-	if err != nil || len(kazeInstances) == 0 {
-		utils.Log(utils.InfoTAG, "No Kaze instances available. Failed to create an entry for the same.")
+	if err != nil {
+		utils.Log("Failed to fetch kaze instances", utils.ErrorTAG)
 	} else {
-		kazeInstances = filterValidInstances(kazeInstances)
-		if len(kazeInstances) > 0 {
-			rand.Seed(time.Now().Unix())
-			updateBody[types.Kaze] = kazeInstances[rand.Intn(len(kazeInstances))]
-		}
+		kazeBalancer.Update(filterValidInstances(kazeInstances))
 	}
 	storage.Replace(updateBody)
 }
