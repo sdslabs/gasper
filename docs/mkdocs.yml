@@ -65,6 +65,7 @@ nav:
   - 'Configurations':
     - 'Overview': 'configurations/overview.md'
     - 'Global': 'configurations/global.md'
+    - 'JWT': 'configurations/jwt.md'
     - 'Admin': 'configurations/admin.md'
     - 'MongoDB': 'configurations/mongodb.md'
     - 'Redis': 'configurations/redis.md'
