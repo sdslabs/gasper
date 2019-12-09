@@ -52,10 +52,10 @@ func updateStorage() {
 		updateBody[name] = appInfoStruct.Server
 	}
 
-	// Create enrty for Kaze
+	// Create enrties for Kaze in the load balancer
 	kazeInstances, err := redis.FetchServiceInstances(types.Kaze)
-	if err != nil || len(kazeInstances) == 0 {
-		utils.Log(utils.InfoTAG, "No Kaze instances available. Failed to create an entry for the same.")
+	if err != nil {
+		utils.Log("Failed to fetch kaze instances", utils.ErrorTAG)
 	} else {
 		kazeBalancer.Update(filterValidInstances(kazeInstances))
 	}

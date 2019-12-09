@@ -16,14 +16,12 @@ type LoadBalancer struct {
 
 // Get returns an instance from the LoadBalancer
 func (lb *LoadBalancer) Get() (string, bool) {
-	numInstances := len(lb.Instances)
+	instances := lb.Instances
+	numInstances := len(instances)
 	if numInstances == 0 {
 		return "", false
 	}
-	if lb.Counter >= numInstances {
-		lb.Counter %= numInstances
-	}
-	instance := lb.Instances[lb.Counter]
+	instance := instances[lb.Counter%numInstances]
 	lb.Counter = (lb.Counter + 1) % numInstances
 	return instance, true
 }
