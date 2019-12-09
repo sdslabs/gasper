@@ -33,19 +33,6 @@ dns_servers = [
 ]
 
 
-#########################
-#   JWT Configuration   #
-#########################
-
-# Both timeout and max_refresh in seconds
-# Total refresh time = max_refresh + timeout
-# Since, max_refresh >> timeout
-# total refresh ~ max_refresh
-[jwt]
-timeout = 3600 # 1 hour
-max_refresh = 2419200 # 28 days
-
-
 ###########################
 #   Admin Configuration   #
 ###########################
@@ -71,12 +58,28 @@ url = "mongodb://localhost:27017"
 #   Redis Configuration   #
 ###########################
 
-# Acts as a central-registry for the Gasper ecosystem
+# Acts as a central-registry for the Gasper ecosystem.
 [redis]
 host = "localhost"
 port = 6379
 password = ""
 db = 0
+
+
+#########################
+#   JWT Configuration   #
+#########################
+
+# Configuration for the JSON Web Token (JWT) authentication mechanism.
+[jwt]
+
+# timeout refers to the duration in which the JWT is valid.
+# max_refresh refers to the duration in which the JWT can be refreshed after its expiry.
+
+# Both timeout and max_refresh are in seconds
+# Total refresh time = max_refresh + timeout
+timeout = 3600 # 1 hour
+max_refresh = 2419200 # 28 days
 
 
 ################################
@@ -111,7 +114,7 @@ mongodb = "mongo:4.2.1"
 #   Services Configuration   #
 ##############################
 
-# Configuration for the various microservices comprising the Gasper ecosystem
+# Configuration for the various microservices comprising the Gasper ecosystem.
 [services]
 
 # Time Interval (in seconds) in which the current node updates

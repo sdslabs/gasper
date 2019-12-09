@@ -65,10 +65,11 @@ nav:
   - 'Configurations':
     - 'Overview': 'configurations/overview.md'
     - 'Global': 'configurations/global.md'
-    - 'JWT': 'configurations/jwt.md'
     - 'Admin': 'configurations/admin.md'
     - 'MongoDB': 'configurations/mongodb.md'
     - 'Redis': 'configurations/redis.md'
+    - 'JWT': 'configurations/jwt.md'
+    - 'Cloudflare': 'configurations/cloudflare.md'
     - 'Docker Images': 'configurations/docker-images.md'
     - 'Mizu 💧': 'configurations/mizu.md'
     - 'Kaen 🔥': 'configurations/kaen.md'
@@ -76,7 +77,6 @@ nav:
     - 'Hikari 💡': 'configurations/hikari.md'
     - 'Iwa 🗿': 'configurations/iwa.md'
     - 'Kaze 🌪': 'configurations/kaze.md'
-    - 'Cloudflare': 'configurations/cloudflare.md'
   - 'API Docs': 'api/index.html'
   - 'Examples':
     - 'Login': 'examples/login.md'
