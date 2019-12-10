@@ -75,7 +75,7 @@ func CreateDatabase(c *gin.Context) {
 // DeleteDatabase deletes a database via gRPC
 func DeleteDatabase(c *gin.Context) {
 	db := c.Param("db")
-	instanceURL, err := redis.FetchDBURL(db)
+	instanceURL, err := redis.FetchDbNode(db)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,

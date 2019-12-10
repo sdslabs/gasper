@@ -1,25 +1,38 @@
 package redis
 
-import "github.com/sdslabs/gasper/types"
+import (
+	"encoding/json"
 
-// RegisterDB registers the database in the databases HashMap with its url
-func RegisterDB(db, url string) error {
-	_, err := client.HSet(DatabaseKey, db, url).Result()
+	"github.com/sdslabs/gasper/types"
+)
+
+// RegisterDB registers the database in the databases HashMap with its server and node url
+func RegisterDB(dbName, nodeURL, serverURL string) error {
+	dbBind := &types.InstanceBindings{
+		Node:   nodeURL,
+		Server: serverURL,
+	}
+	dbBindingJSON, err := json.Marshal(dbBind)
+	if err != nil {
+		return err
+	}
+	_, err = client.HSet(DatabaseKey, dbName, dbBindingJSON).Result()
 	return err
 }
 
-// FetchDBURL returns the URL of the machine where the db in query is deployed
-func FetchDBURL(db string) (string, error) {
-	result, err := client.HGet(DatabaseKey, db).Result()
-	if err != nil {
-		return "", err
-	}
-	return result, nil
+// FetchDbServer returns the URL of the database's server
+func FetchDbServer(dbName string) (string, error) {
+	return fetchServer(DatabaseKey, dbName)
+}
+
+// FetchDbNode returns the URL of the node where the database is deployed
+func FetchDbNode(dbName string) (string, error) {
+	return fetchNode(DatabaseKey, dbName)
 }
 
 // RemoveDB removes the databases's entry from Redis
-func RemoveDB(db string) error {
-	_, err := client.HDel(DatabaseKey, db).Result()
+func RemoveDB(dbName string) error {
+	_, err := client.HDel(DatabaseKey, dbName).Result()
 	if err != nil {
 		return err
 	}

@@ -135,6 +135,11 @@ func CreateApplicationRecord(name string) (*SingleResponse, error) {
 	return createRecord(name, ApplicationInstance)
 }
 
+// CreateDatabaseRecord creates a new DNS record for a database
+func CreateDatabaseRecord(name string) (*SingleResponse, error) {
+	return createRecord(name, DatabaseInstance)
+}
+
 // updateRecord updates the DNS record for an application in the given zone
 func updateRecord(name, instanceType string, payload *singlePayload) (*SingleResponse, error) {
 	zoneID, err := getZoneID()

@@ -9,7 +9,7 @@
 debug = true
 
 # Root domain for all deployed applications.
-domain = "sdslabs.local"
+domain = "sdslabs.co"
 
 # Secret Key used for internal communication in the Gasper ecosystem.
 secret = "YOUR_SECRET_KEY"

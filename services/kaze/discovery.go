@@ -44,7 +44,7 @@ func fetchBoundDatabases(currentIP, service string) []types.M {
 func registerApps(instances []types.M, currentIP string, config *configs.GenericService) {
 	payload := make(types.M)
 	for _, instance := range instances {
-		appBind := &types.AppBindings{
+		appBind := &types.InstanceBindings{
 			Node:   fmt.Sprintf("%s:%d", currentIP, config.Port),
 			Server: fmt.Sprintf("%s:%v", currentIP, instance[mongo.ContainerPortKey]),
 		}

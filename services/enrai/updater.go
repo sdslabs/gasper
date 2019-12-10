@@ -40,7 +40,7 @@ func updateStorage() {
 	}
 
 	updateBody := make(map[string]string)
-	appInfoStruct := &types.AppBindings{}
+	appInfoStruct := &types.InstanceBindings{}
 
 	// Create entries for applications
 	for name, data := range apps {

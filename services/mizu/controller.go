@@ -63,6 +63,8 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	}
 	app.SetSSHCmd(configs.ServiceConfig.Iwa.Port, app.GetName(), sshEntrypointIP)
 
+	app.SetAppURL(fmt.Sprintf("%s.%s.%s", app.GetName(), cloudflare.ApplicationInstance, configs.GasperConfig.Domain))
+
 	if configs.CloudflareConfig.PlugIn {
 		resp, err := cloudflare.CreateApplicationRecord(app.GetName())
 		if err != nil {
@@ -71,7 +73,6 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 			return nil, err
 		}
 		app.SetCloudflareID(resp.Result.ID)
-		app.SetAppURL(fmt.Sprintf("%s.%s.%s", app.GetName(), cloudflare.ApplicationInstance, configs.GasperConfig.Domain))
 	}
 
 	err = mongo.UpsertInstance(

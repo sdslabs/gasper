@@ -6,9 +6,9 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
-// RegisterApp registers the app in the apps HashMap with its url
+// RegisterApp registers the app in the applications HashMap with its server and node url
 func RegisterApp(appName, nodeURL, serverURL string) error {
-	appBind := &types.AppBindings{
+	appBind := &types.InstanceBindings{
 		Node:   nodeURL,
 		Server: serverURL,
 	}
@@ -16,8 +16,8 @@ func RegisterApp(appName, nodeURL, serverURL string) error {
 	if err != nil {
 		return err
 	}
-	_, regerr := client.HSet(ApplicationKey, appName, appBindingJSON).Result()
-	return regerr
+	_, err = client.HSet(ApplicationKey, appName, appBindingJSON).Result()
+	return err
 }
 
 // BulkRegisterApps registers multiple apps at once
@@ -29,38 +29,14 @@ func BulkRegisterApps(data types.M) error {
 	return err
 }
 
-// fetchAppBindings returns a struct containing both the server and node URL
-func fetchAppBindings(appName string) (*types.AppBindings, error) {
-	result, err := client.HGet(ApplicationKey, appName).Result()
-	if err != nil {
-		return nil, err
-	}
-
-	appInfoStruct := &types.AppBindings{}
-	resultByte := []byte(result)
-	err = json.Unmarshal(resultByte, appInfoStruct)
-	if err != nil {
-		return nil, err
-	}
-	return appInfoStruct, nil
-}
-
-// FetchAppServer returns the URL of deployed application bound to the container
+// FetchAppServer returns the URL of deployed application
 func FetchAppServer(appName string) (string, error) {
-	app, err := fetchAppBindings(appName)
-	if err != nil {
-		return "", err
-	}
-	return app.Server, nil
+	return fetchServer(ApplicationKey, appName)
 }
 
-// FetchAppNode returns the URL of the machine where the app in query is deployed
+// FetchAppNode returns the URL of the node where the application is deployed
 func FetchAppNode(appName string) (string, error) {
-	app, err := fetchAppBindings(appName)
-	if err != nil {
-		return "", err
-	}
-	return app.Node, nil
+	return fetchNode(ApplicationKey, appName)
 }
 
 // RemoveApp removes the application's entry from Redis
@@ -72,7 +48,7 @@ func RemoveApp(appName string) error {
 	return nil
 }
 
-// FetchAllApps gets all the apps with their URL (IP of the node and port)
+// FetchAllApps returns all applications along with their URLs (IP of the node and port)
 func FetchAllApps() (map[string]string, error) {
 	return client.HGetAll(ApplicationKey).Result()
 }

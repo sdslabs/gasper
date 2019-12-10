@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/cloudflare"
 	"github.com/sdslabs/gasper/lib/factory"
 	pb "github.com/sdslabs/gasper/lib/factory/protos/database"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -47,6 +48,17 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		return nil, err
 	}
 
+	db.SetDbURL(fmt.Sprintf("%s.%s.%s", db.GetName(), cloudflare.DatabaseInstance, configs.GasperConfig.Domain))
+
+	if configs.CloudflareConfig.PlugIn {
+		resp, err := cloudflare.CreateDatabaseRecord(db.GetName())
+		if err != nil {
+			go pipeline[language].cleanup(db.GetName())
+			return nil, err
+		}
+		db.SetCloudflareID(resp.Result.ID)
+	}
+
 	err = mongo.UpsertInstance(
 		types.M{
 			mongo.NameKey:         db.GetName(),
@@ -60,6 +72,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	err = redis.RegisterDB(
 		db.GetName(),
 		fmt.Sprintf("%s:%d", utils.HostIP, configs.ServiceConfig.Kaen.Port),
+		fmt.Sprintf("%s:%d", utils.HostIP, db.GetContainerPort()),
 	)
 	if err != nil {
 		go pipeline[language].cleanup(db.GetName())

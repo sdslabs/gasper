@@ -14,6 +14,8 @@ type DatabaseConfig struct {
 	User          string `json:"user,omitempty" bson:"user,omitempty"`
 	InstanceType  string `json:"instance_type,omitempty" bson:"instance_type,omitempty"`
 	Language      string `json:"language,omitempty" bson:"language,omitempty"`
+	CloudflareID  string `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
+	DbURL         string `json:"db_url,omitempty" bson:"db_url,omitempty"`
 	HostIP        string `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
 	ContainerPort int    `json:"port,omitempty" bson:"port,omitempty"`
 	Owner         string `json:"owner,omitempty" bson:"owner,omitempty"`
@@ -53,6 +55,16 @@ func (db *DatabaseConfig) SetLanguage(language string) {
 	db.Language = language
 }
 
+// SetCloudflareID sets the database's cloudflare record ID in its context
+func (db *DatabaseConfig) SetCloudflareID(cloudflareID string) {
+	db.CloudflareID = cloudflareID
+}
+
+// SetDbURL sets the database's domain URL in its context
+func (db *DatabaseConfig) SetDbURL(dbURL string) {
+	db.DbURL = dbURL
+}
+
 // SetHostIP sets the IP address of the host in which the database is deployed
 // in its context
 func (db *DatabaseConfig) SetHostIP(IP string) {
@@ -63,6 +75,12 @@ func (db *DatabaseConfig) SetHostIP(IP string) {
 // in the host system to the database's context
 func (db *DatabaseConfig) SetContainerPort(port int) {
 	db.ContainerPort = port
+}
+
+// GetContainerPort returns the port to which the database's
+// container is bound in the host system
+func (db *DatabaseConfig) GetContainerPort() int {
+	return db.ContainerPort
 }
 
 // SetOwner sets the owner of the database in its context
