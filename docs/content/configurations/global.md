@@ -64,10 +64,10 @@ This section determines the root domain of all deployed applications and databas
 The corresponding DNS entries for applications and databases will be automatically created by **Hikari 💡**
 
 !!! example "DNS entry example for an application"
-    If you create an application named **foo** then a DNS entry of **foo.app.sdslabs.co** will be created (based on the above root domain setting) pointing to the IPv4 address of an **Enrai ⚡** instance which in turn will reverse-proxy the request to the application's IPv4 address and port
+    If you create an application named **foo** then a DNS entry of `foo.app.sdslabs.co` will be created (based on the above root domain setting) pointing to the IPv4 address of an **Enrai ⚡** instance which in turn will reverse-proxy the request to the application's IPv4 address and port
 
 !!! example "DNS entry example for a database"
-    If you create a database named **bar** then a DNS entry of **bar.db.sdslabs.co** will be created (based on the above root domain setting) pointing to the IPv4 address of the node where the database's server is deployed
+    If you create a database named **bar** then a DNS entry of `bar.db.sdslabs.co` will be created (based on the above root domain setting) pointing to the IPv4 address of the node where the database's server is deployed
 
 ## Secret Key
 

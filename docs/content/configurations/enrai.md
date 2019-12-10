@@ -43,7 +43,7 @@ private_key = "/home/user/privkey.pem"  # Private Key Location
 The **certificate** and **private key** in the above configuration should be configured for all sub-domains based on the [domain parameter](/configurations/global/#domain) in the configuration file
 
 !!!example "Configuration Example"
-    If the **domain** parameter is **sdslabs.co** then the certificate and private key should be configured for the following subdomains `*.sdslabs.co` and `*.*.sdslabs.co`
+    If the [domain](/configurations/global/#domain) parameter is `sdslabs.co` then the certificate and private key should be configured for the following subdomains `*.sdslabs.co` and `*.*.sdslabs.co`
 
 !!!warning
     **Enrai with SSL** usually runs on port 443, hence the Gasper binary must be executed with **root** privileges in Linux systems

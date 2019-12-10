@@ -9,6 +9,11 @@ All database DNS records point to the IPv4 address of the node where the databas
 !!!info
     **Hikari 💡** automatically creates a DNS entry for **Kaze 🌪** (if deployed) pointing to an **Enrai ⚡** instance which will be further load-balanced among all available **Kaze 🌪** instances
 
+    The created DNS entry will be based on the [domain](/configurations/global/#domain) parameter
+
+    !!!example
+        If the [domain](/configurations/global/#domain) parameter is set to `sdslabs.co` then the corresponding DNS entry `kaze.sdslabs.co` will be created by **Hikari 💡**
+
 The following section deals with the configuration of Hikari
 
 ```toml
