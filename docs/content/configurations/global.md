@@ -13,8 +13,8 @@ Here is the entire section of the configuration file dealing with global setting
 # Set this value to `false` in Production.
 debug = true
 
-# Root domain for all deployed applications.
-domain = "sdslabs.local"
+# Root domain for all deployed applications and databases.
+domain = "sdslabs.co"
 
 # Secret Key used for internal communication in the Gasper ecosystem.
 secret = "YOUR_SECRET_KEY"
@@ -49,22 +49,25 @@ debug = true
 The variable **debug** determines whether to run Gasper in debug mode or not 
 In debug mode, internal server error messages are returned to the end user as JSON responses
 
-!!!warning
+!!!tip
     Set **debug** to `false` in Production 
 
 ## Domain
 
 ```toml
-# Root domain for all deployed applications.
-domain = "sdslabs.local"
+# Root domain for all deployed applications and databases.
+domain = "sdslabs.co"
 ```
 
-This section determines the root domain of all deployed applications
+This section determines the root domain of all deployed applications and databases
 
-The corresponding DNS entry for the application will be automatically created in **Hikari 💡** and resolved by **Enrai ⚡** during reverse-proxy
+The corresponding DNS entries for applications and databases will be automatically created by **Hikari 💡**
 
-!!! example
-    If you create an application named **foo** then a DNS entry of **foo.app.sdslabs.local** will be created based on the above root domain setting pointing to the IPv4 address of an **Enrai** instance
+!!! example "DNS entry example for an application"
+    If you create an application named **foo** then a DNS entry of **foo.app.sdslabs.co** will be created (based on the above root domain setting) pointing to the IPv4 address of an **Enrai ⚡** instance which in turn will reverse-proxy the request to the application's IPv4 address and port
+
+!!! example "DNS entry example for a database"
+    If you create a database named **bar** then a DNS entry of **bar.db.sdslabs.co** will be created (based on the above root domain setting) pointing to the IPv4 address of the node where the database's server is deployed
 
 ## Secret Key
 

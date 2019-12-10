@@ -18,8 +18,8 @@ Here is a [sample config.toml](https://github.com/sdslabs/gasper/blob/develop/co
 # Set this value to `false` in Production.
 debug = true
 
-# Root domain for all deployed applications.
-domain = "sdslabs.local"
+# Root domain for all deployed applications and databases.
+domain = "sdslabs.co"
 
 # Secret Key used for internal communication in the Gasper ecosystem.
 secret = "YOUR_SECRET_KEY"

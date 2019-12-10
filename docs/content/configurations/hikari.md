@@ -1,11 +1,13 @@
 # Hikari Configuration
 
-Hikari deals with creating and managing DNS records of all deployed applications
+Hikari deals with creating and managing DNS records of all deployed applications and databases
 
-All DNS records point to the IPv4 addresses of Enrai ⚡ instances which in turn reverse-proxies the request to the desired application's IPv4 address and port
+All application DNS records point to the IPv4 addresses of Enrai ⚡ instances which in turn reverse-proxies the request to the desired application's IPv4 address and port
+
+All database DNS records point to the IPv4 address of the node where the database's server is deployed
 
 !!!info
-    **Hikari 💡** automatically creates a DNS entry for **Kaze 🌪** (if deployed) pointing to an **Enrai ⚡** instance which will be further reverse-proxied to the **Kaze 🌪** instance's IPv4 address and port
+    **Hikari 💡** automatically creates a DNS entry for **Kaze 🌪** (if deployed) pointing to an **Enrai ⚡** instance which will be further load-balanced among all available **Kaze 🌪** instances
 
 The following section deals with the configuration of Hikari
 

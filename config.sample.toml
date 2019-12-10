@@ -8,7 +8,7 @@
 # Set this value to `false` in Production.
 debug = true
 
-# Root domain for all deployed applications.
+# Root domain for all deployed applications and databases.
 domain = "sdslabs.co"
 
 # Secret Key used for internal communication in the Gasper ecosystem.
