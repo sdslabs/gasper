@@ -141,6 +141,10 @@ components:
           type: string
           description: Docker image used in building the application's container
           example: sdsws/node:2.0
+        app_url:
+          type: string
+          description: The domain name of the application (DNS entry is managed by Hikari 💡)
+          example: alphadose.app.sdslabs.co
         host_ip:
           type: string
           example: 192.168.208.206
@@ -258,6 +262,10 @@ components:
         owner:
           type: string
           description: Owner of the database
+        db_url:
+          type: string
+          description: The domain name of the database (DNS entry is managed by Hikari 💡)
+          example: alphadose.db.sdslabs.co
         host_ip:
           type: string
           description: IPv4 address of the database
