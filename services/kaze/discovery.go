@@ -49,29 +49,33 @@ func registerApps(instances []types.M, currentIP string, config *configs.Generic
 			Server: fmt.Sprintf("%s:%v", currentIP, instance[mongo.ContainerPortKey]),
 		}
 		appBindingJSON, err := json.Marshal(appBind)
-
 		if err != nil {
 			utils.LogError(err)
-			return
+			continue
 		}
 		payload[instance[mongo.NameKey].(string)] = appBindingJSON
 	}
-	err := redis.BulkRegisterApps(payload)
-	if err != nil {
+	if err := redis.BulkRegisterApps(payload); err != nil {
 		utils.LogError(err)
-		return
 	}
 }
 
 func registerDatabases(instances []types.M, currentIP string, config *configs.GenericService) {
 	payload := make(types.M)
 	for _, instance := range instances {
-		payload[instance[mongo.NameKey].(string)] = fmt.Sprintf("%s:%d", currentIP, config.Port)
+		dbBind := &types.InstanceBindings{
+			Node:   fmt.Sprintf("%s:%d", currentIP, config.Port),
+			Server: fmt.Sprintf("%s:%v", currentIP, instance[mongo.PortKey]),
+		}
+		dbBindingJSON, err := json.Marshal(dbBind)
+		if err != nil {
+			utils.LogError(err)
+			continue
+		}
+		payload[instance[mongo.NameKey].(string)] = dbBindingJSON
 	}
-	err := redis.BulkRegisterDatabases(payload)
-	if err != nil {
+	if err := redis.BulkRegisterDatabases(payload); err != nil {
 		utils.LogError(err)
-		return
 	}
 }
 

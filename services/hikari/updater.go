@@ -1,6 +1,7 @@
 package hikari
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -36,14 +37,6 @@ func filterValidInstances(reverseProxyInstances []string) []string {
 // It assigns the A records in such a way that the load is
 // equally distributed among all available Enrai Reverse Proxy Instances
 func updateStorage() {
-	appMap, err := redis.FetchAllApps()
-	if err != nil {
-		handleError(err)
-		return
-	}
-	apps := utils.GetMapKeys(appMap)
-	sort.Strings(apps)
-
 	reverseProxyInstances, err := redis.FetchServiceInstances(types.Enrai)
 	if err != nil {
 		handleError(err)
@@ -61,10 +54,39 @@ func updateStorage() {
 	instanceNum := len(reverseProxyInstances)
 
 	// Create enrties for applications
+	appMap, err := redis.FetchAllApps()
+	if err != nil {
+		handleError(err)
+		return
+	}
+	apps := utils.GetMapKeys(appMap)
+	sort.Strings(apps)
+
 	for index, app := range apps {
 		fqdn := fmt.Sprintf("%s.app.%s.", app, configs.GasperConfig.Domain)
 		address := strings.Split(reverseProxyInstances[index%instanceNum], ":")[0]
 		updateBody[fqdn] = address
+	}
+
+	// Create enrties for databases
+	dbMap, err := redis.FetchAllDatabases()
+	if err != nil {
+		handleError(err)
+		return
+	}
+
+	dbInfoStruct := &types.InstanceBindings{}
+
+	for db, data := range dbMap {
+		resultByte := []byte(data)
+		if err = json.Unmarshal(resultByte, dbInfoStruct); err != nil {
+			handleError(err)
+			continue
+		}
+		if strings.Contains(dbInfoStruct.Server, ":") {
+			fqdn := fmt.Sprintf("%s.db.%s.", db, configs.GasperConfig.Domain)
+			updateBody[fqdn] = strings.Split(dbInfoStruct.Server, ":")[0]
+		}
 	}
 
 	// Create entry for Kaze

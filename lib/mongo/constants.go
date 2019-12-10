@@ -45,6 +45,9 @@ const (
 	// ContainerPortKey is the key holding the port of the container in which an application is deployed
 	ContainerPortKey = "container_port"
 
+	// PortKey is the key holding the port of the container in which a database server is deployed
+	PortKey = "port"
+
 	// EmailKey is the key holding the email of a user
 	EmailKey = "email"
 
