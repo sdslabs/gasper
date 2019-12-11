@@ -39,6 +39,12 @@ func UpsertUser(filter types.M, data interface{}) error {
 	return UpdateOne(UserCollection, filter, data, options.FindOneAndUpdate().SetUpsert(true))
 }
 
+// UpsertMetrics is an abstraction over UpdateOne which updates an metrics document in mongoDB
+// or inserts it if the corresponding document doesn't exist
+func UpsertMetrics(filter types.M, data interface{}) error {
+	return UpdateOne(MetricsCollection, filter, data, options.FindOneAndUpdate().SetUpsert(true))
+}
+
 // UpdateMany updates multiple documents in the mongoDB collection
 func UpdateMany(collectionName string, filter types.M, data interface{}) (interface{}, error) {
 	collection := link.Collection(collectionName)

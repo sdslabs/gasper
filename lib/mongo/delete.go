@@ -30,3 +30,8 @@ func DeleteInstance(filter types.M) (interface{}, error) {
 func DeleteUser(filter types.M) (interface{}, error) {
 	return DeleteOne(UserCollection, filter)
 }
+
+// DeleteMetrics is an abstraction over DeleteOne which deletes a container metrics from mongoDB
+func DeleteMetrics(filter types.M) (interface{}, error) {
+	return DeleteOne(MetricsCollection, filter)
+}

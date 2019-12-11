@@ -27,6 +27,9 @@ const (
 	// UserCollection is the collection for all users
 	UserCollection = "users"
 
+	// MetricsCollection is the collection to hold the metrics of the instances
+	MetricsCollection = "metrics"
+
 	// NameKey is the key holding the name of an instance
 	NameKey = "name"
 

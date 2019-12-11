@@ -26,3 +26,8 @@ func RegisterInstance(data interface{}) (interface{}, error) {
 func RegisterUser(data interface{}) (interface{}, error) {
 	return InsertOne(UserCollection, data)
 }
+
+// RegisterMetrics is an abstraction over InsertOne which inserts metrics into the mongoDB
+func RegisterMetrics(data interface{}) (interface{}, error) {
+	return InsertOne(MetricsCollection, data)
+}

@@ -156,6 +156,14 @@ func FetchUserInfo(filter types.M) []types.M {
 		})
 }
 
+// FetchContainerMetrics is an abstraction over FetchDocs for retrieving metrics of a container
+func FetchContainerMetrics(filter types.M, limit int64) []types.M {
+	options := options.Find()
+	options.SetSort(types.M{"read_time": -1})
+	options.SetLimit(limit)
+	return FetchDocs(MetricsCollection, filter, options)
+}
+
 // CountDocs returns the number of documents matching a filter
 func CountDocs(collectionName string, filter types.M) (int64, error) {
 	collection := link.Collection(collectionName)
