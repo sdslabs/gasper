@@ -3,10 +3,13 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
@@ -228,18 +231,23 @@ func TransferApplicationOwnership(c *gin.Context) {
 // RetrieveMetrics retrieves the metrics of a container as a response
 func RetrieveMetrics(c *gin.Context) {
 	appName := c.Param("app")
-	limitQuery := c.Query("limit")
-	limit, err := strconv.ParseInt(limitQuery, 10, 64)
+	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
 	if err != nil {
 		limit = 10
 	}
+
+	interval, err := strconv.ParseInt(c.Query("interval"), 10, 64)
+	if err != nil {
+		interval = int64(configs.ServiceConfig.Kaze.MetricsInterval) * 2
+	}
+
 	metrics := mongo.FetchContainerMetrics(types.M{
 		mongo.NameKey: appName,
 	}, limit)
-	c.SSEvent("fetch-metrics", metrics)
-	// c.Stream(func(w io.Writer) bool {
-	// 	time.Sleep(time.Second)
-	// 	c.SSEvent("ping", time.Now().String())
-	// 	return true
-	// })
+
+	c.Stream(func(w io.Writer) bool {
+		time.Sleep(time.Second * time.Duration(interval))
+		c.SSEvent("fetch-metrics", metrics)
+		return true
+	})
 }
