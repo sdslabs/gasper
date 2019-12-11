@@ -64,7 +64,7 @@ func CreateDatabase(c *gin.Context) {
 		return
 	}
 
-	response, err := factory.CreateDatabase(database, claims.Email, instanceURL, data)
+	response, err := factory.CreateDatabase(database, claims.GetEmail(), instanceURL, data)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return

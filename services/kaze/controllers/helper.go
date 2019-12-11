@@ -57,7 +57,7 @@ func fetchInstancesByUser(c *gin.Context, instanceType string) {
 		return
 	}
 
-	filter[mongo.OwnerKey] = claims.Email
+	filter[mongo.OwnerKey] = claims.GetEmail()
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchInstances(filter),

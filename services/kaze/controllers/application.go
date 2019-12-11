@@ -120,7 +120,7 @@ func CreateApp(c *gin.Context) {
 		return
 	}
 
-	response, err := factory.CreateApplication(c.Param("language"), claims.Email, instanceURL, data)
+	response, err := factory.CreateApplication(c.Param("language"), claims.GetEmail(), instanceURL, data)
 	if err != nil {
 		utils.LogError(err)
 		if strings.Contains(err.Error(), "authentication required") {
