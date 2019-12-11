@@ -102,3 +102,27 @@ func Handle404(c *gin.Context) {
 		"error":   "Page not found",
 	})
 }
+
+// deleteUser deletes the user from database
+func deleteUser(c *gin.Context, userEmail string) {
+	filter := types.M{
+		mongo.EmailKey: userEmail,
+	}
+	instanceFilter := types.M{
+		mongo.OwnerKey: userEmail,
+	}
+	update := types.M{
+		"deleted": true,
+	}
+	go mongo.UpdateInstances(instanceFilter, update)
+
+	err := mongo.UpdateUser(filter, update)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "user deleted",
+	})
+}

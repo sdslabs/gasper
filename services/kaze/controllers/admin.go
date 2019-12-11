@@ -128,26 +128,7 @@ func GetNodesByName(c *gin.Context) {
 	c.JSON(200, res)
 }
 
-// DeleteUser deletes the user from DB
-func DeleteUser(c *gin.Context) {
-	user := c.Param("user")
-	filter := types.M{
-		mongo.EmailKey: user,
-	}
-	instanceFilter := types.M{
-		mongo.OwnerKey: user,
-	}
-	update := types.M{
-		"deleted": true,
-	}
-	go mongo.UpdateInstances(instanceFilter, update)
-
-	err := mongo.UpdateUser(filter, update)
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
-	c.JSON(200, gin.H{
-		"success": true,
-	})
+// DeleteUserByAdmin deletes the user from database
+func DeleteUserByAdmin(c *gin.Context) {
+	deleteUser(c, c.Param("user"))
 }

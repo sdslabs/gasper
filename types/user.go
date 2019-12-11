@@ -66,3 +66,20 @@ func (user *User) IsAdmin() bool {
 func (user *User) SetSuccess(success bool) {
 	user.Success = success
 }
+
+// PasswordUpdate is the request body for updating a user's password
+type PasswordUpdate struct {
+	OldPassword string `form:"old_password" json:"old_password,omitempty" binding:"required"`
+	NewPassword string `form:"new_password" json:"new_password,omitempty" binding:"required"`
+}
+
+// GetOldPassword returns the user's old password
+func (pw *PasswordUpdate) GetOldPassword() string {
+	return pw.OldPassword
+}
+
+// GetNewPassword returns the user's new password
+// which will replace the old password
+func (pw *PasswordUpdate) GetNewPassword() string {
+	return pw.NewPassword
+}

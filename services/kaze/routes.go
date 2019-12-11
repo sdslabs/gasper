@@ -60,6 +60,14 @@ func NewService() http.Handler {
 		db.PATCH("/:db/transfer/:user", m.IsDatabaseOwner, c.TransferDatabaseOwnership)
 	}
 
+	user := router.Group("/user")
+	user.Use(m.JWT.MiddlewareFunc())
+	{
+		user.GET("", c.GetLoggedInUserInfo)
+		user.PUT("/password", c.UpdatePassword)
+		user.DELETE("", c.DeleteUser)
+	}
+
 	admin := router.Group("/admin")
 	admin.Use(m.JWT.MiddlewareFunc(), m.VerifyAdmin)
 	{
@@ -79,7 +87,7 @@ func NewService() http.Handler {
 		{
 			users.GET("", c.GetAllUsers)
 			users.GET("/:user", c.GetUserInfo)
-			users.DELETE("/:user", c.DeleteUser)
+			users.DELETE("/:user", c.DeleteUserByAdmin)
 			users.PATCH("/:user/grant", c.GrantSuperuserPrivilege)
 			users.PATCH("/:user/revoke", c.RevokeSuperuserPrivilege)
 		}
