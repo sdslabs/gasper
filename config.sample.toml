@@ -129,6 +129,7 @@ exposure_interval = 30
 [services.kaze]
 # Time Interval (in seconds) in which `Kaze` sends health-check probes
 # to all worker nodes and removes inactive nodes from the central registry-server.
+metrics_interval = 10
 cleanup_interval = 600
 deploy = true   # Deploy Kaze?
 port = 3000

@@ -49,6 +49,7 @@ type GenericService struct {
 type KazeService struct {
 	GenericService
 	CleanupInterval time.Duration `toml:"cleanup_interval"`
+	MetricsInterval time.Duration `toml:"metrics_interval"`
 }
 
 // IwaService is the configuration for Iwa microservice
