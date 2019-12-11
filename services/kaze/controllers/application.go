@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -222,4 +223,23 @@ func RebuildApp(c *gin.Context) {
 // TransferApplicationOwnership transfers the ownership of an application to another user
 func TransferApplicationOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("app"), mongo.AppInstance, c.Param("user"))
+}
+
+// RetrieveMetrics retrieves the metrics of a container as a response
+func RetrieveMetrics(c *gin.Context) {
+	appName := c.Param("app")
+	limitQuery := c.Query("limit")
+	limit, err := strconv.ParseInt(limitQuery, 10, 64)
+	if err != nil {
+		limit = 10
+	}
+	metrics := mongo.FetchContainerMetrics(types.M{
+		mongo.NameKey: appName,
+	}, limit)
+	c.SSEvent("fetch-metrics", metrics)
+	// c.Stream(func(w io.Writer) bool {
+	// 	time.Sleep(time.Second)
+	// 	c.SSEvent("ping", time.Now().String())
+	// 	return true
+	// })
 }
