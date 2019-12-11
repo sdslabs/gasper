@@ -16,6 +16,7 @@ func initKaze() {
 	go kaze.ScheduleServiceExposure()
 	if configs.ServiceConfig.Kaze.Deploy {
 		go kaze.ScheduleCleanup()
+		go kaze.ScheduleCollectMetrics()
 	}
 }
 
