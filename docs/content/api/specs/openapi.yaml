@@ -32,6 +32,8 @@ tags:
     description: Application management
   - name: dbs
     description: Database management
+  - name: user
+    description: User specific operations
   - name: admin
     description: Operations with superuser privileges
 
@@ -350,7 +352,7 @@ paths:
               $ref: '#/components/schemas/User'
         required: true
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '200':
           description: Registration successful
@@ -383,7 +385,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401':  &error401
           description: Unauthorized
@@ -437,7 +439,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -462,7 +464,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -496,7 +498,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -534,7 +536,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -563,7 +565,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -593,7 +595,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -630,7 +632,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -704,7 +706,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -747,7 +749,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -772,7 +774,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -806,7 +808,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -838,7 +840,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -874,7 +876,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -886,6 +888,106 @@ paths:
                 properties:
                   success:
                     type: boolean                      
+
+  /user:
+    get:
+      tags:
+        - user
+      summary: Fetch logged in user's info
+      operationId: fetchUser
+      parameters:
+        - <<: *authHeaderParams
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  username:
+                    type: string
+                    example: alphadose
+                  email:
+                    type: string
+                    example: anish.mukherjee1996@gmail.com
+                  admin:
+                    type: boolean
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      operationId: deleteUser
+      parameters:
+        - <<: *authHeaderParams
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: user deleted
+
+  /user/password:
+    put:
+      tags:
+        - user
+      summary: Update the password of the logged in user
+      operationId: updatePassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                old_password:
+                  type: string
+                  description: The current password in use
+                  example: alphadose
+                new_password:
+                  type: string
+                  description: The new password meant to replace the old one
+                  example: betadose
+      parameters:
+        - <<: *authHeaderParams
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    example: password updated
+
 
   /admin/apps:
     get:
@@ -945,7 +1047,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -979,7 +1081,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1011,7 +1113,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1071,7 +1173,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1105,7 +1207,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1137,7 +1239,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1176,7 +1278,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1210,7 +1312,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1242,7 +1344,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1272,7 +1374,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1302,7 +1404,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1326,7 +1428,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
@@ -1402,7 +1504,7 @@ paths:
       security:
         - bearerAuth: []
       responses:
-        '400': *error400     
+        '400': *error400
         '500': *error500
         '401': *error401
         '200':
