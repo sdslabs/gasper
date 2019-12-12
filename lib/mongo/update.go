@@ -6,6 +6,7 @@ import (
 
 	"github.com/sdslabs/gasper/types"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	m "go.mongodb.org/mongo-driver/mongo"
 )
 
 // UpdateOne updates a document in the mongoDB collection
@@ -39,10 +40,22 @@ func UpsertUser(filter types.M, data interface{}) error {
 	return UpdateOne(UserCollection, filter, data, options.FindOneAndUpdate().SetUpsert(true))
 }
 
-// UpsertMetrics is an abstraction over UpdateOne which updates an metrics document in mongoDB
-// or inserts it if the corresponding document doesn't exist
-func UpsertMetrics(filter types.M, data interface{}) error {
-	return UpdateOne(MetricsCollection, filter, data, options.FindOneAndUpdate().SetUpsert(true))
+// UpsertMetrics is an abstraction over BulkUpsert which updates multiple metrics documents in mongoDB
+// or inserts them if the corresponding document doesn't exist
+func UpsertMetrics(data []m.WriteModel) (interface{}, error) {
+	return BulkUpsert(MetricsCollection, data, options.BulkWrite().SetOrdered(false))
+}
+
+// BulkUpsert upserts multiple documents using BulkWrite
+func BulkUpsert(collectionName string, data []m.WriteModel, options *options.BulkWriteOptions) (interface{}, error) {
+	collection := link.Collection(collectionName)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	res, err := collection.BulkWrite(ctx, data, options)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 // UpdateMany updates multiple documents in the mongoDB collection
