@@ -1,13 +1,13 @@
 package docker
 
 import (
+	"encoding/json"
 	"fmt"
-	"os"
+	"io/ioutil"
 
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
-	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
 )
@@ -149,20 +149,36 @@ func StopContainer(containerID string) error {
 }
 
 // ListContainers lists all containers
-func ListContainers() []string {
+func ListContainers() ([]string, error) {
 	ctx := context.Background()
 	containers, err := cli.ContainerList(ctx, dockerTypes.ContainerListOptions{All: true})
 	if err != nil {
-		utils.LogError(err)
-		os.Exit(1)
+		return nil, err
 	}
 
-	list := make([]string, 1)
+	list := make([]string, 0)
 
 	for _, container := range containers {
 		if len(container.Names) > 0 {
-			list = append(list, container.Names[0])
+			list = append(list, container.Names[0][1:])
 		}
 	}
-	return list
+	return list, nil
+}
+
+// ContainerStats returns container statistics using the containerID
+func ContainerStats(containerID string) (*types.Stats, error) {
+	ctx := context.Background()
+	containerStats, err := cli.ContainerStats(ctx, containerID, false)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := ioutil.ReadAll(containerStats.Body)
+	if err != nil {
+		return nil, err
+	}
+	containerStatsInterface := &types.Stats{}
+	err = json.Unmarshal(body, containerStatsInterface)
+	return containerStatsInterface, err
 }
