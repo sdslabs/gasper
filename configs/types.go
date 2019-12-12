@@ -43,6 +43,11 @@ type Redis struct {
 type GenericService struct {
 	Deploy bool `toml:"deploy"`
 	Port   int  `toml:"port"`
+}
+
+// MizuService is the default configuration for mizu microservice
+type MizuService struct {
+	GenericService
 	MetricsInterval time.Duration `toml:"metrics_interval"`
 }
 
@@ -111,13 +116,13 @@ type Images struct {
 
 // Services is the configuration for all Services
 type Services struct {
-	ExposureInterval time.Duration  `toml:"exposure_interval"`
-	Kaze             KazeService    `toml:"kaze"`
-	Mizu             GenericService `toml:"mizu"`
-	Iwa              IwaService     `toml:"iwa"`
-	Enrai            EnraiService   `toml:"enrai"`
-	Hikari           HikariService  `toml:"hikari"`
-	Kaen             KaenService    `toml:"kaen"`
+	ExposureInterval time.Duration `toml:"exposure_interval"`
+	Kaze             KazeService   `toml:"kaze"`
+	Mizu             MizuService   `toml:"mizu"`
+	Iwa              IwaService    `toml:"iwa"`
+	Enrai            EnraiService  `toml:"enrai"`
+	Hikari           HikariService `toml:"hikari"`
+	Kaen             KaenService   `toml:"kaen"`
 }
 
 // GasperCfg is the configuration for the entire project

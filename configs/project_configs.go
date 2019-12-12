@@ -42,7 +42,10 @@ var (
 			Deploy: ServiceConfig.Kaze.Deploy,
 			Port:   ServiceConfig.Kaze.Port,
 		},
-		types.Mizu: &ServiceConfig.Mizu,
+		types.Mizu: &GenericService{
+			Deploy: ServiceConfig.Mizu.Deploy,
+			Port:   ServiceConfig.Mizu.Port,
+		},
 		types.Iwa: &GenericService{
 			Deploy: ServiceConfig.Iwa.Deploy,
 			Port:   ServiceConfig.Iwa.Port,
