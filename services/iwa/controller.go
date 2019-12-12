@@ -42,12 +42,10 @@ func sessionHandler(s ssh.Session) {
 
 	var cmd *exec.Cmd
 
-	status, err := docker.InspectContainerState(s.User())
-
-	if err != nil || len(status) == 0 {
+	if _, err := docker.InspectContainerState(s.User()); err != nil {
 		utils.LogError(err)
 		utils.LogInfo("Application %s's container not present in the current node", s.User())
-		utils.LogInfo("Trying to a create a SSH bridge connection with the desired node")
+		utils.LogInfo("Attempting to a create a SSH bridge connection with the desired node")
 
 		instanceURL, err := redis.FetchAppNode(s.User())
 		if err != nil {

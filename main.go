@@ -22,7 +22,7 @@ func initKaze() {
 
 func initMizu() {
 	if configs.ServiceConfig.Mizu.Deploy {
-		go mizu.ScheduleCollectMetrics()
+		go mizu.ScheduleMetricsCollection()
 	}
 }
 
@@ -54,6 +54,7 @@ func initServices() {
 
 func main() {
 	initKaze()
+	initMizu()
 	initHikari()
 	initEnrai()
 	initServices()
