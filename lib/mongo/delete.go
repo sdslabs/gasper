@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -13,12 +12,7 @@ func DeleteOne(collectionName string, filter types.M) (interface{}, error) {
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	res, err := collection.DeleteOne(ctx, filter)
-	if err != nil {
-		utils.LogError(err)
-		return nil, err
-	}
-	return res, nil
+	return collection.DeleteOne(ctx, filter)
 }
 
 // DeleteInstance is an abstraction over DeleteOne which deletes an application from mongoDB
