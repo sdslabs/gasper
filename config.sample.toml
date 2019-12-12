@@ -160,7 +160,9 @@ private_key = "/home/user/privkey.pem"  # Private Key Location
 [services.mizu]
 deploy = true   # Deploy Mizu?
 port = 4000
-metrics_interval = 10
+# Time Interval (in seconds) in which metrics of all application containers
+# running in the current node are collected and stored in database
+metrics_interval = 600
 
 
 ##########################
