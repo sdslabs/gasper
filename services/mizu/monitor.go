@@ -1,4 +1,4 @@
-package kaze
+package mizu
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
+	m "go.mongodb.org/mongo-driver/mongo"
 )
 
 func monitorHandler() {
@@ -18,15 +19,12 @@ func monitorHandler() {
 }
 
 func registerMetrics() {
-	// apps := mongo.FetchAppInfo(types.M{
-	// 	mongo.HostIPKey: utils.HostIP,
-	// },
-	// )
-
 	apps := mongo.FetchAppInfo(types.M{
-		mongo.HostIPKey: "10.61.22.166",
+		mongo.HostIPKey: utils.HostIP,
 	},
 	)
+
+	var parsedMetricsList []m.WriteModel
 
 	for _, app := range apps {
 		metrics, err := docker.ContainerStats(app["name"].(string))
@@ -60,18 +58,19 @@ func registerMetrics() {
 		parsedMetrics.OnlineCPUS = fmt.Sprintf("%f", onlineCPUs)
 		parsedMetrics.CPUUsage = fmt.Sprintf("%f", (cpuTime / (1000000000 * onlineCPUs)))
 
-		err = mongo.UpsertMetrics(
-			types.M{
-				"read_time": time.Now().Unix(),
-			}, parsedMetrics)
+		operation := m.NewUpdateOneModel()
+		operation.SetFilter(types.M{
+			"read_time": time.Now().Unix(),
+		}).SetUpdate(parsedMetrics).SetUpsert(true)
 
-		if err != nil && err != mongo.ErrNoDocuments {
-			mongo.DeleteMetrics(types.M{
-				mongo.NameKey: app["name"],
-			})
-			utils.LogError(err)
-			return
-		}
+		parsedMetricsList = append(parsedMetricsList, operation)
+	}
+
+	_, err := mongo.UpsertMetrics(parsedMetricsList)
+
+	if err != nil && err != mongo.ErrNoDocuments {
+		utils.LogError(err)
+		return
 	}
 }
 

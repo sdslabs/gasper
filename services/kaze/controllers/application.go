@@ -3,13 +3,10 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"io"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
@@ -228,26 +225,17 @@ func TransferApplicationOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("app"), mongo.AppInstance, c.Param("user"))
 }
 
-// RetrieveMetrics retrieves the metrics of a container as a response
-func RetrieveMetrics(c *gin.Context) {
+// FetchMetrics retrieves the metrics of a container as a response
+func FetchMetrics(c *gin.Context) {
 	appName := c.Param("app")
 	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
 	if err != nil {
 		limit = 10
 	}
 
-	interval, err := strconv.ParseInt(c.Query("interval"), 10, 64)
-	if err != nil {
-		interval = int64(configs.ServiceConfig.Kaze.MetricsInterval) * 2
-	}
-
 	metrics := mongo.FetchContainerMetrics(types.M{
 		mongo.NameKey: appName,
 	}, limit)
 
-	c.Stream(func(w io.Writer) bool {
-		time.Sleep(time.Second * time.Duration(interval))
-		c.SSEvent("fetch-metrics", metrics)
-		return true
-	})
+	c.SSEvent("metrics", metrics)
 }

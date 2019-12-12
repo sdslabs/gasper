@@ -43,13 +43,13 @@ type Redis struct {
 type GenericService struct {
 	Deploy bool `toml:"deploy"`
 	Port   int  `toml:"port"`
+	MetricsInterval time.Duration `toml:"metrics_interval"`
 }
 
 // KazeService is the default configuration for Kaze microservice
 type KazeService struct {
 	GenericService
 	CleanupInterval time.Duration `toml:"cleanup_interval"`
-	MetricsInterval time.Duration `toml:"metrics_interval"`
 }
 
 // IwaService is the configuration for Iwa microservice
