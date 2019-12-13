@@ -4,7 +4,7 @@
 
 <img align="right" width="350px" height="400px" src="./docs/content/assets/logo/gasperlogo.svg">
 
-[![Build Status](https://api.travis-ci.org/sdslabs/gasper.svg)](https://travis-ci.org/sdslabs/gasper)
+[![Build Status](https://travis-ci.org/sdslabs/gasper.svg?branch=develop)](https://travis-ci.org/sdslabs/gasper)
 [![Docs](https://img.shields.io/badge/docs-current-brightgreen.svg)](https://gasper-docs.netlify.com/)
 [![codecov](https://codecov.io/gh/sdslabs/gasper/branch/develop/graph/badge.svg)](https://codecov.io/gh/sdslabs/gasper)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sdslabs/gasper)](https://goreportcard.com/report/github.com/sdslabs/gasper)
