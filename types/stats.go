@@ -31,6 +31,7 @@ type Metrics struct {
 	OnlineCPUs     float64 `json:"online_cpus" bson:"online_cpus"`
 	MemoryUsage    float64 `json:"memory_usage" bson:"memory_usage"`
 	MaxMemoryUsage float64 `json:"max_memory_usage" bson:"max_memory_usage"`
+	MemoryLimit    float64 `json:"memory_limit" bson:"memory_limit"`
 	ReadTime       int64   `json:"timestamp" bson:"timestamp"`
 	Alive          bool    `json:"alive" bson:"alive"`
 	HostIP         string  `json:"host_ip" bson:"host_ip"`

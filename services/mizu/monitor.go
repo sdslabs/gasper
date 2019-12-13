@@ -48,6 +48,7 @@ func registerMetrics() {
 			ReadTime:       time.Now().Unix(),
 			MemoryUsage:    memoryUsage / memoryLimit,
 			MaxMemoryUsage: maxUsage / memoryLimit,
+			MemoryLimit:    memoryLimit / math.Pow(1024, 3),
 			OnlineCPUs:     onlineCPUs,
 			CPUUsage:       cpuTime / (math.Pow(10, 9) * onlineCPUs),
 			HostIP:         utils.HostIP,
