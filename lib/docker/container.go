@@ -33,7 +33,7 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
-			volume: struct{}{},
+			volume: {},
 		},
 	}
 	hostConfig := &container.HostConfig{
@@ -76,7 +76,7 @@ func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
-			volume: struct{}{},
+			volume: {},
 		},
 	}
 
@@ -115,7 +115,7 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
-			volume: struct{}{},
+			volume: {},
 		},
 	}
 

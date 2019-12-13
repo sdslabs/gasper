@@ -53,7 +53,7 @@ func reloadConstructor(serviceName string) func() error {
 }
 
 var pipeline = map[string]*databaseHandler{
-	types.MongoDB: &databaseHandler{
+	types.MongoDB: {
 		init:    initConstructor(types.MongoDB, configs.ServiceConfig.Kaen.MongoDB.ContainerPort),
 		create:  database.CreateMongoDB,
 		delete:  database.DeleteMongoDB,
@@ -61,7 +61,7 @@ var pipeline = map[string]*databaseHandler{
 		logs:    logConstructor(types.MongoDB),
 		reload:  reloadConstructor(types.MongoDB),
 	},
-	types.MySQL: &databaseHandler{
+	types.MySQL: {
 		init:    initConstructor(types.MySQL, configs.ServiceConfig.Kaen.MySQL.ContainerPort),
 		create:  database.CreateMysqlDB,
 		delete:  database.DeleteMysqlDB,

@@ -38,31 +38,31 @@ var (
 	// ServiceMap is the configuration binding the service name to its
 	// deployment status and port
 	ServiceMap = map[string]*GenericService{
-		types.Kaze: &GenericService{
+		types.Kaze: {
 			Deploy: ServiceConfig.Kaze.Deploy,
 			Port:   ServiceConfig.Kaze.Port,
 		},
-		types.Mizu: &GenericService{
+		types.Mizu: {
 			Deploy: ServiceConfig.Mizu.Deploy,
 			Port:   ServiceConfig.Mizu.Port,
 		},
-		types.Iwa: &GenericService{
+		types.Iwa: {
 			Deploy: ServiceConfig.Iwa.Deploy,
 			Port:   ServiceConfig.Iwa.Port,
 		},
-		types.Enrai: &GenericService{
+		types.Enrai: {
 			Deploy: ServiceConfig.Enrai.Deploy,
 			Port:   ServiceConfig.Enrai.Port,
 		},
-		types.Hikari: &GenericService{
+		types.Hikari: {
 			Deploy: ServiceConfig.Hikari.Deploy,
 			Port:   ServiceConfig.Hikari.Port,
 		},
-		types.MySQL: &GenericService{
+		types.MySQL: {
 			Deploy: ServiceConfig.Kaen.MySQL.PlugIn && ServiceConfig.Kaen.Deploy,
 			Port:   ServiceConfig.Kaen.Port,
 		},
-		types.MongoDB: &GenericService{
+		types.MongoDB: {
 			Deploy: ServiceConfig.Kaen.MongoDB.PlugIn && ServiceConfig.Kaen.Deploy,
 			Port:   ServiceConfig.Kaen.Port,
 		},

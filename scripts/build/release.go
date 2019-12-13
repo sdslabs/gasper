@@ -10,11 +10,11 @@ import (
 const releaseDir = "releases"
 
 var releaseMap = map[string][]string{
-	"darwin":  []string{"386", "amd64"},
-	"linux":   []string{"386", "amd64", "arm64", "ppc64le"},
-	"freebsd": []string{"386", "amd64"},
-	"openbsd": []string{"386", "amd64"},
-	"windows": []string{"386", "amd64"},
+	"darwin":  {"386", "amd64"},
+	"linux":   {"386", "amd64", "arm64", "ppc64le"},
+	"freebsd": {"386", "amd64"},
+	"openbsd": {"386", "amd64"},
+	"windows": {"386", "amd64"},
 }
 
 func md5sum(archiveName string) error {

@@ -55,7 +55,7 @@ clean:
 ## fmt: Format entire codebase
 fmt:
 	@printf "🔨 Formatting\n" 
-	@go fmt $(PACKAGES)
+	@gofmt -s -w .
 	@printf "👍 Done\n"
 
 ## vet: Vet entire codebase

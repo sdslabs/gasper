@@ -22,31 +22,31 @@ type serviceLauncher struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]*serviceLauncher{
-	kaze.ServiceName: &serviceLauncher{
+	kaze.ServiceName: {
 		Deploy: configs.ServiceConfig.Kaze.Deploy,
 		Start:  startKazeService,
 	},
-	mizu.ServiceName: &serviceLauncher{
+	mizu.ServiceName: {
 		Deploy: configs.ServiceConfig.Mizu.Deploy,
 		Start:  startMizuService,
 	},
-	iwa.ServiceName: &serviceLauncher{
+	iwa.ServiceName: {
 		Deploy: configs.ServiceConfig.Iwa.Deploy,
 		Start:  startIwaService,
 	},
-	hikari.ServiceName: &serviceLauncher{
+	hikari.ServiceName: {
 		Deploy: configs.ServiceConfig.Hikari.Deploy,
 		Start:  hikari.NewService().ListenAndServe,
 	},
-	enrai.DefaultServiceName: &serviceLauncher{
+	enrai.DefaultServiceName: {
 		Deploy: configs.ServiceConfig.Enrai.Deploy,
 		Start:  startEnraiService,
 	},
-	enrai.SSLServiceName: &serviceLauncher{
+	enrai.SSLServiceName: {
 		Deploy: configs.ServiceConfig.Enrai.SSL.PlugIn,
 		Start:  startEnraiServiceWithSSL,
 	},
-	kaen.ServiceName: &serviceLauncher{
+	kaen.ServiceName: {
 		Deploy: configs.ServiceConfig.Kaen.Deploy,
 		Start:  startKaenService,
 	},
