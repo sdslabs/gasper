@@ -159,7 +159,7 @@ func ListContainers() ([]string, error) {
 	list := make([]string, 0)
 
 	for _, container := range containers {
-		if len(container.Names) > 0 {
+		if len(container.Names) > 0 && len(container.Names[0]) > 1 {
 			list = append(list, container.Names[0][1:])
 		}
 	}
