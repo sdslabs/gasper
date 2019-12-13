@@ -14,14 +14,10 @@ func keyNotExists(service, url string) bool {
 	return false
 }
 
-// RegisterService puts a service URL in its respective sorted set if it doesn't exist
-// for service discovery
+// RegisterService puts a service URL in its respective sorted set
 func RegisterService(service, url string, score float64) error {
-	if keyNotExists(service, url) {
-		_, err := client.ZAdd(service, redis.Z{Score: score, Member: url}).Result()
-		return err
-	}
-	return nil
+	_, err := client.ZAdd(service, redis.Z{Score: score, Member: url}).Result()
+	return err
 }
 
 // IncrementServiceLoad increments the number of apps deployed on a service host by 1
@@ -30,24 +26,57 @@ func IncrementServiceLoad(service, url string) error {
 	return err
 }
 
-// GetLeastLoadedInstance returns the URL of the host currently having the least number
+// DecrementServiceLoad decrements the number of apps deployed on a service host by 1
+func DecrementServiceLoad(service, url string) error {
+	_, err := client.ZIncrBy(service, -1, url).Result()
+	return err
+}
+
+// GetLeastLoadedInstances returns the URL of the host currently having the least number
 // of apps of a particular service deployed
-func GetLeastLoadedInstance(service string) (string, error) {
+func GetLeastLoadedInstances(service string, count int64) ([]string, error) {
 	data, err := client.ZRangeByScore(
 		service,
 		redis.ZRangeBy{
 			Min:    "-inf",
 			Max:    "+inf",
 			Offset: 0,
-			Count:  1,
+			Count:  count,
 		}).Result()
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if len(data) == 0 {
-		return "Empty Set", nil
+		return []string{ErrEmptySet}, nil
 	}
-	return data[0], nil
+
+	return data, nil
+}
+
+// GetLeastLoadedInstancesWithScores returns the n least loaded instances along with their scores
+func GetLeastLoadedInstancesWithScores(service string, count int64) ([]redis.Z, error) {
+	return client.ZRangeByScoreWithScores(
+		service,
+		redis.ZRangeBy{
+			Min:    "-inf",
+			Max:    "+inf",
+			Offset: 0,
+			Count:  count,
+		}).Result()
+}
+
+// GetLeastLoadedInstance returns a single instance having least number of apps of a particular service deployed
+func GetLeastLoadedInstance(service string) (string, error) {
+	instance, err := GetLeastLoadedInstances(service, 1)
+	if err != nil {
+		return ErrEmptySet, err
+	}
+	return instance[0], nil
+}
+
+// GetLeastLoadedWorker returns a single worker instance having least number of apps deployed
+func GetLeastLoadedWorker() (string, error) {
+	return GetLeastLoadedInstance(WorkerInstanceKey)
 }
 
 // FetchServiceInstances returns all instances of a given service
@@ -68,6 +97,11 @@ func FetchServiceInstances(service string) ([]string, error) {
 	return data, nil
 }
 
+// FetchWorkerInstances returns all worker service instances
+func FetchWorkerInstances() ([]string, error) {
+	return FetchServiceInstances(WorkerInstanceKey)
+}
+
 // RemoveServiceInstance removes an instance of a particular service
 func RemoveServiceInstance(service, member string) error {
 	_, err := client.ZRem(service, member).Result()
@@ -79,12 +113,12 @@ func RemoveServiceInstance(service, member string) error {
 
 // GetSSHPort returns the port of an instance where its ssh service is deployed
 func GetSSHPort(url string) (string, error) {
-	data, _, err := client.ZScan("ssh", 0, url+":*", 1).Result()
+	data, _, err := client.ZScan(SSHKey, 0, url+":*", 1).Result()
 	if err != nil {
-		return "", err
+		return ErrEmptySet, err
 	}
 	if len(data) == 0 {
-		return "", nil
+		return ErrEmptySet, nil
 	}
 	return strings.Split(data[0], ":")[1], nil
 }

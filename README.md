@@ -1,57 +1,182 @@
-# SWS
+# Gasper
 
-> SDS Web Services
+> Your Cloud in a Binary
 
-## Prerequisites
+<img align="right" width="350px" height="400px" src="./docs/content/assets/logo/gasperlogo.svg">
 
-1. [GoLang](https://golang.org/)
+[![Build Status](https://api.travis-ci.org/sdslabs/gasper.svg)](https://travis-ci.org/sdslabs/gasper)
+[![Docs](https://img.shields.io/badge/docs-current-brightgreen.svg)](https://gasper-docs.netlify.com/)
+[![codecov](https://codecov.io/gh/sdslabs/gasper/branch/develop/graph/badge.svg)](https://codecov.io/gh/sdslabs/gasper)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sdslabs/gasper)](https://goreportcard.com/report/github.com/sdslabs/gasper)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sdslabs/gasper/blob/develop/LICENSE.md)
 
-   [Download](https://golang.org/dl/)
+Gasper is an intelligent Platform as a Service (PaaS) used for deploying and managing applications and databases in any cloud topology.
 
-2. [Docker](https://www.docker.com/)
+## Contents
 
-   [Download / Get Started](https://www.docker.com/get-started)
+* [Overview](#overview)
+* [Features](#features)
+* [Supported Languages](#supported-languages)
+* [Supported Databases](#supported-databases)
+* [Documentation](#documentation)
+* [Dependencies](#dependencies)
+* [Download](#download)
+* [Development](#development)
+* [Contributing](#contributing)
+* [Meet the A-Team](#meet-the-a-team)
+* [Contact](#contact)
 
-3. [MongoDB](https://www.mongodb.com/)
+## Overview
 
-   [Download](https://www.mongodb.com/download-center/community)
-   
-4. [Redis](https://redis.io/)
+### The Dilemma
+Imagine you have a couple of *Bare Metal Servers* and/or *Virtual Machines* (collectively called nodes) at your disposal. Now you want to deploy a couple of applications/services to these nodes in such a manner so as to not put too much load on a single node.
 
-   [Download](https://redis.io/download)
+### Naive Approach
+Your 1st option is to manually decide which application goes to which node, then use ssh/telnet to manually
+setup all of your applications in each node one by one.
 
-5. [Nginx](https://nginx.org/en/download.html) or [Apache](https://httpd.apache.org/download.cgi) on your machine
+### A Wise Choice
+But you are smarter than that, hence you go for the 2nd option which is [Kubernetes](https://kubernetes.io/). You setup Kubernetes in all of your
+nodes which forms a cluster, and now you can deploy your applications without worrying about load distribution. But
+Kubernetes requires a lot of configuration for each application(deployments, services, stateful-sets etc) not to mention
+pipelines for creating the corresponding docker image.
 
-## Setup
+### The Ultimatum
+Here comes (🥁drumroll please 🥁) **Gasper**, your 3rd option!<br>
+Gasper builds and runs applications in docker containers **directly from source code** instead of docker images.
+It requires minimal parameters for deploying an application, so minimal that you can count them on fingers in one hand 🤚. Same goes for Gasper provisioned databases. Gone are the days of hard labour (writing configurations).
 
-- Clone the repository
-- `cp config.sample.json config.json`
-- Start hacking
+## Features
 
-**Note:** The vendor is committed, to add another package as dependency, `go get ...` the package in your gopath and then run the command `go mod vendor` to add the dependency in the SWS package.
+Fear not because the reduction in complexity doesn't imply the reduction in features. You can rest assured because Gasper has:-
 
-*To use go-modules you must have Golang version 1.11 or later. Also remember to set the environment variable `GO111MODULE=on`. For reference see - [https://github.com/golang/go/wiki/Modules](https://github.com/golang/go/wiki/Modules).*
+* Worker services for creating/managing databases and applications
+* Master service for:-
+    * Checking the status of worker services
+    * Intelligently distributing applications/databases among them
+    * Transferring applications from one worker node to another in case of node failure
+    * Removing dead worker nodes from the cloud
+* REST API interface for the entire ecosystem
+* Reverse-proxy service with HTTPS, HTTP/2, Websocket and gRPC support for accessing deployed applications
+* DNS service which automatically creates DNS entries for all applications which in turn are resolved inside containers
+* SSH service for providing ssh access directly to an application's docker container
+* Virtual terminal for interacting with your application's docker container from your browser
+* Dynamic addition/removal of nodes and services without configuration changes or restarts
+* Compatibility with Linux, Windows, MacOS, FreeBSD and OpenBSD
+* All of the above packaged with ❤️ in a **single binary**
 
-### Development
+## Supported Languages
 
-- Set `debug` to `true` in `config.json`
+Gasper currently supports applications of the following types:-
 
-- For development purposes we recommend using [Fresh](https://github.com/pilu/fresh)
+* Static web pages
+* PHP
+* Python 2
+* Python 3
+* Node.js
+* Golang
+* Ruby
 
-  ```shell
-  $ go get github.com/pilu/fresh
-  ```
+It ain't much but it's honest work 🥳
 
-- Run the following command to start the server
-  ```shell
-  $ fresh
-  ```
+## Supported Databases
 
-### Production
+The following databases are supported by Gasper:-
 
-- Set `debug` to `false` in `config.json`
+* MySQL
+* MongoDB
 
-- Start server using
-  ```shell
-  $ go run server.go
-  ```
+It ain't.... (complete the rest yourself)
+
+## Documentation
+
+You can find the complete documentation of Gasper at [https://gasper-docs.netlify.com/](https://gasper-docs.netlify.com/)
+
+## Dependencies
+
+The following softwares are required for running Gasper:-
+
+* [Docker](https://www.docker.com/)
+    * [For Linux](https://runnable.com/docker/install-docker-on-linux)
+    * [For MacOS](https://docs.docker.com/docker-for-mac/install/)
+    * [For Windows](https://docs.docker.com/docker-for-windows/install/)
+* [MongoDB](https://www.mongodb.com/download-center/community)
+* [Redis](https://redis.io/download)
+
+## Download
+
+Assuming you have the [dependencies](#dependencies) installed, head over to Gasper's [releases](https://github.com/sdslabs/gasper/releases) page and grab the latest binary according to your operating system and system architecture
+
+Run the downloaded binary with the [sample configuration file](./config.sample.toml)
+
+```bash
+$ ./gasper --conf ./config.toml
+```
+
+## Development
+
+You need to have [Golang 1.13.x](https://golang.org/dl/) or higher installed along with the mentioned [dependencies](#dependencies)
+
+Open your favourite terminal and perform the following tasks:-
+
+1. Cross-check your golang version.
+
+    ```bash
+    $ go version
+    go version go1.13.5 darwin/amd64
+    ```
+
+2. Clone this repository.
+
+    ```bash
+    $ git clone https://github.com/sdslabs/gasper
+    ```
+
+3. Go inside the cloned directory and list available *makefile* commands.
+
+    ```bash
+    $ cd gasper && make help
+
+    Gasper: Your cloud in a binary
+
+    install   Install missing dependencies
+    build     Build the project binary
+    tools     Install development tools
+    release   Build release binaries
+    start     Start in development mode with hot-reload enabled
+    clean     Clean build files
+    fmt       Format entire codebase
+    vet       Vet entire codebase
+    lint      Check codebase for style mistakes
+    test      Run tests
+    help      Display this help
+    ```
+
+4. Setup project configuration and make changes if required. The configuration file is well-documented so you
+won't have a hard time looking around.
+
+    ```bash
+    $ cp config.sample.toml config.toml
+    ```
+
+5. Start the development server.
+
+    ```bash
+    $ make start
+    ```
+
+## Contributing
+
+If you'd like to contribute to this project, refer to the [contributing documentation](./CONTRIBUTING.md).
+
+## Meet the A-Team
+
+* Anish Mukherjee [@alphadose](https://github.com/alphadose)
+* Vaibhav [@vrongmeal](https://github.com/vrongmeal)
+* Supratik Das [@supra08](https://github.com/supra08)
+* Karanpreet Singh [@karan0299](https://github.com/karan0299)
+
+## Contact
+
+If you have a query regarding the product or just want to say hello then feel free to visit
+[chat.sdslabs.co](http://chat.sdslabs.co/) or drop a mail at [contact@sdslabs.co.in](mailto:contact@sdslabs.co.in)

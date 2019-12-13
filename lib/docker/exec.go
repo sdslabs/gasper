@@ -4,14 +4,14 @@ import (
 	"errors"
 
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
 )
 
 // ExecDetachedProcess executes a command in detached form, returns the id of the process
 // Command of the exec format: mkdir folder => ["mkdir", "folder"]
-func ExecDetachedProcess(ctx context.Context, cli *client.Client, containerID string, command []string) (string, error) {
+func ExecDetachedProcess(containerID string, command []string) (string, error) {
 	// TODO: check if container is up and running first
+	ctx := context.Background()
 	config := types.ExecConfig{
 		Detach: true,
 		Cmd:    command,
@@ -25,6 +25,32 @@ func ExecDetachedProcess(ctx context.Context, cli *client.Client, containerID st
 		return "", errors.New("empty exec ID")
 	}
 	err = cli.ContainerExecStart(ctx, execID, types.ExecStartCheck{Detach: true})
+	if err != nil {
+		return "", err
+	}
+	return execID, nil
+}
+
+// ExecProcess executes a command in a blocing manner and returns the id of the process
+func ExecProcess(containerID string, command []string) (string, error) {
+	ctx := context.Background()
+	config := types.ExecConfig{
+		Detach:       false,
+		Tty:          true,
+		Cmd:          command,
+		AttachStdin:  true,
+		AttachStderr: true,
+		AttachStdout: true,
+	}
+	execProcess, err := cli.ContainerExecCreate(ctx, containerID, config)
+	if err != nil {
+		return "", err
+	}
+	execID := execProcess.ID
+	if execID == "" {
+		return "", errors.New("empty exec ID")
+	}
+	err = cli.ContainerExecStart(ctx, execID, types.ExecStartCheck{Detach: false, Tty: true})
 	if err != nil {
 		return "", err
 	}

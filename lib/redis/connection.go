@@ -2,22 +2,26 @@ package redis
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/go-redis/redis"
-	"github.com/sdslabs/SWS/lib/configs"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
 )
 
 var client = redis.NewClient(&redis.Options{
-	Addr:     configs.RedisConfig["host"].(string) + configs.RedisConfig["port"].(string),
-	Password: configs.RedisConfig["password"].(string),
-	DB:       int(configs.RedisConfig["DB"].(float64)),
+	Addr:     fmt.Sprintf("%s:%d", configs.RedisConfig.Host, configs.RedisConfig.Port),
+	Password: configs.RedisConfig.Password,
+	DB:       configs.RedisConfig.DB,
 })
 
 func init() {
 	_, err := client.Ping().Result()
 	if err != nil {
-		panic(err)
+		utils.Log("Redis connection was not established", utils.ErrorTAG)
+		utils.LogError(err)
+		os.Exit(1)
 	} else {
-		fmt.Println("Redis Connection Established")
+		utils.LogInfo("Redis Connection Established")
 	}
 }

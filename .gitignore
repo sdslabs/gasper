@@ -1,6 +1,14 @@
 # Temp build by fresh
 tmp/
 # Config file
-config.json
-# storage
+config.toml
 storage/
+mysql-storage/
+mongodb-storage/
+__debug_bin
+bin/
+.vscode/
+site/
+.DS_Store
+coverage.txt
+releases/

@@ -4,23 +4,38 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 
-	"github.com/sdslabs/SWS/lib/configs"
-	"github.com/sdslabs/SWS/lib/docker"
-	"github.com/sdslabs/SWS/lib/git"
-	"github.com/sdslabs/SWS/lib/types"
-	"github.com/sdslabs/SWS/lib/utils"
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/commons"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/git"
+	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 	gogit "gopkg.in/src-d/go-git.v4"
 )
 
-func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) {
+func cloneRepo(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
 	err := os.MkdirAll(storedir, 0755)
 	if err != nil {
 		mutex["clone"] <- types.NewResErr(500, "storage directory not created", err)
 		return
 	}
-	err = git.Clone(url, storedir)
+
+	if app.HasGitAccessToken() {
+		err = git.CloneWithToken(
+			app.GetGitRepositoryURL(),
+			app.GetGitRepositoryBranch(),
+			storedir,
+			app.GetGitAccessToken(),
+		)
+	} else {
+		err = git.Clone(
+			app.GetGitRepositoryURL(),
+			app.GetGitRepositoryBranch(),
+			storedir,
+		)
+	}
+
 	if err != nil {
 		if err == gogit.ErrRepositoryAlreadyExists {
 			mutex["clone"] <- types.NewResErr(500, "repository already exists", err)
@@ -32,44 +47,51 @@ func cloneRepo(url, storedir string, mutex map[string]chan types.ResponseError) 
 	mutex["clone"] <- nil
 }
 
-func setupContainer(
-	appEnv *types.ApplicationEnv,
-	storePath,
-	confFileName,
-	workdir,
-	storedir,
-	name,
-	url,
-	httpPort,
-	sshPort string,
-	env map[string]interface{},
-	appContext map[string]interface{},
-	appConf *types.ApplicationConfig,
-	mutex map[string]chan types.ResponseError) {
+func setupContainer(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
+	var (
+		confFileName = fmt.Sprintf("%s.gasper.conf", app.GetName())
+		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, app.GetName())
+	)
 
-	var err error
 	// create the container
-	appEnv.ContainerID, err = docker.CreateContainer(appEnv.Context, appEnv.Client, appConf.DockerImage, httpPort, sshPort, workdir, storedir, name, env)
+	containerID, err := docker.CreateContainer(&types.ApplicationContainer{
+		Name:            app.GetName(),
+		Image:           app.GetDockerImage(),
+		ApplicationPort: app.GetApplicationPort(),
+		ContainerPort:   app.GetContainerPort(),
+		WorkDir:         workdir,
+		StoreDir:        storedir,
+		Env:             app.GetEnvVars(),
+		Memory:          app.GetMemoryLimit(),
+		CPU:             app.GetCPULimit(),
+		NameServers:     app.GetNameServers(),
+	})
+
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not created", err)
 		return
 	}
 
-	// write config to the container
-	confFile := []byte(appConf.ConfFunction(name, appContext))
-	archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
-	if err != nil {
-		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		return
-	}
-	err = docker.CopyToContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID, "/etc/nginx/conf.d/", archive)
-	if err != nil {
-		mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
-		return
+	app.SetContainerID(containerID)
+
+	// For PHP and Static applications, a nginx configuration is necessary
+	if app.HasConfGenerator() {
+		// write config to the container
+		confFile := []byte(app.InvokeConfGenerator(app.GetName(), app.GetIndex()))
+		archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
+		if err != nil {
+			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+			return
+		}
+		err = docker.CopyToContainer(app.GetContainerID(), "/etc/nginx/conf.d/", archive)
+		if err != nil {
+			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+			return
+		}
 	}
 
 	// start the container
-	err = docker.StartContainer(appEnv.Context, appEnv.Client, appEnv.ContainerID)
+	err = docker.StartContainer(app.GetContainerID())
 	if err != nil {
 		mutex["setup"] <- types.NewResErr(500, "container not started", err)
 		return
@@ -78,17 +100,10 @@ func setupContainer(
 }
 
 // CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]interface{}, appContext map[string]interface{}, appConf *types.ApplicationConfig) (*types.ApplicationEnv, []types.ResponseError) {
-	appEnv, err := types.NewAppEnv()
-	if err != nil {
-		return nil, []types.ResponseError{types.NewResErr(500, "", err), nil}
-	}
-
+func CreateBasicApplication(app types.Application) []types.ResponseError {
 	var (
 		storepath, _ = os.Getwd()
-		confFileName = fmt.Sprintf("%s.sws.conf", name)
-		workdir      = fmt.Sprintf("%s/%s", configs.SWSConfig["projectRoot"].(string), name)
-		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", name))
+		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
 	)
 
 	var mutex = map[string]chan types.ResponseError{
@@ -97,23 +112,10 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	}
 
 	// Step 1: clone the repo in the storage
-	go cloneRepo(url, storedir, mutex)
+	go cloneRepo(app, storedir, mutex)
 
 	// Step 2: setup the container
-	go setupContainer(
-		appEnv,
-		storepath,
-		confFileName,
-		workdir,
-		storedir,
-		name,
-		url,
-		httpPort,
-		sshPort,
-		env,
-		appContext,
-		appConf,
-		mutex)
+	go setupContainer(app, storedir, mutex)
 
 	setupErr := <-mutex["setup"]
 	cloneErr := <-mutex["clone"]
@@ -134,48 +136,46 @@ func CreateBasicApplication(name, url, httpPort, sshPort string, env map[string]
 	}
 
 	if setupFlag || cloneFlag {
-		go utils.FullCleanup(name)
+		go commons.AppFullCleanup(app.GetName())
 	}
 
-	return appEnv, []types.ResponseError{setupErr, cloneErr}
+	return []types.ResponseError{setupErr, cloneErr}
 }
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
-func SetupApplication(appConf *types.ApplicationConfig, data map[string]interface{}) (*types.ApplicationEnv, types.ResponseError) {
-	ports, err := utils.GetFreePorts(2)
+func SetupApplication(app types.Application) types.ResponseError {
+	containerPort, err := utils.GetFreePort()
 	if err != nil {
-		return nil, types.NewResErr(500, "free ports unavailable", err)
-	}
-	if len(ports) < 2 {
-		return nil, types.NewResErr(500, "not enough free ports available", nil)
-	}
-	sshPort, httpPort := ports[0], ports[1]
-
-	var env map[string]interface{}
-
-	if data["env"] != nil {
-		env = data["env"].(map[string]interface{})
+		return types.NewResErr(500, "No free port available", err)
 	}
 
-	appEnv, errList := CreateBasicApplication(
-		data["name"].(string),
-		data["url"].(string),
-		strconv.Itoa(httpPort),
-		strconv.Itoa(sshPort),
-		env,
-		data["context"].(map[string]interface{}),
-		appConf)
+	app.SetContainerPort(containerPort)
+
+	errList := CreateBasicApplication(app)
 
 	for _, e := range errList {
 		if e != nil {
-			return nil, e
+			return e
 		}
 	}
 
-	data["sshPort"] = sshPort
-	data["httpPort"] = httpPort
-	data["containerID"] = appEnv.ContainerID
-	data["hostIP"] = utils.HostIP
+	if app.HasRcFile() {
+		cmd := []string{"sh", "-c",
+			fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`,
+				configs.GasperConfig.RcFile, configs.GasperConfig.RcFile)}
 
-	return appEnv, nil
+		_, err = docker.ExecDetachedProcess(app.GetContainerID(), cmd)
+		if err != nil {
+			// this error cannot be ignored; the chances of error here are very less
+			// but if an error arises, this means there's some issue with "execing"
+			// any process in the container => there's a problem with the container
+			// hence we also run the cleanup here so that nothing else goes wrong
+			go commons.AppFullCleanup(app.GetName())
+			return types.NewResErr(500, "cannot exec rc file", err)
+		}
+	} else {
+		go buildAndRun(app)
+	}
+
+	return nil
 }

@@ -1,0 +1,4950 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Gasper Kaze API",
+    "description": "Handles authentication, creation/management of applications, databases, users and also provides a superuser API. <br><br> Only a superuser can avail the superuser API. A superuser can **grant/revoke** superuser privileges to other users. A default  superuser is created every time a Gasper instance is launched whose credentials are defined in the `admin` section of `config.toml`, the main configuration file. A sample configuration file is available [here](https://github.com/sdslabs/gasper/blob/develop/config.sample.toml#L37).<br><br>\n**Note:-** Normally the applications and databases can only be managed by their owners but the superuser can bypass that check.<br><br>\n**PS:-** If you want to programmatically generate a client for this API, you can find the corresponding OpenAPI specifications [here](https://github.com/sdslabs/gasper/tree/develop/docs/content/api/specs). We recommend using [OpenAPI-Generator](https://openapi-generator.tech/) for generating clients.",
+    "contact": {
+      "name": "SDSLabs",
+      "url": "https://chat.sdslabs.co",
+      "email": "contact@sdslabs.co.in"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/sdslabs/gasper/blob/develop/LICENSE.md"
+    },
+    "version": "1.0"
+  },
+  "externalDocs": {
+    "description": "Find out more about Gasper",
+    "url": "https://github.com/sdslabs/gasper"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Authentication for all endpoints"
+    },
+    {
+      "name": "apps",
+      "description": "Application management"
+    },
+    {
+      "name": "dbs",
+      "description": "Database management"
+    },
+    {
+      "name": "user",
+      "description": "User specific operations"
+    },
+    {
+      "name": "admin",
+      "description": "Operations with superuser privileges"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Context": {
+        "type": "object",
+        "required": [
+          "index"
+        ],
+        "properties": {
+          "index": {
+            "type": "string",
+            "description": "Entrypoint for an application",
+            "example": "index.js"
+          },
+          "port": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Port on which the application runs",
+            "example": 3000,
+            "default": 80
+          },
+          "rc_file": {
+            "type": "boolean",
+            "description": "Is a Run Commands file present in the application's git repository's root directory?",
+            "default": false
+          },
+          "build": {
+            "type": "array",
+            "description": "Commands for installing application dependencies",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "npm install",
+              "grunt build"
+            ]
+          },
+          "run": {
+            "type": "array",
+            "description": "Commands for running the application",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "node index.js"
+            ]
+          }
+        }
+      },
+      "Git": {
+        "type": "object",
+        "required": [
+          "repo_url"
+        ],
+        "properties": {
+          "repo_url": {
+            "type": "string",
+            "description": "Git Repository URL of the application",
+            "example": "https://github.com/sdslabs/gasper"
+          },
+          "access_token": {
+            "type": "string",
+            "description": "Access token for cloning the application's git repository"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Specific branch to clone",
+            "default": "master",
+            "example": "master"
+          }
+        }
+      },
+      "Application": {
+        "type": "object",
+        "required": [
+          "name",
+          "password",
+          "git",
+          "context"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the application"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password required for SSH access to the application's docker container"
+          },
+          "git": {
+            "$ref": "#/components/schemas/Git"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment variables required by the application",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "resources": {
+            "type": "object",
+            "description": "Resources required by the application",
+            "properties": {
+              "cpu": {
+                "type": "number",
+                "format": "float",
+                "example": 0.25,
+                "description": "Number of virtual CPUs"
+              },
+              "memory": {
+                "type": "number",
+                "format": "float",
+                "example": 0.5,
+                "description": "Memory in GigaBytes (GB)"
+              }
+            }
+          }
+        }
+      },
+      "CreatedApplication": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the application"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password required for SSH access to the application's docker container"
+          },
+          "git": {
+            "$ref": "#/components/schemas/Git"
+          },
+          "context": {
+            "$ref": "#/components/schemas/Context"
+          },
+          "env": {
+            "type": "object",
+            "description": "Environment variables required by the application",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "resources": {
+            "type": "object",
+            "description": "Resources required by the application",
+            "properties": {
+              "cpu": {
+                "type": "number",
+                "format": "float",
+                "example": 0.25,
+                "description": "Number of virtual CPUs"
+              },
+              "memory": {
+                "type": "number",
+                "format": "float",
+                "example": 0.5,
+                "description": "Memory in GigaBytes (GB)"
+              }
+            }
+          },
+          "container_id": {
+            "type": "string",
+            "description": "ID of the application's docker container"
+          },
+          "container_port": {
+            "type": "integer",
+            "format": "int64",
+            "example": 35000,
+            "description": "Port assigned by the node to the application's docker container"
+          },
+          "docker_image": {
+            "type": "string",
+            "description": "Docker image used in building the application's container",
+            "example": "sdsws/node:2.0"
+          },
+          "app_url": {
+            "type": "string",
+            "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+            "example": "alphadose.app.sdslabs.co"
+          },
+          "host_ip": {
+            "type": "string",
+            "example": "192.168.208.206",
+            "description": "IPv4 address of the node"
+          },
+          "name_servers": {
+            "type": "array",
+            "description": "The DNS NameServers used by the application's docker container",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "8.8.8.8",
+              "8.8.4.4"
+            ]
+          },
+          "instance_type": {
+            "type": "string",
+            "description": "The kind of instance this application belongs to",
+            "example": "app"
+          },
+          "language": {
+            "type": "string",
+            "description": "The programming language in which the application is written",
+            "example": "nodejs",
+            "enum": [
+              "php",
+              "nodejs",
+              "static",
+              "python2",
+              "python3",
+              "golang",
+              "ruby"
+            ]
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owner of the application",
+            "example": "anish.mukherjee1996@gmail.com"
+          },
+          "ssh_cmd": {
+            "type": "string",
+            "description": "Command to SSH into the application's docker container",
+            "example": "ssh -p 2222 alphadose@192.168.208.206"
+          },
+          "_id": {
+            "type": "string",
+            "description": "Application's identifier assigned by MongoDB"
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "required": [
+          "username",
+          "password",
+          "email"
+        ],
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "CreatedUser": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "admin": {
+            "type": "boolean",
+            "description": "Field denoting superuser privileges",
+            "example": true
+          },
+          "_id": {
+            "type": "string",
+            "description": "User's identifier assigned by MongoDB"
+          }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "required": [
+          "password",
+          "email"
+        ],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "example": 200
+          },
+          "expire": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2019-10-28T00:58:11+05:30"
+          },
+          "token": {
+            "type": "string",
+            "description": "The token required for authentication via bearer scheme",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+          }
+        }
+      },
+      "Database": {
+        "type": "object",
+        "required": [
+          "name",
+          "password"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the database"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password of the database"
+          }
+        }
+      },
+      "CreatedDatabase": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the database"
+          },
+          "password": {
+            "type": "string",
+            "description": "Password of the database"
+          },
+          "user": {
+            "type": "string",
+            "description": "Username of the database"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owner of the database"
+          },
+          "db_url": {
+            "type": "string",
+            "description": "The domain name of the database (DNS entry is managed by Hikari 💡)",
+            "example": "alphadose.db.sdslabs.co"
+          },
+          "host_ip": {
+            "type": "string",
+            "description": "IPv4 address of the node where the database is deployed",
+            "example": "192.168.208.208"
+          },
+          "port": {
+            "type": "string",
+            "description": "Port on which the database server is running",
+            "example": 35000
+          },
+          "instance_type": {
+            "type": "string",
+            "description": "The kind of instance the database belongs to"
+          },
+          "language": {
+            "type": "string",
+            "description": "The type of database",
+            "example": "mysql",
+            "enum": [
+              "mysql",
+              "mongodb"
+            ]
+          }
+        }
+      },
+      "Metrics": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document's identifier assigned by MongoDB"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the application",
+            "example": "sampledose"
+          },
+          "host_ip": {
+            "type": "string",
+            "description": "IPv4 address of the node where the application is deployed",
+            "example": "192.168.208.208"
+          },
+          "alive": {
+            "type": "boolean",
+            "description": "Is the application up and running?"
+          },
+          "online_cpus": {
+            "type": "integer",
+            "description": "The number of available CPUs in the node",
+            "example": 4
+          },
+          "cpu_usage": {
+            "type": "number",
+            "format": "double",
+            "description": "Fraction of total CPUs utilized by the application",
+            "example": 0.1
+          },
+          "memory_usage": {
+            "type": "number",
+            "format": "double",
+            "description": "Fraction of memory utilized by the application",
+            "example": 0.2
+          },
+          "max_memory_usage": {
+            "type": "number",
+            "format": "double",
+            "description": "Highest fraction of memory utilized by the application in its lifetime",
+            "example": 0.5
+          },
+          "memory_limit": {
+            "type": "number",
+            "format": "float",
+            "description": "Memory (in GigaBytes) alloted to the application",
+            "example": 1
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp of the metrics document",
+            "example": 1576210138
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login to get a Bearer token",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Register a user",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User created"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Refresh JWT token using existing token",
+        "operationId": "refresh",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Refresh successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/{language}": {
+      "post": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Create an application",
+        "operationId": "createApp",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Application"
+              }
+            }
+          },
+          "required": true
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "language",
+            "required": true,
+            "description": "The programming language in which the application is written",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "static",
+                "php",
+                "nodejs",
+                "python2",
+                "python3",
+                "golang",
+                "ruby"
+              ]
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the application"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "Password required for SSH access to the application's docker container"
+                    },
+                    "git": {
+                      "$ref": "#/components/schemas/Git"
+                    },
+                    "context": {
+                      "$ref": "#/components/schemas/Context"
+                    },
+                    "env": {
+                      "type": "object",
+                      "description": "Environment variables required by the application",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "resources": {
+                      "type": "object",
+                      "description": "Resources required by the application",
+                      "properties": {
+                        "cpu": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 0.25,
+                          "description": "Number of virtual CPUs"
+                        },
+                        "memory": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 0.5,
+                          "description": "Memory in GigaBytes (GB)"
+                        }
+                      }
+                    },
+                    "container_id": {
+                      "type": "string",
+                      "description": "ID of the application's docker container"
+                    },
+                    "container_port": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 35000,
+                      "description": "Port assigned by the node to the application's docker container"
+                    },
+                    "docker_image": {
+                      "type": "string",
+                      "description": "Docker image used in building the application's container",
+                      "example": "sdsws/node:2.0"
+                    },
+                    "app_url": {
+                      "type": "string",
+                      "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+                      "example": "alphadose.app.sdslabs.co"
+                    },
+                    "host_ip": {
+                      "type": "string",
+                      "example": "192.168.208.206",
+                      "description": "IPv4 address of the node"
+                    },
+                    "name_servers": {
+                      "type": "array",
+                      "description": "The DNS NameServers used by the application's docker container",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "8.8.8.8",
+                        "8.8.4.4"
+                      ]
+                    },
+                    "instance_type": {
+                      "type": "string",
+                      "description": "The kind of instance this application belongs to",
+                      "example": "app"
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "The programming language in which the application is written",
+                      "example": "nodejs",
+                      "enum": [
+                        "php",
+                        "nodejs",
+                        "static",
+                        "python2",
+                        "python3",
+                        "golang",
+                        "ruby"
+                      ]
+                    },
+                    "owner": {
+                      "type": "string",
+                      "description": "Owner of the application",
+                      "example": "anish.mukherjee1996@gmail.com"
+                    },
+                    "ssh_cmd": {
+                      "type": "string",
+                      "description": "Command to SSH into the application's docker container",
+                      "example": "ssh -p 2222 alphadose@192.168.208.206"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "description": "Application's identifier assigned by MongoDB"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps": {
+      "get": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Fetch all applications owned by a user",
+        "operationId": "fetchAppsByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedApplication"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/{app}": {
+      "get": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Fetch a single application owned by a user",
+        "operationId": "fetchAppByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedApplication"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Update an application owned by a user",
+        "operationId": "updateAppByUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Application"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the application"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "Password required for SSH access to the application's docker container"
+                    },
+                    "git": {
+                      "$ref": "#/components/schemas/Git"
+                    },
+                    "context": {
+                      "$ref": "#/components/schemas/Context"
+                    },
+                    "env": {
+                      "type": "object",
+                      "description": "Environment variables required by the application",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "resources": {
+                      "type": "object",
+                      "description": "Resources required by the application",
+                      "properties": {
+                        "cpu": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 0.25,
+                          "description": "Number of virtual CPUs"
+                        },
+                        "memory": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 0.5,
+                          "description": "Memory in GigaBytes (GB)"
+                        }
+                      }
+                    },
+                    "container_id": {
+                      "type": "string",
+                      "description": "ID of the application's docker container"
+                    },
+                    "container_port": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 35000,
+                      "description": "Port assigned by the node to the application's docker container"
+                    },
+                    "docker_image": {
+                      "type": "string",
+                      "description": "Docker image used in building the application's container",
+                      "example": "sdsws/node:2.0"
+                    },
+                    "app_url": {
+                      "type": "string",
+                      "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+                      "example": "alphadose.app.sdslabs.co"
+                    },
+                    "host_ip": {
+                      "type": "string",
+                      "example": "192.168.208.206",
+                      "description": "IPv4 address of the node"
+                    },
+                    "name_servers": {
+                      "type": "array",
+                      "description": "The DNS NameServers used by the application's docker container",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "8.8.8.8",
+                        "8.8.4.4"
+                      ]
+                    },
+                    "instance_type": {
+                      "type": "string",
+                      "description": "The kind of instance this application belongs to",
+                      "example": "app"
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "The programming language in which the application is written",
+                      "example": "nodejs",
+                      "enum": [
+                        "php",
+                        "nodejs",
+                        "static",
+                        "python2",
+                        "python3",
+                        "golang",
+                        "ruby"
+                      ]
+                    },
+                    "owner": {
+                      "type": "string",
+                      "description": "Owner of the application",
+                      "example": "anish.mukherjee1996@gmail.com"
+                    },
+                    "ssh_cmd": {
+                      "type": "string",
+                      "description": "Command to SSH into the application's docker container",
+                      "example": "ssh -p 2222 alphadose@192.168.208.206"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "description": "Application's identifier assigned by MongoDB"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Delete an application owned by a user",
+        "operationId": "deleteAppByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/{app}/rebuild": {
+      "patch": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Rebuild an application",
+        "operationId": "rebuildAppByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the application"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "Password required for SSH access to the application's docker container"
+                    },
+                    "git": {
+                      "$ref": "#/components/schemas/Git"
+                    },
+                    "context": {
+                      "$ref": "#/components/schemas/Context"
+                    },
+                    "env": {
+                      "type": "object",
+                      "description": "Environment variables required by the application",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    },
+                    "resources": {
+                      "type": "object",
+                      "description": "Resources required by the application",
+                      "properties": {
+                        "cpu": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 0.25,
+                          "description": "Number of virtual CPUs"
+                        },
+                        "memory": {
+                          "type": "number",
+                          "format": "float",
+                          "example": 0.5,
+                          "description": "Memory in GigaBytes (GB)"
+                        }
+                      }
+                    },
+                    "container_id": {
+                      "type": "string",
+                      "description": "ID of the application's docker container"
+                    },
+                    "container_port": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 35000,
+                      "description": "Port assigned by the node to the application's docker container"
+                    },
+                    "docker_image": {
+                      "type": "string",
+                      "description": "Docker image used in building the application's container",
+                      "example": "sdsws/node:2.0"
+                    },
+                    "app_url": {
+                      "type": "string",
+                      "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+                      "example": "alphadose.app.sdslabs.co"
+                    },
+                    "host_ip": {
+                      "type": "string",
+                      "example": "192.168.208.206",
+                      "description": "IPv4 address of the node"
+                    },
+                    "name_servers": {
+                      "type": "array",
+                      "description": "The DNS NameServers used by the application's docker container",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "8.8.8.8",
+                        "8.8.4.4"
+                      ]
+                    },
+                    "instance_type": {
+                      "type": "string",
+                      "description": "The kind of instance this application belongs to",
+                      "example": "app"
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "The programming language in which the application is written",
+                      "example": "nodejs",
+                      "enum": [
+                        "php",
+                        "nodejs",
+                        "static",
+                        "python2",
+                        "python3",
+                        "golang",
+                        "ruby"
+                      ]
+                    },
+                    "owner": {
+                      "type": "string",
+                      "description": "Owner of the application",
+                      "example": "anish.mukherjee1996@gmail.com"
+                    },
+                    "ssh_cmd": {
+                      "type": "string",
+                      "description": "Command to SSH into the application's docker container",
+                      "example": "ssh -p 2222 alphadose@192.168.208.206"
+                    },
+                    "_id": {
+                      "type": "string",
+                      "description": "Application's identifier assigned by MongoDB"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/{app}/transfer/{userEmail}": {
+      "patch": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Transfer ownership of an application to another user",
+        "operationId": "transferAppByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userEmail",
+            "required": true,
+            "description": "Email ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/{app}/term": {
+      "get": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Fetch a browser terminal instance for an application owned by a user",
+        "operationId": "fetchTerminalByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "The URL endpoint for accessing the browser terminal instance in the form of domain_name:port",
+                      "example": "kaze.sdslabs.co:51000"
+                    },
+                    "raw_url": {
+                      "type": "string",
+                      "description": "The URL endpoint for accessing the browser terminal instance in the form of ip_address:port",
+                      "example": "10.43.3.24:51000"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/{app}/logs": {
+      "get": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Fetch logs of an application",
+        "operationId": "fetchLogsByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "tail",
+            "description": "Fetch the last **n** logs (Fetches all logs if not specified)",
+            "schema": {
+              "type": "integer",
+              "example": 3
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "2019-10-28T05:46:19.012861400Z Server listening on port 3000"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/apps/{app}/metrics": {
+      "get": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Fetch metrics of an application",
+        "operationId": "fetchMetricsByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Fetch metrics in the last **n** seconds",
+            "schema": {
+              "type": "integer",
+              "example": 8
+            }
+          },
+          {
+            "in": "query",
+            "name": "minutes",
+            "description": "Fetch metrics in the last **n** minutes",
+            "schema": {
+              "type": "integer",
+              "example": 7
+            }
+          },
+          {
+            "in": "query",
+            "name": "hours",
+            "description": "Fetch metrics in the last **n** hours",
+            "schema": {
+              "type": "integer",
+              "example": 6
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "description": "Fetch metrics in the last **n** days",
+            "schema": {
+              "type": "integer",
+              "example": 5
+            }
+          },
+          {
+            "in": "query",
+            "name": "weeks",
+            "description": "Fetch metrics in the last **n** weeks",
+            "schema": {
+              "type": "integer",
+              "example": 4
+            }
+          },
+          {
+            "in": "query",
+            "name": "months",
+            "description": "Fetch metrics in the last **n** months",
+            "schema": {
+              "type": "integer",
+              "example": 3
+            }
+          },
+          {
+            "in": "query",
+            "name": "years",
+            "description": "Fetch metrics in the last **n** years",
+            "schema": {
+              "type": "integer",
+              "example": 2
+            }
+          },
+          {
+            "in": "query",
+            "name": "decades",
+            "description": "Fetch metrics in the last **n** decades",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Metrics"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dbs/{databaseType}": {
+      "post": {
+        "tags": [
+          "dbs"
+        ],
+        "summary": "Create a database",
+        "operationId": "createDB",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Database"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "databaseType",
+            "required": true,
+            "description": "The type of database",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mysql",
+                "mongodb"
+              ]
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the database"
+                    },
+                    "password": {
+                      "type": "string",
+                      "description": "Password of the database"
+                    },
+                    "user": {
+                      "type": "string",
+                      "description": "Username of the database"
+                    },
+                    "owner": {
+                      "type": "string",
+                      "description": "Owner of the database"
+                    },
+                    "db_url": {
+                      "type": "string",
+                      "description": "The domain name of the database (DNS entry is managed by Hikari 💡)",
+                      "example": "alphadose.db.sdslabs.co"
+                    },
+                    "host_ip": {
+                      "type": "string",
+                      "description": "IPv4 address of the node where the database is deployed",
+                      "example": "192.168.208.208"
+                    },
+                    "port": {
+                      "type": "string",
+                      "description": "Port on which the database server is running",
+                      "example": 35000
+                    },
+                    "instance_type": {
+                      "type": "string",
+                      "description": "The kind of instance the database belongs to"
+                    },
+                    "language": {
+                      "type": "string",
+                      "description": "The type of database",
+                      "example": "mysql",
+                      "enum": [
+                        "mysql",
+                        "mongodb"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dbs": {
+      "get": {
+        "tags": [
+          "dbs"
+        ],
+        "summary": "Fetch all databases owned by a user",
+        "operationId": "fetchDbsByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedDatabase"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dbs/{db}": {
+      "get": {
+        "tags": [
+          "dbs"
+        ],
+        "summary": "Fetch a single database owned by a user",
+        "operationId": "fetchDbByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "db",
+            "required": true,
+            "description": "Name of the database",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedDatabase"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "dbs"
+        ],
+        "summary": "Delete a single database owned by a user",
+        "operationId": "deleteDbByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "db",
+            "required": true,
+            "description": "Name of the database",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/dbs/{db}/transfer/{userEmail}": {
+      "patch": {
+        "tags": [
+          "dbs"
+        ],
+        "summary": "Transfer ownership of a database to another user",
+        "operationId": "transferDbByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "db",
+            "required": true,
+            "description": "Name of the database",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userEmail",
+            "required": true,
+            "description": "Email ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Fetch logged in user's info",
+        "operationId": "fetchUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "alphadose"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "anish.mukherjee1996@gmail.com"
+                    },
+                    "admin": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Delete user",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "user deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/password": {
+      "put": {
+        "tags": [
+          "user"
+        ],
+        "summary": "Update the password of the logged in user",
+        "operationId": "updatePassword",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "old_password": {
+                    "type": "string",
+                    "description": "The current password in use",
+                    "example": "alphadose"
+                  },
+                  "new_password": {
+                    "type": "string",
+                    "description": "The new password meant to replace the old one",
+                    "example": "betadose"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "password updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/apps": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch all applications with/without a filter defined by query params",
+        "operationId": "fetchAppsByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "description": "Name of the application",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "owner",
+            "description": "Owner of the application",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "language",
+            "description": "Language in which the application is written",
+            "schema": {
+              "type": "string",
+              "example": "nodejs",
+              "enum": [
+                "php",
+                "static",
+                "nodejs",
+                "python2",
+                "python3",
+                "golang",
+                "ruby"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "docker_image",
+            "description": "Docker Image used in building the application's container",
+            "schema": {
+              "type": "string",
+              "example": "sdsws/node:2.0"
+            }
+          },
+          {
+            "in": "query",
+            "name": "host_ip",
+            "description": "IPv4 address of the node in which the application is deployed",
+            "schema": {
+              "type": "string",
+              "example": "192.168.208.208"
+            }
+          },
+          {
+            "in": "query",
+            "name": "git_url",
+            "description": "Application's Git Repository URL",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "container_port",
+            "description": "Port assigned by the node to the application's docker container",
+            "schema": {
+              "type": "string",
+              "example": 35000
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedApplication"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/apps/{app}": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch a single application",
+        "operationId": "fetchAppByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedApplication"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete an application",
+        "operationId": "deleteAppByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/dbs": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch all databases with/without a filter defined by query params",
+        "operationId": "fetchDbsByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "description": "Name of the database",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "user",
+            "description": "User of the database",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "owner",
+            "description": "Owner of the database",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "language",
+            "description": "Type of the database",
+            "schema": {
+              "type": "string",
+              "example": "mysql",
+              "enum": [
+                "mysql",
+                "mongodb"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "host_ip",
+            "description": "IPv4 address of the node in which the database is deployed",
+            "schema": {
+              "type": "string",
+              "example": "192.168.208.208"
+            }
+          },
+          {
+            "in": "query",
+            "name": "container_port",
+            "description": "Port assigned by the node to the database's docker container",
+            "schema": {
+              "type": "string",
+              "example": 35000
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedDatabase"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/dbs/{db}": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch a single database",
+        "operationId": "fetchDbByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "db",
+            "required": true,
+            "description": "Name of the database",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedDatabase"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete a single database",
+        "operationId": "deleteDbByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "db",
+            "required": true,
+            "description": "Name of the database",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch all users with/without a filter defined by query params",
+        "operationId": "fetchUsersByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "query",
+            "name": "username",
+            "description": "Name of the user",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "email",
+            "description": "Email of the user",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "admin",
+            "description": "Field denoting superuser privileges",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedUser"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/users/{userEmail}": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch a single user",
+        "operationId": "fetchUserByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userEmail",
+            "required": true,
+            "description": "Email ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CreatedUser"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Delete a single user",
+        "operationId": "deleteUserByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userEmail",
+            "required": true,
+            "description": "Email ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/users/{userEmail}/grant": {
+      "patch": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Grant superuser privileges to a single user",
+        "operationId": "grantSuperuserPrivilege",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userEmail",
+            "required": true,
+            "description": "Email ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/users/{userEmail}/revoke": {
+      "patch": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Revoke superuser privileges from a single user",
+        "operationId": "revokeSuperuserPrivilege",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userEmail",
+            "required": true,
+            "description": "Email ID of the user",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/nodes": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch bind addresses(IP:Port) of all microservices on all nodes",
+        "operationId": "fetchNodesByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "kaze": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:3000"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "enrai": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:80"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "hikari": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:53"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "mizu": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:4000"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "mongodb": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:9001"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "mysql": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:9000"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "iwa": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:2222"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/nodes/{type}": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Fetch bind addresses(IP:Port) of a single microservice on all nodes",
+        "operationId": "fetchNodeByAdmin",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "description": "Type of microservice",
+            "schema": {
+              "type": "string",
+              "example": "master",
+              "enum": [
+                "master",
+                "workers",
+                "kaze",
+                "enrai",
+                "mizu",
+                "iwa",
+                "hikari",
+                "mysql",
+                "mongodb"
+              ]
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "kaze": {
+                      "type": "array",
+                      "example": [
+                        "192.168.208.206:3000"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

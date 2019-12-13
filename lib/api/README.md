@@ -1,8 +1,8 @@
-# `github.com/sdslabs/SWS/lib/api`
+# `github.com/sdslabs/gasper/lib/api`
 
 This package consists of methods that have a direct affect on the user requests. Some guidelines that need to be followed:
 
-- For every exportable function, use the type `ResponseError` as in package `.../SWS/lib/types`.
+- For every exportable function, use the type `ResponseError` as in package `.../gasper/lib/types`.
 
   ```go
   // The NewResponseError function takes 3 arguments

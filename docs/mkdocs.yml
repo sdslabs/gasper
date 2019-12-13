@@ -1,0 +1,94 @@
+site_name: Gasper
+site_description: Gasper Documentation
+site_author: SDSLabs
+# site_url: https://github.com/sdslabs/gasper
+dev_addr: 0.0.0.0:8000
+
+repo_name: 'GitHub'
+repo_url: 'https://github.com/sdslabs/gasper'
+
+docs_dir: 'content'
+
+theme:
+  name: 'material'
+  custom_dir: 'theme'
+  language: en
+  include_sidebar: true
+  favicon: assets/logo/docs-logo.png
+  logo: assets/logo/docs-logo.png
+  feature:
+    tabs: false
+  palette:
+    primary: 'indigo'
+    accent: 'indigo'
+  i18n:
+    prev: 'Previous'
+    next: 'Next'
+
+copyright: "Copyright &copy; SDSLabs"
+
+extra_css:
+  - assets/css/atom-one-light.css # HightlightJS's CSS theme
+  - assets/css/style.css
+
+extra_javascript:
+  - assets/js/highlight.pack.js # Download from https://highlightjs.org/download/ and enable YAML, TOML and Dockerfile
+  - assets/js/script.js
+
+plugins:
+  - search
+
+markdown_extensions:
+  - attr_list
+  - admonition
+  - codehilite
+  - footnotes
+  - pymdownx.details
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      use_pygments: false # highlight.js is used instead of pygment for TOML highlighting support
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist
+  - pymdownx.snippets:
+      check_paths: true
+  - toc:
+      permalink: true
+
+nav:
+  - 'Welcome': 'index.md'
+  - 'Features': 'features.md'
+  - 'Concepts': 'concepts.md'
+  - 'Getting Started':
+    - 'Dependencies': 'getting-started/dependencies.md'
+    - 'Quick Start': 'getting-started/quick-start.md'
+  - 'Configurations':
+    - 'Overview': 'configurations/overview.md'
+    - 'Global': 'configurations/global.md'
+    - 'Admin': 'configurations/admin.md'
+    - 'MongoDB': 'configurations/mongodb.md'
+    - 'Redis': 'configurations/redis.md'
+    - 'JWT': 'configurations/jwt.md'
+    - 'Cloudflare': 'configurations/cloudflare.md'
+    - 'Docker Images': 'configurations/docker-images.md'
+    - 'Mizu 💧': 'configurations/mizu.md'
+    - 'Kaen 🔥': 'configurations/kaen.md'
+    - 'Enrai ⚡': 'configurations/enrai.md'
+    - 'Hikari 💡': 'configurations/hikari.md'
+    - 'Iwa 🗿': 'configurations/iwa.md'
+    - 'Kaze 🌪': 'configurations/kaze.md'
+  - 'API Docs': 'api/index.html'
+  - 'Examples':
+    - 'Login': 'examples/login.md'
+    - 'Deploying Applications':
+      - 'Static Website': 'examples/applications/static.md'
+      - 'Simple PHP': 'examples/applications/simple-php.md'
+      - 'Advanced PHP': 'examples/applications/advanced-php.md'
+      - 'Node.js': 'examples/applications/nodejs.md'
+      - 'Python Flask': 'examples/applications/python-flask.md'
+      - 'Python Django': 'examples/applications/python-django.md'
+      - 'Go': 'examples/applications/golang.md'
+      - 'Ruby on Rails': 'examples/applications/ruby-on-rails.md'
+    - 'Creating Databases':
+      - 'MySQL': 'examples/databases/mysql.md'
+      - 'MongoDB': 'examples/databases/mongodb.md'
