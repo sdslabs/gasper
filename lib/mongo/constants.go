@@ -27,6 +27,9 @@ const (
 	// UserCollection is the collection for all users
 	UserCollection = "users"
 
+	// MetricsCollection is the collection to hold the metrics of the instances
+	MetricsCollection = "metrics"
+
 	// NameKey is the key holding the name of an instance
 	NameKey = "name"
 
@@ -59,6 +62,9 @@ const (
 
 	// AdminKey is the key denoting whether a user has superuser privileges or not
 	AdminKey = "admin"
+
+	// TimestampKey is the key holding the timestamp of when a metrics collection was inserted
+	TimestampKey = "timestamp"
 )
 
 // ErrNoDocuments is the error when no matching documents are found

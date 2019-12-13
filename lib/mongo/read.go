@@ -25,12 +25,11 @@ func FetchDocs(collectionName string, filter types.M, opts ...*options.FindOptio
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		var result types.M
-		err := cur.Decode(&result)
-		data = append(data, result)
-		if err != nil {
+		if err := cur.Decode(&result); err != nil {
 			utils.LogError(err)
 			return nil
 		}
+		data = append(data, result)
 	}
 	if err := cur.Err(); err != nil {
 		utils.LogError(err)
@@ -62,10 +61,8 @@ func FetchSingleApp(name string) (*types.ApplicationConfig, error) {
 		NameKey:         name,
 		InstanceTypeKey: AppInstance,
 	}).Decode(appCfg)
-	if err != nil {
-		return nil, err
-	}
-	return appCfg, nil
+
+	return appCfg, err
 }
 
 // FetchSingleDatabase returns a database based on a name based filter
@@ -80,10 +77,8 @@ func FetchSingleDatabase(name string) (*types.DatabaseConfig, error) {
 		NameKey:         name,
 		InstanceTypeKey: DBInstance,
 	}).Decode(databaseCfg)
-	if err != nil {
-		return nil, err
-	}
-	return databaseCfg, nil
+
+	return databaseCfg, err
 }
 
 // FetchSingleUser returns a user based on a email based filter
@@ -154,6 +149,12 @@ func FetchUserInfo(filter types.M) []types.M {
 		&options.FindOptions{
 			Projection: types.M{PasswordKey: 0},
 		})
+}
+
+// FetchContainerMetrics is an abstraction over FetchDocs for retrieving metrics of a container
+func FetchContainerMetrics(filter types.M) []types.M {
+	options := options.Find().SetSort(types.M{TimestampKey: -1})
+	return FetchDocs(MetricsCollection, filter, options)
 }
 
 // CountDocs returns the number of documents matching a filter

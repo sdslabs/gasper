@@ -3,7 +3,9 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/factory"
@@ -222,4 +224,33 @@ func RebuildApp(c *gin.Context) {
 // TransferApplicationOwnership transfers the ownership of an application to another user
 func TransferApplicationOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("app"), mongo.AppInstance, c.Param("user"))
+}
+
+// FetchMetrics retrieves the metrics of an application's container
+func FetchMetrics(c *gin.Context) {
+	appName := c.Param("app")
+	filter := utils.QueryToFilter(c.Request.URL.Query())
+	var timeSpan int64
+
+	for unit, converter := range timeConversionMap {
+		if val, ok := filter[unit].(string); ok {
+			timeVal, err := strconv.ParseInt(val, 10, 64)
+			if err != nil {
+				continue
+			}
+			timeSpan += timeVal * converter
+		}
+	}
+
+	metrics := mongo.FetchContainerMetrics(types.M{
+		mongo.NameKey: appName,
+		mongo.TimestampKey: types.M{
+			"$gte": time.Now().Unix() - timeSpan,
+		},
+	})
+
+	c.JSON(200, gin.H{
+		"success": true,
+		"data":    metrics,
+	})
 }

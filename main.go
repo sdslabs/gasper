@@ -9,6 +9,7 @@ import (
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
 	"github.com/sdslabs/gasper/services/kaze"
+	"github.com/sdslabs/gasper/services/mizu"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -16,6 +17,12 @@ func initKaze() {
 	go kaze.ScheduleServiceExposure()
 	if configs.ServiceConfig.Kaze.Deploy {
 		go kaze.ScheduleCleanup()
+	}
+}
+
+func initMizu() {
+	if configs.ServiceConfig.Mizu.Deploy {
+		go mizu.ScheduleMetricsCollection()
 	}
 }
 
@@ -47,6 +54,7 @@ func initServices() {
 
 func main() {
 	initKaze()
+	initMizu()
 	initHikari()
 	initEnrai()
 	initServices()

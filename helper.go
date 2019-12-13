@@ -56,9 +56,13 @@ func buildHTTPServer(handler http.Handler, port int) *http.Server {
 }
 
 func setupDatabaseContainer(serviceName string) {
-	containerName := fmt.Sprintf("/%s", serviceName)
-	containers := docker.ListContainers()
-	if !utils.Contains(containers, containerName) {
+	containers, err := docker.ListContainers()
+	if err != nil {
+		utils.LogError(err)
+		os.Exit(1)
+	}
+
+	if !utils.Contains(containers, serviceName) {
 		utils.LogInfo("No %s instance found in host. Building the instance.", strings.Title(serviceName))
 		containerID, err := database.SetupDBInstance(serviceName)
 		if err != nil {
@@ -68,11 +72,11 @@ func setupDatabaseContainer(serviceName string) {
 			utils.LogInfo("%s Container has been deployed with ID:\t%s \n", strings.Title(serviceName), containerID)
 		}
 	} else {
-		containerStatus, err := docker.InspectContainerState(containerName)
+		containerStatus, err := docker.InspectContainerState(serviceName)
 		if err != nil {
 			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
 			utils.LogError(err)
-			err := docker.DeleteContainer(containerName)
+			err := docker.DeleteContainer(serviceName)
 			if err != nil {
 				utils.LogError(err)
 			}
@@ -85,9 +89,8 @@ func setupDatabaseContainer(serviceName string) {
 				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
 			}
 		}
-		if containerStatus["Status"].(string) == "exited" {
-			err := docker.StartContainer(serviceName)
-			if err != nil {
+		if !containerStatus.Running {
+			if err := docker.StartContainer(serviceName); err != nil {
 				utils.LogError(err)
 			}
 		}
