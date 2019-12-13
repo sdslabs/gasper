@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/factory"
@@ -225,17 +226,31 @@ func TransferApplicationOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("app"), mongo.AppInstance, c.Param("user"))
 }
 
-// FetchMetrics retrieves the metrics of a container as a response
+// FetchMetrics retrieves the metrics of an application's container
 func FetchMetrics(c *gin.Context) {
 	appName := c.Param("app")
-	limit, err := strconv.ParseInt(c.Query("limit"), 10, 64)
-	if err != nil {
-		limit = 10
+	filter := utils.QueryToFilter(c.Request.URL.Query())
+	var timeSpan int64
+
+	for unit, converter := range timeConversionMap {
+		if val, ok := filter[unit].(string); ok {
+			timeVal, err := strconv.ParseInt(val, 10, 64)
+			if err != nil {
+				continue
+			}
+			timeSpan += timeVal * converter
+		}
 	}
 
 	metrics := mongo.FetchContainerMetrics(types.M{
 		mongo.NameKey: appName,
-	}, limit)
+		mongo.TimestampKey: types.M{
+			"$gte": time.Now().Unix() - timeSpan,
+		},
+	})
 
-	c.SSEvent("metrics", metrics)
+	c.JSON(200, gin.H{
+		"success": true,
+		"data":    metrics,
+	})
 }

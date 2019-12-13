@@ -62,6 +62,9 @@ const (
 
 	// AdminKey is the key denoting whether a user has superuser privileges or not
 	AdminKey = "admin"
+
+	// TimestampKey is the key holding the timestamp of when a metrics collection was inserted
+	TimestampKey = "timestamp"
 )
 
 // ErrNoDocuments is the error when no matching documents are found

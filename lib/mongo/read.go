@@ -152,10 +152,8 @@ func FetchUserInfo(filter types.M) []types.M {
 }
 
 // FetchContainerMetrics is an abstraction over FetchDocs for retrieving metrics of a container
-func FetchContainerMetrics(filter types.M, limit int64) []types.M {
-	options := options.Find()
-	options.SetSort(types.M{"read_time": -1})
-	options.SetLimit(limit)
+func FetchContainerMetrics(filter types.M) []types.M {
+	options := options.Find().SetSort(types.M{TimestampKey: -1})
 	return FetchDocs(MetricsCollection, filter, options)
 }
 
