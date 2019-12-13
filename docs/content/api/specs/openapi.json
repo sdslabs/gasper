@@ -216,7 +216,7 @@
             "type": "integer",
             "format": "int64",
             "example": 35000,
-            "description": "Port alloted by the host machine to the application's docker container"
+            "description": "Port assigned by the node to the application's docker container"
           },
           "docker_image": {
             "type": "string",
@@ -231,7 +231,7 @@
           "host_ip": {
             "type": "string",
             "example": "192.168.208.206",
-            "description": "IPv4 address of the host machine"
+            "description": "IPv4 address of the node"
           },
           "name_servers": {
             "type": "array",
@@ -396,7 +396,7 @@
           },
           "host_ip": {
             "type": "string",
-            "description": "IPv4 address of the database",
+            "description": "IPv4 address of the node where the database is deployed",
             "example": "192.168.208.208"
           },
           "port": {
@@ -416,6 +416,64 @@
               "mysql",
               "mongodb"
             ]
+          }
+        }
+      },
+      "Metrics": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Document's identifier assigned by MongoDB"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the application",
+            "example": "sampledose"
+          },
+          "host_ip": {
+            "type": "string",
+            "description": "IPv4 address of the node where the application is deployed",
+            "example": "192.168.208.208"
+          },
+          "alive": {
+            "type": "boolean",
+            "description": "Is the application up and running?"
+          },
+          "online_cpus": {
+            "type": "integer",
+            "description": "The number of available CPUs in the node",
+            "example": 4
+          },
+          "cpu_usage": {
+            "type": "number",
+            "format": "double",
+            "description": "Fraction of total CPUs utilized by the application",
+            "example": 0.1
+          },
+          "memory_usage": {
+            "type": "number",
+            "format": "double",
+            "description": "Fraction of memory utilized by the application",
+            "example": 0.2
+          },
+          "max_memory_usage": {
+            "type": "number",
+            "format": "double",
+            "description": "Highest fraction of memory utilized by the application in its lifetime",
+            "example": 0.5
+          },
+          "memory_limit": {
+            "type": "number",
+            "format": "float",
+            "description": "Memory (in GigaBytes) alloted to the application",
+            "example": 1
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Unix timestamp of the metrics document",
+            "example": 1576210138
           }
         }
       }
@@ -785,7 +843,7 @@
                       "type": "integer",
                       "format": "int64",
                       "example": 35000,
-                      "description": "Port alloted by the host machine to the application's docker container"
+                      "description": "Port assigned by the node to the application's docker container"
                     },
                     "docker_image": {
                       "type": "string",
@@ -800,7 +858,7 @@
                     "host_ip": {
                       "type": "string",
                       "example": "192.168.208.206",
-                      "description": "IPv4 address of the host machine"
+                      "description": "IPv4 address of the node"
                     },
                     "name_servers": {
                       "type": "array",
@@ -1237,7 +1295,7 @@
                       "type": "integer",
                       "format": "int64",
                       "example": 35000,
-                      "description": "Port alloted by the host machine to the application's docker container"
+                      "description": "Port assigned by the node to the application's docker container"
                     },
                     "docker_image": {
                       "type": "string",
@@ -1252,7 +1310,7 @@
                     "host_ip": {
                       "type": "string",
                       "example": "192.168.208.206",
-                      "description": "IPv4 address of the host machine"
+                      "description": "IPv4 address of the node"
                     },
                     "name_servers": {
                       "type": "array",
@@ -1565,7 +1623,7 @@
                       "type": "integer",
                       "format": "int64",
                       "example": 35000,
-                      "description": "Port alloted by the host machine to the application's docker container"
+                      "description": "Port assigned by the node to the application's docker container"
                     },
                     "docker_image": {
                       "type": "string",
@@ -1580,7 +1638,7 @@
                     "host_ip": {
                       "type": "string",
                       "example": "192.168.208.206",
-                      "description": "IPv4 address of the host machine"
+                      "description": "IPv4 address of the node"
                     },
                     "name_servers": {
                       "type": "array",
@@ -2063,6 +2121,195 @@
         }
       }
     },
+    "/apps/{app}/metrics": {
+      "get": {
+        "tags": [
+          "apps"
+        ],
+        "summary": "Fetch metrics of an application",
+        "operationId": "fetchMetricsByUser",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "description": "Bearer Token Authentication",
+            "schema": {
+              "type": "string",
+              "example": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+            }
+          },
+          {
+            "in": "path",
+            "name": "app",
+            "required": true,
+            "description": "The name of the application",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "seconds",
+            "description": "Fetch metrics in the last **n** seconds",
+            "schema": {
+              "type": "integer",
+              "example": 8
+            }
+          },
+          {
+            "in": "query",
+            "name": "minutes",
+            "description": "Fetch metrics in the last **n** minutes",
+            "schema": {
+              "type": "integer",
+              "example": 7
+            }
+          },
+          {
+            "in": "query",
+            "name": "hours",
+            "description": "Fetch metrics in the last **n** hours",
+            "schema": {
+              "type": "integer",
+              "example": 6
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "description": "Fetch metrics in the last **n** days",
+            "schema": {
+              "type": "integer",
+              "example": 5
+            }
+          },
+          {
+            "in": "query",
+            "name": "weeks",
+            "description": "Fetch metrics in the last **n** weeks",
+            "schema": {
+              "type": "integer",
+              "example": 4
+            }
+          },
+          {
+            "in": "query",
+            "name": "months",
+            "description": "Fetch metrics in the last **n** months",
+            "schema": {
+              "type": "integer",
+              "example": 3
+            }
+          },
+          {
+            "in": "query",
+            "name": "years",
+            "description": "Fetch metrics in the last **n** years",
+            "schema": {
+              "type": "integer",
+              "example": 2
+            }
+          },
+          {
+            "in": "query",
+            "name": "decades",
+            "description": "Fetch metrics in the last **n** decades",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Metrics"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "Token is expired"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string",
+                      "example": "INTERNAL_SERVER_ERROR"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/dbs/{databaseType}": {
       "post": {
         "tags": [
@@ -2143,7 +2390,7 @@
                     },
                     "host_ip": {
                       "type": "string",
-                      "description": "IPv4 address of the database",
+                      "description": "IPv4 address of the node where the database is deployed",
                       "example": "192.168.208.208"
                     },
                     "port": {
@@ -3094,7 +3341,7 @@
           {
             "in": "query",
             "name": "host_ip",
-            "description": "IPv4 address of the host machine in which the application is deployed",
+            "description": "IPv4 address of the node in which the application is deployed",
             "schema": {
               "type": "string",
               "example": "192.168.208.208"
@@ -3111,7 +3358,7 @@
           {
             "in": "query",
             "name": "container_port",
-            "description": "Port assigned by the host machine to the application's docker container",
+            "description": "Port assigned by the node to the application's docker container",
             "schema": {
               "type": "string",
               "example": 35000
@@ -3491,7 +3738,7 @@
           {
             "in": "query",
             "name": "host_ip",
-            "description": "IPv4 address of the host machine in which the database is deployed",
+            "description": "IPv4 address of the node in which the database is deployed",
             "schema": {
               "type": "string",
               "example": "192.168.208.208"
@@ -3500,7 +3747,7 @@
           {
             "in": "query",
             "name": "container_port",
-            "description": "Port assigned by the host machine to the database's docker container",
+            "description": "Port assigned by the node to the database's docker container",
             "schema": {
               "type": "string",
               "example": 35000
