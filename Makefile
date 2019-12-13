@@ -67,7 +67,7 @@ vet:
 ## lint: Check codebase for style mistakes
 lint:
 	@printf "🔨 Linting\n"
-	@golint $(PACKAGES)
+	@golint -set_exit_status $(PACKAGES)
 	@printf "👍 Done\n"
 
 ## test: Run tests
