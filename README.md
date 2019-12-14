@@ -43,8 +43,8 @@ pipelines for creating the corresponding docker image.
 
 ### The Ultimatum
 Here comes (🥁drumroll please 🥁) **Gasper**, your 3rd option!<br>
-Gasper builds and runs applications in docker containers **directly from source code** instead of docker images.
-It requires minimal parameters for deploying an application, so minimal that you can count them on fingers in one hand 🤚. Same goes for Gasper provisioned databases. Gone are the days of hard labour (writing configurations).
+Gasper builds and runs applications in docker containers **directly from source code**. You no longer need to create application specific docker images and build pipelines, let Gasper do the heavylifting for you 😊.
+Gasper requires minimal parameters for deploying an application, so minimal that you can count them on fingers in one hand 🤚. Same goes for Gasper provisioned databases. Gone are the days of hard labour (writing configurations).
 
 ## Features
 
