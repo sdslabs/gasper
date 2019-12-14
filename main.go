@@ -9,6 +9,7 @@ import (
 	"github.com/sdslabs/gasper/services/enrai"
 	"github.com/sdslabs/gasper/services/hikari"
 	"github.com/sdslabs/gasper/services/kaze"
+	"github.com/sdslabs/gasper/services/kaze/middlewares"
 	"github.com/sdslabs/gasper/services/mizu"
 	"golang.org/x/sync/errgroup"
 )
@@ -29,6 +30,12 @@ func initMizu() {
 func initHikari() {
 	if configs.ServiceConfig.Hikari.Deploy {
 		go hikari.ScheduleUpdate()
+	}
+}
+
+func initFalcon() {
+	if configs.GasperConfig.Falcon.PlugIn {
+		go middlewares.InitializeFalconConfig()
 	}
 }
 
@@ -56,6 +63,7 @@ func main() {
 	initKaze()
 	initMizu()
 	initHikari()
+	initFalcon()
 	initEnrai()
 	initServices()
 }

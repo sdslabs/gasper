@@ -26,7 +26,7 @@ func NewService() http.Handler {
 		AllowAllOrigins:  true,
 		MaxAge:           12 * time.Hour,
 	}
-	router.Use(cors.New(corsConfig))
+	router.Use(cors.New(corsConfig), m.FalconGuard())
 	router.NoRoute(c.Handle404)
 
 	auth := router.Group("/auth")
