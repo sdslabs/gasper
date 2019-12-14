@@ -26,6 +26,9 @@ var (
 	// CloudflareConfig is the configuration for cloudflare services used by gasper
 	CloudflareConfig = GasperConfig.Cloudflare
 
+	// FalconConfig is the configuration for all the falcon client services
+	FalconConfig = GasperConfig.Falcon
+
 	// ImageConfig is the configuration for the images used by gasper
 	ImageConfig = GasperConfig.Images
 

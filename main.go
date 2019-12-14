@@ -9,6 +9,7 @@ import (
 	"github.com/sdslabs/gasper/services/appmaker"
 	"github.com/sdslabs/gasper/services/gendns"
 	"github.com/sdslabs/gasper/services/genproxy"
+	"github.com/sdslabs/gasper/services/kaze/middlewares"
 	"github.com/sdslabs/gasper/services/master"
 	"golang.org/x/sync/errgroup"
 )
@@ -38,6 +39,18 @@ func initGenProxy() {
 	}
 }
 
+func initFalcon() {
+	if configs.GasperConfig.Falcon.PlugIn {
+		go middlewares.InitializeFalconConfig()
+	}
+}
+
+func initEnrai() {
+	if configs.ServiceConfig.Enrai.Deploy {
+		go enrai.ScheduleUpdate()
+	}
+}
+
 func initServices() {
 	var g errgroup.Group
 	for service, launcher := range launcherBindings {
@@ -57,5 +70,6 @@ func main() {
 	initAppMaker()
 	initGenDNS()
 	initGenProxy()
+	initFalcon()
 	initServices()
 }

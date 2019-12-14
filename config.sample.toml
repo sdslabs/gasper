@@ -94,6 +94,18 @@ plugin = false  # Use Cloudflare Plugin?
 public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 
 
+###############################
+#      Falcon configuration   #
+###############################
+[falcon]
+plugin = false
+falcon_client_id = ""
+falcon_client_secret = ""
+falcon_access_token_url = "http://falcon.sdslabs.local/access_token"
+falcon_resource_owner_url = "http://falcon.sdslabs.local/users"
+falcon_accounts_url = "http://arceus.sdslabs.local/"
+redirect_uri =  ""
+
 ###################################
 #   Docker Images Configuration   #
 ###################################
