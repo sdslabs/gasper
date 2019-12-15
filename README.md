@@ -176,6 +176,10 @@ If you'd like to contribute to this project, refer to the [contributing document
 * Supratik Das [@supra08](https://github.com/supra08)
 * Karanpreet Singh [@karan0299](https://github.com/karan0299)
 
+You can find the entire list of contributors [here](https://github.com/sdslabs/gasper/graphs/contributors)
+
+Created with 💖 by [SDSLabs](https://github.com/sdslabs)
+
 ## Contact
 
 If you have a query regarding the product or just want to say hello then feel free to visit
