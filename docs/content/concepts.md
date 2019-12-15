@@ -4,7 +4,7 @@
 
 * **Node**: A Virtual Machine or a Bare-Metal Server
 * **Worker Node**: A node which handles creation/management of applications and databases
-* **Miscellaneous Node**: A node which handles Reverse-Proxy to other nodes or DNS entries or SSH access to docker containers
+* **Support Node**: A node which supports the functioning of applications and databases in worker nodes
 * **Master Node**: A node which manages all other nodes and keeps them in check
 
 ## Components
@@ -49,7 +49,7 @@ It ain't.... (complete the rest yourself)
 Enrai service deals with reverse-proxying HTTP, HTTPS, HTTP/2, Websocket and gRPC requests to the desired application's IPv4 address and port based on the hostname.
 
 !!!info
-    A node with **Enrai** deployed is a Miscellaneous Node
+    A node with **Enrai** deployed is a Support Node
 
 ### Hikari 💡
 
@@ -59,7 +59,7 @@ Hikari service deals with creating and managing DNS records of all deployed appl
     **Hikari** stores DNS records in such a manner that all requests are equally distributed among all available **Enrai** instances. The records dynamically change with the addition/deletion of **Enrai** instances.
 
 !!!info
-    A node with **Hikari** deployed is a Miscellaneous Node
+    A node with **Hikari** deployed is a Support Node
 
 ### Iwa 🗿 
 
@@ -67,7 +67,7 @@ Iwa service provides [SSH](https://www.ssh.com/ssh/protocol/) access directly to
 The SSH command will be automatically returned to the user on application creation provided the node where the application is deployed has the Iwa service deployed.
 
 !!!info
-    A node with **Iwa** deployed is a Miscellaneous Node
+    A node with **Iwa** deployed is a Support Node
 
 ### Kaze 🌪 
 
