@@ -169,13 +169,6 @@ won't have a hard time looking around.
 
 If you'd like to contribute to this project, refer to the [contributing documentation](./CONTRIBUTING.md).
 
-## Meet the A-Team
-
-* Anish Mukherjee [@alphadose](https://github.com/alphadose)
-* Vaibhav [@vrongmeal](https://github.com/vrongmeal)
-* Supratik Das [@supra08](https://github.com/supra08)
-* Karanpreet Singh [@karan0299](https://github.com/karan0299)
-
 You can find the entire list of contributors [here](https://github.com/sdslabs/gasper/graphs/contributors)
 
 Created with 💖 by [SDSLabs](https://github.com/sdslabs)
