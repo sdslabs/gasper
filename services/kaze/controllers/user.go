@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -13,14 +14,11 @@ import (
 // Register handles registration of new users
 func Register(c *gin.Context) {
 	user := &types.User{}
-	if err := c.BindJSON(user); err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
-		return
-	}
-
+	username, _ := c.Get("Username")
+	email, _ := c.Get("Email")
+	user.Email = fmt.Sprintf("%v", email)
+	user.Username = fmt.Sprintf("%v", username)
+	user.Password = fmt.Sprintf("%v", username)
 	filter := types.M{mongo.EmailKey: user.Email}
 	count, err := mongo.CountUsers(filter)
 	if err != nil {
@@ -28,11 +26,7 @@ func Register(c *gin.Context) {
 		return
 	}
 	if count > 0 {
-		c.JSON(400, gin.H{
-			"success": false,
-			"error":   "email already registered",
-		})
-		return
+		c.Next()
 	}
 
 	hashedPass, err := utils.HashPassword(user.GetPassword())
@@ -47,10 +41,7 @@ func Register(c *gin.Context) {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
-	c.JSON(200, gin.H{
-		"success": true,
-		"message": "user created",
-	})
+	c.Next()
 }
 
 // GetUserInfo gets info regarding particular user

@@ -31,8 +31,7 @@ func NewService() http.Handler {
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/login", m.JWT.LoginHandler)
-		auth.POST("/register", m.ValidateRegistration, c.Register)
+		auth.POST("/login", c.Register, m.JWT.LoginHandler)
 		auth.GET("/refresh", m.JWT.RefreshHandler)
 	}
 

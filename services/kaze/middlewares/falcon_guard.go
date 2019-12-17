@@ -1,12 +1,15 @@
 package middlewares
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	g "github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
+
+	// m "github.com/sdslabs/gasper/services/kaze/controllers"
 	falconApi "github.com/supra08/falcon-client-golang"
 )
 
@@ -49,6 +52,10 @@ func FalconGuard() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
+			var data map[string]interface{}
+			json.Unmarshal([]byte(user), &data)
+			c.Set("Username", data["username"])
+			c.Set("Email", data["email"])
 			c.Next()
 		}
 	}
