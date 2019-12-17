@@ -1,12 +1,14 @@
 package middlewares
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	g "github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
 	falconApi "github.com/supra08/falcon-client-golang"
 )
 
@@ -41,14 +43,18 @@ func FalconGuard() gin.HandlerFunc {
 			cookie := c.GetHeader("Cookie")
 			user, err := getUser(cookie, c)
 			if user == "" {
-				c.Redirect(301, "http://arceus.sdslabs.local/")
-				c.JSON(401, gin.H{
-					"success": false,
-					"error":   err.Error(),
-				})
-				c.Abort()
+				c.Redirect(301, configs.FalconConfig.FalconAccountsURL)
 				return
 			}
+			var data map[string]interface{}
+			err = json.Unmarshal([]byte(user), &data)
+			if err != nil {
+				c.Redirect(301, configs.FalconConfig.FalconAccountsURL)
+				utils.LogError(err)
+				return
+			}
+			c.Set("Username", data["username"])
+			c.Set("Email", data["email"])
 			c.Next()
 		}
 	}

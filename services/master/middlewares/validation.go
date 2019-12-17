@@ -135,25 +135,3 @@ func ValidateDatabaseRequest(c *gin.Context) {
 	}
 	c.Next()
 }
-
-// ValidateRegistration validates the user registration request
-func ValidateRegistration(c *gin.Context) {
-	requestBody := getBodyFromContext(c)
-	user := &types.User{}
-	if err := json.Unmarshal(requestBody, user); err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
-		return
-	}
-
-	if result, err := validator.ValidateStruct(user); !result {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
-		return
-	}
-	c.Next()
-}
