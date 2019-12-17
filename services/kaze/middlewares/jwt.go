@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -20,9 +21,8 @@ var (
 
 func authenticator(c *gin.Context) (interface{}, error) {
 	auth := &types.Login{}
-	if err := c.ShouldBind(auth); err != nil {
-		return nil, errMissingCredentials
-	}
+	email, _ := c.Get("Email")
+	auth.Email = fmt.Sprintf("%v", email)
 	user, err := mongo.FetchSingleUser(auth.GetEmail())
 	if err != nil || user == nil {
 		return nil, errFailedAuthentication
