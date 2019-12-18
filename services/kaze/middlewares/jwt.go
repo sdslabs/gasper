@@ -46,10 +46,22 @@ func payloadFunc(data interface{}) jwt.MapClaims {
 
 func identityHandler(c *gin.Context) interface{} {
 	claims := jwt.ExtractClaims(c)
+	email, ok := claims[mongo.EmailKey].(string)
+	if !ok {
+		return nil
+	}
+	username, ok := claims[mongo.UsernameKey].(string)
+	if !ok {
+		return nil
+	}
+	admin, ok := claims[mongo.AdminKey].(bool)
+	if !ok {
+		return nil
+	}
 	return &types.User{
-		Email:    claims[mongo.EmailKey].(string),
-		Username: claims[mongo.UsernameKey].(string),
-		Admin:    claims[mongo.AdminKey].(bool),
+		Email:    email,
+		Username: username,
+		Admin:    admin,
 	}
 }
 
