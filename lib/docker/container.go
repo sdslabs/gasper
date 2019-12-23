@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
+	"github.com/sdslabs/gasper/configs"
 )
 
 // CreateContainer creates a new container of the given container options, returns id of the container created
@@ -37,7 +39,9 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 		},
 		Healthcheck : &container.HealthConfig{
 			Test: []string{"CMD-SHELL", fmt.Sprintf("curl --fail http://localhost:%d/ || exit 1", containerCfg.ContainerPort)},
-			Retries: 5,
+			Interval: configs.ServiceConfig.Mizu.MetricsInterval*time.Second,
+			Timeout: 10*time.Second,
+			Retries: 3,
 		},
 	}
 
