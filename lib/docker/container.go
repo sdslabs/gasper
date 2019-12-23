@@ -35,7 +35,13 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 		Volumes: map[string]struct{}{
 			volume: {},
 		},
+		Healthcheck : &container.HealthConfig{
+			Test: []string{"CMD-SHELL", fmt.Sprintf("curl --fail http://localhost:%d/ || exit 1", containerCfg.ContainerPort)},
+			Retries: 5,
+		},
 	}
+
+
 	hostConfig := &container.HostConfig{
 		Binds: []string{
 			volume,
