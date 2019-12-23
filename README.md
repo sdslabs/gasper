@@ -175,6 +175,7 @@ If you'd like to contribute to this project, refer to the [contributing document
 * Vaibhav [@vrongmeal](https://github.com/vrongmeal)
 * Supratik Das [@supra08](https://github.com/supra08)
 * Karanpreet Singh [@karan0299](https://github.com/karan0299)
+* Mohit Sharma [@Scar26](https://github.com/Scar26)
 
 You can find the entire list of contributors [here](https://github.com/sdslabs/gasper/graphs/contributors)
 
