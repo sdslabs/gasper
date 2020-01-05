@@ -3,11 +3,13 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
@@ -228,6 +230,7 @@ func TransferApplicationOwnership(c *gin.Context) {
 
 // FetchMetrics retrieves the metrics of an application's container
 func FetchMetrics(c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	appName := c.Param("app")
 	filter := utils.QueryToFilter(c.Request.URL.Query())
 	var timeSpan int64
@@ -242,15 +245,23 @@ func FetchMetrics(c *gin.Context) {
 		}
 	}
 
-	metrics := mongo.FetchContainerMetrics(types.M{
-		mongo.NameKey: appName,
-		mongo.TimestampKey: types.M{
-			"$gte": time.Now().Unix() - timeSpan,
-		},
-	})
-
-	c.JSON(200, gin.H{
-		"success": true,
-		"data":    metrics,
+	chanStream := make(chan bool)
+	go func() {
+		defer close(chanStream)
+		chanStream <- true
+		time.Sleep(2 * configs.ServiceConfig.Mizu.MetricsInterval)
+	}()
+	c.Stream(func(w io.Writer) bool {
+		if _, ok := <-chanStream; ok {
+			metrics := mongo.FetchContainerMetrics(types.M{
+				mongo.NameKey: appName,
+				mongo.TimestampKey: types.M{
+					"$gte": time.Now().Unix() - timeSpan,
+				},
+			})
+			c.SSEvent("metrics", metrics)
+			return true
+		}
+		return false
 	})
 }
