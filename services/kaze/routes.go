@@ -36,6 +36,8 @@ func NewService() http.Handler {
 		auth.GET("/refresh", m.JWT.RefreshHandler)
 	}
 
+	router.GET("/instances", m.JWT.MiddlewareFunc(), c.FetchAllInstancesByUser)
+
 	app := router.Group("/apps")
 	app.Use(m.JWT.MiddlewareFunc())
 	{
