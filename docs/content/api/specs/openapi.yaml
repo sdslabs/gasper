@@ -334,12 +334,39 @@ components:
           description: Unix timestamp of the metrics document
           example: 1576210138
 
+    Instances:
+      type: object
+      properties:
+        _id:
+          type: string
+          description:  Document's identifier assigned by MongoDB
+        name:
+          type: string
+          description: Name of the application or database
+          example: Facebook
+        instance_type:
+          type: string
+          description: The kind of instance this application belongs to
+          example: app
+        language:
+          type: string
+          description: The programming language in which the application is written
+          example: nodejs
+          enum:
+            - php
+            - nodejs
+            - static
+            - python2
+            - python3
+            - golang
+            - ruby
+
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
+      
 paths:
   /auth/login:
     post:
@@ -453,8 +480,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoginResponse'
-        
-              
+
+  /instances:
+    get:
+      tags:
+        - instances
+      summary: Fetch all instances owned by a user
+      operationId: fetchIntancesByUser
+      parameters:
+         - <<: *authHeaderParams
+      security:
+        - bearerAuth: []
+      responses:
+        '400': *error400
+        '500': *error500
+        '401': *error401
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Instances'
+                        
   '/apps/{language}':
     post:
       tags:
