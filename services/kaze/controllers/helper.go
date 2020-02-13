@@ -9,6 +9,7 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/kaze/middlewares"
 	"github.com/sdslabs/gasper/types"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var immutableFields = []string{
@@ -44,6 +45,30 @@ func fetchInstances(c *gin.Context, instance string) {
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    mongo.FetchDocs(mongo.InstanceCollection, filter, nil),
+	})
+}
+
+// FetchAllInstancesByUser returns all instances owned by a user
+func FetchAllInstancesByUser(c *gin.Context) {
+	filter := utils.QueryToFilter(c.Request.URL.Query())
+	claims := middlewares.ExtractClaims(c)
+	if claims == nil {
+		utils.SendServerErrorResponse(c, errors.New("Failed to extract JWT claims"))
+		return
+	}
+	filter[mongo.OwnerKey] = claims.GetEmail()
+
+	projection := types.M{
+		mongo.NameKey:         1,
+		mongo.LanguageKey:     1,
+		mongo.InstanceTypeKey: 1,
+	}
+
+	opts := options.Find().SetProjection(projection)
+
+	c.JSON(200, gin.H{
+		"success": true,
+		"data":    mongo.FetchDocs(mongo.InstanceCollection, filter, opts),
 	})
 }
 

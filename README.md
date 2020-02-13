@@ -6,7 +6,6 @@
 
 [![Build Status](https://travis-ci.org/sdslabs/gasper.svg?branch=develop)](https://travis-ci.org/sdslabs/gasper)
 [![Docs](https://img.shields.io/badge/docs-current-brightgreen.svg)](https://gasper-docs.netlify.com/)
-[![codecov](https://codecov.io/gh/sdslabs/gasper/branch/develop/graph/badge.svg)](https://codecov.io/gh/sdslabs/gasper)
 [![Go Report Card](https://goreportcard.com/badge/github.com/sdslabs/gasper)](https://goreportcard.com/report/github.com/sdslabs/gasper)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sdslabs/gasper/blob/develop/LICENSE.md)
 
@@ -175,6 +174,7 @@ If you'd like to contribute to this project, refer to the [contributing document
 * Vaibhav [@vrongmeal](https://github.com/vrongmeal)
 * Supratik Das [@supra08](https://github.com/supra08)
 * Karanpreet Singh [@karan0299](https://github.com/karan0299)
+* Mohit Sharma [@Scar26](https://github.com/Scar26)
 
 You can find the entire list of contributors [here](https://github.com/sdslabs/gasper/graphs/contributors)
 
