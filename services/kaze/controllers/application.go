@@ -232,36 +232,25 @@ func TransferApplicationOwnership(c *gin.Context) {
 func FetchMetrics(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	appName := c.Param("app")
-	filter := utils.QueryToFilter(c.Request.URL.Query())
-	var timeSpan int64
+	metricsFetchInterval := c.Query("fetch_interval")
+	metricsCount := c.Query("fetch_count")
 
-	for unit, converter := range timeConversionMap {
-		if val, ok := filter[unit].(string); ok {
-			timeVal, err := strconv.ParseInt(val, 10, 64)
-			if err != nil {
-				continue
-			}
-			timeSpan += timeVal * converter
-		}
-	}
+	count, _ := strconv.ParseInt(metricsCount, 10, 64)
 
-	chanStream := make(chan bool)
-	go func() {
-		defer close(chanStream)
-		chanStream <- true
-		time.Sleep(2 * configs.ServiceConfig.Mizu.MetricsInterval)
-	}()
 	c.Stream(func(w io.Writer) bool {
-		if _, ok := <-chanStream; ok {
-			metrics := mongo.FetchContainerMetrics(types.M{
-				mongo.NameKey: appName,
-				mongo.TimestampKey: types.M{
-					"$gte": time.Now().Unix() - timeSpan,
-				},
-			})
-			c.SSEvent("metrics", metrics)
-			return true
+		metrics := mongo.FetchContainerMetrics(types.M{
+			mongo.NameKey: appName,
+			mongo.TimestampKey: types.M{
+				"$gte": time.Now().Unix() - int64(configs.ServiceConfig.Mizu.MetricsInterval*time.Second),
+			},
+		}, count)
+		c.SSEvent("metrics", metrics)
+		fetchInt, _ := strconv.ParseInt(metricsFetchInterval, 10, 64)
+		fetchIntTime := time.Duration(fetchInt)
+		if fetchIntTime < configs.ServiceConfig.Mizu.MetricsInterval {
+			fetchIntTime = 2 * fetchIntTime
 		}
-		return false
+		time.Sleep(configs.ServiceConfig.Mizu.MetricsInterval * time.Second * fetchIntTime)
+		return true
 	})
 }
