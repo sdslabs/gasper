@@ -232,10 +232,19 @@ func TransferApplicationOwnership(c *gin.Context) {
 func FetchMetrics(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	appName := c.Param("app")
-	metricsFetchInterval := c.Query("fetch_interval")
-	metricsCount := c.Query("fetch_count")
 
-	count, _ := strconv.ParseInt(metricsCount, 10, 64)
+	metricsFetchInterval := c.Query("fetch_interval")
+	fetchInt, err := strconv.ParseInt(metricsFetchInterval, 10, 64)
+	if err != nil {
+		fetchInt = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
+	}
+	fetchIntTime := time.Duration(fetchInt)
+
+	metricsCount := c.Query("fetch_count")
+	count, err := strconv.ParseInt(metricsCount, 10, 64)
+	if err != nil {
+		count = 10
+	}
 
 	c.Stream(func(w io.Writer) bool {
 		metrics := mongo.FetchContainerMetrics(types.M{
@@ -245,12 +254,12 @@ func FetchMetrics(c *gin.Context) {
 			},
 		}, count)
 		c.SSEvent("metrics", metrics)
-		fetchInt, _ := strconv.ParseInt(metricsFetchInterval, 10, 64)
-		fetchIntTime := time.Duration(fetchInt)
+
 		if fetchIntTime < configs.ServiceConfig.Mizu.MetricsInterval {
 			fetchIntTime = 2 * fetchIntTime
 		}
 		time.Sleep(configs.ServiceConfig.Mizu.MetricsInterval * time.Second * fetchIntTime)
+
 		return true
 	})
 }
