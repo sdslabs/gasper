@@ -237,6 +237,7 @@ func FetchMetrics(c *gin.Context) {
 			"success": false,
 			"error":   "App name not provided for metrics",
 		})
+		return
 	}
 
 	metricsInterval, err := strconv.ParseInt(c.Query("interval"), 10, 64)
