@@ -232,18 +232,21 @@ func TransferApplicationOwnership(c *gin.Context) {
 func FetchMetrics(c *gin.Context) {
 	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	appName := c.Param("app")
-
-	metricsFetchInterval := c.Query("fetch_interval")
-	fetchInt, err := strconv.ParseInt(metricsFetchInterval, 10, 64)
-	if err != nil {
-		fetchInt = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
+	if appName == "" {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   "App name not provided for metrics",
+		})
 	}
-	fetchIntTime := time.Duration(fetchInt)
 
-	metricsCount := c.Query("fetch_count")
-	count, err := strconv.ParseInt(metricsCount, 10, 64)
+	metricsInterval, err := strconv.ParseInt(c.Query("interval"), 10, 64)
 	if err != nil {
-		count = 10
+		metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
+	}
+
+	metricsCount, err := strconv.ParseInt(c.Query("count"), 10, 64)
+	if err != nil {
+		metricsCount = 10
 	}
 
 	c.Stream(func(w io.Writer) bool {
@@ -252,13 +255,14 @@ func FetchMetrics(c *gin.Context) {
 			mongo.TimestampKey: types.M{
 				"$gte": time.Now().Unix() - int64(configs.ServiceConfig.Mizu.MetricsInterval*time.Second),
 			},
-		}, count)
+		}, metricsCount)
+
 		c.SSEvent("metrics", metrics)
 
-		if fetchIntTime < configs.ServiceConfig.Mizu.MetricsInterval {
-			fetchIntTime = 2 * fetchIntTime
+		if metricsInterval < int64(configs.ServiceConfig.Mizu.MetricsInterval) {
+			metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
 		}
-		time.Sleep(configs.ServiceConfig.Mizu.MetricsInterval * time.Second * fetchIntTime)
+		time.Sleep(time.Second * time.Duration(metricsInterval))
 
 		return true
 	})
