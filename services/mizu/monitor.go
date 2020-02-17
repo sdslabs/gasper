@@ -37,10 +37,20 @@ func registerMetrics() {
 		memoryUsage := metrics.Memory.Usage
 		maxUsage := metrics.Memory.MaxUsage
 		memoryLimit := metrics.Memory.Limit
+		if memoryLimit == 0 {
+			// utils.Log("Container has stopped", utils.ErrorTAG)
+			// error needs to be handled in a better way
+			continue
+		}
 
 		// cpu metrics
 		cpuTime := metrics.CPU.CPUUsage.TotalUsage
 		onlineCPUs := metrics.CPU.OnlineCPUs
+		if onlineCPUs == 0 {
+			// utils.Log("Container has stopped", utils.ErrorTAG)
+			// error needs to be handled in a better way
+			continue
+		}
 
 		parsedMetrics := types.Metrics{
 			Name:           app,
