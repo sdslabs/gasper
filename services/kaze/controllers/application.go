@@ -250,21 +250,29 @@ func FetchMetrics(c *gin.Context) {
 		metricsCount = 10
 	}
 
-	c.Stream(func(w io.Writer) bool {
+	chanStream := make(chan []types.M, 10)
+	go func() {
+		defer close(chanStream)
 		metrics := mongo.FetchContainerMetrics(types.M{
 			mongo.NameKey: appName,
 			mongo.TimestampKey: types.M{
 				"$gte": time.Now().Unix() - int64(configs.ServiceConfig.Mizu.MetricsInterval*time.Second),
 			},
 		}, metricsCount)
-
-		c.SSEvent("metrics", metrics)
-
+		chanStream <- metrics
 		if metricsInterval < int64(configs.ServiceConfig.Mizu.MetricsInterval) {
 			metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
 		}
-		time.Sleep(time.Second * time.Duration(metricsInterval))
 
-		return true
+		time.Sleep(time.Second * time.Duration(metricsInterval))
+	}()
+
+	c.Stream(func(w io.Writer) bool {
+		if metrics, ok := <-chanStream; ok {
+			c.SSEvent("metrics", metrics)
+			return true
+		}
+
+		return false
 	})
 }
