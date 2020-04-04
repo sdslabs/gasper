@@ -27,8 +27,8 @@ func VerifyAdmin(c *gin.Context) {
 	})
 }
 
-func isInstanceOwner(c *gin.Context, instanceType string) {
-	instance := c.Param(instanceType)
+func isInstanceOwner(c *gin.Context, instanceType, instanceReqParam string) {
+	instance := c.Param(instanceReqParam)
 	user := ExtractClaims(c)
 	if user == nil {
 		utils.SendServerErrorResponse(c, errors.New("Failed to extract JWT claims"))
@@ -38,6 +38,7 @@ func isInstanceOwner(c *gin.Context, instanceType string) {
 		c.Next()
 		return
 	}
+
 	count, err := mongo.CountInstances(types.M{
 		mongo.NameKey:         instance,
 		mongo.InstanceTypeKey: instanceType,
@@ -60,10 +61,10 @@ func isInstanceOwner(c *gin.Context, instanceType string) {
 
 // IsAppOwner checks if a user is entitled to perform operations on an application
 func IsAppOwner(c *gin.Context) {
-	isInstanceOwner(c, mongo.AppInstance)
+	isInstanceOwner(c, mongo.AppInstance, appReqParam)
 }
 
 // IsDatabaseOwner checks if a user is entitled to perform operations on a database
 func IsDatabaseOwner(c *gin.Context) {
-	isInstanceOwner(c, mongo.DBInstance)
+	isInstanceOwner(c, mongo.DBInstance, dbReqParam)
 }
