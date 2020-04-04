@@ -230,15 +230,7 @@ func TransferApplicationOwnership(c *gin.Context) {
 
 // FetchMetrics retrieves the metrics of an application's container
 func FetchMetrics(c *gin.Context) {
-	c.Writer.Header().Set("Content-Type", "text/event-stream")
 	appName := c.Param("app")
-	if appName == "" {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   "App name not provided for metrics",
-		})
-		return
-	}
 
 	metricsInterval, err := strconv.ParseInt(c.Query("interval"), 10, 64)
 	if err != nil {
