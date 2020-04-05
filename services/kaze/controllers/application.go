@@ -245,7 +245,7 @@ func FetchMetrics(c *gin.Context) {
 		mongo.TimestampKey: types.M{
 			"$gte": time.Now().Unix() - timeSpan,
 		},
-	})
+	}, -1)
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    metrics,
