@@ -257,3 +257,12 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 # To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""
+
+
+###########################
+#   Jikan Configuration   #
+###########################
+
+[services.jikan]
+deploy = false   # Deploy Jikan?
+port = 3333
