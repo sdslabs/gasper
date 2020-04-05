@@ -3,13 +3,11 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"io"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
@@ -231,40 +229,25 @@ func TransferApplicationOwnership(c *gin.Context) {
 // FetchMetrics retrieves the metrics of an application's container
 func FetchMetrics(c *gin.Context) {
 	appName := c.Param("app")
-
-	metricsInterval, err := strconv.ParseInt(c.Query("interval"), 10, 64)
-	if err != nil {
-		metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
-	}
-
-	metricsCount, err := strconv.ParseInt(c.Query("count"), 10, 64)
-	if err != nil {
-		metricsCount = 10
-	}
-
-	chanStream := make(chan []types.M, 10)
-	go func() {
-		defer close(chanStream)
-		metrics := mongo.FetchContainerMetrics(types.M{
-			mongo.NameKey: appName,
-			mongo.TimestampKey: types.M{
-				"$gte": time.Now().Unix() - int64(configs.ServiceConfig.Mizu.MetricsInterval*time.Second),
-			},
-		}, metricsCount)
-		chanStream <- metrics
-		if metricsInterval < int64(configs.ServiceConfig.Mizu.MetricsInterval) {
-			metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
+	filter := utils.QueryToFilter(c.Request.URL.Query())
+	var timeSpan int64
+	for unit, converter := range timeConversionMap {
+		if val, ok := filter[unit].(string); ok {
+			timeVal, err := strconv.ParseInt(val, 10, 64)
+			if err != nil {
+				continue
+			}
+			timeSpan += timeVal * converter
 		}
-
-		time.Sleep(time.Second * time.Duration(metricsInterval))
-	}()
-
-	c.Stream(func(w io.Writer) bool {
-		if metrics, ok := <-chanStream; ok {
-			c.SSEvent("metrics", metrics)
-			return true
-		}
-
-		return false
+	}
+	metrics := mongo.FetchContainerMetrics(types.M{
+		mongo.NameKey: appName,
+		mongo.TimestampKey: types.M{
+			"$gte": time.Now().Unix() - timeSpan,
+		},
+	})
+	c.JSON(200, gin.H{
+		"success": true,
+		"data":    metrics,
 	})
 }
