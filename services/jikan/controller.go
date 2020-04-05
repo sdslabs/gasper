@@ -35,19 +35,21 @@ func streamHandler(c *gin.Context) {
 
 	chanStream := make(chan []types.M, 10)
 	go func() {
-		defer close(chanStream)
-		metrics := mongo.FetchContainerMetrics(types.M{
-			mongo.NameKey: appName,
-			mongo.TimestampKey: types.M{
-				"$gte": time.Now().Unix() - int64(configs.ServiceConfig.Mizu.MetricsInterval*time.Second),
-			},
-		}, metricsCount)
-		chanStream <- metrics
-		if metricsInterval < int64(configs.ServiceConfig.Mizu.MetricsInterval) {
-			metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
-		}
+		for {
+			defer close(chanStream)
+			metrics := mongo.FetchContainerMetrics(types.M{
+				mongo.NameKey: appName,
+				mongo.TimestampKey: types.M{
+					"$gte": time.Now().Unix() - int64(configs.ServiceConfig.Mizu.MetricsInterval*time.Second),
+				},
+			}, metricsCount)
+			chanStream <- metrics
+			if metricsInterval < int64(configs.ServiceConfig.Mizu.MetricsInterval) {
+				metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
+			}
 
-		time.Sleep(time.Second * time.Duration(metricsInterval))
+			time.Sleep(time.Second * time.Duration(metricsInterval))
+		}
 	}()
 	c.Stream(func(w io.Writer) bool {
 		if metrics, ok := <-chanStream; ok {
@@ -77,7 +79,7 @@ func NewService() *http.Server {
 	}
 	router.Use(cors.New(corsConfig))
 
-	router.GET("/stream", streamHandler)
+	router.GET("/stream/:app/metrics", streamHandler)
 
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", configs.ServiceConfig.Jikan.Port),
