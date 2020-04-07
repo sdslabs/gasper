@@ -16,6 +16,12 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
+type metricsRecord struct {
+	UptimeRecord []bool    `json:"uptime_record"`
+	CPURecord    []float64 `json:"cpu_record"`
+	MemoryRecord []float64 `json:"memory_record"`
+}
+
 // FetchAppsByUser returns all applications owned by a user
 func FetchAppsByUser(c *gin.Context) {
 	fetchInstancesByUser(c, mongo.AppInstance)
@@ -248,8 +254,39 @@ func FetchMetrics(c *gin.Context) {
 		},
 	}, -1)
 
+	sparcity := timeConversionMap[filter["sparcity"].(string)]
+
+	uptimeRecord := []bool{}
+	CPURecord := []float64{}
+	memoryRecord := []float64{}
+
+	baseTimestamp := metrics[0]["timestamp"].(int64)
+	var downtimeIntensity int = 0
+	var currTimestamp int64
+
+	for i := range metrics {
+		currTimestamp = metrics[i]["timestamp"].(int64)
+		if !metrics[i]["alive"].(bool) {
+			downtimeIntensity++
+		}
+		if (baseTimestamp - currTimestamp) >= sparcity {
+			baseTimestamp = currTimestamp
+			if downtimeIntensity > 0 {
+				uptimeRecord = append(uptimeRecord, false)
+			} else {
+				uptimeRecord = append(uptimeRecord, true)
+			}
+			downtimeIntensity = 0
+		}
+
+		CPURecord = append(CPURecord, metrics[i]["cpu_usage"].(float64))
+		memoryRecord = append(memoryRecord, metrics[i]["memory_usage"].(float64))
+	}
+
+	metricsRecord := metricsRecord{uptimeRecord, CPURecord, memoryRecord}
+
 	c.JSON(200, gin.H{
 		"success": true,
-		"data":    metrics,
+		"data":    metricsRecord,
 	})
 }
