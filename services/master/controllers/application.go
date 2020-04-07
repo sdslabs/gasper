@@ -254,7 +254,7 @@ func FetchMetrics(c *gin.Context) {
 		},
 	}, -1)
 
-	sparcity := timeConversionMap[filter["sparcity"].(string)]
+	sparsity := timeConversionMap[filter["sparsity"].(string)]
 
 	uptimeRecord := []bool{}
 	CPURecord := []float64{}
@@ -269,7 +269,7 @@ func FetchMetrics(c *gin.Context) {
 		if !metrics[i]["alive"].(bool) {
 			downtimeIntensity++
 		}
-		if (baseTimestamp - currTimestamp) >= sparcity {
+		if (baseTimestamp - currTimestamp) >= sparsity {
 			baseTimestamp = currTimestamp
 			if downtimeIntensity > 0 {
 				uptimeRecord = append(uptimeRecord, false)
