@@ -231,7 +231,6 @@ func FetchMetrics(c *gin.Context) {
 	appName := c.Param("app")
 	filter := utils.QueryToFilter(c.Request.URL.Query())
 	var timeSpan int64
-
 	for unit, converter := range timeConversionMap {
 		if val, ok := filter[unit].(string); ok {
 			timeVal, err := strconv.ParseInt(val, 10, 64)
@@ -247,7 +246,7 @@ func FetchMetrics(c *gin.Context) {
 		mongo.TimestampKey: types.M{
 			"$gte": time.Now().Unix() - timeSpan,
 		},
-	})
+	}, -1)
 
 	c.JSON(200, gin.H{
 		"success": true,
