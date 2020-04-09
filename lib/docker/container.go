@@ -145,6 +145,44 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 	return createdConf.ID, nil
 }
 
+// CreatePostgreSQLContainer function sets up a mongoDB instance for managing databases
+func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, env types.M) (string, error) {
+	ctx := context.Background()
+	volume := fmt.Sprintf("%s:%s", storedir, workdir)
+
+	envArr := []string{}
+	for key, value := range env {
+		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
+	}
+
+	containerConfig := &container.Config{
+		Image: image,
+		ExposedPorts: nat.PortSet{
+			"5432/tcp": struct{}{},
+		},
+		Env: envArr,
+		Volumes: map[string]struct{}{
+			volume: {},
+		},
+	}
+
+	hostConfig := &container.HostConfig{
+		Binds: []string{
+			volume,
+		},
+		PortBindings: nat.PortMap{
+			nat.Port("5432/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: postgresqlPort}},
+		},
+	}
+
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.PostgreSQL)
+	if err != nil {
+		return "", err
+	}
+
+	return createdConf.ID, nil
+}
+
 // StartContainer starts the container corresponding to given containerID
 func StartContainer(containerID string) error {
 	ctx := context.Background()

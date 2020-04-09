@@ -53,6 +53,10 @@ var (
 		types.Enrai: {
 			Deploy: ServiceConfig.Enrai.Deploy,
 			Port:   ServiceConfig.Enrai.Port,
+		}, 
+		types.MongoDB: {
+			Deploy: ServiceConfig.Kaen.MongoDB.PlugIn && ServiceConfig.Kaen.Deploy,
+			Port:   ServiceConfig.Kaen.Port,
 		},
 		types.Hikari: {
 			Deploy: ServiceConfig.Hikari.Deploy,
@@ -62,8 +66,8 @@ var (
 			Deploy: ServiceConfig.Kaen.MySQL.PlugIn && ServiceConfig.Kaen.Deploy,
 			Port:   ServiceConfig.Kaen.Port,
 		},
-		types.MongoDB: {
-			Deploy: ServiceConfig.Kaen.MongoDB.PlugIn && ServiceConfig.Kaen.Deploy,
+		types.PostgreSQL: {
+			Deploy: ServiceConfig.Kaen.PostgreSQL.PlugIn && ServiceConfig.Kaen.Deploy,
 			Port:   ServiceConfig.Kaen.Port,
 		},
 	}

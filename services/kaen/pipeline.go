@@ -69,4 +69,12 @@ var pipeline = map[string]*databaseHandler{
 		logs:    logConstructor(types.MySQL),
 		reload:  reloadConstructor(types.MySQL),
 	},
+	types.PostgreSQL: {
+		init:    initConstructor(types.PostgreSQL, configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort),
+		create:  database.CreatePostgresqlDB,
+		delete:  database.DeletePostgresqlDB,
+		cleanup: cleanupConstructor(types.PostgreSQL),
+		logs:    logConstructor(types.PostgreSQL),
+		reload:  reloadConstructor(types.PostgreSQL),
+	},
 }

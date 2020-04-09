@@ -47,6 +47,21 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 				storedir,
 				env)
 		}
+	case types.PostgreSQL:
+		{
+			dockerImage := configs.ImageConfig.Postgresql
+			port := strconv.Itoa(configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort)
+			env := configs.ServiceConfig.Kaen.PostgreSQL.Env
+			workdir := "/var/lib/postgresql/data"
+			storedir := filepath.Join(storepath, "postgresql-storage")
+			containerID, err = docker.CreatePostgreSQLContainer(
+				dockerImage,
+				port,
+				workdir,
+				storedir,
+				env)
+		}
+
 	default:
 		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))
 	}
