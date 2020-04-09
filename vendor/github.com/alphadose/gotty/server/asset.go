@@ -316,17 +316,17 @@ type bintree struct {
 }
 
 var _bintree = &bintree{nil, map[string]*bintree{
-	"static": {nil, map[string]*bintree{
-		"css": {nil, map[string]*bintree{
-			"index.css":           {staticCssIndexCss, map[string]*bintree{}},
-			"xterm.css":           {staticCssXtermCss, map[string]*bintree{}},
-			"xterm_customize.css": {staticCssXterm_customizeCss, map[string]*bintree{}},
+	"static": &bintree{nil, map[string]*bintree{
+		"css": &bintree{nil, map[string]*bintree{
+			"index.css":           &bintree{staticCssIndexCss, map[string]*bintree{}},
+			"xterm.css":           &bintree{staticCssXtermCss, map[string]*bintree{}},
+			"xterm_customize.css": &bintree{staticCssXterm_customizeCss, map[string]*bintree{}},
 		}},
-		"favicon.png": {staticFaviconPng, map[string]*bintree{}},
-		"index.html":  {staticIndexHtml, map[string]*bintree{}},
-		"js": {nil, map[string]*bintree{
-			"bundle.js":       {staticJsBundleJs, map[string]*bintree{}},
-			"gotty-bundle.js": {staticJsGottyBundleJs, map[string]*bintree{}},
+		"favicon.png": &bintree{staticFaviconPng, map[string]*bintree{}},
+		"index.html":  &bintree{staticIndexHtml, map[string]*bintree{}},
+		"js": &bintree{nil, map[string]*bintree{
+			"bundle.js":       &bintree{staticJsBundleJs, map[string]*bintree{}},
+			"gotty-bundle.js": &bintree{staticJsGottyBundleJs, map[string]*bintree{}},
 		}},
 	}},
 }}

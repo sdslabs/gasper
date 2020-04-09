@@ -21,7 +21,7 @@ var (
 // CreatePostgresqlDB creates a postgre database
 func CreatePostgresqlDB(db types.Database) error {
 	ctx := context.Background()
-	connection := fmt.Sprintf("postgres://%v:%v@localhost:%d/%v", postgresqlRootUser, postgresqlPassword, postgresqlPort, "postgres")
+	connection := fmt.Sprintf("postgres://%v:%v@localhost:%d/%v", postgresqlRootUser, postgresqlPassword, postgresqlPort, postgresqlRootUser)
 	conn, err := pgx.Connect(ctx, connection)
 	if err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
@@ -51,7 +51,7 @@ func DeletePostgresqlDB(databaseName string) error {
 	username := databaseName
 	ctx := context.Background()
 
-	connection := fmt.Sprintf("postgres://%v:%v@localhost:%d/%v", postgresqlRootUser, postgresqlPassword, postgresqlPort, postgresqlDatabaseName)
+	connection := fmt.Sprintf("postgres://%v:%v@localhost:%d/%v", postgresqlRootUser, postgresqlPassword, postgresqlPort, postgresqlRootUser)
 	conn, err := pgx.Connect(ctx, connection)
 	if err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
@@ -62,7 +62,7 @@ func DeletePostgresqlDB(databaseName string) error {
 		return fmt.Errorf("Error while deleting the database : %s", err)
 	}
 
-	if _, err = conn.Exec(ctx, fmt.Sprintf("DROP USER IF EXISTS '%s'@'%s'", username, postgresqlHost)); err != nil {
+	if _, err = conn.Exec(ctx, fmt.Sprintf("DROP USER IF EXISTS %s", username)); err != nil {
 		return fmt.Errorf("Error while deleting the user : %s", err)
 	}
 	return nil
