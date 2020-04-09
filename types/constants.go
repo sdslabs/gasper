@@ -16,7 +16,7 @@ const (
 	// MongoDB holds the name of `mongodb` mongo component under `kaen`
 	MongoDB = "mongodb"
 
-	//PostgreSQL holds the name of `postgresql` component under 'kaen'
+	// PostgreSQL holds the name of `postgresql` component under 'kaen'
 	PostgreSQL = "postgresql"
 
 	// Iwa holds the name of `iwa` microservice
