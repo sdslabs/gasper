@@ -53,7 +53,7 @@ var (
 		types.Enrai: {
 			Deploy: ServiceConfig.Enrai.Deploy,
 			Port:   ServiceConfig.Enrai.Port,
-		}, 
+		},
 		types.MongoDB: {
 			Deploy: ServiceConfig.Kaen.MongoDB.PlugIn && ServiceConfig.Kaen.Deploy,
 			Port:   ServiceConfig.Kaen.Port,
