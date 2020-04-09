@@ -113,7 +113,7 @@ type Images struct {
 	Ruby       string `toml:"ruby"`
 	Mysql      string `toml:"mysql"`
 	Mongodb    string `toml:"mongodb"`
-	Postgresql string `toml:"postgres"`
+	Postgresql string `toml:"postgresql"`
 }
 
 // Services is the configuration for all Services
