@@ -61,6 +61,10 @@ func startKaenService() error {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDB)
 	}
+	if configs.ServiceConfig.Kaen.PostgreSQL.PlugIn {
+		checkAndPullImages(configs.ImageConfig.Postgresql)
+		setupDatabaseContainer(types.PostgreSQL)
+	}
 	return startGrpcServer(kaen.NewService(), configs.ServiceConfig.Kaen.Port)
 }
 

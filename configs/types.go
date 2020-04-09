@@ -97,21 +97,23 @@ type DatabaseService struct {
 // KaenService is the configuration for Kaen microservice
 type KaenService struct {
 	GenericService
-	MySQL   DatabaseService `toml:"mysql"`
-	MongoDB DatabaseService `toml:"mongodb"`
+	MySQL      DatabaseService `toml:"mysql"`
+	MongoDB    DatabaseService `toml:"mongodb"`
+	PostgreSQL DatabaseService `toml:"postgresql"`
 }
 
 // Images is the configuration for the docker images in use
 type Images struct {
-	Static  string `toml:"static"`
-	Php     string `toml:"php"`
-	Nodejs  string `toml:"nodejs"`
-	Python2 string `toml:"python2"`
-	Python3 string `toml:"python3"`
-	Golang  string `toml:"golang"`
-	Ruby    string `toml:"ruby"`
-	Mysql   string `toml:"mysql"`
-	Mongodb string `toml:"mongodb"`
+	Static     string `toml:"static"`
+	Php        string `toml:"php"`
+	Nodejs     string `toml:"nodejs"`
+	Python2    string `toml:"python2"`
+	Python3    string `toml:"python3"`
+	Golang     string `toml:"golang"`
+	Ruby       string `toml:"ruby"`
+	Mysql      string `toml:"mysql"`
+	Mongodb    string `toml:"mongodb"`
+	Postgresql string `toml:"postgres"`
 }
 
 // Services is the configuration for all Services
