@@ -54,7 +54,8 @@ type MizuService struct {
 // KazeService is the default configuration for Kaze microservice
 type KazeService struct {
 	GenericService
-	CleanupInterval time.Duration `toml:"cleanup_interval"`
+	CleanupInterval time.Duration   `toml:"cleanup_interval"`
+	MongoDB         DatabaseService `toml:"mongodb"`
 }
 
 // IwaService is the configuration for Iwa microservice

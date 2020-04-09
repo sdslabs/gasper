@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -31,7 +32,8 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 				port,
 				workdir,
 				storedir,
-				env)
+				env,
+				databaseType)
 		}
 	case types.MySQL:
 		{
@@ -59,9 +61,25 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 				port,
 				workdir,
 				storedir,
-				env)
+				env,
+				databaseType)
 		}
-
+	case types.MongoDB_Gasper:
+		{
+			dockerImage := configs.ImageConfig.Mongodb
+			port := strconv.Itoa(configs.ServiceConfig.Kaze.MongoDB.ContainerPort)
+			fmt.Println(port)
+			env := configs.ServiceConfig.Kaze.MongoDB.Env
+			workdir := "/data/db"
+			storedir := filepath.Join(storepath, "mongodb-storage")
+			containerID, err = docker.CreateMongoDBContainer(
+				dockerImage,
+				port,
+				workdir,
+				storedir,
+				env,
+				databaseType)
+		}
 	default:
 		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))
 	}

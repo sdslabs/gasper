@@ -108,7 +108,7 @@ func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.
 }
 
 // CreateMongoDBContainer function sets up a mongoDB instance for managing databases
-func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env types.M) (string, error) {
+func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
@@ -137,7 +137,7 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 		},
 	}
 
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.MongoDB)
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
 	if err != nil {
 		return "", err
 	}
