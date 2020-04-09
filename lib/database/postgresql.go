@@ -21,8 +21,6 @@ var (
 // CreatePostgresqlDB creates a postgre database
 func CreatePostgresqlDB(db types.Database) error {
 	ctx := context.Background()
-	// ctx, cancel := context.WithCancel(ctx)
-	// defer cancel()
 	connection := fmt.Sprintf("postgres://%v:%v@localhost:%d/%v", postgresqlRootUser, postgresqlPassword, postgresqlPort, "postgres")
 	conn, err := pgx.Connect(ctx, connection)
 	if err != nil {
