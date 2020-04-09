@@ -145,7 +145,7 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 	return createdConf.ID, nil
 }
 
-// CreatePostgreSQLContainer function sets up a mongoDB instance for managing databases
+// CreatePostgreSQLContainer function sets up a postgreSQL instance for managing databases
 func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, env types.M) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
