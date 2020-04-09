@@ -34,7 +34,7 @@ func CreatePostgresqlDB(db types.Database) error {
 
 	query := fmt.Sprintf("CREATE USER %s WITH PASSWORD '%s'", db.GetUser(), db.GetPassword())
 	if _, err = conn.Exec(ctx, query); err != nil {
-		if err = refrershPostgresqlUser(db, conn); err != nil {
+		if err = refreshPostgresqlUser(db, conn); err != nil {
 			return fmt.Errorf("Error while creating the database : %s", err)
 		}
 	}
@@ -68,7 +68,7 @@ func DeletePostgresqlDB(databaseName string) error {
 	return nil
 }
 
-func refrershPostgresqlUser(db types.Database, conn *pgx.Conn) error {
+func refreshPostgresqlUser(db types.Database, conn *pgx.Conn) error {
 	ctx := context.Background()
 	_, err := conn.Exec(ctx, fmt.Sprintf("DROP USER IF EXISTS '%s'@'%s'", db.GetUser(), postgresqlHost))
 	if err != nil {
