@@ -85,8 +85,9 @@ func startMizuService() error {
 func startKazeService() error {
 	if configs.ServiceConfig.Kaze.MongoDB.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
-		setupDatabaseContainer(types.MongoDB_Gasper)
+		setupDatabaseContainer(types.MongoDBGasper)
 	}
+
 	return buildHTTPServer(kaze.NewService(), configs.ServiceConfig.Kaze.Port).ListenAndServe()
 }
 

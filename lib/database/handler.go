@@ -64,7 +64,7 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 				env,
 				databaseType)
 		}
-	case types.MongoDB_Gasper:
+	case types.MongoDBGasper:
 		{
 			dockerImage := configs.ImageConfig.Mongodb
 			port := strconv.Itoa(configs.ServiceConfig.Kaze.MongoDB.ContainerPort)
