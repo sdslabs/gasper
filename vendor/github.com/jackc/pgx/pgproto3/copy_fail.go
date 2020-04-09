@@ -39,10 +39,10 @@ func (src *CopyFail) Encode(dst []byte) []byte {
 
 func (src *CopyFail) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		Type       string
+		Type    string
 		Message string
 	}{
-		Type:       "CopyFail",
+		Type:    "CopyFail",
 		Message: src.Message,
 	})
 }

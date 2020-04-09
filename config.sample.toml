@@ -196,7 +196,7 @@ POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB server ins
 
 # Configuration for PostgreSQL database server managed by `Kaen`
 [services.kaen.mongodb]
-plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
+plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it
 container_port = 27018  # Port on which the PostgreSQL server container will run
 
 # Environment variables for MongoDB docker container.
