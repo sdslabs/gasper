@@ -147,6 +147,9 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 
 // CreatePostgreSQLContainer function sets up a postgreSQL instance for managing databases
 func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, env types.M) (string, error) {
+}
+// CreateRedisContainer function sets up a redis instance for gasper
+func CreateRedisContainer(image, redisPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
@@ -159,6 +162,7 @@ func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, 
 		Image: image,
 		ExposedPorts: nat.PortSet{
 			"5432/tcp": struct{}{},
+			"6379/tcp": struct{}{},
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
@@ -176,6 +180,11 @@ func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, 
 	}
 
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.PostgreSQL)
+			nat.Port("6379/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: redisPort}},
+		},
+	}
+
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
 	if err != nil {
 		return "", err
 	}

@@ -22,6 +22,9 @@ const (
 	// MongoDBGasper holds the name of `mongodb_gasper` mongo component under `kaze`
 	MongoDBGasper = "mongodb_gasper"
 
+	//RedisGasper holds the name of `redis_gasper` redis component under `kaze`
+	RedisGasper = "redis_gasper"
+
 	// Iwa holds the name of `iwa` microservice
 	Iwa = "iwa"
 

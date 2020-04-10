@@ -87,7 +87,10 @@ func startKazeService() error {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDBGasper)
 	}
-
+	if configs.ServiceConfig.Kaze.Redis.PlugIn {
+		checkAndPullImages(configs.ImageConfig.Redis)
+		setupDatabaseContainer(types.RedisGasper)
+	}
 	return buildHTTPServer(kaze.NewService(), configs.ServiceConfig.Kaze.Port).ListenAndServe()
 }
 

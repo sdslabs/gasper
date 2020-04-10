@@ -80,6 +80,23 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 				env,
 				databaseType)
 		}
+	case types.RedisGasper:
+		{
+			dockerImage := configs.ImageConfig.Redis
+			port := strconv.Itoa(configs.ServiceConfig.Kaze.Redis.ContainerPort)
+			fmt.Println(port)
+			env := configs.ServiceConfig.Kaze.Redis.Env
+			workdir := "/data/db"
+			storedir := filepath.Join(storepath, "redis-storage")
+			containerID, err = docker.CreateRedisContainer(
+				dockerImage,
+				port,
+				workdir,
+				storedir,
+				env,
+				databaseType)
+
+		}
 	default:
 		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))
 	}
