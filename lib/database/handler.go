@@ -2,7 +2,6 @@ package database
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -68,10 +67,9 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 		{
 			dockerImage := configs.ImageConfig.Mongodb
 			port := strconv.Itoa(configs.ServiceConfig.Kaze.MongoDB.ContainerPort)
-			fmt.Println(port)
 			env := configs.ServiceConfig.Kaze.MongoDB.Env
 			workdir := "/data/db"
-			storedir := filepath.Join(storepath, "mongodb-storage")
+			storedir := filepath.Join(storepath, "gasper-mongodb-storage")
 			containerID, err = docker.CreateMongoDBContainer(
 				dockerImage,
 				port,
@@ -84,10 +82,9 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 		{
 			dockerImage := configs.ImageConfig.Redis
 			port := strconv.Itoa(configs.ServiceConfig.Kaze.Redis.ContainerPort)
-			fmt.Println(port)
 			env := configs.ServiceConfig.Kaze.Redis.Env
 			workdir := "/data/db"
-			storedir := filepath.Join(storepath, "redis-storage")
+			storedir := filepath.Join(storepath, "gasper-redis-storage")
 			containerID, err = docker.CreateRedisContainer(
 				dockerImage,
 				port,
