@@ -11,6 +11,28 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
+//GetDockerConfig returns the docker conatiner configurations
+func GetDockerConfig(image, Port, workdir, storedir string, env types.M, databaseType string) (string, error) {
+	switch databaseType {
+	case types.MongoDB, types.MongoDBGasper:
+		{
+			return docker.CreateMongoDBContainer(image, Port, workdir, storedir, env, databaseType)
+		}
+	case types.MySQL:
+		{
+			return docker.CreateMysqlContainer(image, Port, workdir, storedir, env, databaseType)
+		}
+	case types.RedisGasper:
+		{
+			return docker.CreateRedisContainer(image, Port, workdir, storedir, env, databaseType)
+		}
+	default:
+		{
+			return "Invalid database type!", nil
+		}
+	}
+}
+
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 	storepath, _ := os.Getwd()
@@ -26,13 +48,7 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 			env := configs.ServiceConfig.Kaen.MongoDB.Env
 			workdir := "/data/db"
 			storedir := filepath.Join(storepath, "mongodb-storage")
-			containerID, err = docker.CreateMongoDBContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				env,
-				databaseType)
+			containerID, err = GetDockerConfig(dockerImage, port, workdir, storedir, env, databaseType)
 		}
 	case types.MySQL:
 		{
@@ -41,12 +57,7 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 			env := configs.ServiceConfig.Kaen.MySQL.Env
 			workdir := "/var/lib/mysql"
 			storedir := filepath.Join(storepath, "mysql-storage")
-			containerID, err = docker.CreateMysqlContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				env)
+			containerID, err = GetDockerConfig(dockerImage, port, workdir, storedir, env, databaseType)
 		}
 	case types.PostgreSQL:
 		{
@@ -70,13 +81,7 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 			env := configs.ServiceConfig.Kaze.MongoDB.Env
 			workdir := "/data/db"
 			storedir := filepath.Join(storepath, "gasper-mongodb-storage")
-			containerID, err = docker.CreateMongoDBContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				env,
-				databaseType)
+			containerID, err = GetDockerConfig(dockerImage, port, workdir, storedir, env, databaseType)
 		}
 	case types.RedisGasper:
 		{
@@ -85,14 +90,7 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 			env := configs.ServiceConfig.Kaze.Redis.Env
 			workdir := "/data/db"
 			storedir := filepath.Join(storepath, "gasper-redis-storage")
-			containerID, err = docker.CreateRedisContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				env,
-				databaseType)
-
+			containerID, err = GetDockerConfig(dockerImage, port, workdir, storedir, env, databaseType)
 		}
 	default:
 		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))

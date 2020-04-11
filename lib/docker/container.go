@@ -69,7 +69,7 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 }
 
 //CreateContainerConfig function returns the config variables associated with creation of a container.
-func CreateContainerConfig(dockerImage, hostPort, workdir, storedir string, containerPort nat.Port, env types.M) (*container.Config, *container.HostConfig)  {
+func CreateContainerConfig(dockerImage, hostPort, workdir, storedir string, containerPort nat.Port, env types.M) (*container.Config, *container.HostConfig) {
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	envArr := []string{}
@@ -97,14 +97,14 @@ func CreateContainerConfig(dockerImage, hostPort, workdir, storedir string, cont
 		},
 	}
 
-	return containerConfig, hostConfig 
+	return containerConfig, hostConfig
 }
 
 // CreateMysqlContainer function sets up a mysql instance for managing databases
-func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.M) (string, error) {
+func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
 	ctx := context.Background()
 	containerConfig, hostConfig := CreateContainerConfig(image, mysqlPort, workdir, storedir, "3306/tcp", env)
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.MySQL)
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
 
 	if err != nil {
 		return "", err
