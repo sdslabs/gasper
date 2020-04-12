@@ -1,7 +1,6 @@
 package database
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -11,26 +10,13 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
-//GetDockerConfig returns the docker conatiner configurations
-func GetDockerConfig(image, Port, workdir, storedir string, env types.M, databaseType string) (string, error) {
-	switch databaseType {
-	case types.MongoDB, types.MongoDBGasper:
-		{
-			return docker.CreateMongoDBContainer(image, Port, workdir, storedir, env, databaseType)
-		}
-	case types.MySQL:
-		{
-			return docker.CreateMysqlContainer(image, Port, workdir, storedir, env, databaseType)
-		}
-	case types.RedisGasper:
-		{
-			return docker.CreateRedisContainer(image, Port, workdir, storedir, env, databaseType)
-		}
-	default:
-		{
-			return "Invalid database type!", nil
-		}
-	}
+type containerHandler struct {
+	dockerImage      string
+	port             string
+	env              types.M
+	workdir          string
+	storedir         string
+	containerID, err func(string, string, string, string, types.M, string) (string, error)
 }
 
 // SetupDBInstance sets up containers for database
@@ -95,6 +81,14 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 	default:
 		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))
 	}
+
+	containerID, err = databaseMap[databaseType].containerID(databaseMap[databaseType].dockerImage,
+		databaseMap[databaseType].port,
+		databaseMap[databaseType].workdir,
+		databaseMap[databaseType].storedir,
+		databaseMap[databaseType].env,
+		databaseType,
+	)
 
 	if err != nil {
 		return "", types.NewResErr(500, "container not created", err)
