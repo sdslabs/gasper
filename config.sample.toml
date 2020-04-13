@@ -108,7 +108,7 @@ golang = "docker.io/sdsws/golang:1.1"
 ruby = "docker.io/sdsws/ruby:1.0"
 mysql = "docker.io/mysql:5.7"
 mongodb = "docker.io/mongo:4.2.1"
-postgres = "docker.io/postgres:latest"
+postgresql = "docker.io/postgres:latest"
 
 
 
