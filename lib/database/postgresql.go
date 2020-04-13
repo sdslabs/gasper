@@ -3,9 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
-
-	_ "github.com/jackc/pgx" // PostgrerSQL driver
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4" // PostgrerSQL driver
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/types"
 )
