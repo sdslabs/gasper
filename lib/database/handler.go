@@ -19,8 +19,10 @@ type containerHandler struct {
 	containerID, err func(string, string, string, string, types.M, string) (string, error)
 }
 
+
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(databaseType string) (string, types.ResponseError) {
+
 	storepath, _ := os.Getwd()
 
 	var containerID string

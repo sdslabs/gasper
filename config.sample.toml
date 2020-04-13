@@ -54,6 +54,7 @@ password = "alphadose"
 url = "mongodb://localhost:27017"
 
 
+
 ###########################
 #   Redis Configuration   #
 ###########################
@@ -109,8 +110,7 @@ ruby = "docker.io/sdsws/ruby:1.0"
 mysql = "docker.io/mysql:5.7"
 mongodb = "docker.io/mongo:4.2.1"
 postgresql = "docker.io/postgres:12.2-alpine"
-
-
+redis = "redis:latest"
 
 ##############################
 #   Services Configuration   #
@@ -133,7 +133,15 @@ exposure_interval = 30
 # to all worker nodes and removes inactive nodes from the central registry-server.
 cleanup_interval = 600
 deploy = true   # Deploy Kaze?
-port = 3000
+
+[services.kaze.mongodb]
+plugin = true  # Deploy MongoDB server and let `Kaze` manage it?
+container_port = 27019  # Port on which the MongoDB server container will run
+
+[services.kaze.redis]
+plugin = true  # Deploy Redis server and let `Kaze` manage it?
+container_port = 6380  # Port on which the Redis server container will run
+
 
 
 ###########################
@@ -172,7 +180,7 @@ metrics_interval = 600
 ##########################
 
 [services.kaen]
-deploy = false   # Deploy Kaen?
+deploy = false  # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`
