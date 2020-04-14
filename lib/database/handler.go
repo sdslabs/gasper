@@ -19,7 +19,6 @@ type containerHandler struct {
 	containerID, err func(string, string, string, string, types.M, string) (string, error)
 }
 
-
 var storepath, _ = os.Getwd()
 
 var databaseMap = map[string]*containerHandler{
@@ -37,7 +36,7 @@ var databaseMap = map[string]*containerHandler{
 		env:         configs.ServiceConfig.Kaze.MongoDB.Env,
 		workdir:     "/data/db",
 		storedir:    filepath.Join(storepath, "gasper-mongodb-storage"),
-		containerID: docker.CreateMongoDBContainer,
+		containerID: containerSpawnConstructor(dockerImage, port, workdir, storedir, env),
 	},
 	types.MySQL: {
 		dockerImage: configs.ImageConfig.Mysql,
@@ -56,6 +55,7 @@ var databaseMap = map[string]*containerHandler{
 		containerID: docker.CreateRedisContainer,
 	},
 }
+
 
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(databaseType string) (string, types.ResponseError) {

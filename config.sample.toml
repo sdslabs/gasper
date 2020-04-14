@@ -110,7 +110,7 @@ ruby = "docker.io/sdsws/ruby:1.0"
 mysql = "docker.io/mysql:5.7"
 mongodb = "docker.io/mongo:4.2.1"
 postgresql = "docker.io/postgres:12.2-alpine"
-redis = "redis:latest"
+redis = "docker.io/redis:6.0-rc3-alpine3.11"
 
 ##############################
 #   Services Configuration   #
