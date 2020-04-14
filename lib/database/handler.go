@@ -36,7 +36,7 @@ var databaseMap = map[string]*containerHandler{
 		env:         configs.ServiceConfig.Kaze.MongoDB.Env,
 		workdir:     "/data/db",
 		storedir:    filepath.Join(storepath, "gasper-mongodb-storage"),
-		containerID: containerSpawnConstructor(dockerImage, port, workdir, storedir, env),
+		containerID: docker.CreateMongoDBContainer,
 	},
 	types.MySQL: {
 		dockerImage: configs.ImageConfig.Mysql,
@@ -63,11 +63,14 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 	var containerID string
 	var err error
 
-	containerID, err = databaseMap[databaseType].containerID(databaseMap[databaseType].dockerImage,
-		databaseMap[databaseType].port,
-		databaseMap[databaseType].workdir,
-		databaseMap[databaseType].storedir,
-		databaseMap[databaseType].env,
+	instance := databaseMap[databaseType]
+
+	containerID, err = instance.containerID(
+		instance.dockerImage,
+		instance.port,
+		instance.workdir,
+		instance.storedir,
+		instance.env,
 		databaseType,
 	)
 
