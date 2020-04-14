@@ -42,7 +42,7 @@ var databaseMap = map[string]*containerHandler{
 		dockerImage: configs.ImageConfig.Mysql,
 		port:        strconv.Itoa(configs.ServiceConfig.Kaen.MySQL.ContainerPort),
 		env:         configs.ServiceConfig.Kaen.MySQL.Env,
-		workdir:     "/var/lib/mysql",
+		workdir:     "/app",
 		storedir:    filepath.Join(storepath, "mysql-storage"),
 		containerID: docker.CreateMysqlContainer,
 	},
