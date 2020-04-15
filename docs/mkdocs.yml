@@ -92,3 +92,4 @@ nav:
     - 'Creating Databases':
       - 'MySQL': 'examples/databases/mysql.md'
       - 'MongoDB': 'examples/databases/mongodb.md'
+      - 'PostgreSQL': 'examples/databases/postgresql.md'
