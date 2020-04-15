@@ -192,6 +192,16 @@ container_port = 33061  # Port on which the MySQL server container will run
 [services.kaen.mysql.env]
 MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server inside the container
 
+# Configuration for PostgreSQL database server managed by `Kaen`
+[services.kaen.postgresql]
+plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
+container_port = 29121  # Port on which the PostgreSQL server container will run
+
+# Environment variables for PostgreSQL docker container.
+[services.kaen.postgresql.env]
+POSTGRES_USER = "YOUR_ROOT_NAME"   # Root user of PostgreSQL server inside the container
+POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server inside the container
+
 # Configuration for MongoDB database server managed by `Kaen`
 [services.kaen.mongodb]
 plugin = false  # Deploy MongoDB server and let `Kaen` manage it?
