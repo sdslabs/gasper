@@ -54,7 +54,6 @@ password = "alphadose"
 url = "mongodb://localhost:27017"
 
 
-
 ###########################
 #   Redis Configuration   #
 ###########################
@@ -133,6 +132,7 @@ exposure_interval = 30
 # to all worker nodes and removes inactive nodes from the central registry-server.
 cleanup_interval = 600
 deploy = true   # Deploy Kaze?
+port = 3000
 
 [services.kaze.mongodb]
 plugin = true  # Deploy MongoDB server and let `Kaze` manage it?

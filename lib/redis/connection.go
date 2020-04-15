@@ -2,7 +2,7 @@ package redis
 
 import (
 	"fmt"
-	"os"
+	"time"
 
 	"github.com/go-redis/redis"
 	"github.com/sdslabs/gasper/configs"
@@ -15,13 +15,18 @@ var client = redis.NewClient(&redis.Options{
 	DB:       configs.RedisConfig.DB,
 })
 
-func init() {
+func setup() {
+	time.Sleep(5*time.Second)
 	_, err := client.Ping().Result()
 	if err != nil {
 		utils.Log("Redis connection was not established", utils.ErrorTAG)
 		utils.LogError(err)
-		os.Exit(1)
+		setup()
 	} else {
 		utils.LogInfo("Redis Connection Established")
 	}
+}
+
+func init(){
+	go setup()
 }
