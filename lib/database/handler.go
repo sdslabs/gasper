@@ -56,7 +56,6 @@ var databaseMap = map[string]*containerHandler{
 	},
 }
 
-
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 

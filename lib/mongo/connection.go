@@ -36,7 +36,7 @@ func setupAdmin() {
 }
 
 func setup() {
-	time.Sleep(5*time.Second)
+	time.Sleep(5 * time.Second)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	err = client.Ping(ctx, nil)
@@ -50,6 +50,6 @@ func setup() {
 	}
 }
 
-func init(){
+func init() {
 	go setup()
 }
