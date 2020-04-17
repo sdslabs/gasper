@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+
 	"github.com/jackc/pgx/v4" // PostgrerSQL driver
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/types"
@@ -26,7 +27,7 @@ func CreatePostgresqlDB(db types.Database) error {
 	}
 	defer conn.Close(ctx)
 
-	if _, err = conn.Exec(ctx, "CREATE DATABASE "+db.GetName()); err != nil {
+	if _, err = conn.Exec(ctx, fmt.Sprintf("CREATE DATABASE %s", db.GetName())); err != nil {
 		return fmt.Errorf("Error while creating the database : Database Already Exists")
 	}
 
@@ -56,7 +57,7 @@ func DeletePostgresqlDB(databaseName string) error {
 	}
 	defer conn.Close(ctx)
 
-	if _, err = conn.Exec(ctx, "DROP DATABASE IF EXISTS "+databaseName); err != nil {
+	if _, err = conn.Exec(ctx, fmt.Sprintf("DROP DATABASE IF EXISTS %s", databaseName)); err != nil {
 		return fmt.Errorf("Error while deleting the database : %s", err)
 	}
 
