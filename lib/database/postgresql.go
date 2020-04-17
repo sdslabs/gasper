@@ -42,6 +42,21 @@ func CreatePostgresqlDB(db types.Database) error {
 	if _, err = conn.Exec(ctx, query); err != nil {
 		return fmt.Errorf("Error while creating the database : %s", err)
 	}
+
+	query = fmt.Sprintf("REVOKE CONNECT ON DATABASE %s FROM PUBLIC;", db.GetName())
+	if _, err = conn.Exec(ctx, query); err != nil {
+		return fmt.Errorf("Error while revoking permissions : %s", err)
+	}
+
+	query = fmt.Sprintf("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA pg_catalog  FROM PUBLIC;")
+	if _, err = conn.Exec(ctx, query); err != nil {
+		return fmt.Errorf("Error while revoking permissions : %s", err)
+	}
+
+	query = fmt.Sprintf("REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA information_schema FROM PUBLIC;")
+	if _, err = conn.Exec(ctx, query); err != nil {
+		return fmt.Errorf("Error while revoking permissions : %s", err)
+	}
 	return nil
 }
 
