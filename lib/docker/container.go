@@ -76,7 +76,7 @@ func CreateContainerConfig(dockerImage, hostPort, workdir, storedir string, cont
 	for key, value := range env {
 		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
 	}
-	
+
 	containerConfig := &container.Config{
 		Image: dockerImage,
 		ExposedPorts: nat.PortSet{
@@ -96,7 +96,7 @@ func CreateContainerConfig(dockerImage, hostPort, workdir, storedir string, cont
 			nat.Port(containerPort): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: hostPort}},
 		},
 	}
-	
+
 	return containerConfig, hostConfig
 }
 

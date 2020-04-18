@@ -17,9 +17,9 @@ var (
 	mongoRootPassword = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"]
 	mongoPort         = configs.ServiceConfig.Kaen.MongoDB.ContainerPort
 
-	mongoGasperUser   = configs.ServiceConfig.Kaze.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"]
+	mongoGasperUser     = configs.ServiceConfig.Kaze.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"]
 	mongoGasperPassword = configs.ServiceConfig.Kaze.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"]
-	mongoGasperPort 	= configs.ServiceConfig.Kaze.MongoDB.ContainerPort
+	mongoGasperPort     = configs.ServiceConfig.Kaze.MongoDB.ContainerPort
 )
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {
