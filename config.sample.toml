@@ -146,6 +146,7 @@ MONGO_INITDB_ROOT_PASSWORD = "alphadose"   # Root password of MongoDB server ins
 [services.kaze.redis]
 plugin = true  # Deploy Redis server and let `Kaze` manage it?
 container_port = 6380  # Port on which the Redis server container will run
+password = "alphadose"
 
 ###########################
 #   Enrai Configuration   #
