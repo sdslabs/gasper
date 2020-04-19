@@ -94,7 +94,7 @@ type DatabaseService struct {
 	PlugIn        bool    `toml:"plugin"`
 	ContainerPort int     `toml:"container_port"`
 	Env           types.M `toml:"env"`
-	Password  	  string  `toml:"password"`
+	Password      string  `toml:"password"`
 }
 
 // KaenService is the configuration for Kaen microservice
