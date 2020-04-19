@@ -51,7 +51,7 @@ password = "alphadose"
 [mongo]
 # For databases with authentication
 # use the following URL format `mongodb://username:password@host:port`.
-url = "mongodb://alphadose:alphadose@localhost:27019/gasper?authSource=admin"
+url = "mongodb://alphadose:alphadose@localhost:27019/?authSource=admin"
 
 
 ###########################
