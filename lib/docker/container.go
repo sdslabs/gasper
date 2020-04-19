@@ -139,7 +139,7 @@ func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, 
 func CreateRedisContainer(image, redisPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
 	ctx := context.Background()
 	containerConfig, hostConfig := CreateContainerConfig(image, redisPort, workdir, storedir, "6379/tcp", env, databaseType)
-	containerConfig.Cmd = []string{"redis-server", "--requirepass", configs.RedisConfig.Password}
+	containerConfig.Cmd = []string{"redis-server", "--requirepass", configs.ServiceConfig.Kaze.Redis.Password}
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
 	if err != nil {
 		return "", err
