@@ -184,7 +184,7 @@ metrics_interval = 600
 ##########################
 
 [services.kaen]
-deploy = false  # Deploy Kaen?
+deploy = true  # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`
@@ -198,7 +198,7 @@ MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server ins
 
 # Configuration for PostgreSQL database server managed by `Kaen`
 [services.kaen.postgresql]
-plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
+plugin = true  # Deploy PostgreSQL server and let `Kaen` manage it?
 container_port = 29121  # Port on which the PostgreSQL server container will run
 
 # Environment variables for PostgreSQL docker container.

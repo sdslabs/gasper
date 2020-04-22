@@ -54,6 +54,14 @@ var databaseMap = map[string]*containerHandler{
 		storedir:    filepath.Join(storepath, "gasper-redis-storage"),
 		containerID: docker.CreateRedisContainer,
 	},
+	types.PostgreSQL: {
+		dockerImage: configs.ImageConfig.Postgresql,
+		port:        strconv.Itoa(configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort),
+		env:         configs.ServiceConfig.Kaen.PostgreSQL.Env,
+		workdir:     "/var/lib/postgresql/data",
+		storedir:    filepath.Join(storepath, "postgresql-storage"),
+		containerID: docker.CreatePostgreSQLContainer,
+	},
 }
 
 // SetupDBInstance sets up containers for database

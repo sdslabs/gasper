@@ -128,13 +128,14 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 // CreatePostgreSQLContainer function sets up a postgreSQL instance for managing databases
 func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
 	ctx := context.Background()
-	containerConfig, hostConfig := CreateContainerConfig(image, postgresqlPort, workdir, storedir, "5432/tcp", env)
+	containerConfig, hostConfig := CreateContainerConfig(image, postgresqlPort, workdir, storedir, "5432/tcp", env, databaseType)
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
 	if err != nil {
 		return "", err
 	}
 	return createdConf.ID, nil
 }
+
 // CreateRedisContainer function sets up a redis instance for gasper
 func CreateRedisContainer(image, redisPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
 	ctx := context.Background()
