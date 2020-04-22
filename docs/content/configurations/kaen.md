@@ -53,3 +53,22 @@ MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB s
 
 !!!info
     The username of the deployed MongoDB server will be the value of the variable **MONGO_INITDB_ROOT_USERNAME** and the password will be the value of the variable **MONGO_INITDB_ROOT_PASSWORD**
+
+## PostgreSQL Configuration
+
+This section deals with the PostgreSQL server configuration managed by Kaen
+
+```toml
+# Configuration for PostgreSQL database server managed by `Kaen`
+[services.kaen.postgresql]
+plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
+container_port = 29121  # Port on which the PostgreSQL server container will run
+
+# Environment variables for PostgreSQL docker container.
+[services.kaen.postgresql.env]
+POSTGRES_USER = "YOUR_ROOT_NAME"   # Root user of PostgreSQL server inside the container
+POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server inside the container
+```
+
+!!!info
+    The username of the deployed PostgreSQL server will be the value of the variable **POSTGRES_USER** and the password will be the value of the variable **POSTGRES_PASSWORD**

@@ -5,6 +5,7 @@ config.toml
 storage/
 mysql-storage/
 mongodb-storage/
+postgresql-storage/
 __debug_bin
 bin/
 .vscode/

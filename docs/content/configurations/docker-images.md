@@ -17,8 +17,9 @@ golang = "sdsws/golang:1.1"
 ruby = "sdsws/ruby:1.0"
 mysql = "mysql:5.7"
 mongodb = "mongo:4.2.1"
+postgresql ="postgres:12.2-alpine"
 ```
 
 You can replace the above default images and plug in your own docker images but make sure that each image has a **blocking CMD call** at the end of its corresponding dockerfile such as **CMD tail -f /dev/null**
 
-For reference, you can check out the [dockerfiles](https://github.com/sdslabs/gasper/tree/develop/dockerfiles) for the default images used by Gasper 
+For reference, you can check out the [dockerfiles](https://github.com/sdslabs/gasper/tree/develop/dockerfiles) for the default images used by Gasper

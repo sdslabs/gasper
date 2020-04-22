@@ -109,15 +109,16 @@ public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 ###################################
 
 [images]
-static = "sdsws/static:2.0"
-php = "sdsws/php:3.0"
-nodejs = "sdsws/node:2.1"
-python2 =  "sdsws/python2:1.1"
-python3 = "sdsws/python3:1.1"
-golang = "sdsws/golang:1.1"
-ruby = "sdsws/ruby:1.0"
-mysql = "mysql:5.7"
-mongodb = "mongo:4.2.1"
+static = "docker.io/sdsws/static:2.0"
+php = "docker.io/sdsws/php:3.0"
+nodejs = "docker.io/sdsws/node:2.1"
+python2 =  "docker.io/sdsws/python2:1.1"
+python3 = "docker.io/sdsws/python3:1.1"
+golang = "docker.io/sdsws/golang:1.1"
+ruby = "docker.io/sdsws/ruby:1.0"
+mysql = "docker.io/mysql:5.7"
+mongodb = "docker.io/mongo:4.2.1"
+postgresql ="docker.io/postgres:12.2-alpine"
 
 
 ##############################
@@ -191,6 +192,16 @@ container_port = 33061  # Port on which the MySQL server container will run
 # Environment variables for MySQL docker container.
 [services.kaen.mysql.env]
 MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server inside the container
+
+# Configuration for PostgreSQL database server managed by `Kaen`
+[services.kaen.postgresql]
+plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
+container_port = 29121  # Port on which the PostgreSQL server container will run
+
+# Environment variables for PostgreSQL docker container.
+[services.kaen.postgresql.env]
+POSTGRES_USER = "YOUR_ROOT_NAME"   # Root user of PostgreSQL server inside the container
+POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server inside the container
 
 # Configuration for MongoDB database server managed by `Kaen`
 [services.kaen.mongodb]
