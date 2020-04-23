@@ -12,7 +12,7 @@ The following section in the configuration file deals with MongoDB
 [mongo]
 # For databases with authentication
 # use the following URL format `mongodb://username:password@host:port`.
-url = "mongodb://localhost:27017"
+url = "mongodb://alphadose:alphadose@localhost:27019/?authSource=admin"
 ```
 
 !!!warning
