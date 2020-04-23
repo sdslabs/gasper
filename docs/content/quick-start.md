@@ -1,7 +1,14 @@
 # Quick Start
 
+## Dependencies
+The only thing you need for running Gasper is [Docker](https://www.docker.com/). Here are the installation guides for:-
+
+* [Linux](https://runnable.com/docker/install-docker-on-linux)
+* [MacOS](https://docs.docker.com/docker-for-mac/install/)
+* [Windows](https://docs.docker.com/docker-for-windows/install/)
+
 ## Grab the latest binary
-Assuming you have the [dependencies](/getting-started/dependencies) installed, head over to Gasper's [releases](https://github.com/sdslabs/gasper/releases) page and grab the latest binary according to your operating system and system architecture.
+Assuming you have the [dependencies](#dependencies) installed, head over to Gasper's [releases](https://github.com/sdslabs/gasper/releases) page and grab the latest binary according to your operating system and system architecture.
 
 ## Extract the downloaded content
 After downloading, unzip the tar file
