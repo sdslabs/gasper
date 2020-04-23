@@ -14,8 +14,8 @@ import (
 	"golang.org/x/net/context"
 )
 
-// CreateContainer creates a new container of the given container options, returns id of the container created
-func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
+// CreateApplicationContainer creates a new container of the given container options, returns id of the container created
+func CreateApplicationContainer(containerCfg *types.ApplicationContainer) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
@@ -68,13 +68,15 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 	return createdConf.ID, nil
 }
 
-//CreateContainerConfig function returns the config variables associated with creation of a container.
-func CreateContainerConfig(dockerImage, hostPort, workdir, storedir string, containerPort nat.Port, env types.M, databaseType string) (*container.Config, *container.HostConfig) {
+// createDatabaseContainerConfig function returns the config variables associated with creation of a container.
+func createDatabaseContainerConfig(dockerImage, hostPort, workdir, storedir string,
+	containerPort nat.Port, env types.M) (*container.Config, *container.HostConfig) {
+
 	volume := fmt.Sprintf("%s:%s", storedir, workdir)
 
 	envArr := []string{}
 	for key, value := range env {
-		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
+		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
 	}
 
 	containerConfig := &container.Config{
@@ -100,46 +102,38 @@ func CreateContainerConfig(dockerImage, hostPort, workdir, storedir string, cont
 	return containerConfig, hostConfig
 }
 
-// CreateMysqlContainer function sets up a mysql instance for managing databases
-func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
-	ctx := context.Background()
-	containerConfig, hostConfig := CreateContainerConfig(image, mysqlPort, workdir, storedir, "3306/tcp", env, databaseType)
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
+// createDatabaseContainer creates a container for database services
+func createDatabaseContainer(image, mysqlPort, workdir, storedir, databaseType string,
+	containerPort nat.Port, env types.M) (string, error) {
 
+	ctx := context.Background()
+	containerConfig, hostConfig := createDatabaseContainerConfig(image, mysqlPort, workdir, storedir, containerPort, env)
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
 	if err != nil {
 		return "", err
 	}
-
 	return createdConf.ID, nil
+}
+
+// CreateMySQLContainer function sets up a mysql instance for managing databases
+func CreateMySQLContainer(image, mysqlPort, workdir, storedir, databaseType string, env types.M) (string, error) {
+	return createDatabaseContainer(image, mysqlPort, workdir, storedir, databaseType, "3306/tcp", env)
 }
 
 // CreateMongoDBContainer function sets up a mongoDB instance for managing databases
-func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
-	ctx := context.Background()
-	containerConfig, hostConfig := CreateContainerConfig(image, mongodbPort, workdir, storedir, "27017/tcp", env, databaseType)
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
-	if err != nil {
-		return "", err
-	}
-
-	return createdConf.ID, nil
+func CreateMongoDBContainer(image, mongodbPort, workdir, storedir, databaseType string, env types.M) (string, error) {
+	return createDatabaseContainer(image, mongodbPort, workdir, storedir, databaseType, "27017/tcp", env)
 }
 
 // CreatePostgreSQLContainer function sets up a postgreSQL instance for managing databases
-func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
-	ctx := context.Background()
-	containerConfig, hostConfig := CreateContainerConfig(image, postgresqlPort, workdir, storedir, "5432/tcp", env, databaseType)
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
-	if err != nil {
-		return "", err
-	}
-	return createdConf.ID, nil
+func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir, databaseType string, env types.M) (string, error) {
+	return createDatabaseContainer(image, postgresqlPort, workdir, storedir, databaseType, "5432/tcp", env)
 }
 
 // CreateRedisContainer function sets up a redis instance for gasper
-func CreateRedisContainer(image, redisPort, workdir, storedir string, env types.M, databaseType string) (string, error) {
+func CreateRedisContainer(image, redisPort, workdir, storedir, databaseType string, env types.M) (string, error) {
 	ctx := context.Background()
-	containerConfig, hostConfig := CreateContainerConfig(image, redisPort, workdir, storedir, "6379/tcp", env, databaseType)
+	containerConfig, hostConfig := createDatabaseContainerConfig(image, redisPort, workdir, storedir, "6379/tcp", env)
 	containerConfig.Cmd = []string{"redis-server", "--requirepass", configs.ServiceConfig.Kaze.Redis.Password}
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
 	if err != nil {

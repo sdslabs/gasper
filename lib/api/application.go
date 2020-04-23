@@ -54,7 +54,7 @@ func setupContainer(app types.Application, storedir string, mutex map[string]cha
 	)
 
 	// create the container
-	containerID, err := docker.CreateContainer(&types.ApplicationContainer{
+	containerID, err := docker.CreateApplicationContainer(&types.ApplicationContainer{
 		Name:            app.GetName(),
 		Image:           app.GetDockerImage(),
 		ApplicationPort: app.GetApplicationPort(),
