@@ -68,21 +68,22 @@ func CreateApplicationContainer(containerCfg *types.ApplicationContainer) (strin
 	return createdConf.ID, nil
 }
 
-// createDatabaseContainerConfig function returns the config variables associated with creation of a container.
-func createDatabaseContainerConfig(dockerImage, hostPort, workdir, storedir string,
-	containerPort nat.Port, env types.M) (*container.Config, *container.HostConfig) {
-
-	volume := fmt.Sprintf("%s:%s", storedir, workdir)
+// CreateDatabaseContainer function creates a new container of the given container options, returns id of the container created
+func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, error) {
+	ctx := context.Background()
+	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
 	envArr := []string{}
-	for key, value := range env {
+	for key, value := range containerCfg.Env {
 		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
 	}
 
+	containerPortRule := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.DatabasePort))
+
 	containerConfig := &container.Config{
-		Image: dockerImage,
+		Image: containerCfg.Image,
 		ExposedPorts: nat.PortSet{
-			containerPort: struct{}{},
+			containerPortRule: struct{}{},
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
@@ -90,52 +91,22 @@ func createDatabaseContainerConfig(dockerImage, hostPort, workdir, storedir stri
 		},
 	}
 
+	if containerCfg.HasCustomCMD() {
+		containerConfig.Cmd = containerCfg.Cmd
+	}
+
 	hostConfig := &container.HostConfig{
 		Binds: []string{
 			volume,
 		},
 		PortBindings: nat.PortMap{
-			nat.Port(containerPort): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: hostPort}},
+			nat.Port(containerPortRule): []nat.PortBinding{{
+				HostIP:   "0.0.0.0",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort)}},
 		},
 	}
 
-	return containerConfig, hostConfig
-}
-
-// createDatabaseContainer creates a container for database services
-func createDatabaseContainer(image, mysqlPort, workdir, storedir, databaseType string,
-	containerPort nat.Port, env types.M) (string, error) {
-
-	ctx := context.Background()
-	containerConfig, hostConfig := createDatabaseContainerConfig(image, mysqlPort, workdir, storedir, containerPort, env)
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
-	if err != nil {
-		return "", err
-	}
-	return createdConf.ID, nil
-}
-
-// CreateMySQLContainer function sets up a mysql instance for managing databases
-func CreateMySQLContainer(image, mysqlPort, workdir, storedir, databaseType string, env types.M) (string, error) {
-	return createDatabaseContainer(image, mysqlPort, workdir, storedir, databaseType, "3306/tcp", env)
-}
-
-// CreateMongoDBContainer function sets up a mongoDB instance for managing databases
-func CreateMongoDBContainer(image, mongodbPort, workdir, storedir, databaseType string, env types.M) (string, error) {
-	return createDatabaseContainer(image, mongodbPort, workdir, storedir, databaseType, "27017/tcp", env)
-}
-
-// CreatePostgreSQLContainer function sets up a postgreSQL instance for managing databases
-func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir, databaseType string, env types.M) (string, error) {
-	return createDatabaseContainer(image, postgresqlPort, workdir, storedir, databaseType, "5432/tcp", env)
-}
-
-// CreateRedisContainer function sets up a redis instance for gasper
-func CreateRedisContainer(image, redisPort, workdir, storedir, databaseType string, env types.M) (string, error) {
-	ctx := context.Background()
-	containerConfig, hostConfig := createDatabaseContainerConfig(image, redisPort, workdir, storedir, "6379/tcp", env)
-	containerConfig.Cmd = []string{"redis-server", "--requirepass", configs.ServiceConfig.Kaze.Redis.Password}
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, databaseType)
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
 	if err != nil {
 		return "", err
 	}

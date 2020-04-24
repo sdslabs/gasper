@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
@@ -13,72 +12,53 @@ import (
 
 var storepath, _ = os.Getwd()
 
-type containerHandler struct {
-	dockerImage           string
-	port                  string
-	env                   types.M
-	workdir               string
-	storedir              string
-	databaseType          string
-	containerSpawner, err func(string, string, string, string, string, types.M) (string, error)
-}
-
-func (ch *containerHandler) spawn() (string, error) {
-	return ch.containerSpawner(
-		ch.dockerImage,
-		ch.port,
-		ch.workdir,
-		ch.storedir,
-		ch.databaseType,
-		ch.env,
-	)
-}
-
-var databaseMap = map[string]*containerHandler{
+// Maps database name with its appropriate configuration
+var databaseMap = map[string]*types.DatabaseContainer{
 	types.MongoDB: {
-		dockerImage:      configs.ImageConfig.Mongodb,
-		port:             strconv.Itoa(configs.ServiceConfig.Kaen.MongoDB.ContainerPort),
-		env:              configs.ServiceConfig.Kaen.MongoDB.Env,
-		workdir:          "/data/db",
-		storedir:         filepath.Join(storepath, "mongodb-storage"),
-		databaseType:     types.MongoDB,
-		containerSpawner: docker.CreateMongoDBContainer,
+		Image:         configs.ImageConfig.Mongodb,
+		ContainerPort: configs.ServiceConfig.Kaen.MongoDB.ContainerPort,
+		DatabasePort:  27017,
+		Env:           configs.ServiceConfig.Kaen.MongoDB.Env,
+		WorkDir:       "/data/db",
+		StoreDir:      filepath.Join(storepath, "mongodb-storage"),
+		Name:          types.MongoDB,
 	},
 	types.MongoDBGasper: {
-		dockerImage:      configs.ImageConfig.Mongodb,
-		port:             strconv.Itoa(configs.ServiceConfig.Kaze.MongoDB.ContainerPort),
-		env:              configs.ServiceConfig.Kaze.MongoDB.Env,
-		workdir:          "/data/db",
-		storedir:         filepath.Join(storepath, "gasper-mongodb-storage"),
-		databaseType:     types.MongoDBGasper,
-		containerSpawner: docker.CreateMongoDBContainer,
+		Image:         configs.ImageConfig.Mongodb,
+		ContainerPort: configs.ServiceConfig.Kaze.MongoDB.ContainerPort,
+		DatabasePort:  27017,
+		Env:           configs.ServiceConfig.Kaze.MongoDB.Env,
+		WorkDir:       "/data/db",
+		StoreDir:      filepath.Join(storepath, "gasper-mongodb-storage"),
+		Name:          types.MongoDBGasper,
 	},
 	types.MySQL: {
-		dockerImage:      configs.ImageConfig.Mysql,
-		port:             strconv.Itoa(configs.ServiceConfig.Kaen.MySQL.ContainerPort),
-		env:              configs.ServiceConfig.Kaen.MySQL.Env,
-		workdir:          "/var/lib/mysql",
-		storedir:         filepath.Join(storepath, "mysql-storage"),
-		databaseType:     types.MySQL,
-		containerSpawner: docker.CreateMySQLContainer,
+		Image:         configs.ImageConfig.Mysql,
+		ContainerPort: configs.ServiceConfig.Kaen.MySQL.ContainerPort,
+		DatabasePort:  3306,
+		Env:           configs.ServiceConfig.Kaen.MySQL.Env,
+		WorkDir:       "/var/lib/mysql",
+		StoreDir:      filepath.Join(storepath, "mysql-storage"),
+		Name:          types.MySQL,
 	},
 	types.RedisGasper: {
-		dockerImage:      configs.ImageConfig.Redis,
-		port:             strconv.Itoa(configs.ServiceConfig.Kaze.Redis.ContainerPort),
-		env:              configs.ServiceConfig.Kaze.Redis.Env,
-		workdir:          "/data/",
-		storedir:         filepath.Join(storepath, "gasper-redis-storage"),
-		databaseType:     types.RedisGasper,
-		containerSpawner: docker.CreateRedisContainer,
+		Image:         configs.ImageConfig.Redis,
+		ContainerPort: configs.ServiceConfig.Kaze.Redis.ContainerPort,
+		DatabasePort:  6379,
+		Env:           configs.ServiceConfig.Kaze.Redis.Env,
+		WorkDir:       "/data/",
+		StoreDir:      filepath.Join(storepath, "gasper-redis-storage"),
+		Name:          types.RedisGasper,
+		Cmd:           []string{"redis-server", "--requirepass", configs.ServiceConfig.Kaze.Redis.Password},
 	},
 	types.PostgreSQL: {
-		dockerImage:      configs.ImageConfig.Postgresql,
-		port:             strconv.Itoa(configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort),
-		env:              configs.ServiceConfig.Kaen.PostgreSQL.Env,
-		workdir:          "/var/lib/postgresql/data",
-		storedir:         filepath.Join(storepath, "postgresql-storage"),
-		databaseType:     types.PostgreSQL,
-		containerSpawner: docker.CreatePostgreSQLContainer,
+		Image:         configs.ImageConfig.Postgresql,
+		ContainerPort: configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort,
+		DatabasePort:  5432,
+		Env:           configs.ServiceConfig.Kaen.PostgreSQL.Env,
+		WorkDir:       "/var/lib/postgresql/data",
+		StoreDir:      filepath.Join(storepath, "postgresql-storage"),
+		Name:          types.PostgreSQL,
 	},
 }
 
@@ -88,7 +68,7 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 		return "", types.NewResErr(500, fmt.Sprintf("Invalid database type %s provided", databaseType), nil)
 	}
 
-	containerID, err := databaseMap[databaseType].spawn()
+	containerID, err := docker.CreateDatabaseContainer(databaseMap[databaseType])
 	if err != nil {
 		return "", types.NewResErr(500, "container not created", err)
 	}
