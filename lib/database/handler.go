@@ -1,78 +1,79 @@
 package database
 
 import (
-	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/types"
 )
 
+var storepath, _ = os.Getwd()
+
+// Maps database name with its appropriate configuration
+var databaseMap = map[string]*types.DatabaseContainer{
+	types.MongoDB: {
+		Image:         configs.ImageConfig.Mongodb,
+		ContainerPort: configs.ServiceConfig.Kaen.MongoDB.ContainerPort,
+		DatabasePort:  27017,
+		Env:           configs.ServiceConfig.Kaen.MongoDB.Env,
+		WorkDir:       "/data/db",
+		StoreDir:      filepath.Join(storepath, "mongodb-storage"),
+		Name:          types.MongoDB,
+	},
+	types.MongoDBGasper: {
+		Image:         configs.ImageConfig.Mongodb,
+		ContainerPort: configs.ServiceConfig.Kaze.MongoDB.ContainerPort,
+		DatabasePort:  27017,
+		Env:           configs.ServiceConfig.Kaze.MongoDB.Env,
+		WorkDir:       "/data/db",
+		StoreDir:      filepath.Join(storepath, "gasper-mongodb-storage"),
+		Name:          types.MongoDBGasper,
+	},
+	types.MySQL: {
+		Image:         configs.ImageConfig.Mysql,
+		ContainerPort: configs.ServiceConfig.Kaen.MySQL.ContainerPort,
+		DatabasePort:  3306,
+		Env:           configs.ServiceConfig.Kaen.MySQL.Env,
+		WorkDir:       "/var/lib/mysql",
+		StoreDir:      filepath.Join(storepath, "mysql-storage"),
+		Name:          types.MySQL,
+	},
+	types.RedisGasper: {
+		Image:         configs.ImageConfig.Redis,
+		ContainerPort: configs.ServiceConfig.Kaze.Redis.ContainerPort,
+		DatabasePort:  6379,
+		Env:           configs.ServiceConfig.Kaze.Redis.Env,
+		WorkDir:       "/data/",
+		StoreDir:      filepath.Join(storepath, "gasper-redis-storage"),
+		Name:          types.RedisGasper,
+		Cmd:           []string{"redis-server", "--requirepass", configs.ServiceConfig.Kaze.Redis.Password},
+	},
+	types.PostgreSQL: {
+		Image:         configs.ImageConfig.Postgresql,
+		ContainerPort: configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort,
+		DatabasePort:  5432,
+		Env:           configs.ServiceConfig.Kaen.PostgreSQL.Env,
+		WorkDir:       "/var/lib/postgresql/data",
+		StoreDir:      filepath.Join(storepath, "postgresql-storage"),
+		Name:          types.PostgreSQL,
+	},
+}
+
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(databaseType string) (string, types.ResponseError) {
-	storepath, _ := os.Getwd()
-
-	var containerID string
-	var err error
-
-	switch databaseType {
-	case types.MongoDB:
-		{
-			dockerImage := configs.ImageConfig.Mongodb
-			port := strconv.Itoa(configs.ServiceConfig.Kaen.MongoDB.ContainerPort)
-			env := configs.ServiceConfig.Kaen.MongoDB.Env
-			workdir := "/data/db"
-			storedir := filepath.Join(storepath, "mongodb-storage")
-			containerID, err = docker.CreateMongoDBContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				env)
-		}
-	case types.MySQL:
-		{
-			dockerImage := configs.ImageConfig.Mysql
-			port := strconv.Itoa(configs.ServiceConfig.Kaen.MySQL.ContainerPort)
-			env := configs.ServiceConfig.Kaen.MySQL.Env
-			workdir := "/var/lib/mysql"
-			storedir := filepath.Join(storepath, "mysql-storage")
-			containerID, err = docker.CreateMysqlContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				env)
-		}
-	case types.PostgreSQL:
-		{
-			dockerImage := configs.ImageConfig.Postgresql
-			port := strconv.Itoa(configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort)
-			env := configs.ServiceConfig.Kaen.PostgreSQL.Env
-			workdir := "/var/lib/postgresql/data"
-			storedir := filepath.Join(storepath, "postgresql-storage")
-			containerID, err = docker.CreatePostgreSQLContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				env)
-		}
-
-	default:
-		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))
+	if databaseMap[databaseType] == nil {
+		return "", types.NewResErr(500, fmt.Sprintf("Invalid database type %s provided", databaseType), nil)
 	}
 
+	containerID, err := docker.CreateDatabaseContainer(databaseMap[databaseType])
 	if err != nil {
 		return "", types.NewResErr(500, "container not created", err)
 	}
 
-	err = docker.StartContainer(containerID)
-
-	if err != nil {
+	if err := docker.StartContainer(containerID); err != nil {
 		return "", types.NewResErr(500, "container not started", err)
 	}
 

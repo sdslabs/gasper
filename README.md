@@ -84,6 +84,7 @@ The following databases are supported by Gasper:-
 
 * MySQL
 * MongoDB
+* PostgreSQL
 
 It ain't.... (complete the rest yourself)
 
@@ -93,14 +94,13 @@ You can find the complete documentation of Gasper at [https://gasper-docs.netlif
 
 ## Dependencies
 
-The following softwares are required for running Gasper:-
+The only thing you need for running Gasper is [Docker](https://www.docker.com/). Here are the installation guides for:-
 
-* [Docker](https://www.docker.com/)
-    * [For Linux](https://runnable.com/docker/install-docker-on-linux)
-    * [For MacOS](https://docs.docker.com/docker-for-mac/install/)
-    * [For Windows](https://docs.docker.com/docker-for-windows/install/)
-* [MongoDB](https://www.mongodb.com/download-center/community)
-* [Redis](https://redis.io/download)
+* [Linux](https://runnable.com/docker/install-docker-on-linux)
+* [MacOS](https://docs.docker.com/docker-for-mac/install/)
+* [Windows](https://docs.docker.com/docker-for-windows/install/)
+
+If you perhaps need a higher degree of control over your entire cloud then you may setup [MongoDB](https://www.mongodb.com/download-center/community) and [Redis](https://redis.io/download) separately within your infrastructure and make the necessary changes in the `mongo` and `redis` sections of `config.toml`.
 
 ## Download
 

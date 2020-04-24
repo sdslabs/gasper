@@ -6,6 +6,8 @@ storage/
 mysql-storage/
 mongodb-storage/
 postgresql-storage/
+gasper-mongodb-storage/
+gasper-redis-storage/
 __debug_bin
 bin/
 .vscode/

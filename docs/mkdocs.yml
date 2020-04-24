@@ -59,9 +59,7 @@ nav:
   - 'Welcome': 'index.md'
   - 'Features': 'features.md'
   - 'Concepts': 'concepts.md'
-  - 'Getting Started':
-    - 'Dependencies': 'getting-started/dependencies.md'
-    - 'Quick Start': 'getting-started/quick-start.md'
+  - 'Quick Start': 'quick-start.md'
   - 'Configurations':
     - 'Overview': 'configurations/overview.md'
     - 'Global': 'configurations/global.md'

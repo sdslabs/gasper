@@ -54,7 +54,9 @@ type MizuService struct {
 // KazeService is the default configuration for Kaze microservice
 type KazeService struct {
 	GenericService
-	CleanupInterval time.Duration `toml:"cleanup_interval"`
+	CleanupInterval time.Duration   `toml:"cleanup_interval"`
+	MongoDB         DatabaseService `toml:"mongodb"`
+	Redis           DatabaseService `toml:"redis"`
 }
 
 // IwaService is the configuration for Iwa microservice
@@ -92,6 +94,7 @@ type DatabaseService struct {
 	PlugIn        bool    `toml:"plugin"`
 	ContainerPort int     `toml:"container_port"`
 	Env           types.M `toml:"env"`
+	Password      string  `toml:"password"`
 }
 
 // KaenService is the configuration for Kaen microservice
@@ -114,6 +117,7 @@ type Images struct {
 	Mysql      string `toml:"mysql"`
 	Mongodb    string `toml:"mongodb"`
 	Postgresql string `toml:"postgresql"`
+	Redis      string `toml:"redis"`
 }
 
 // Services is the configuration for all Services

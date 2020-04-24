@@ -61,18 +61,18 @@ password = "alphadose"
 [mongo]
 # For databases with authentication
 # use the following URL format `mongodb://username:password@host:port`.
-url = "mongodb://localhost:27017"
+url = "mongodb://alphadose:alphadose@localhost:27019/?authSource=admin"
 
 
 ###########################
 #   Redis Configuration   #
 ###########################
 
-# Acts as a central-registry for the Gasper ecosystem
+# Acts as a central-registry for the Gasper ecosystem.
 [redis]
 host = "localhost"
-port = 6379
-password = ""
+port = 6380
+password = "alphadose"
 db = 0
 
 
@@ -99,7 +99,7 @@ max_refresh = 2419200 # 28 days
 [cloudflare]
 # API Token used for creating/updating Cloudflare's DNS records.
 # This token must have the scopes ZONE:ZONE:EDIT and ZONE:DNS:EDIT.
-api_token = "" 
+api_token = ""
 plugin = false  # Use Cloudflare Plugin?
 public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 
@@ -118,14 +118,14 @@ golang = "docker.io/sdsws/golang:1.1"
 ruby = "docker.io/sdsws/ruby:1.0"
 mysql = "docker.io/mysql:5.7"
 mongodb = "docker.io/mongo:4.2.1"
-postgresql ="docker.io/postgres:12.2-alpine"
-
+postgresql = "docker.io/postgres:12.2-alpine"
+redis = "docker.io/redis:6.0-rc3-alpine3.11"
 
 ##############################
 #   Services Configuration   #
 ##############################
 
-# Configuration for the various microservices comprising the Gasper ecosystem
+# Configuration for the various microservices comprising the Gasper ecosystem.
 [services]
 
 # Time Interval (in seconds) in which the current node updates
@@ -144,6 +144,19 @@ cleanup_interval = 600
 deploy = true   # Deploy Kaze?
 port = 3000
 
+[services.kaze.mongodb]
+plugin = true  # Deploy MongoDB server and let `Kaze` manage it?
+container_port = 27019  # Port on which the MongoDB server container will run
+
+# Environment variables for MongoDB docker container.
+[services.kaze.mongodb.env]
+MONGO_INITDB_ROOT_USERNAME = "alphadose"   # Root user of MongoDB server inside the container
+MONGO_INITDB_ROOT_PASSWORD = "alphadose"   # Root password of MongoDB server inside the container
+
+[services.kaze.redis]
+plugin = true  # Deploy Redis server and let `Kaze` manage it?
+container_port = 6380  # Port on which the Redis server container will run
+password = "alphadose"
 
 ###########################
 #   Enrai Configuration   #
@@ -152,7 +165,7 @@ port = 3000
 [services.enrai]
 # Time Interval (in seconds) in which `Enrai` updates its
 # `Reverse-Proxy Record Storage` by polling the central registry-server.
-record_update_interval = 30
+record_update_interval = 15
 deploy = false  # Deploy Enrai?
 port = 80
 
@@ -181,7 +194,7 @@ metrics_interval = 600
 ##########################
 
 [services.kaen]
-deploy = false   # Deploy Kaen?
+deploy = true  # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`
@@ -195,7 +208,7 @@ MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server ins
 
 # Configuration for PostgreSQL database server managed by `Kaen`
 [services.kaen.postgresql]
-plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
+plugin = true  # Deploy PostgreSQL server and let `Kaen` manage it?
 container_port = 29121  # Port on which the PostgreSQL server container will run
 
 # Environment variables for PostgreSQL docker container.
@@ -205,7 +218,7 @@ POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server 
 
 # Configuration for MongoDB database server managed by `Kaen`
 [services.kaen.mongodb]
-plugin = false  # Deploy MongoDB server and let `Kaen` manage it?
+plugin = false  # Deploy MongoDB server and let `Kaen` manage it
 container_port = 27018  # Port on which the MongoDB server container will run
 
 # Environment variables for MongoDB docker container.
@@ -221,7 +234,7 @@ MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB s
 [services.hikari]
 # Time Interval (in seconds) in which `Hikari` updates its
 # `DNS Record Storage` by polling the central registry-server.
-record_update_interval = 30
+record_update_interval = 15
 deploy = false  # Deploy Hikari?
 port = 53
 
@@ -241,9 +254,9 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 
 # IP address to establish a SSH connection to.
 # Equal to the current node's IP address if left blank.
-# This field is only for information of the client who will create applications 
+# This field is only for information of the client who will create applications
 # and this field's value will not affect Iwa's functioning in any manner.
-# To be used when the current node is only accessible by a jump host or 
+# To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""
 ```

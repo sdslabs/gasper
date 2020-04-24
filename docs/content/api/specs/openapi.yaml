@@ -286,6 +286,7 @@ components:
           enum:
             - mysql
             - mongodb
+            - postgresql
 
     Metrics:
       type: object
@@ -929,6 +930,7 @@ paths:
             enum:
               - mysql
               - mongodb
+              - postgresql
       security:
         - bearerAuth: []
       responses:
@@ -1341,6 +1343,7 @@ paths:
             enum:
               - mysql
               - mongodb
+              - postgresql
         - in: query
           name: host_ip
           description: IPv4 address of the node in which the database is deployed
@@ -1645,7 +1648,7 @@ paths:
                       type: string  
                   mongodb:
                     type: array
-                    example: [192.168.208.206:9001]
+                    example: [192.168.208.206:9000]
                     items:
                       type: string  
                   mysql:
@@ -1653,6 +1656,11 @@ paths:
                     example: [192.168.208.206:9000]
                     items:
                       type: string  
+                  postgresql:
+                    type: array
+                    example: [192.168.208.206:9000]
+                    items:
+                      type: string                       
                   iwa:
                     type: array
                     example: [192.168.208.206:2222]
@@ -1684,6 +1692,7 @@ paths:
               - hikari
               - mysql
               - mongodb
+              - postgresql
       security:
         - bearerAuth: []
       responses:

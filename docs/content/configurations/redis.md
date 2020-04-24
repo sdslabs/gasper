@@ -13,7 +13,7 @@ It is used for storing the addresses of all active components, nodes, applicatio
 [redis]
 host = "localhost"
 port = 6379
-password = ""
+password = "alphadose"
 db = 0
 ```
 

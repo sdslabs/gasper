@@ -14,8 +14,8 @@ import (
 	"golang.org/x/net/context"
 )
 
-// CreateContainer creates a new container of the given container options, returns id of the container created
-func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
+// CreateApplicationContainer creates a new container of the given container options, returns id of the container created
+func CreateApplicationContainer(containerCfg *types.ApplicationContainer) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
@@ -68,20 +68,22 @@ func CreateContainer(containerCfg *types.ApplicationContainer) (string, error) {
 	return createdConf.ID, nil
 }
 
-// CreateMysqlContainer function sets up a mysql instance for managing databases
-func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.M) (string, error) {
+// CreateDatabaseContainer function creates a new container of the given container options, returns id of the container created
+func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, error) {
 	ctx := context.Background()
-	volume := fmt.Sprintf("%s:%s", storedir, workdir)
+	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
 	envArr := []string{}
-	for key, value := range env {
-		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
+	for key, value := range containerCfg.Env {
+		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
 	}
 
+	containerPortRule := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.DatabasePort))
+
 	containerConfig := &container.Config{
-		Image: image,
+		Image: containerCfg.Image,
 		ExposedPorts: nat.PortSet{
-			"3306/tcp": struct{}{},
+			containerPortRule: struct{}{},
 		},
 		Env: envArr,
 		Volumes: map[string]struct{}{
@@ -89,43 +91,8 @@ func CreateMysqlContainer(image, mysqlPort, workdir, storedir string, env types.
 		},
 	}
 
-	hostConfig := &container.HostConfig{
-		Binds: []string{
-			volume,
-		},
-		PortBindings: nat.PortMap{
-			nat.Port("3306/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: mysqlPort}},
-		},
-	}
-
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.MySQL)
-
-	if err != nil {
-		return "", err
-	}
-
-	return createdConf.ID, nil
-}
-
-// CreateMongoDBContainer function sets up a mongoDB instance for managing databases
-func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env types.M) (string, error) {
-	ctx := context.Background()
-	volume := fmt.Sprintf("%s:%s", storedir, workdir)
-
-	envArr := []string{}
-	for key, value := range env {
-		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
-	}
-
-	containerConfig := &container.Config{
-		Image: image,
-		ExposedPorts: nat.PortSet{
-			"27017/tcp": struct{}{},
-		},
-		Env: envArr,
-		Volumes: map[string]struct{}{
-			volume: {},
-		},
+	if containerCfg.HasCustomCMD() {
+		containerConfig.Cmd = containerCfg.Cmd
 	}
 
 	hostConfig := &container.HostConfig{
@@ -133,53 +100,16 @@ func CreateMongoDBContainer(image, mongodbPort, workdir, storedir string, env ty
 			volume,
 		},
 		PortBindings: nat.PortMap{
-			nat.Port("27017/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: mongodbPort}},
+			nat.Port(containerPortRule): []nat.PortBinding{{
+				HostIP:   "0.0.0.0",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort)}},
 		},
 	}
 
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.MongoDB)
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
 	if err != nil {
 		return "", err
 	}
-
-	return createdConf.ID, nil
-}
-
-// CreatePostgreSQLContainer function sets up a postgreSQL instance for managing databases
-func CreatePostgreSQLContainer(image, postgresqlPort, workdir, storedir string, env types.M) (string, error) {
-	ctx := context.Background()
-	volume := fmt.Sprintf("%s:%s", storedir, workdir)
-
-	envArr := []string{}
-	for key, value := range env {
-		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
-	}
-
-	containerConfig := &container.Config{
-		Image: image,
-		ExposedPorts: nat.PortSet{
-			"5432/tcp": struct{}{},
-		},
-		Env: envArr,
-		Volumes: map[string]struct{}{
-			volume: {},
-		},
-	}
-
-	hostConfig := &container.HostConfig{
-		Binds: []string{
-			volume,
-		},
-		PortBindings: nat.PortMap{
-			nat.Port("5432/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: postgresqlPort}},
-		},
-	}
-
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, types.PostgreSQL)
-	if err != nil {
-		return "", err
-	}
-
 	return createdConf.ID, nil
 }
 
