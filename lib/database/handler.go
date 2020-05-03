@@ -61,13 +61,13 @@ var databaseMap = map[string]*types.DatabaseContainer{
 		Name:          types.PostgreSQL,
 	},
 	types.RedisKaen: {
-		Image:         configs.ImageConfig.Redis,
-		ContainerPort: configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort,
-		DatabasePort:  6379,
-		Env:           configs.ServiceConfig.Kaen.PostgreSQL.Env,
-		WorkDir:       "/data/",
-		StoreDir:      filepath.Join(storepath, "kaen-redis-storage"),
-		Name:          types.RedisKaen,
+		// Image:         configs.ImageConfig.Redis,
+		// ContainerPort: configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort,
+		// DatabasePort:  6379,
+		// Env:           configs.ServiceConfig.Kaen.PostgreSQL.Env,
+		// WorkDir:       "/data/",
+		// StoreDir:      filepath.Join(storepath, "kaen-redis-storage"),
+		// Name:          types.RedisKaen,
 	},
 }
 
@@ -82,7 +82,15 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 		return "", types.NewResErr(500, "container not created", err)
 	}
 
+<<<<<<< HEAD
 	if err := docker.StartContainer(containerID); err != nil {
+=======
+	if databaseType != types.RedisKaen {
+		err = docker.StartContainer(containerID)
+	}
+
+	if err != nil {
+>>>>>>> fix(handler.go): fix error log
 		return "", types.NewResErr(500, "container not started", err)
 	}
 
