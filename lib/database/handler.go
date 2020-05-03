@@ -63,18 +63,18 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 		}
 	case types.RedisKaen:
 		{
-			dockerImage := configs.ImageConfig.RedisKaen
-			port := strconv.Itoa(configs.ServiceConfig.Kaen.RedisKaen.ContainerPort)
-			env := configs.ServiceConfig.Kaen.RedisKaen.Env
-			workdir := "/var/lib/redis/6379"
-			storedir := filepath.Join(storepath, "redis-storage", "main")
-			containerID, err = docker.CreateRedisContainer(
-				dockerImage,
-				port,
-				workdir,
-				storedir,
-				"main",
-				env)
+			// dockerImage := configs.ImageConfig.RedisKaen
+			// port := strconv.Itoa(configs.ServiceConfig.Kaen.RedisKaen.ContainerPort)
+			// env := configs.ServiceConfig.Kaen.RedisKaen.Env
+			// workdir := "/var/lib/redis/6379"
+			// storedir := filepath.Join(storepath, "redis-storage", "main")
+			// containerID, err = docker.CreateRedisContainer(
+			// 	dockerImage,
+			// 	port,
+			// 	workdir,
+			// 	storedir,
+			// 	"main",
+			// 	env)
 		}
 
 	default:
@@ -85,7 +85,9 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 		return "", types.NewResErr(500, "container not created", err)
 	}
 
-	err = docker.StartContainer(containerID)
+	if databaseType != types.RedisKaen {
+		err = docker.StartContainer(containerID)
+	}
 
 	if err != nil {
 		return "", types.NewResErr(500, "container not started", err)
