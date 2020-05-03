@@ -60,6 +60,15 @@ var databaseMap = map[string]*types.DatabaseContainer{
 		StoreDir:      filepath.Join(storepath, "postgresql-storage"),
 		Name:          types.PostgreSQL,
 	},
+	types.RedisKaen: {
+		Image:         configs.ImageConfig.Redis,
+		ContainerPort: configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort,
+		DatabasePort:  6379,
+		Env:           configs.ServiceConfig.Kaen.PostgreSQL.Env,
+		WorkDir:       "/data/",
+		StoreDir:      filepath.Join(storepath, "kaen-redis-storage"),
+		Name:          types.RedisKaen,
+	},
 }
 
 // SetupDBInstance sets up containers for database
