@@ -61,6 +61,21 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 				storedir,
 				env)
 		}
+	case types.RedisKaen:
+		{
+			dockerImage := configs.ImageConfig.RedisKaen
+			port := strconv.Itoa(configs.ServiceConfig.Kaen.RedisKaen.ContainerPort)
+			env := configs.ServiceConfig.Kaen.RedisKaen.Env
+			workdir := "/var/lib/redis/6379"
+			storedir := filepath.Join(storepath, "redis-storage", "main")
+			containerID, err = docker.CreateRedisContainer(
+				dockerImage,
+				port,
+				workdir,
+				storedir,
+				"main",
+				env)
+		}
 
 	default:
 		return "", types.NewResErr(500, "invalid database type provided", errors.New("invalid database type provided"))

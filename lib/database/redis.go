@@ -1,0 +1,45 @@
+package database
+
+import (
+	"os"
+	"path/filepath"
+	"strconv"
+
+	"github.com/sdslabs/gasper/lib/utils"
+
+	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/types"
+)
+
+// CreateRedisDBContainer  creates a postgre database
+func CreateRedisDBContainer(db types.Database) error {
+	storepath, _ := os.Getwd()
+	var err error
+	dockerImage := configs.ImageConfig.RedisKaen
+	port, err := utils.GetFreePort()
+	contaierport := strconv.Itoa(port)
+	env := configs.ServiceConfig.Kaen.RedisKaen.Env
+	workdir := "/var/lib/redis/6379"
+	storedir := filepath.Join(storepath, "redis-storage", db.GetName())
+	_, err = docker.CreateRedisContainer(
+		dockerImage,
+		contaierport,
+		workdir,
+		storedir,
+		db.GetName(),
+		env)
+	if err != nil {
+		return types.NewResErr(500, "container not created", err)
+	}
+	// err = docker.StartContainer(containerID)
+	// if err != nil {
+	// 	return "", types.NewResErr(500, "container not started", err)
+	// }
+	return nil
+}
+
+// DeleteRedisDBContainer delete container
+func DeleteRedisDBContainer(databasename string) error {
+	return nil
+}

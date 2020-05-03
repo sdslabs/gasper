@@ -19,6 +19,9 @@ const (
 	// PostgreSQL holds the name of `postgresql` component under 'kaen'
 	PostgreSQL = "postgresql"
 
+	// RedisKaen holds the name of `rediskaen` component under 'kaen'
+	RedisKaen = "rediskaen"
+
 	// Iwa holds the name of `iwa` microservice
 	Iwa = "iwa"
 

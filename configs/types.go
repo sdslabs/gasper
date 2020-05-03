@@ -100,6 +100,7 @@ type KaenService struct {
 	MySQL      DatabaseService `toml:"mysql"`
 	MongoDB    DatabaseService `toml:"mongodb"`
 	PostgreSQL DatabaseService `toml:"postgresql"`
+	RedisKaen  DatabaseService `toml:"rediskaen"`
 }
 
 // Images is the configuration for the docker images in use
@@ -114,6 +115,7 @@ type Images struct {
 	Mysql      string `toml:"mysql"`
 	Mongodb    string `toml:"mongodb"`
 	Postgresql string `toml:"postgresql"`
+	RedisKaen  string `toml:"redis"`
 }
 
 // Services is the configuration for all Services
