@@ -3,7 +3,6 @@ package database
 import (
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"github.com/sdslabs/gasper/lib/utils"
 
@@ -16,23 +15,32 @@ import (
 func CreateRedisDBContainer(db types.Database) error {
 	storepath, _ := os.Getwd()
 	var err error
-	dockerImage := configs.ImageConfig.Redis
 	port, err := utils.GetFreePort()
+	var databaseMap = map[string]*types.DatabaseContainer{
+		types.RedisKaen: {
+			Image:         configs.ImageConfig.Redis,
+			ContainerPort: port,
+			DatabasePort:  6379,
+			Env:           configs.ServiceConfig.Kaen.RedisKaen.Env,
+			WorkDir:       "/data/",
+			StoreDir:      filepath.Join(storepath, "kaen-redis-storage", db.GetName()),
+			Name:          db.GetName(),
+			Cmd:           []string{"redis-server", "--requirepass", db.GetPassword()},
 
-	contaierport := strconv.Itoa(port)
-	env := configs.ServiceConfig.Kaen.RedisKaen.Env
-	workdir := "/data/"
-	storedir := filepath.Join(storepath, "kaen-redis-storage", db.GetName())
-	_, err = docker.CreateRedisContainer(
-		dockerImage,
-		contaierport,
-		workdir,
-		storedir,
-		db.GetName(),
-		env)
+		},
+	}
+
+	containerID, err := docker.CreateDatabaseContainer(databaseMap[types.RedisKaen])
+	err = docker.StartContainer(containerID)
+
+	db.SetContainerPort(port)
+
 	if err != nil {
 		return types.NewResErr(500, "container not created", err)
 	}
+
+	err = docker.StartContainer(containerID)
+
 	return nil
 }
 

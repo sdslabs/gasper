@@ -26,7 +26,7 @@ const (
 	RedisGasper = "redis_gasper"
 
 	// RedisKaen holds the name of `rediskaen` component under 'kaen'
-	RedisKaen = "rediskaen"
+	RedisKaen = "redis"
 
 	// Iwa holds the name of `iwa` microservice
 	Iwa = "iwa"

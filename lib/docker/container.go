@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
@@ -111,44 +110,6 @@ func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, err
 	if err != nil {
 		return "", err
 	}
-	return createdConf.ID, nil
-}
-
-// CreateRedisContaienr function sets up a redisDB instance for managing databases
-func CreateRedisContainer(image, rediskaenport, workdir, storedir string, containername string, env types.M) (string, error) {
-	ctx := context.Background()
-	volume := fmt.Sprintf("%s:%s", storedir, workdir)
-
-	envArr := []string{}
-	for key, value := range env {
-		envArr = append(envArr, key+"="+fmt.Sprintf("%v", value))
-	}
-
-	containerConfig := &container.Config{
-		Image: image,
-		ExposedPorts: nat.PortSet{
-			"6379/tcp": struct{}{},
-		},
-		Env: envArr,
-		Volumes: map[string]struct{}{
-			volume: {},
-		},
-	}
-
-	hostConfig := &container.HostConfig{
-		Binds: []string{
-			volume,
-		},
-		PortBindings: nat.PortMap{
-			nat.Port("6379/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: strconv.Itoa(1000)}},
-		},
-	}
-
-	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containername)
-	if err != nil {
-		return "", err
-	}
-
 	return createdConf.ID, nil
 }
 
