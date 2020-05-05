@@ -216,12 +216,7 @@ POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server 
 plugin = false  # Deploy MongoDB server and let `Kaen` manage it?
 container_port = 27018  # Port on which the MongoDB server container will run
 
-# Environment variables for RedisDB docker container.
-[services.kaen.mongodb.env]
-MONGO_INITDB_ROOT_USERNAME = "YOUR_ROOT_NAME"   # Root user of MongoDB server inside the container
-MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB server inside the container
-
-# Configuration for RedisDB database server managed by `Kaen`
+# Configuration for Redis database server managed by `Kaen`
 [services.kaen.redis]
 plugin = false  # Deploy RedisDB server and let `Kaen` manage it
 container_port = 20000  # Port on which the RedisDB server container will run
