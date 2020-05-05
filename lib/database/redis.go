@@ -18,11 +18,11 @@ func CreateRedisDBContainer(db types.Database) error {
 	var err error
 	dockerImage := configs.ImageConfig.Redis
 	port, err := utils.GetFreePort()
-	
+
 	contaierport := strconv.Itoa(port)
 	env := configs.ServiceConfig.Kaen.RedisKaen.Env
-	workdir := "/var/lib/redis/6379"
-	storedir := filepath.Join(storepath, "redis-storage", db.GetName())
+	workdir := "/data/"
+	storedir := filepath.Join(storepath, "kaen-redis-storage", db.GetName())
 	_, err = docker.CreateRedisContainer(
 		dockerImage,
 		contaierport,

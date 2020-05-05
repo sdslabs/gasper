@@ -66,7 +66,7 @@ func startKaenService() error {
 		setupDatabaseContainer(types.PostgreSQL)
 	}
 	if configs.ServiceConfig.Kaen.RedisKaen.PlugIn {
-		checkAndPullImages(configs.ImageConfig.RedisKaen)
+		checkAndPullImages(configs.ImageConfig.Redis)
 		setupDatabaseContainer(types.RedisKaen)
 	}
 	return startGrpcServer(kaen.NewService(), configs.ServiceConfig.Kaen.Port)
