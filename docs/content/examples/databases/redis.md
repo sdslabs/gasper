@@ -23,7 +23,7 @@ $ curl -X POST \
     "user": "alpha",
     "instance_type": "database",
     "language": "redis",
-    "db_url": "alpha3.db.sdslabs.co",
+    "db_url": "alpha.db.sdslabs.co",
     "host_ip": "192.168.43.46",
     "port": 45861,
     "owner": "anish.mukherjee1996@gmail.com",
