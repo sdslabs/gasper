@@ -91,4 +91,4 @@ nav:
       - 'MySQL': 'examples/databases/mysql.md'
       - 'MongoDB': 'examples/databases/mongodb.md'
       - 'PostgreSQL': 'examples/databases/postgresql.md'
-      - 'PostgreSQL': 'examples/databases/redis.md'
+      - 'Redis': 'examples/databases/redis.md'
