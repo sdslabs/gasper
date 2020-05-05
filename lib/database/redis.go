@@ -18,6 +18,7 @@ func CreateRedisDBContainer(db types.Database) error {
 	var err error
 	dockerImage := configs.ImageConfig.RedisKaen
 	port, err := utils.GetFreePort()
+	
 	contaierport := strconv.Itoa(port)
 	env := configs.ServiceConfig.Kaen.RedisKaen.Env
 	workdir := "/var/lib/redis/6379"
@@ -32,14 +33,12 @@ func CreateRedisDBContainer(db types.Database) error {
 	if err != nil {
 		return types.NewResErr(500, "container not created", err)
 	}
-	// err = docker.StartContainer(containerID)
-	// if err != nil {
-	// 	return "", types.NewResErr(500, "container not started", err)
-	// }
 	return nil
 }
 
 // DeleteRedisDBContainer delete container
-func DeleteRedisDBContainer(databasename string) error {
-	return nil
+func DeleteRedisDBContainer(containerID string) error {
+	err := docker.DeleteContainer(containerID)
+	return err
+
 }

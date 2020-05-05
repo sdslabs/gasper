@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
@@ -209,7 +210,7 @@ func CreateRedisContainer(image, rediskaenport, workdir, storedir string, contai
 			volume,
 		},
 		PortBindings: nat.PortMap{
-			nat.Port("6379/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: rediskaenport}},
+			nat.Port("6379/tcp"): []nat.PortBinding{{HostIP: "0.0.0.0", HostPort: strconv.Itoa(1000)}},
 		},
 	}
 
