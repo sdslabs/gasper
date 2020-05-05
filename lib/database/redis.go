@@ -26,7 +26,6 @@ func CreateRedisDBContainer(db types.Database) error {
 			StoreDir:      filepath.Join(storepath, "kaen-redis-storage", db.GetName()),
 			Name:          db.GetName(),
 			Cmd:           []string{"redis-server", "--requirepass", db.GetPassword()},
-
 		},
 	}
 
