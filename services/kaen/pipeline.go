@@ -2,87 +2,86 @@ package kaen
 
 import (
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/mongo"
+	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/types"
 )
 
+// databaseStateCleanup removes the database's data from MongoDB and Redis
+func databaseStateCleanup(databaseName string) {
+	mongo.DeleteInstance(types.M{
+		mongo.NameKey:         databaseName,
+		mongo.InstanceTypeKey: mongo.DBInstance,
+	})
+	redis.RemoveDB(databaseName)
+}
+
+// databaseHandler is a struct for managing operations of a specific type of database (eg:- MySQL, Redis etc)
 type databaseHandler struct {
-	init    func(*types.DatabaseConfig)
-	create  func(types.Database) error
-	delete  func(string) error
-	cleanup func(string)
-	logs    func(string) ([]string, error)
-	reload  func() error
+	language      string
+	containerPort int
+	create        func(types.Database) error
+	delete        func(string) error
 }
 
-func initConstructor(language string, containerPort int) func(*types.DatabaseConfig) {
-	return func(db *types.DatabaseConfig) {
-		db.SetLanguage(language)
-		db.SetContainerPort(containerPort)
+// init sets the language and container port of the database server in the context
+// of the new database to be created
+func (db *databaseHandler) init(cfg *types.DatabaseConfig) {
+	cfg.SetLanguage(db.language)
+	cfg.SetContainerPort(db.containerPort)
+}
+
+// cleanup cleans the database from MongoDB, Redis and the corresponding database server
+func (db *databaseHandler) cleanup(databaseName string) {
+	go db.delete(databaseName)
+	databaseStateCleanup(databaseName)
+}
+
+// logs fetches the logs of the database server
+func (db *databaseHandler) logs(tail string) ([]string, error) {
+	if tail == "" {
+		tail = "-1"
 	}
-}
-
-func cleanupConstructor(databaseType string) func(string) {
-	return func(databaseName string) {
-		go commons.DatabaseFullCleanup(databaseName, databaseType)
-		go commons.DatabaseStateCleanup(databaseName)
+	data, err := docker.ReadLogs(db.language, tail)
+	if err != nil && err.Error() != "EOF" {
+		return nil, err
 	}
+	return data, nil
 }
 
-func logConstructor(serviceName string) func(string) ([]string, error) {
-	return func(tail string) ([]string, error) {
-		if tail == "" {
-			tail = "-1"
-		}
-		data, err := docker.ReadLogs(serviceName, tail)
-		if err != nil && err.Error() != "EOF" {
-			return nil, err
-		}
-		return data, nil
-	}
+// reload restarts the database server
+func (db *databaseHandler) reload() error {
+	cmd := []string{"service", db.language, "start"}
+	_, err := docker.ExecDetachedProcess(db.language, cmd)
+	return err
 }
 
-func reloadConstructor(serviceName string) func() error {
-	return func() (err error) {
-		cmd := []string{"service", serviceName, "start"}
-		_, err = docker.ExecDetachedProcess(serviceName, cmd)
-		return
-	}
-}
-
+// pipeline maps the type of database to the corresponding handler
 var pipeline = map[string]*databaseHandler{
 	types.MongoDB: {
-		init:    initConstructor(types.MongoDB, configs.ServiceConfig.Kaen.MongoDB.ContainerPort),
-		create:  database.CreateMongoDB,
-		delete:  database.DeleteMongoDB,
-		cleanup: cleanupConstructor(types.MongoDB),
-		logs:    logConstructor(types.MongoDB),
-		reload:  reloadConstructor(types.MongoDB),
+		language:      types.MongoDB,
+		containerPort: configs.ServiceConfig.Kaen.MongoDB.ContainerPort,
+		create:        database.CreateMongoDB,
+		delete:        database.DeleteMongoDB,
 	},
 	types.MySQL: {
-		init:    initConstructor(types.MySQL, configs.ServiceConfig.Kaen.MySQL.ContainerPort),
-		create:  database.CreateMysqlDB,
-		delete:  database.DeleteMysqlDB,
-		cleanup: cleanupConstructor(types.MySQL),
-		logs:    logConstructor(types.MySQL),
-		reload:  reloadConstructor(types.MySQL),
+		language:      types.MySQL,
+		containerPort: configs.ServiceConfig.Kaen.MySQL.ContainerPort,
+		create:        database.CreateMysqlDB,
+		delete:        database.DeleteMysqlDB,
 	},
 	types.PostgreSQL: {
-		init:    initConstructor(types.PostgreSQL, configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort),
-		create:  database.CreatePostgresqlDB,
-		delete:  database.DeletePostgresqlDB,
-		cleanup: cleanupConstructor(types.PostgreSQL),
-		logs:    logConstructor(types.PostgreSQL),
-		reload:  reloadConstructor(types.PostgreSQL),
+		language:      types.PostgreSQL,
+		containerPort: configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort,
+		create:        database.CreatePostgresqlDB,
+		delete:        database.DeletePostgresqlDB,
 	},
 	types.Redis: {
-		init:    initConstructor(types.Redis, configs.ServiceConfig.Kaen.Redis.ContainerPort),
-		create:  database.CreateRedisDB,
-		delete:  database.DeleteRedisDB,
-		cleanup: cleanupConstructor(types.Redis),
-		logs:    logConstructor(types.Redis),
-		reload:  reloadConstructor(types.Redis),
+		language:      types.Redis,
+		containerPort: configs.ServiceConfig.Kaen.Redis.ContainerPort,
+		create:        database.CreateRedisDB,
+		delete:        database.DeleteRedisDB,
 	},
 }

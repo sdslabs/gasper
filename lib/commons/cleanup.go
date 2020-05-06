@@ -67,33 +67,3 @@ func AppStateCleanup(instanceName string) {
 	})
 	redis.RemoveApp(instanceName)
 }
-
-// DatabaseFullCleanup deletes the specified database from the container
-func DatabaseFullCleanup(db, databaseType string) {
-	switch databaseType {
-	case types.MySQL:
-		{
-			err := MysqlDatabaseCleanup(db)
-			if err != nil {
-				utils.LogError(err)
-			}
-		}
-	case types.MongoDB:
-		{
-			err := MongoDatabaseCleanup(db)
-			if err != nil {
-				utils.LogError(err)
-			}
-		}
-	}
-}
-
-// DatabaseStateCleanup removes the database's data from MongoDB and Redis
-func DatabaseStateCleanup(db string) {
-	mongo.DeleteInstance(types.M{
-		mongo.NameKey:         db,
-		"user":                db,
-		mongo.InstanceTypeKey: mongo.DBInstance,
-	})
-	redis.RemoveDB(db)
-}

@@ -55,8 +55,8 @@ func CreateRedisDB(db types.Database) error {
 }
 
 // DeleteRedisDB deletes RedisDB container
-func DeleteRedisDB(containerID string) error {
-	if err := docker.DeleteContainer(containerID); err != nil {
+func DeleteRedisDB(databaseName string) error {
+	if err := docker.DeleteContainer(databaseName); err != nil {
 		return types.NewResErr(500, "container not deleted", err)
 	}
 
@@ -65,7 +65,7 @@ func DeleteRedisDB(containerID string) error {
 		return fmt.Errorf("Error while getting root directory of project : %s", err)
 	}
 
-	storedir := filepath.Join(storepath, "redis-storage", containerID)
+	storedir := filepath.Join(storepath, "redis-storage", databaseName)
 
 	if err := os.RemoveAll(storedir); err != nil {
 		return fmt.Errorf("Error while deleting the database directory : %s", err)
