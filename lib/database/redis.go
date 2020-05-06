@@ -11,27 +11,25 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
-// CreateRedisDBContainer  creates a postgre database
+// CreateRedisDBContainer  creates a RedisDB container
 func CreateRedisDBContainer(db types.Database) error {
 	storepath, _ := os.Getwd()
 	var err error
 	port, err := utils.GetFreePort()
-	var databaseMap = map[string]*types.DatabaseContainer{
-		types.RedisKaen: {
-			Image:         configs.ImageConfig.Redis,
-			ContainerPort: port,
-			DatabasePort:  6379,
-			Env:           configs.ServiceConfig.Kaen.RedisKaen.Env,
-			WorkDir:       "/data/",
-			StoreDir:      filepath.Join(storepath, "kaen-redis-storage", db.GetName()),
-			Name:          db.GetName(),
-			Cmd:           []string{"redis-server", "--requirepass", db.GetPassword()},
-		},
-	}
+	storedir := filepath.Join(storepath, "redis-storage", db.GetName())
+	err = os.MkdirAll(storedir, 0755)
+	containerID, err := docker.CreateDatabaseContainer(&types.DatabaseContainer{
+		Image:         configs.ImageConfig.Redis,
+		ContainerPort: port,
+		DatabasePort:  6379,
+		Env:           configs.ServiceConfig.Kaen.RedisKaen.Env,
+		WorkDir:       "/data/",
+		StoreDir:      filepath.Join(storepath, "kaen-redis-storage", db.GetName()),
+		Name:          db.GetName(),
+		Cmd:           []string{"redis-server", "--requirepass", db.GetPassword()},
+	})
 
-	containerID, err := docker.CreateDatabaseContainer(databaseMap[types.RedisKaen])
 	err = docker.StartContainer(containerID)
-
 	db.SetContainerPort(port)
 
 	if err != nil {
@@ -39,13 +37,14 @@ func CreateRedisDBContainer(db types.Database) error {
 	}
 
 	err = docker.StartContainer(containerID)
-
 	return nil
 }
 
-// DeleteRedisDBContainer delete container
+// DeleteRedisDBContainer deletes RedisDB container
 func DeleteRedisDBContainer(containerID string) error {
 	err := docker.DeleteContainer(containerID)
+	storepath, _ := os.Getwd()
+	storedir := filepath.Join(storepath, "redis-storage", containerID)
+	os.RemoveAll(storedir)
 	return err
-
 }

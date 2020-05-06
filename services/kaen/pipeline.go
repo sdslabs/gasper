@@ -20,9 +20,7 @@ type databaseHandler struct {
 func initConstructor(language string, containerPort int) func(*types.DatabaseConfig) {
 	return func(db *types.DatabaseConfig) {
 		db.SetLanguage(language)
-		if language != types.RedisKaen {
-			db.SetContainerPort(containerPort)
-		}
+		db.SetContainerPort(containerPort)
 	}
 }
 

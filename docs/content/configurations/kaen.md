@@ -81,7 +81,6 @@ This section deals with the Redis server configuration managed by Kaen
 # Configuration for Redis database server managed by `Kaen`
 [services.kaen.redis]
 plugin = false  # Deploy RedisDB server and let `Kaen` manage it
-container_port = 20000  # Port on which the RedisDB server container will run
 
 ```
 
