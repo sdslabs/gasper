@@ -45,10 +45,11 @@ func CreateRedisDB(db types.Database) error {
 		return types.NewResErr(500, "container not created", err)
 	}
 
-	db.SetContainerPort(port)
 	if err := docker.StartContainer(containerID); err != nil {
 		return types.NewResErr(500, "container not started", err)
 	}
+
+	db.SetContainerPort(port)
 
 	return nil
 }
@@ -59,7 +60,11 @@ func DeleteRedisDB(containerID string) error {
 		return types.NewResErr(500, "container not deleted", err)
 	}
 
-	storepath, _ := os.Getwd()
+	storepath, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("Error while getting root directory of project : %s", err)
+	}
+
 	storedir := filepath.Join(storepath, "redis-storage", containerID)
 
 	if err := os.RemoveAll(storedir); err != nil {
