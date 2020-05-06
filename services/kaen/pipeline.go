@@ -77,12 +77,12 @@ var pipeline = map[string]*databaseHandler{
 		logs:    logConstructor(types.PostgreSQL),
 		reload:  reloadConstructor(types.PostgreSQL),
 	},
-	types.RedisKaen: {
-		init:    initConstructor(types.RedisKaen, configs.ServiceConfig.Kaen.RedisKaen.ContainerPort),
+	types.Redis: {
+		init:    initConstructor(types.Redis, configs.ServiceConfig.Kaen.Redis.ContainerPort),
 		create:  database.CreateRedisDBContainer,
 		delete:  database.DeleteRedisDBContainer,
-		cleanup: cleanupConstructor(types.RedisKaen),
-		logs:    logConstructor(types.RedisKaen),
-		reload:  reloadConstructor(types.RedisKaen),
+		cleanup: cleanupConstructor(types.Redis),
+		logs:    logConstructor(types.Redis),
+		reload:  reloadConstructor(types.Redis),
 	},
 }
