@@ -12,12 +12,14 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
-// CreateRedisDBContainer  creates a RedisDB container
-func CreateRedisDBContainer(db types.Database) error {
-	storepath, _ := os.Getwd()
-	var err error
-	port, err := utils.GetFreePort()
+// CreateRedisDB  creates a RedisDB container
+func CreateRedisDB(db types.Database) error {
+	storepath, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("Error while getting root directory of project : %s", err)
+	}
 
+	port, err := utils.GetFreePort()
 	if err != nil {
 		return fmt.Errorf("Error while getting free port for container : %s", err)
 	}
@@ -51,8 +53,8 @@ func CreateRedisDBContainer(db types.Database) error {
 	return nil
 }
 
-// DeleteRedisDBContainer deletes RedisDB container
-func DeleteRedisDBContainer(containerID string) error {
+// DeleteRedisDB deletes RedisDB container
+func DeleteRedisDB(containerID string) error {
 	if err := docker.DeleteContainer(containerID); err != nil {
 		return types.NewResErr(500, "container not deleted", err)
 	}

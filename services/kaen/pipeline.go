@@ -79,8 +79,8 @@ var pipeline = map[string]*databaseHandler{
 	},
 	types.Redis: {
 		init:    initConstructor(types.Redis, configs.ServiceConfig.Kaen.Redis.ContainerPort),
-		create:  database.CreateRedisDBContainer,
-		delete:  database.DeleteRedisDBContainer,
+		create:  database.CreateRedisDB,
+		delete:  database.DeleteRedisDB,
 		cleanup: cleanupConstructor(types.Redis),
 		logs:    logConstructor(types.Redis),
 		reload:  reloadConstructor(types.Redis),
