@@ -8,7 +8,6 @@ import (
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/cloudflare"
-	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/factory"
 	pb "github.com/sdslabs/gasper/lib/factory/protos/application"
@@ -54,6 +53,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	}
 	resErr := pipeline[language].create(app)
 	if resErr != nil {
+		go diskCleanup(app.GetName())
 		return nil, fmt.Errorf(resErr.Error())
 	}
 
@@ -68,8 +68,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	if configs.CloudflareConfig.PlugIn {
 		resp, err := cloudflare.CreateApplicationRecord(app.GetName())
 		if err != nil {
-			go commons.AppFullCleanup(app.GetName())
-			go commons.AppStateCleanup(app.GetName())
+			go diskCleanup(app.GetName())
 			return nil, err
 		}
 		app.SetCloudflareID(resp.Result.ID)
@@ -82,8 +81,8 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		}, app)
 
 	if err != nil && err != mongo.ErrNoDocuments {
-		go commons.AppFullCleanup(app.GetName())
-		go commons.AppStateCleanup(app.GetName())
+		go diskCleanup(app.GetName())
+		go stateCleanup(app.GetName())
 		return nil, err
 	}
 
@@ -94,8 +93,8 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	)
 
 	if err != nil {
-		go commons.AppFullCleanup(app.GetName())
-		go commons.AppStateCleanup(app.GetName())
+		go diskCleanup(app.GetName())
+		go stateCleanup(app.GetName())
 		return nil, err
 	}
 
@@ -105,8 +104,8 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	)
 
 	if err != nil {
-		go commons.AppFullCleanup(app.GetName())
-		go commons.AppStateCleanup(app.GetName())
+		go diskCleanup(app.GetName())
+		go stateCleanup(app.GetName())
 		return nil, err
 	}
 
@@ -125,13 +124,15 @@ func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.Response
 		return nil, err
 	}
 
-	commons.AppFullCleanup(appName)
+	diskCleanup(appName)
 
 	if pipeline[app.Language] == nil {
 		return nil, fmt.Errorf("Non-supported language `%s` specified for `%s`", app.Language, appName)
 	}
+
 	resErr := pipeline[app.Language].create(app)
 	if resErr != nil {
+		go diskCleanup(app.GetName())
 		return nil, fmt.Errorf(resErr.Error())
 	}
 
@@ -157,7 +158,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.DeletionR
 	node, _ := redis.FetchAppNode(appName)
 	go redis.DecrementServiceLoad(ServiceName, node)
 	go redis.RemoveApp(appName)
-	go commons.AppFullCleanup(appName)
+	go diskCleanup(appName)
 
 	if configs.CloudflareConfig.PlugIn {
 		go cloudflare.DeleteRecord(appName, mongo.AppInstance)

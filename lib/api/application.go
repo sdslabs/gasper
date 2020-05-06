@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/sdslabs/gasper/configs"
-	"github.com/sdslabs/gasper/lib/commons"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/git"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -99,8 +98,8 @@ func setupContainer(app types.Application, storedir string, mutex map[string]cha
 	mutex["setup"] <- nil
 }
 
-// CreateBasicApplication spawns a new container with the application of a particular service
-func CreateBasicApplication(app types.Application) []types.ResponseError {
+// createBasicApplication spawns a new container with the application of a particular service
+func createBasicApplication(app types.Application) []types.ResponseError {
 	var (
 		storepath, _ = os.Getwd()
 		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
@@ -117,29 +116,7 @@ func CreateBasicApplication(app types.Application) []types.ResponseError {
 	// Step 2: setup the container
 	go setupContainer(app, storedir, mutex)
 
-	setupErr := <-mutex["setup"]
-	cloneErr := <-mutex["clone"]
-
-	setupFlag := false
-	cloneFlag := false
-
-	if cloneErr != nil {
-		if cloneErr.Message() != "repository already exists" {
-			cloneFlag = true
-		}
-	}
-
-	if setupErr != nil {
-		if setupErr.Message() != "container not created" {
-			setupFlag = true
-		}
-	}
-
-	if setupFlag || cloneFlag {
-		go commons.AppFullCleanup(app.GetName())
-	}
-
-	return []types.ResponseError{setupErr, cloneErr}
+	return []types.ResponseError{<-mutex["setup"], <-mutex["clone"]}
 }
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
@@ -151,7 +128,7 @@ func SetupApplication(app types.Application) types.ResponseError {
 
 	app.SetContainerPort(containerPort)
 
-	errList := CreateBasicApplication(app)
+	errList := createBasicApplication(app)
 
 	for _, e := range errList {
 		if e != nil {
@@ -170,7 +147,6 @@ func SetupApplication(app types.Application) types.ResponseError {
 			// but if an error arises, this means there's some issue with "execing"
 			// any process in the container => there's a problem with the container
 			// hence we also run the cleanup here so that nothing else goes wrong
-			go commons.AppFullCleanup(app.GetName())
 			return types.NewResErr(500, "cannot exec rc file", err)
 		}
 	} else {
