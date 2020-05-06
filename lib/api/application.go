@@ -13,10 +13,10 @@ import (
 	gogit "gopkg.in/src-d/go-git.v4"
 )
 
-func cloneRepo(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
+func cloneRepo(app types.Application, storedir string, clone chan types.ResponseError) {
 	err := os.MkdirAll(storedir, 0755)
 	if err != nil {
-		mutex["clone"] <- types.NewResErr(500, "storage directory not created", err)
+		clone <- types.NewResErr(500, "storage directory not created", err)
 		return
 	}
 
@@ -37,20 +37,18 @@ func cloneRepo(app types.Application, storedir string, mutex map[string]chan typ
 
 	if err != nil {
 		if err == gogit.ErrRepositoryAlreadyExists {
-			mutex["clone"] <- types.NewResErr(500, "repository already exists", err)
+			clone <- types.NewResErr(500, "repository already exists", err)
 		} else {
-			mutex["clone"] <- types.NewResErr(500, "repository not cloned", err)
+			clone <- types.NewResErr(500, "repository not cloned", err)
 		}
 		return
 	}
-	mutex["clone"] <- nil
+	clone <- nil
 }
 
-func setupContainer(app types.Application, storedir string, mutex map[string]chan types.ResponseError) {
-	var (
-		confFileName = fmt.Sprintf("%s.gasper.conf", app.GetName())
-		workdir      = fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, app.GetName())
-	)
+func setupContainer(app types.Application, storedir string, setup chan types.ResponseError) {
+	confFileName := fmt.Sprintf("%s.gasper.conf", app.GetName())
+	workdir := fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, app.GetName())
 
 	// create the container
 	containerID, err := docker.CreateApplicationContainer(&types.ApplicationContainer{
@@ -67,7 +65,7 @@ func setupContainer(app types.Application, storedir string, mutex map[string]cha
 	})
 
 	if err != nil {
-		mutex["setup"] <- types.NewResErr(500, "container not created", err)
+		setup <- types.NewResErr(500, "container not created", err)
 		return
 	}
 
@@ -79,12 +77,12 @@ func setupContainer(app types.Application, storedir string, mutex map[string]cha
 		confFile := []byte(app.InvokeConfGenerator(app.GetName(), app.GetIndex()))
 		archive, err := utils.NewTarArchiveFromContent(confFile, confFileName, 0644)
 		if err != nil {
-			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+			setup <- types.NewResErr(500, "container conf file not written", err)
 			return
 		}
 		err = docker.CopyToContainer(app.GetContainerID(), "/etc/nginx/conf.d/", archive)
 		if err != nil {
-			mutex["setup"] <- types.NewResErr(500, "container conf file not written", err)
+			setup <- types.NewResErr(500, "container conf file not written", err)
 			return
 		}
 	}
@@ -92,31 +90,26 @@ func setupContainer(app types.Application, storedir string, mutex map[string]cha
 	// start the container
 	err = docker.StartContainer(app.GetContainerID())
 	if err != nil {
-		mutex["setup"] <- types.NewResErr(500, "container not started", err)
+		setup <- types.NewResErr(500, "container not started", err)
 		return
 	}
-	mutex["setup"] <- nil
+	setup <- nil
 }
 
 // createBasicApplication spawns a new container with the application of a particular service
 func createBasicApplication(app types.Application) []types.ResponseError {
-	var (
-		storepath, _ = os.Getwd()
-		storedir     = filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
-	)
-
-	var mutex = map[string]chan types.ResponseError{
-		"setup": make(chan types.ResponseError),
-		"clone": make(chan types.ResponseError),
-	}
+	storepath, _ := os.Getwd()
+	storedir := filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
+	setup := make(chan types.ResponseError)
+	clone := make(chan types.ResponseError)
 
 	// Step 1: clone the repo in the storage
-	go cloneRepo(app, storedir, mutex)
+	go cloneRepo(app, storedir, clone)
 
 	// Step 2: setup the container
-	go setupContainer(app, storedir, mutex)
+	go setupContainer(app, storedir, setup)
 
-	return []types.ResponseError{<-mutex["setup"], <-mutex["clone"]}
+	return []types.ResponseError{<-setup, <-clone}
 }
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
@@ -130,9 +123,9 @@ func SetupApplication(app types.Application) types.ResponseError {
 
 	errList := createBasicApplication(app)
 
-	for _, e := range errList {
-		if e != nil {
-			return e
+	for _, err := range errList {
+		if err != nil {
+			return err
 		}
 	}
 
