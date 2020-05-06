@@ -23,9 +23,8 @@ func CreateRedisDBContainer(db types.Database) error {
 	}
 
 	storedir := filepath.Join(storepath, "redis-storage", db.GetName())
-	err = os.MkdirAll(storedir, 0755)
 
-	if err != nil {
+	if err := os.MkdirAll(storedir, 0755); err != nil {
 		return fmt.Errorf("Error while creating the directory : %s", err)
 	}
 
@@ -45,25 +44,23 @@ func CreateRedisDBContainer(db types.Database) error {
 	}
 
 	db.SetContainerPort(port)
-	err = docker.StartContainer(containerID)
-
-	if err != nil {
+	if err := docker.StartContainer(containerID); err != nil {
 		return types.NewResErr(500, "container not started", err)
 	}
+
 	return nil
 }
 
 // DeleteRedisDBContainer deletes RedisDB container
 func DeleteRedisDBContainer(containerID string) error {
-	err := docker.DeleteContainer(containerID)
-	if err != nil {
+	if err := docker.DeleteContainer(containerID); err != nil {
 		return types.NewResErr(500, "container not deleted", err)
 	}
 
 	storepath, _ := os.Getwd()
 	storedir := filepath.Join(storepath, "redis-storage", containerID)
-	err = os.RemoveAll(storedir)
-	if err != nil {
+
+	if err := os.RemoveAll(storedir); err != nil {
 		return fmt.Errorf("Error while deleting the database directory : %s", err)
 	}
 	return nil
