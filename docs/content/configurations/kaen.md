@@ -85,4 +85,4 @@ plugin = false  # Deploy RedisDB server and let `Kaen` manage it
 ```
 
 !!!info
-    The container name of the deployed Redis server will be the value of the variable **username** and the password will be the value of the variable **password** . Both from Api request 
+    The container name of the deployed Redis server will be the value of the variable **username** and the password will be the value of the variable **password**
