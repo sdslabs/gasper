@@ -52,7 +52,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	if pipeline[language] == nil {
 		return nil, fmt.Errorf("Language `%s` is not supported", language)
 	}
-	resErr := pipeline[language](app)
+	resErr := pipeline[language].create(app)
 	if resErr != nil {
 		return nil, fmt.Errorf(resErr.Error())
 	}
@@ -130,7 +130,7 @@ func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.Response
 	if pipeline[app.Language] == nil {
 		return nil, fmt.Errorf("Non-supported language `%s` specified for `%s`", app.Language, appName)
 	}
-	resErr := pipeline[app.Language](app)
+	resErr := pipeline[app.Language].create(app)
 	if resErr != nil {
 		return nil, fmt.Errorf(resErr.Error())
 	}

@@ -28,23 +28,23 @@ type databaseHandler struct {
 
 // init sets the language and container port of the database server in the context
 // of the new database to be created
-func (db *databaseHandler) init(cfg *types.DatabaseConfig) {
-	cfg.SetLanguage(db.language)
-	cfg.SetContainerPort(db.containerPort)
+func (handler *databaseHandler) init(db *types.DatabaseConfig) {
+	db.SetLanguage(handler.language)
+	db.SetContainerPort(handler.containerPort)
 }
 
 // cleanup cleans the database from MongoDB, Redis and the corresponding database server
-func (db *databaseHandler) cleanup(databaseName string) {
-	go db.delete(databaseName)
+func (handler *databaseHandler) cleanup(databaseName string) {
+	go handler.delete(databaseName)
 	databaseStateCleanup(databaseName)
 }
 
 // logs fetches the logs of the database server
-func (db *databaseHandler) logs(tail string) ([]string, error) {
+func (handler *databaseHandler) logs(tail string) ([]string, error) {
 	if tail == "" {
 		tail = "-1"
 	}
-	data, err := docker.ReadLogs(db.language, tail)
+	data, err := docker.ReadLogs(handler.language, tail)
 	if err != nil && err.Error() != "EOF" {
 		return nil, err
 	}
@@ -52,9 +52,9 @@ func (db *databaseHandler) logs(tail string) ([]string, error) {
 }
 
 // reload restarts the database server
-func (db *databaseHandler) reload() error {
-	cmd := []string{"service", db.language, "start"}
-	_, err := docker.ExecDetachedProcess(db.language, cmd)
+func (handler *databaseHandler) reload() error {
+	cmd := []string{"service", handler.language, "start"}
+	_, err := docker.ExecDetachedProcess(handler.language, cmd)
 	return err
 }
 
