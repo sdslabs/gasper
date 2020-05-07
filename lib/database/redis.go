@@ -14,11 +14,6 @@ import (
 
 // CreateRedisDB  creates a RedisDB container
 func CreateRedisDB(db types.Database) error {
-	storepath, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("Error while getting root directory of project : %s", err)
-	}
-
 	port, err := utils.GetFreePort()
 	if err != nil {
 		return fmt.Errorf("Error while getting free port for container : %s", err)
@@ -58,11 +53,6 @@ func CreateRedisDB(db types.Database) error {
 func DeleteRedisDB(databaseName string) error {
 	if err := docker.DeleteContainer(databaseName); err != nil {
 		return types.NewResErr(500, "container not deleted", err)
-	}
-
-	storepath, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("Error while getting root directory of project : %s", err)
 	}
 
 	storedir := filepath.Join(storepath, "redis-storage", databaseName)
