@@ -106,8 +106,8 @@ python2 =  "docker.io/sdsws/python2:1.1"
 python3 = "docker.io/sdsws/python3:1.1"
 golang = "docker.io/sdsws/golang:1.1"
 ruby = "docker.io/sdsws/ruby:1.0"
-mysql = "wangxian/alpine-mysql"
-mongodb = "docker.io/mongo:4.2.1"
+mysql = "wangxia/alpine-mysql"
+mongodb = "docker.io/sdsws/alpine-mongo"
 postgresql = "docker.io/postgres:12.2-alpine"
 redis = "docker.io/redis:6.0-rc3-alpine3.11"
 
@@ -140,8 +140,8 @@ container_port = 27019  # Port on which the MongoDB server container will run
 
 # Environment variables for MongoDB docker container.
 [services.kaze.mongodb.env]
-MONGO_INITDB_ROOT_USERNAME = "alphadose"   # Root user of MongoDB server inside the container
-MONGO_INITDB_ROOT_PASSWORD = "alphadose"   # Root password of MongoDB server inside the container
+MONGO_USERNAME = "alphadose"   # Root user of MongoDB server inside the container
+MONGO_PASSWORD = "alphadose"   # Root password of MongoDB server inside the container
 
 [services.kaze.redis]
 plugin = true  # Deploy Redis server and let `Kaze` manage it?
@@ -184,12 +184,12 @@ metrics_interval = 600
 ##########################
 
 [services.kaen]
-deploy = true  # Deploy Kaen?
+deploy = false  # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`
 [services.kaen.mysql]
-plugin = true  # Deploy MySQL server and let `Kaen` manage it?
+plugin = false  # Deploy MySQL server and let `Kaen` manage it?
 container_port = 33061  # Port on which the MySQL server container will run
 
 # Environment variables for MySQL docker container.
