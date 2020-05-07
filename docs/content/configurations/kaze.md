@@ -25,6 +25,7 @@ cleanup_interval = 600
 deploy = true   # Deploy Kaze?
 port = 3000
 
+# Configuration for the MongoDB service container required by all deployed services.
 [services.kaze.mongodb]
 plugin = true  # Deploy MongoDB server and let `Kaze` manage it?
 container_port = 27019  # Port on which the MongoDB server container will run
@@ -34,6 +35,7 @@ container_port = 27019  # Port on which the MongoDB server container will run
 MONGO_INITDB_ROOT_USERNAME = "alphadose"   # Root user of MongoDB server inside the container
 MONGO_INITDB_ROOT_PASSWORD = "alphadose"   # Root password of MongoDB server inside the container
 
+# Configuration for the Redis service container required by all deployed services.
 [services.kaze.redis]
 plugin = true  # Deploy Redis server and let `Kaze` manage it?
 container_port = 6380  # Port on which the Redis server container will run

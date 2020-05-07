@@ -37,7 +37,7 @@ var databaseMap = map[string]*types.DatabaseContainer{
 		ContainerPort: configs.ServiceConfig.Kaen.MySQL.ContainerPort,
 		DatabasePort:  3306,
 		Env:           configs.ServiceConfig.Kaen.MySQL.Env,
-		WorkDir:       "/var/lib/mysql",
+		WorkDir:       "/app",
 		StoreDir:      filepath.Join(storepath, "mysql-storage"),
 		Name:          types.MySQL,
 	},

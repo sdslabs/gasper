@@ -14,7 +14,7 @@ domain = "sdslabs.co"
 # Secret Key used for internal communication in the Gasper ecosystem.
 secret = "YOUR_SECRET_KEY"
 
-# Root of the deployed application in every docker container's filesystem.
+# Root of the deployed application in the docker container's filesystem.
 project_root = "/gasper"
 
 # Name of the file used for building and running applications.
@@ -106,8 +106,8 @@ python2 =  "docker.io/sdsws/python2:1.1"
 python3 = "docker.io/sdsws/python3:1.1"
 golang = "docker.io/sdsws/golang:1.1"
 ruby = "docker.io/sdsws/ruby:1.0"
-mysql = "docker.io/mysql:5.7"
-mongodb = "docker.io/mongo:4.2.1"
+mysql = "docker.io/wangxia/alpine-mysql"
+mongodb = "docker.io/sdsws/alpine-mongo"
 postgresql = "docker.io/postgres:12.2-alpine"
 redis = "docker.io/redis:6.0-rc3-alpine3.11"
 
@@ -188,7 +188,7 @@ metrics_interval = 600
 ##########################
 
 [services.kaen]
-deploy = true  # Deploy Kaen?
+deploy = false  # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`
@@ -202,7 +202,7 @@ MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server ins
 
 # Configuration for PostgreSQL database server managed by `Kaen`
 [services.kaen.postgresql]
-plugin = true  # Deploy PostgreSQL server and let `Kaen` manage it?
+plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
 container_port = 29121  # Port on which the PostgreSQL server container will run
 
 # Environment variables for PostgreSQL docker container.
@@ -212,7 +212,7 @@ POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server 
 
 # Configuration for MongoDB database server managed by `Kaen`
 [services.kaen.mongodb]
-plugin = false  # Deploy MongoDB server and let `Kaen` manage it?
+plugin = false  # Deploy MongoDB server and let `Kaen` manage it
 container_port = 27018  # Port on which the MongoDB server container will run
 
 # Environment variables for MongoDB docker container.

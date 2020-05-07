@@ -60,7 +60,7 @@ password = "alphadose"
 
 [mongo]
 # For databases with authentication
-# use the following URL format `mongodb://username:password@host:port`.
+# use the following URL format `mongodb://username:password@host:port/?authSource=admin`.
 url = "mongodb://alphadose:alphadose@localhost:27019/?authSource=admin"
 
 
@@ -116,10 +116,11 @@ python2 =  "docker.io/sdsws/python2:1.1"
 python3 = "docker.io/sdsws/python3:1.1"
 golang = "docker.io/sdsws/golang:1.1"
 ruby = "docker.io/sdsws/ruby:1.0"
-mysql = "docker.io/mysql:5.7"
-mongodb = "docker.io/mongo:4.2.1"
+mysql = "docker.io/wangxia/alpine-mysql"
+mongodb = "docker.io/sdsws/alpine-mongo"
 postgresql = "docker.io/postgres:12.2-alpine"
 redis = "docker.io/redis:6.0-rc3-alpine3.11"
+
 
 ##############################
 #   Services Configuration   #
@@ -144,6 +145,7 @@ cleanup_interval = 600
 deploy = true   # Deploy Kaze?
 port = 3000
 
+# Configuration for the MongoDB service container required by all deployed services.
 [services.kaze.mongodb]
 plugin = true  # Deploy MongoDB server and let `Kaze` manage it?
 container_port = 27019  # Port on which the MongoDB server container will run
@@ -153,10 +155,12 @@ container_port = 27019  # Port on which the MongoDB server container will run
 MONGO_INITDB_ROOT_USERNAME = "alphadose"   # Root user of MongoDB server inside the container
 MONGO_INITDB_ROOT_PASSWORD = "alphadose"   # Root password of MongoDB server inside the container
 
+# Configuration for the Redis service container required by all deployed services.
 [services.kaze.redis]
 plugin = true  # Deploy Redis server and let `Kaze` manage it?
 container_port = 6380  # Port on which the Redis server container will run
 password = "alphadose"
+
 
 ###########################
 #   Enrai Configuration   #
@@ -194,7 +198,7 @@ metrics_interval = 600
 ##########################
 
 [services.kaen]
-deploy = true  # Deploy Kaen?
+deploy = false  # Deploy Kaen?
 port = 9000
 
 # Configuration for MySQL database server managed by `Kaen`
@@ -208,7 +212,7 @@ MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server ins
 
 # Configuration for PostgreSQL database server managed by `Kaen`
 [services.kaen.postgresql]
-plugin = true  # Deploy PostgreSQL server and let `Kaen` manage it?
+plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
 container_port = 29121  # Port on which the PostgreSQL server container will run
 
 # Environment variables for PostgreSQL docker container.
