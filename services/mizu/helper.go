@@ -32,10 +32,8 @@ func containerCleanup(appName string) error {
 
 // diskCleanup cleans the specified application's container and local storage
 func diskCleanup(appName string) {
-	var (
-		path, _ = os.Getwd()
-		appDir  = filepath.Join(path, fmt.Sprintf("storage/%s", appName))
-	)
+	path, _ := os.Getwd()
+	appDir := filepath.Join(path, fmt.Sprintf("storage/%s", appName))
 	storeCleanupChan := make(chan error)
 	containerCleanupChan := make(chan error)
 	go func() {
