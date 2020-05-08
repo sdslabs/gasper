@@ -45,7 +45,6 @@ var databaseMap = map[string]*types.DatabaseContainer{
 		Image:         configs.ImageConfig.Redis,
 		ContainerPort: configs.ServiceConfig.Kaze.Redis.ContainerPort,
 		DatabasePort:  6379,
-		Env:           configs.ServiceConfig.Kaze.Redis.Env,
 		WorkDir:       "/data/",
 		StoreDir:      filepath.Join(storepath, "gasper-redis-storage"),
 		Name:          types.RedisGasper,

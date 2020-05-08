@@ -79,9 +79,8 @@ var pipeline = map[string]*databaseHandler{
 		delete:        database.DeletePostgresqlDB,
 	},
 	types.Redis: {
-		language:      types.Redis,
-		containerPort: configs.ServiceConfig.Kaen.Redis.ContainerPort,
-		create:        database.CreateRedisDB,
-		delete:        database.DeleteRedisDB,
+		language: types.Redis,
+		create:   database.CreateRedisDB,
+		delete:   database.DeleteRedisDB,
 	},
 }

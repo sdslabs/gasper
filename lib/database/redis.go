@@ -29,7 +29,6 @@ func CreateRedisDB(db types.Database) error {
 		Image:         configs.ImageConfig.Redis,
 		ContainerPort: port,
 		DatabasePort:  6379,
-		Env:           configs.ServiceConfig.Kaen.Redis.Env,
 		WorkDir:       "/data/",
 		StoreDir:      filepath.Join(storepath, "redis-storage", db.GetName()),
 		Name:          db.GetName(),
@@ -45,7 +44,6 @@ func CreateRedisDB(db types.Database) error {
 	}
 
 	db.SetContainerPort(port)
-
 	return nil
 }
 
