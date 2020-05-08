@@ -85,6 +85,7 @@ The following databases are supported by Gasper:-
 * MySQL
 * MongoDB
 * PostgreSQL
+* Redis
 
 It ain't.... (complete the rest yourself)
 

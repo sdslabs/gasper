@@ -72,3 +72,18 @@ POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server 
 
 !!!info
     The username of the deployed PostgreSQL server will be the value of the variable **POSTGRES_USER** and the password will be the value of the variable **POSTGRES_PASSWORD**
+
+## Redis Configuration
+
+This section deals with the Redis server configuration managed by Kaen
+
+```toml
+# Configuration for Redis database server managed by `Kaen`
+[services.kaen.redis]
+plugin = false  # Deploy RedisDB server and let `Kaen` manage it
+
+```
+
+!!!info
+    * For Redis due to the lack of namespaces a new container is created per user unlike others where one database is created per user in a single container
+    * The container name of the deployed Redis server will be the value of the variable **username** and the password will be the value of the variable **password** both of which are retrieved from the API request to the master service

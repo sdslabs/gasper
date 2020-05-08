@@ -39,6 +39,7 @@ It currently supports databases of the following types
 * MySQL
 * MongoDB
 * PostgreSQL
+* Redis
 
 It ain't.... (complete the rest yourself)
 

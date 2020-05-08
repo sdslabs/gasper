@@ -287,6 +287,7 @@ components:
             - mysql
             - mongodb
             - postgresql
+            - redis
 
     Metrics:
       type: object
@@ -931,6 +932,7 @@ paths:
               - mysql
               - mongodb
               - postgresql
+              - redis
       security:
         - bearerAuth: []
       responses:
@@ -1344,6 +1346,7 @@ paths:
               - mysql
               - mongodb
               - postgresql
+              - redis
         - in: query
           name: host_ip
           description: IPv4 address of the node in which the database is deployed
@@ -1660,7 +1663,12 @@ paths:
                     type: array
                     example: [192.168.208.206:9000]
                     items:
-                      type: string                       
+                      type: string
+                  redis:
+                    type: array
+                    example: [192.168.208.206:9000]
+                    items:
+                      type: string                      
                   iwa:
                     type: array
                     example: [192.168.208.206:2222]
@@ -1693,6 +1701,7 @@ paths:
               - mysql
               - mongodb
               - postgresql
+              - redis
       security:
         - bearerAuth: []
       responses:

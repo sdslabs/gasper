@@ -70,6 +70,10 @@ var (
 			Deploy: ServiceConfig.Kaen.PostgreSQL.PlugIn && ServiceConfig.Kaen.Deploy,
 			Port:   ServiceConfig.Kaen.Port,
 		},
+		types.Redis: {
+			Deploy: ServiceConfig.Kaen.Redis.PlugIn && ServiceConfig.Kaen.Deploy,
+			Port:   ServiceConfig.Kaen.Port,
+		},
 	}
 )
 

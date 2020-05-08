@@ -5,6 +5,7 @@ type Database interface {
 	GetName() string
 	GetPassword() string
 	GetUser() string
+	SetContainerPort(port int)
 }
 
 // DatabaseConfig is the configuration required for creating a database
