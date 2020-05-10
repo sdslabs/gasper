@@ -6,10 +6,8 @@ clone:
 
 steps:
 - name: testing
-  image: golang:1.12
+  image: golang:1.13
   pull: true
-  environment:
-    GO111MODULE: on
   commands:
   - make vet
   - make lint
@@ -30,10 +28,8 @@ clone:
 
 steps:
 - name: testing
-  image: golang:1.12
+  image: golang:1.13
   pull: true
-  environment:
-    GO111MODULE: on
   commands:
   - make test
 

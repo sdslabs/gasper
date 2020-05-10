@@ -14,10 +14,11 @@ It uses [jwt-go](https://github.com/dgrijalva/jwt-go) to provide a jwt authentic
 
 ## Usage
 
-Download and install it:
+Download and install using [go module](https://blog.golang.org/using-go-modules):
 
 ```sh
-$ go get github.com/appleboy/gin-jwt/v2
+export GO111MODULE=on
+go get github.com/appleboy/gin-jwt/v2
 ```
 
 Import it in your code:
@@ -26,11 +27,23 @@ Import it in your code:
 import "github.com/appleboy/gin-jwt/v2"
 ```
 
+Download and install without using [go module](https://blog.golang.org/using-go-modules):
+
+```sh
+go get github.com/appleboy/gin-jwt
+```
+
+Import it in your code:
+
+```go
+import "github.com/appleboy/gin-jwt"
+```
+
 ## Example
 
-Please see [the example file](example/basic/server.go) and you can use `ExtractClaims` to fetch user data.
+Please see [the example file](_example/basic/server.go) and you can use `ExtractClaims` to fetch user data.
 
-[embedmd]:# (example/basic/server.go go)
+[embedmd]:# (_example/basic/server.go go)
 ```go
 package main
 
@@ -55,7 +68,7 @@ func helloHandler(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	user, _ := c.Get(identityKey)
 	c.JSON(200, gin.H{
-		"userID":   claims["id"],
+		"userID":   claims[identityKey],
 		"userName": user.(*User).UserName,
 		"text":     "Hello World.",
 	})
@@ -96,7 +109,7 @@ func main() {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &User{
-				UserName: claims["id"].(string),
+				UserName: claims[identityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -177,28 +190,28 @@ func main() {
 
 ## Demo
 
-Please run example/server.go file and listen `8000` port.
+Please run _example/server.go file and listen `8000` port.
 
-```bash
-$ go run example/server.go
+```sh
+go run _example/server.go
 ```
 
 Download and install [httpie](https://github.com/jkbrzt/httpie) CLI HTTP client.
 
-### Login API:
+### Login API
 
-```bash
-$ http -v --json POST localhost:8000/login username=admin password=admin
+```sh
+http -v --json POST localhost:8000/login username=admin password=admin
 ```
 
 Output screenshot
 
 ![api screenshot](screenshot/login.png)
 
-### Refresh token API:
+### Refresh token API
 
 ```bash
-$ http -v -f GET localhost:8000/auth/refresh_token "Authorization:Bearer xxxxxxxxx"  "Content-Type: application/json"
+http -v -f GET localhost:8000/auth/refresh_token "Authorization:Bearer xxxxxxxxx"  "Content-Type: application/json"
 ```
 
 Output screenshot
@@ -210,12 +223,12 @@ Output screenshot
 Please login as `admin` and password as `admin`
 
 ```bash
-$ http -f GET localhost:8000/auth/hello "Authorization:Bearer xxxxxxxxx"  "Content-Type: application/json"
+http -f GET localhost:8000/auth/hello "Authorization:Bearer xxxxxxxxx"  "Content-Type: application/json"
 ```
 
 Response message `200 OK`:
 
-```
+```sh
 HTTP/1.1 200 OK
 Content-Length: 24
 Content-Type: application/json; charset=utf-8
@@ -232,12 +245,12 @@ Date: Sat, 19 Mar 2016 03:02:57 GMT
 Please login as `test` and password as `test`
 
 ```bash
-$ http -f GET localhost:8000/auth/hello "Authorization:Bearer xxxxxxxxx"  "Content-Type: application/json"
+http -f GET localhost:8000/auth/hello "Authorization:Bearer xxxxxxxxx"  "Content-Type: application/json"
 ```
 
 Response message `403 Forbidden`:
 
-```
+```sh
 HTTP/1.1 403 Forbidden
 Content-Length: 62
 Content-Type: application/json; charset=utf-8
@@ -251,7 +264,8 @@ Www-Authenticate: JWT realm=test zone
 ```
 
 ### Cookie Token
-Use these options for setting the JWT in a cookie. See the Mozilla [documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies) for more information on these options. 
+
+Use these options for setting the JWT in a cookie. See the Mozilla [documentation](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies) for more information on these options.
 
 ```go
 	SendCookie:       true,
@@ -262,13 +276,16 @@ Use these options for setting the JWT in a cookie. See the Mozilla [documentatio
 	TokenLookup:      "cookie:token",
 ```
 
-### Login Flow 
-1. Authenticator: handles the login logic. On success LoginResponse is called, on failure Unauthorized is called. 
+Adding a route to the `LogoutHandler` route will the deletion of the auth cookie, effectively logging the user out. The `LoginResponse` object can optionally be set to customize the response of this endpoint.
+
+### Login Flow
+
+1. Authenticator: handles the login logic. On success LoginResponse is called, on failure Unauthorized is called.
 2. LoginResponse: optional, allows setting a custom response such as a redirect.
 
+### JWT Flow
 
-### JWT Flow 
-1. PayloadFunc: maps the claims in the JWT. 
-2. IdentityHandler: extracts identity from claims. 
+1. PayloadFunc: maps the claims in the JWT.
+2. IdentityHandler: extracts identity from claims.
 3. Authorizator: receives identity and handles authorization logic.
 4. Unauthorized: handles unauthorized logic.
