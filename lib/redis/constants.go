@@ -10,10 +10,10 @@ const (
 	DatabaseKey string = "databases"
 
 	// SSHKey is the key name for the Sorted Set containing ssh microservice instances
-	SSHKey string = types.Iwa
+	SSHKey string = types.GenSSH
 
 	// WorkerInstanceKey is the key name for Worker nodes
-	WorkerInstanceKey string = types.Mizu
+	WorkerInstanceKey string = types.AppMaker
 
 	// ErrEmptySet is the error message when the redis set being queried is empty
 	ErrEmptySet string = "Empty Set"

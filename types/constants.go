@@ -1,44 +1,44 @@
 package types
 
 const (
-	// Kaze holds the name of `kaze` microservice
-	Kaze = "kaze"
+	// Master holds the name of `master` microservice
+	Master = "master"
 
-	// Mizu holds the name of `mizu` microservice
-	Mizu = "mizu"
+	// AppMaker holds the name of `appmaker` microservice
+	AppMaker = "appmaker"
 
-	// Kaen holds the name of `kaen` microservice
-	Kaen = "kaen"
+	// DbMaker holds the name of `dbmaker` microservice
+	DbMaker = "dbmaker"
 
-	// MySQL holds the name of `mysql` component under `kaen`
+	// MySQL holds the name of `mysql` component under `dbmaker`
 	MySQL = "mysql"
 
-	// MongoDB holds the name of `mongodb` mongo component under `kaen`
+	// MongoDB holds the name of `mongodb` mongo component under `dbmaker`
 	MongoDB = "mongodb"
 
-	// PostgreSQL holds the name of `postgresql` component under 'kaen'
+	// PostgreSQL holds the name of `postgresql` component under 'dbmaker'
 	PostgreSQL = "postgresql"
 
-	// MongoDBGasper holds the name of `mongodb_gasper` mongo component under `kaze`
+	// MongoDBGasper holds the name of `mongodb_gasper` mongo component under `master`
 	MongoDBGasper = "mongodb_gasper"
 
-	//RedisGasper holds the name of `redis_gasper` redis component under `kaze`
+	//RedisGasper holds the name of `redis_gasper` redis component under `master`
 	RedisGasper = "redis_gasper"
 
-	// Redis holds the name of `redis` component under 'kaen'
+	// Redis holds the name of `redis` component under 'dbmaker'
 	Redis = "redis"
 
-	// Iwa holds the name of `iwa` microservice
-	Iwa = "iwa"
+	// GenSSH holds the name of `genssh` microservice
+	GenSSH = "genssh"
 
-	// Enrai holds the name of `enrai` microservice
-	Enrai = "enrai"
+	// GenProxy holds the name of `genproxy` microservice
+	GenProxy = "genproxy"
 
-	// Hikari holds the name of `hikari` microservice
-	Hikari = "hikari"
+	// GenDNS holds the name of `gendns` microservice
+	GenDNS = "gendns"
 
-	// EnraiSSL holds the name of `enrai` microservice with SSL support
-	EnraiSSL = "enrai_ssl"
+	// GenProxySSL holds the name of `genproxy` microservice with SSL support
+	GenProxySSL = "genproxy_ssl"
 
 	// DefaultMemory is the default memory allotted to a container
 	DefaultMemory = 0.5

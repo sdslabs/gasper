@@ -5,7 +5,7 @@ This example shows how to deploy a [node.js](https://nodejs.org/en/) application
 Lets use a [sample application](https://github.com/sdslabs/gasper-sample-nodejs) for demonstration which runs on **port 3000** 
 
 !!!warning "Prerequisites"
-    * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
+    * You have [Master](/configurations/master/) and [AppMaker](/configurations/appmaker/) up and running
     * You have already [logged in](/examples/login/) and obtained a JSON Web Token
 
 

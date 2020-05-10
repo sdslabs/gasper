@@ -43,14 +43,14 @@ func NotAlive(url string) bool {
 	return false
 }
 
-// IsHikariAlive checks if a Hikari instance is alive or not
-func IsHikariAlive(url string) bool {
-	target := fmt.Sprintf("%s.%s", types.Kaze, configs.GasperConfig.Domain)
+// IsGenDNSAlive checks if a GenDNS instance is alive or not
+func IsGenDNSAlive(url string) bool {
+	target := fmt.Sprintf("%s.%s", types.Master, configs.GasperConfig.Domain)
 	c := dns.Client{}
 	m := dns.Msg{}
 	m.SetQuestion(target+".", dns.TypeA)
 	if _, _, err := c.Exchange(&m, url); err != nil {
-		Log("Health-Check failed for Hikari instance "+url, ErrorTAG)
+		Log("Health-Check failed for GenDNS instance "+url, ErrorTAG)
 		LogError(err)
 		return false
 	}

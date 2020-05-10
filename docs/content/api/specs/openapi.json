@@ -225,7 +225,7 @@
           },
           "app_url": {
             "type": "string",
-            "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+            "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
             "example": "alphadose.app.sdslabs.co"
           },
           "host_ip": {
@@ -391,7 +391,7 @@
           },
           "db_url": {
             "type": "string",
-            "description": "The domain name of the database (DNS entry is managed by Hikari 💡)",
+            "description": "The domain name of the database (DNS entry is managed by GenDNS 💡)",
             "example": "alphadose.db.sdslabs.co"
           },
           "host_ip": {
@@ -995,7 +995,7 @@
                     },
                     "app_url": {
                       "type": "string",
-                      "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+                      "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
                       "example": "alphadose.app.sdslabs.co"
                     },
                     "host_ip": {
@@ -1447,7 +1447,7 @@
                     },
                     "app_url": {
                       "type": "string",
-                      "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+                      "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
                       "example": "alphadose.app.sdslabs.co"
                     },
                     "host_ip": {
@@ -1775,7 +1775,7 @@
                     },
                     "app_url": {
                       "type": "string",
-                      "description": "The domain name of the application (DNS entry is managed by Hikari 💡)",
+                      "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
                       "example": "alphadose.app.sdslabs.co"
                     },
                     "host_ip": {
@@ -2530,7 +2530,7 @@
                     },
                     "db_url": {
                       "type": "string",
-                      "description": "The domain name of the database (DNS entry is managed by Hikari 💡)",
+                      "description": "The domain name of the database (DNS entry is managed by GenDNS 💡)",
                       "example": "alphadose.db.sdslabs.co"
                     },
                     "host_ip": {
@@ -4860,7 +4860,7 @@
                         "type": "string"
                       }
                     },
-                    "mizu": {
+                    "appmaker": {
                       "type": "array",
                       "example": [
                         "192.168.208.206:4000"
@@ -5012,7 +5012,7 @@
                 "workers",
                 "kaze",
                 "enrai",
-                "mizu",
+                "appmaker",
                 "iwa",
                 "hikari",
                 "mysql",

@@ -3,8 +3,8 @@
 This example shows how to deploy a [Redis](https://redis.io/) database via Gasper
 
 !!!warning "Prerequisites"
-    * You have [Kaze](/configurations/kaze/) and [Kaen](/configurations/kaen/) up and running
-    * You have [Kaen Redis Plugin](/configurations/kaen/#redis-configuration) enabled
+    * You have [Master](/configurations/master/) and [DbMaker](/configurations/dbmaker/) up and running
+    * You have [DbMaker Redis Plugin](/configurations/dbmaker/#redis-configuration) enabled
     * You have already [logged in](/examples/login/) and obtained a JSON Web Token
 
 ```bash

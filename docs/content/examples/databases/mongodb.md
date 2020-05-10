@@ -3,8 +3,8 @@
 This example shows how to deploy a [MongoDB](https://www.mongodb.com/) database via Gasper
 
 !!!warning "Prerequisites"
-    * You have [Kaze](/configurations/kaze/) and [Kaen](/configurations/kaen/) up and running
-    * You have [Kaen MongoDB Plugin](/configurations/kaen/#mongodb-configuration) enabled
+    * You have [Master](/configurations/master/) and [DbMaker](/configurations/dbmaker/) up and running
+    * You have [DbMaker MongoDB Plugin](/configurations/dbmaker/#mongodb-configuration) enabled
     * You have already [logged in](/examples/login/) and obtained a JSON Web Token
 
 ```bash

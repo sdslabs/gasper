@@ -124,124 +124,125 @@ redis = "docker.io/redis:6.0-rc3-alpine3.11"
 exposure_interval = 30
 
 
-##########################
-#   Kaze Configuration   #
-##########################
+############################
+#   Master Configuration   #
+############################
 
-[services.kaze]
-# Time Interval (in seconds) in which `Kaze` sends health-check probes
+[services.master]
+# Time Interval (in seconds) in which `Master` sends health-check probes
 # to all worker nodes and removes inactive nodes from the central registry-server.
 cleanup_interval = 600
-deploy = true   # Deploy Kaze?
+deploy = true   # Deploy Master?
 port = 3000
 
 # Configuration for the MongoDB service container required by all deployed services.
-[services.kaze.mongodb]
-plugin = true  # Deploy MongoDB server and let `Kaze` manage it?
+[services.master.mongodb]
+plugin = true  # Deploy MongoDB server and let `Master` manage it?
 container_port = 27019  # Port on which the MongoDB server container will run
 
 # Environment variables for MongoDB docker container.
-[services.kaze.mongodb.env]
+[services.master.mongodb.env]
 MONGO_INITDB_ROOT_USERNAME = "alphadose"   # Root user of MongoDB server inside the container
 MONGO_INITDB_ROOT_PASSWORD = "alphadose"   # Root password of MongoDB server inside the container
 
 # Configuration for the Redis service container required by all deployed services.
-[services.kaze.redis]
-plugin = true  # Deploy Redis server and let `Kaze` manage it?
+[services.master.redis]
+plugin = true  # Deploy Redis server and let `Master` manage it?
 container_port = 6380  # Port on which the Redis server container will run
 password = "alphadose"
 
 
-###########################
-#   Enrai Configuration   #
-###########################
+##############################
+#   GenProxy Configuration   #
+##############################
 
-[services.enrai]
-# Time Interval (in seconds) in which `Enrai` updates its
+[services.genproxy]
+# Time Interval (in seconds) in which `GenProxy` updates its
 # `Reverse-Proxy Record Storage` by polling the central registry-server.
 record_update_interval = 15
-deploy = false  # Deploy Enrai?
+deploy = false  # Deploy GenProxy?
 port = 80
 
-# Configuration for using SSL with `Enrai`.
-[services.enrai.ssl]
-plugin = false  # Use SSL with Enrai?
+# Configuration for using SSL with `GenProxy`.
+[services.genproxy.ssl]
+plugin = false  # Use SSL with GenProxy?
 port = 443
 certificate = "/home/user/fullchain.pem"  # Certificate Location
 private_key = "/home/user/privkey.pem"  # Private Key Location
 
 
-##########################
-#   Mizu Configuration   #
-##########################
+##############################
+#   AppMaker Configuration   #
+##############################
 
-[services.mizu]
-deploy = true   # Deploy Mizu?
+[services.appmaker]
+deploy = true   # Deploy AppMaker?
 port = 4000
 # Time Interval (in seconds) in which metrics of all application containers
 # running in the current node are collected and stored in the central mongoDB database
 metrics_interval = 600
 
 
-##########################
-#   Kaen Configuration   #
-##########################
+#############################
+#   DbMaker Configuration   #
+#############################
 
-[services.kaen]
-deploy = false  # Deploy Kaen?
+[services.dbmaker]
+deploy = false  # Deploy DbMaker?
 port = 9000
 
-# Configuration for MySQL database server managed by `Kaen`
-[services.kaen.mysql]
-plugin = false  # Deploy MySQL server and let `Kaen` manage it?
+# Configuration for MySQL database server managed by `DbMaker`
+[services.dbmaker.mysql]
+plugin = false  # Deploy MySQL server and let `DbMaker` manage it?
 container_port = 33061  # Port on which the MySQL server container will run
 
 # Environment variables for MySQL docker container.
-[services.kaen.mysql.env]
+[services.dbmaker.mysql.env]
 MYSQL_ROOT_PASSWORD = "YOUR_MYSQL_PASSWORD"  # Root password of MySQL server inside the container
 
-# Configuration for PostgreSQL database server managed by `Kaen`
-[services.kaen.postgresql]
-plugin = false  # Deploy PostgreSQL server and let `Kaen` manage it?
+# Configuration for PostgreSQL database server managed by `DbMaker`
+[services.dbmaker.postgresql]
+plugin = false  # Deploy PostgreSQL server and let `DbMaker` manage it?
 container_port = 29121  # Port on which the PostgreSQL server container will run
 
 # Environment variables for PostgreSQL docker container.
-[services.kaen.postgresql.env]
+[services.dbmaker.postgresql.env]
 POSTGRES_USER = "YOUR_ROOT_NAME"   # Root user of PostgreSQL server inside the container
 POSTGRES_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of PostgreSQL server inside the container
 
-# Configuration for MongoDB database server managed by `Kaen`
-[services.kaen.mongodb]
-plugin = false  # Deploy MongoDB server and let `Kaen` manage it
+# Configuration for MongoDB database server managed by `DbMaker`
+[services.dbmaker.mongodb]
+plugin = false  # Deploy MongoDB server and let `DbMaker` manage it
 container_port = 27018  # Port on which the MongoDB server container will run
 
 # Environment variables for MongoDB docker container.
-[services.kaen.mongodb.env]
+[services.dbmaker.mongodb.env]
 MONGO_INITDB_ROOT_USERNAME = "YOUR_ROOT_NAME"   # Root user of MongoDB server inside the container
 MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB server inside the container
 
-# Configuration for Redis database server managed by `Kaen`
-[services.kaen.redis]
-plugin = false  # Deploy RedisDB server and let `Kaen` manage it
+# Configuration for Redis database server managed by `DbMaker`
+[services.dbmaker.redis]
+plugin = false  # Deploy RedisDB server and let `DbMaker` manage it
+
 
 ############################
-#   Hikari Configuration   #
+#   GenDNS Configuration   #
 ############################
 
-[services.hikari]
-# Time Interval (in seconds) in which `Hikari` updates its
+[services.gendns]
+# Time Interval (in seconds) in which `GenDNS` updates its
 # `DNS Record Storage` by polling the central registry-server.
 record_update_interval = 15
-deploy = false  # Deploy Hikari?
+deploy = false  # Deploy GenDNS?
 port = 53
 
 
-#########################
-#   Iwa Configuration   #
-#########################
+############################
+#   GenSSH Configuration   #
+############################
 
-[services.iwa]
-deploy = false   # Deploy Iwa?
+[services.genssh]
+deploy = false   # Deploy GenSSH?
 port = 2222
 
 # Location of Private Key for creating the SSH Signer.
@@ -252,7 +253,7 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 # IP address to establish a SSH connection to.
 # Equal to the current node's IP address if left blank.
 # This field is only for information of the client who will create applications
-# and this field's value will not affect Iwa's functioning in any manner.
+# and this field's value will not affect GenSSH's functioning in any manner.
 # To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""

@@ -13,9 +13,9 @@ import (
 )
 
 var (
-	mongoRootUser     = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"]
-	mongoRootPassword = configs.ServiceConfig.Kaen.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"]
-	mongoPort         = configs.ServiceConfig.Kaen.MongoDB.ContainerPort
+	mongoRootUser     = configs.ServiceConfig.DbMaker.MongoDB.Env["MONGO_INITDB_ROOT_USERNAME"]
+	mongoRootPassword = configs.ServiceConfig.DbMaker.MongoDB.Env["MONGO_INITDB_ROOT_PASSWORD"]
+	mongoPort         = configs.ServiceConfig.DbMaker.MongoDB.ContainerPort
 )
 
 func createConnection(ctx context.Context) (*mongo.Client, error) {

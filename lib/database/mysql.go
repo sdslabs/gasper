@@ -13,8 +13,8 @@ var (
 	mysqlDriver       = "mysql"
 	mysqlHost         = `%`
 	mysqlRootUser     = "root"
-	mysqlPort         = configs.ServiceConfig.Kaen.MySQL.ContainerPort
-	mysqlRootPassword = configs.ServiceConfig.Kaen.MySQL.Env["MYSQL_ROOT_PASSWORD"]
+	mysqlPort         = configs.ServiceConfig.DbMaker.MySQL.ContainerPort
+	mysqlRootPassword = configs.ServiceConfig.DbMaker.MySQL.Env["MYSQL_ROOT_PASSWORD"]
 )
 
 // CreateMysqlDB creates a database in the Mysql instance with the given database name, user and password

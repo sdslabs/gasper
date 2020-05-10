@@ -5,7 +5,7 @@ This example shows how to deploy a PHP application which uses [composer](https:/
 Lets use an [advanced PHP application](https://github.com/alphadose/MVC-Project) for demonstration
 
 !!!warning "Prerequisites"
-    * You have [Kaze](/configurations/kaze/) and [Mizu](/configurations/mizu/) up and running
+    * You have [Master](/configurations/master/) and [AppMaker](/configurations/appmaker/) up and running
     * You have already [logged in](/examples/login/) and obtained a JSON Web Token
 
 

@@ -6,12 +6,12 @@ import (
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
-	"github.com/sdslabs/gasper/services/enrai"
-	"github.com/sdslabs/gasper/services/hikari"
-	"github.com/sdslabs/gasper/services/iwa"
-	"github.com/sdslabs/gasper/services/kaen"
-	"github.com/sdslabs/gasper/services/kaze"
-	"github.com/sdslabs/gasper/services/mizu"
+	"github.com/sdslabs/gasper/services/appmaker"
+	"github.com/sdslabs/gasper/services/dbmaker"
+	"github.com/sdslabs/gasper/services/gendns"
+	"github.com/sdslabs/gasper/services/genproxy"
+	"github.com/sdslabs/gasper/services/genssh"
+	"github.com/sdslabs/gasper/services/master"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -22,56 +22,56 @@ type serviceLauncher struct {
 
 // Bind the services to the launchers
 var launcherBindings = map[string]*serviceLauncher{
-	kaze.ServiceName: {
-		Deploy: configs.ServiceConfig.Kaze.Deploy,
-		Start:  startKazeService,
+	master.ServiceName: {
+		Deploy: configs.ServiceConfig.Master.Deploy,
+		Start:  startMasterService,
 	},
-	mizu.ServiceName: {
-		Deploy: configs.ServiceConfig.Mizu.Deploy,
-		Start:  startMizuService,
+	appmaker.ServiceName: {
+		Deploy: configs.ServiceConfig.AppMaker.Deploy,
+		Start:  startAppMakerService,
 	},
-	iwa.ServiceName: {
-		Deploy: configs.ServiceConfig.Iwa.Deploy,
-		Start:  startIwaService,
+	genssh.ServiceName: {
+		Deploy: configs.ServiceConfig.GenSSH.Deploy,
+		Start:  startGenSSHService,
 	},
-	hikari.ServiceName: {
-		Deploy: configs.ServiceConfig.Hikari.Deploy,
-		Start:  hikari.NewService().ListenAndServe,
+	gendns.ServiceName: {
+		Deploy: configs.ServiceConfig.GenDNS.Deploy,
+		Start:  gendns.NewService().ListenAndServe,
 	},
-	enrai.DefaultServiceName: {
-		Deploy: configs.ServiceConfig.Enrai.Deploy,
-		Start:  startEnraiService,
+	genproxy.DefaultServiceName: {
+		Deploy: configs.ServiceConfig.GenProxy.Deploy,
+		Start:  startGenProxyService,
 	},
-	enrai.SSLServiceName: {
-		Deploy: configs.ServiceConfig.Enrai.SSL.PlugIn,
-		Start:  startEnraiServiceWithSSL,
+	genproxy.SSLServiceName: {
+		Deploy: configs.ServiceConfig.GenProxy.SSL.PlugIn,
+		Start:  startGenProxyServiceWithSSL,
 	},
-	kaen.ServiceName: {
-		Deploy: configs.ServiceConfig.Kaen.Deploy,
-		Start:  startKaenService,
+	dbmaker.ServiceName: {
+		Deploy: configs.ServiceConfig.DbMaker.Deploy,
+		Start:  startDbMakerService,
 	},
 }
 
-func startKaenService() error {
-	if configs.ServiceConfig.Kaen.MySQL.PlugIn {
+func startDbMakerService() error {
+	if configs.ServiceConfig.DbMaker.MySQL.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mysql)
 		setupDatabaseContainer(types.MySQL)
 	}
-	if configs.ServiceConfig.Kaen.MongoDB.PlugIn {
+	if configs.ServiceConfig.DbMaker.MongoDB.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDB)
 	}
-	if configs.ServiceConfig.Kaen.PostgreSQL.PlugIn {
+	if configs.ServiceConfig.DbMaker.PostgreSQL.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Postgresql)
 		setupDatabaseContainer(types.PostgreSQL)
 	}
-	if configs.ServiceConfig.Kaen.Redis.PlugIn {
+	if configs.ServiceConfig.DbMaker.Redis.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Redis)
 	}
-	return startGrpcServer(kaen.NewService(), configs.ServiceConfig.Kaen.Port)
+	return startGrpcServer(dbmaker.NewService(), configs.ServiceConfig.DbMaker.Port)
 }
 
-func startMizuService() error {
+func startAppMakerService() error {
 	images := []string{
 		configs.ImageConfig.Static,
 		configs.ImageConfig.Php,
@@ -82,43 +82,43 @@ func startMizuService() error {
 		configs.ImageConfig.Ruby,
 	}
 	checkAndPullImages(images...)
-	return startGrpcServer(mizu.NewService(), configs.ServiceConfig.Mizu.Port)
+	return startGrpcServer(appmaker.NewService(), configs.ServiceConfig.AppMaker.Port)
 }
 
-func startKazeService() error {
-	if configs.ServiceConfig.Kaze.MongoDB.PlugIn {
+func startMasterService() error {
+	if configs.ServiceConfig.Master.MongoDB.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDBGasper)
 	}
-	if configs.ServiceConfig.Kaze.Redis.PlugIn {
+	if configs.ServiceConfig.Master.Redis.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Redis)
 		setupDatabaseContainer(types.RedisGasper)
 	}
-	return buildHTTPServer(kaze.NewService(), configs.ServiceConfig.Kaze.Port).ListenAndServe()
+	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()
 }
 
-func startEnraiService() error {
-	return buildHTTPServer(enrai.NewService(), configs.ServiceConfig.Enrai.Port).ListenAndServe()
+func startGenProxyService() error {
+	return buildHTTPServer(genproxy.NewService(), configs.ServiceConfig.GenProxy.Port).ListenAndServe()
 }
 
-func startIwaService() error {
-	if !configs.ServiceConfig.Iwa.Deploy {
+func startGenSSHService() error {
+	if !configs.ServiceConfig.GenSSH.Deploy {
 		return nil
 	}
 	if runtime.GOOS == "windows" {
-		utils.LogInfo("Iwa doesn't work on Windows, skipping its deployment")
+		utils.LogInfo("GenSSH doesn't work on Windows, skipping its deployment")
 		return nil
 	}
-	return iwa.NewService().ListenAndServe()
+	return genssh.NewService().ListenAndServe()
 }
 
-func startEnraiServiceWithSSL() error {
-	port := configs.ServiceConfig.Enrai.SSL.Port
-	certificate := configs.ServiceConfig.Enrai.SSL.Certificate
-	privateKey := configs.ServiceConfig.Enrai.SSL.PrivateKey
-	err := buildHTTPServer(enrai.NewService(), port).ListenAndServeTLS(certificate, privateKey)
+func startGenProxyServiceWithSSL() error {
+	port := configs.ServiceConfig.GenProxy.SSL.Port
+	certificate := configs.ServiceConfig.GenProxy.SSL.Certificate
+	privateKey := configs.ServiceConfig.GenProxy.SSL.PrivateKey
+	err := buildHTTPServer(genproxy.NewService(), port).ListenAndServeTLS(certificate, privateKey)
 	if err != nil {
-		utils.Log("There was a problem deploying Enrai Service with SSL", utils.ErrorTAG)
+		utils.Log("There was a problem deploying GenProxy Service with SSL", utils.ErrorTAG)
 		utils.Log("Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
 		utils.LogError(err)
 		os.Exit(1)

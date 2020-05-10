@@ -26,4 +26,4 @@ max_refresh = 2419200 # 28 days
 ```
 
 !!!info
-    The above section only needs to be configured for the nodes where **Kaze 🌪** is to be deployed
+    The above section only needs to be configured for the nodes where **Master 🌪** is to be deployed

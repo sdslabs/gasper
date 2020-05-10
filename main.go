@@ -6,35 +6,35 @@ import (
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
-	"github.com/sdslabs/gasper/services/enrai"
-	"github.com/sdslabs/gasper/services/hikari"
-	"github.com/sdslabs/gasper/services/kaze"
-	"github.com/sdslabs/gasper/services/mizu"
+	"github.com/sdslabs/gasper/services/appmaker"
+	"github.com/sdslabs/gasper/services/gendns"
+	"github.com/sdslabs/gasper/services/genproxy"
+	"github.com/sdslabs/gasper/services/master"
 	"golang.org/x/sync/errgroup"
 )
 
-func initKaze() {
-	go kaze.ScheduleServiceExposure()
-	if configs.ServiceConfig.Kaze.Deploy {
-		go kaze.ScheduleCleanup()
+func initMaster() {
+	go master.ScheduleServiceExposure()
+	if configs.ServiceConfig.Master.Deploy {
+		go master.ScheduleCleanup()
 	}
 }
 
-func initMizu() {
-	if configs.ServiceConfig.Mizu.Deploy {
-		go mizu.ScheduleMetricsCollection()
+func initAppMaker() {
+	if configs.ServiceConfig.AppMaker.Deploy {
+		go appmaker.ScheduleMetricsCollection()
 	}
 }
 
-func initHikari() {
-	if configs.ServiceConfig.Hikari.Deploy {
-		go hikari.ScheduleUpdate()
+func initGenDNS() {
+	if configs.ServiceConfig.GenDNS.Deploy {
+		go gendns.ScheduleUpdate()
 	}
 }
 
-func initEnrai() {
-	if configs.ServiceConfig.Enrai.Deploy {
-		go enrai.ScheduleUpdate()
+func initGenProxy() {
+	if configs.ServiceConfig.GenProxy.Deploy {
+		go genproxy.ScheduleUpdate()
 	}
 }
 
@@ -53,9 +53,9 @@ func initServices() {
 }
 
 func main() {
-	initKaze()
-	initMizu()
-	initHikari()
-	initEnrai()
+	initMaster()
+	initAppMaker()
+	initGenDNS()
+	initGenProxy()
 	initServices()
 }

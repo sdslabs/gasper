@@ -38,41 +38,41 @@ var (
 	// ServiceMap is the configuration binding the service name to its
 	// deployment status and port
 	ServiceMap = map[string]*GenericService{
-		types.Kaze: {
-			Deploy: ServiceConfig.Kaze.Deploy,
-			Port:   ServiceConfig.Kaze.Port,
+		types.Master: {
+			Deploy: ServiceConfig.Master.Deploy,
+			Port:   ServiceConfig.Master.Port,
 		},
-		types.Mizu: {
-			Deploy: ServiceConfig.Mizu.Deploy,
-			Port:   ServiceConfig.Mizu.Port,
+		types.AppMaker: {
+			Deploy: ServiceConfig.AppMaker.Deploy,
+			Port:   ServiceConfig.AppMaker.Port,
 		},
-		types.Iwa: {
-			Deploy: ServiceConfig.Iwa.Deploy,
-			Port:   ServiceConfig.Iwa.Port,
+		types.GenSSH: {
+			Deploy: ServiceConfig.GenSSH.Deploy,
+			Port:   ServiceConfig.GenSSH.Port,
 		},
-		types.Enrai: {
-			Deploy: ServiceConfig.Enrai.Deploy,
-			Port:   ServiceConfig.Enrai.Port,
+		types.GenProxy: {
+			Deploy: ServiceConfig.GenProxy.Deploy,
+			Port:   ServiceConfig.GenProxy.Port,
 		},
 		types.MongoDB: {
-			Deploy: ServiceConfig.Kaen.MongoDB.PlugIn && ServiceConfig.Kaen.Deploy,
-			Port:   ServiceConfig.Kaen.Port,
+			Deploy: ServiceConfig.DbMaker.MongoDB.PlugIn && ServiceConfig.DbMaker.Deploy,
+			Port:   ServiceConfig.DbMaker.Port,
 		},
-		types.Hikari: {
-			Deploy: ServiceConfig.Hikari.Deploy,
-			Port:   ServiceConfig.Hikari.Port,
+		types.GenDNS: {
+			Deploy: ServiceConfig.GenDNS.Deploy,
+			Port:   ServiceConfig.GenDNS.Port,
 		},
 		types.MySQL: {
-			Deploy: ServiceConfig.Kaen.MySQL.PlugIn && ServiceConfig.Kaen.Deploy,
-			Port:   ServiceConfig.Kaen.Port,
+			Deploy: ServiceConfig.DbMaker.MySQL.PlugIn && ServiceConfig.DbMaker.Deploy,
+			Port:   ServiceConfig.DbMaker.Port,
 		},
 		types.PostgreSQL: {
-			Deploy: ServiceConfig.Kaen.PostgreSQL.PlugIn && ServiceConfig.Kaen.Deploy,
-			Port:   ServiceConfig.Kaen.Port,
+			Deploy: ServiceConfig.DbMaker.PostgreSQL.PlugIn && ServiceConfig.DbMaker.Deploy,
+			Port:   ServiceConfig.DbMaker.Port,
 		},
 		types.Redis: {
-			Deploy: ServiceConfig.Kaen.Redis.PlugIn && ServiceConfig.Kaen.Deploy,
-			Port:   ServiceConfig.Kaen.Port,
+			Deploy: ServiceConfig.DbMaker.Redis.PlugIn && ServiceConfig.DbMaker.Deploy,
+			Port:   ServiceConfig.DbMaker.Port,
 		},
 	}
 )

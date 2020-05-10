@@ -45,22 +45,22 @@ type GenericService struct {
 	Port   int  `toml:"port"`
 }
 
-// MizuService is the default configuration for mizu microservice
-type MizuService struct {
+// AppMakerService is the default configuration for appmaker microservice
+type AppMakerService struct {
 	GenericService
 	MetricsInterval time.Duration `toml:"metrics_interval"`
 }
 
-// KazeService is the default configuration for Kaze microservice
-type KazeService struct {
+// MasterService is the default configuration for Master microservice
+type MasterService struct {
 	GenericService
 	CleanupInterval time.Duration   `toml:"cleanup_interval"`
 	MongoDB         DatabaseService `toml:"mongodb"`
 	Redis           DatabaseService `toml:"redis"`
 }
 
-// IwaService is the configuration for Iwa microservice
-type IwaService struct {
+// GenSSHService is the configuration for GenSSH microservice
+type GenSSHService struct {
 	GenericService
 	HostSigners     []string `toml:"host_signers"`
 	UsingPassphrase bool     `toml:"using_passphrase"`
@@ -68,7 +68,7 @@ type IwaService struct {
 	EntrypointIP    string   `toml:"entrypoint_ip"`
 }
 
-// SSLConfig is the configuration for SSL in Enrai microservice
+// SSLConfig is the configuration for SSL in GenProxy microservice
 type SSLConfig struct {
 	PlugIn      bool   `toml:"plugin"`
 	Port        int    `toml:"port"`
@@ -76,15 +76,15 @@ type SSLConfig struct {
 	PrivateKey  string `toml:"private_key"`
 }
 
-// EnraiService is the configuration for Enrai microservice
-type EnraiService struct {
+// GenProxyService is the configuration for GenProxy microservice
+type GenProxyService struct {
 	GenericService
 	SSL                  SSLConfig     `toml:"ssl"`
 	RecordUpdateInterval time.Duration `toml:"record_update_interval"`
 }
 
-// HikariService is the configuration for Hikari microservice
-type HikariService struct {
+// GenDNSService is the configuration for GenDNS microservice
+type GenDNSService struct {
 	GenericService
 	RecordUpdateInterval time.Duration `toml:"record_update_interval"`
 }
@@ -97,8 +97,8 @@ type DatabaseService struct {
 	Password      string  `toml:"password"`
 }
 
-// KaenService is the configuration for Kaen microservice
-type KaenService struct {
+// DbMakerService is the configuration for DbMaker microservice
+type DbMakerService struct {
 	GenericService
 	MySQL      DatabaseService `toml:"mysql"`
 	MongoDB    DatabaseService `toml:"mongodb"`
@@ -123,13 +123,13 @@ type Images struct {
 
 // Services is the configuration for all Services
 type Services struct {
-	ExposureInterval time.Duration `toml:"exposure_interval"`
-	Kaze             KazeService   `toml:"kaze"`
-	Mizu             MizuService   `toml:"mizu"`
-	Iwa              IwaService    `toml:"iwa"`
-	Enrai            EnraiService  `toml:"enrai"`
-	Hikari           HikariService `toml:"hikari"`
-	Kaen             KaenService   `toml:"kaen"`
+	ExposureInterval time.Duration   `toml:"exposure_interval"`
+	Master           MasterService   `toml:"master"`
+	AppMaker         AppMakerService `toml:"appmaker"`
+	GenSSH           GenSSHService   `toml:"genssh"`
+	GenProxy         GenProxyService `toml:"genproxy"`
+	GenDNS           GenDNSService   `toml:"gendns"`
+	DbMaker          DbMakerService  `toml:"dbmaker"`
 }
 
 // GasperCfg is the configuration for the entire project

@@ -39,7 +39,7 @@ func CreateApplicationContainer(containerCfg *types.ApplicationContainer) (strin
 		},
 		Healthcheck: &container.HealthConfig{
 			Test:     []string{"CMD-SHELL", fmt.Sprintf("curl --fail --silent http://localhost:%d/ || exit 1", containerCfg.ApplicationPort)},
-			Interval: configs.ServiceConfig.Mizu.MetricsInterval * time.Second,
+			Interval: configs.ServiceConfig.AppMaker.MetricsInterval * time.Second,
 			Timeout:  10 * time.Second,
 			Retries:  3,
 		},

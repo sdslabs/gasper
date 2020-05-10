@@ -11,8 +11,8 @@ import (
 
 // NewClient returns a new docker client
 func NewClient() *client.Client {
-	// No need to test docker connection if Mizu and Kaen are not deployed
-	if !configs.ServiceConfig.Mizu.Deploy && !configs.ServiceConfig.Kaen.Deploy {
+	// No need to test docker connection if AppMaker and DbMaker are not deployed
+	if !configs.ServiceConfig.AppMaker.Deploy && !configs.ServiceConfig.DbMaker.Deploy {
 		return nil
 	}
 	cli, err := client.NewEnvClient()

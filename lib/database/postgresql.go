@@ -11,10 +11,10 @@ import (
 
 var (
 	postgresqlHost         = `%`
-	postgresqlRootUser     = configs.ServiceConfig.Kaen.PostgreSQL.Env["POSTGRES_USER"]
-	postgresqlPassword     = configs.ServiceConfig.Kaen.PostgreSQL.Env["POSTGRES_PASSWORD"]
-	postgresqlDatabaseName = configs.ServiceConfig.Kaen.PostgreSQL.Env["POSTGRES_DB"]
-	postgresqlPort         = configs.ServiceConfig.Kaen.PostgreSQL.ContainerPort
+	postgresqlRootUser     = configs.ServiceConfig.DbMaker.PostgreSQL.Env["POSTGRES_USER"]
+	postgresqlPassword     = configs.ServiceConfig.DbMaker.PostgreSQL.Env["POSTGRES_PASSWORD"]
+	postgresqlDatabaseName = configs.ServiceConfig.DbMaker.PostgreSQL.Env["POSTGRES_DB"]
+	postgresqlPort         = configs.ServiceConfig.DbMaker.PostgreSQL.ContainerPort
 )
 
 // CreatePostgresqlDB creates a postgre database

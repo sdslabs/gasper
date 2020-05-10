@@ -32,7 +32,7 @@ You can generate a *Cloudflare API Token* from [here](https://dash.cloudflare.co
 !!!warning
     The generated token must have the permissions **ZONE:ZONE:EDIT** and **ZONE:DNS:EDIT** in order for this plugin to work
 
-The **public_ip** field in the above configuration should hold the public IPv4 address of an **Enrai ⚡** instance or a **load balancer** pointing to multiple **Enrai ⚡** instances
+The **public_ip** field in the above configuration should hold the public IPv4 address of an **GenProxy ⚡** instance or a **load balancer** pointing to multiple **GenProxy ⚡** instances
 
 !!!warning
-    If you wish to use the Cloudflare plugin in your cloud ecosystem then make sure that the above configuration is **same** across all **nodes** where **Mizu 💧** is deployed
+    If you wish to use the Cloudflare plugin in your cloud ecosystem then make sure that the above configuration is **same** across all **nodes** where **AppMaker 💧** is deployed

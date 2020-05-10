@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Gasper Kaze API
+  title: Gasper Master API
   description: >-
     Handles authentication, creation/management of applications, databases, users and also provides a superuser API. <br><br>
     Only a superuser can avail the superuser API. A superuser can **grant/revoke** superuser privileges to other users. A default 
@@ -145,7 +145,7 @@ components:
           example: sdsws/node:2.0
         app_url:
           type: string
-          description: The domain name of the application (DNS entry is managed by Hikari 💡)
+          description: The domain name of the application (DNS entry is managed by GenDNS 💡)
           example: alphadose.app.sdslabs.co
         host_ip:
           type: string
@@ -266,7 +266,7 @@ components:
           description: Owner of the database
         db_url:
           type: string
-          description: The domain name of the database (DNS entry is managed by Hikari 💡)
+          description: The domain name of the database (DNS entry is managed by GenDNS 💡)
           example: alphadose.db.sdslabs.co
         host_ip:
           type: string
@@ -780,7 +780,7 @@ paths:
                   url:
                     type: string
                     description: The URL endpoint for accessing the browser terminal instance in the form of domain_name:port
-                    example: kaze.sdslabs.co:51000
+                    example: master.sdslabs.co:51000
                   raw_url:
                     type: string
                     description: The URL endpoint for accessing the browser terminal instance in the form of ip_address:port
@@ -1629,22 +1629,22 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  kaze:
+                  master:
                     type: array
                     example: [192.168.208.206:3000]
                     items:
                       type: string 
-                  enrai:
+                  genproxy:
                     type: array
                     example: [192.168.208.206:80]
                     items:
                       type: string  
-                  hikari:
+                  gendns:
                     type: array
                     example: [192.168.208.206:53]
                     items:
                       type: string  
-                  mizu:
+                  appmaker:
                     type: array
                     example: [192.168.208.206:4000]
                     items:
@@ -1669,7 +1669,7 @@ paths:
                     example: [192.168.208.206:9000]
                     items:
                       type: string                      
-                  iwa:
+                  genssh:
                     type: array
                     example: [192.168.208.206:2222]
                     items:
@@ -1693,11 +1693,11 @@ paths:
             enum:
               - master
               - workers
-              - kaze
-              - enrai
-              - mizu
-              - iwa
-              - hikari
+              - master
+              - genproxy
+              - appmaker
+              - genssh
+              - gendns
               - mysql
               - mongodb
               - postgresql
@@ -1717,7 +1717,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                  kaze:
+                  master:
                     type: array
                     example: [192.168.208.206:3000]
                     items:

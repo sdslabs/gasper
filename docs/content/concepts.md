@@ -11,9 +11,9 @@
 
 Gasper is divided into number of components each playing a specific role in the ecosystem. Lets have a look.
 
-### Mizu 💧 
+### AppMaker 💧 
 
-Mizu service deals with creating and managing applications and their life-cycles.
+AppMaker service deals with creating and managing applications and their life-cycles.
 
 It currently supports applications of the following types
 
@@ -28,11 +28,11 @@ It currently supports applications of the following types
 It ain't much but it's honest work 🥳
 
 !!!info
-    A node with **Mizu** deployed is a Worker Node
+    A node with **AppMaker** deployed is a Worker Node
 
-### Kaen 🔥
+### DbMaker 🔥
 
-Kaen service deals with creating and managing databases and their life-cycles
+DbMaker service deals with creating and managing databases and their life-cycles
 
 It currently supports databases of the following types
 
@@ -44,36 +44,36 @@ It currently supports databases of the following types
 It ain't.... (complete the rest yourself)
 
 !!!info
-    A node with **Kaen** deployed is a Worker Node
+    A node with **DbMaker** deployed is a Worker Node
 
-### Enrai ⚡
+### GenProxy ⚡
 
-Enrai service deals with reverse-proxying HTTP, HTTPS, HTTP/2, Websocket and gRPC requests to the desired application's IPv4 address and port based on the hostname.
+GenProxy service deals with reverse-proxying HTTP, HTTPS, HTTP/2, Websocket and gRPC requests to the desired application's IPv4 address and port based on the hostname.
 
 !!!info
-    A node with **Enrai** deployed is a Support Node
+    A node with **GenProxy** deployed is a Support Node
 
-### Hikari 💡
+### GenDNS 💡
 
-Hikari service deals with creating and managing DNS records of all deployed applications. All DNS records point to the IPv4 addresses of Enrai ⚡ instances which in turn reverse-proxies the request to the desired application's IPv4 address and port.
+GenDNS service deals with creating and managing DNS records of all deployed applications. All DNS records point to the IPv4 addresses of GenProxy ⚡ instances which in turn reverse-proxies the request to the desired application's IPv4 address and port.
 
 !!!note
-    **Hikari** stores DNS records in such a manner that all requests are equally distributed among all available **Enrai** instances. The records dynamically change with the addition/deletion of **Enrai** instances.
+    **GenDNS** stores DNS records in such a manner that all requests are equally distributed among all available **GenProxy** instances. The records dynamically change with the addition/deletion of **GenProxy** instances.
 
 !!!info
-    A node with **Hikari** deployed is a Support Node
+    A node with **GenDNS** deployed is a Support Node
 
-### Iwa 🗿 
+### GenSSH 🗿 
 
-Iwa service provides [SSH](https://www.ssh.com/ssh/protocol/) access directly to an application's docker container to the end user.
-The SSH command will be automatically returned to the user on application creation provided the node where the application is deployed has the Iwa service deployed.
+GenSSH service provides [SSH](https://www.ssh.com/ssh/protocol/) access directly to an application's docker container to the end user.
+The SSH command will be automatically returned to the user on application creation provided the node where the application is deployed has the GenSSH service deployed.
 
 !!!info
-    A node with **Iwa** deployed is a Support Node
+    A node with **GenSSH** deployed is a Support Node
 
-### Kaze 🌪 
+### Master 🌪 
 
-Kaze is the master of the entire Gasper ecosystem which performs the following tasks
+Master is the master of the entire Gasper ecosystem which performs the following tasks
 
 * Equal distribution of applications and databases among worker nodes
 * User Authentication based on JWT (JSON Web Token)
@@ -82,10 +82,10 @@ Kaze is the master of the entire Gasper ecosystem which performs the following t
 * Removal of inactive nodes from the cloud ecosystem
 * Re-scheduling of applications in case of node failure
 
-Kaze API docs are available [here](/api)
+Master API docs are available [here](/api)
 
 !!!info
-    You can interact with the entire Gasper ecosystem (example:- create/manage applications or databases) only through the REST API provided by **Kaze**
+    You can interact with the entire Gasper ecosystem (example:- create/manage applications or databases) only through the REST API provided by **Master**
 
 !!!info
-    A node with **Kaze** deployed is a Master Node
+    A node with **Master** deployed is a Master Node

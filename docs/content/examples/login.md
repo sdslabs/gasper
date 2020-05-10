@@ -6,7 +6,7 @@ This example shows how to login into the Gasper ecosystem and obtain a JSON Web 
     The JSON Web Token obtained will be used in other requests
 
 !!!warning "Prerequisites"
-    You have [Kaze](/configurations/kaze/) up and running
+    You have [Master](/configurations/master/) up and running
 
 ```bash
 $ curl -X POST \
