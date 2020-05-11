@@ -21,11 +21,13 @@ func checkAndPullImages(imageList ...string) {
 		os.Exit(1)
 	}
 	for _, image := range imageList {
-		if !utils.Contains(availableImages, image) {
-			utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
-			if err = docker.Pull(image); err != nil {
-				utils.LogError(err)
-			}
+		imageWithoutRepoName := strings.Replace(image, "docker.io/", "", -1)
+		if utils.Contains(availableImages, image) || utils.Contains(availableImages, imageWithoutRepoName) {
+			continue
+		}
+		utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
+		if err = docker.Pull(image); err != nil {
+			utils.LogError(err)
 		}
 	}
 }
