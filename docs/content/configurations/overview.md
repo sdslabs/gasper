@@ -134,9 +134,9 @@ redis = "docker.io/redis:6.0-rc3-alpine3.11"
 exposure_interval = 30
 
 
-##########################
+############################
 #   Master Configuration   #
-##########################
+############################
 
 [services.master]
 # Time Interval (in seconds) in which `Master` sends health-check probes
@@ -162,9 +162,9 @@ container_port = 6380  # Port on which the Redis server container will run
 password = "alphadose"
 
 
-###########################
+##############################
 #   GenProxy Configuration   #
-###########################
+##############################
 
 [services.genproxy]
 # Time Interval (in seconds) in which `GenProxy` updates its
@@ -181,9 +181,9 @@ certificate = "/home/user/fullchain.pem"  # Certificate Location
 private_key = "/home/user/privkey.pem"  # Private Key Location
 
 
-##########################
+##############################
 #   AppMaker Configuration   #
-##########################
+##############################
 
 [services.appmaker]
 deploy = true   # Deploy AppMaker?
@@ -193,9 +193,9 @@ port = 4000
 metrics_interval = 600
 
 
-##########################
+#############################
 #   DbMaker Configuration   #
-##########################
+#############################
 
 [services.dbmaker]
 deploy = false  # Deploy DbMaker?
@@ -234,6 +234,7 @@ MONGO_INITDB_ROOT_PASSWORD = "YOUR_ROOT_PASSWORD"   # Root password of MongoDB s
 [services.dbmaker.redis]
 plugin = false  # Deploy RedisDB server and let `DbMaker` manage it
 
+
 ############################
 #   GenDNS Configuration   #
 ############################
@@ -246,9 +247,9 @@ deploy = false  # Deploy GenDNS?
 port = 53
 
 
-#########################
+############################
 #   GenSSH Configuration   #
-#########################
+############################
 
 [services.genssh]
 deploy = false   # Deploy GenSSH?

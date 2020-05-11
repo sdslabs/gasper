@@ -5,9 +5,9 @@ AppMaker deals with creating and managing applications and their life-cycles
 The following section deals with the configuration of AppMaker
 
 ```toml
-##########################
+##############################
 #   AppMaker Configuration   #
-##########################
+##############################
 
 [services.appmaker]
 deploy = true   # Deploy AppMaker?

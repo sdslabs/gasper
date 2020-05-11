@@ -14,9 +14,9 @@ Master API docs are available [here](/api)
 The following section deals with the configuration of Master
 
 ```toml
-##########################
+############################
 #   Master Configuration   #
-##########################
+############################
 
 [services.master]
 # Time Interval (in seconds) in which `Master` sends health-check probes
@@ -40,7 +40,6 @@ MONGO_INITDB_ROOT_PASSWORD = "alphadose"   # Root password of MongoDB server ins
 plugin = true  # Deploy Redis server and let `Master` manage it?
 container_port = 6380  # Port on which the Redis server container will run
 password = "alphadose"
-
 ```
 
 !!!tip

@@ -9,9 +9,9 @@ GenProxy service deals with reverse-proxying HTTP, HTTPS, HTTP/2, Websocket and 
 The following section deals with the configuration of GenProxy
 
 ```toml
-###########################
+##############################
 #   GenProxy Configuration   #
-###########################
+##############################
 
 [services.genproxy]
 # Time Interval (in seconds) in which `GenProxy` updates its

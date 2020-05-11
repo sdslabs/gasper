@@ -7,9 +7,9 @@ The SSH command will be automatically returned to the user on application creati
 The following section deals with the configuration of GenSSH
 
 ```toml
-#########################
+############################
 #   GenSSH Configuration   #
-#########################
+############################
 
 [services.genssh]
 deploy = false   # Deploy GenSSH?
@@ -22,9 +22,9 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 
 # IP address to establish a SSH connection to.
 # Equal to the current node's IP address if left blank.
-# This field is only for information of the client who will create applications 
+# This field is only for information of the client who will create applications
 # and this field's value will not affect GenSSH's functioning in any manner.
-# To be used when the current node is only accessible by a jump host or 
+# To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""
 ```

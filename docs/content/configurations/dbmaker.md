@@ -5,12 +5,12 @@ DbMaker deals with creating and managing databases and their life-cycles
 The following section deals with the configuration of DbMaker
 
 ```toml
-##########################
+#############################
 #   DbMaker Configuration   #
-##########################
+#############################
 
 [services.dbmaker]
-deploy = false   # Deploy DbMaker?
+deploy = false  # Deploy DbMaker?
 port = 9000
 ```
 
@@ -81,7 +81,6 @@ This section deals with the Redis server configuration managed by DbMaker
 # Configuration for Redis database server managed by `DbMaker`
 [services.dbmaker.redis]
 plugin = false  # Deploy RedisDB server and let `DbMaker` manage it
-
 ```
 
 !!!info
