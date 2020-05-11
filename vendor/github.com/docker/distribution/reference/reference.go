@@ -243,9 +243,12 @@ func ParseNamed(s string) (Named, error) {
 	if err != nil {
 		return nil, err
 	}
-	if named.String() != s {
-		return nil, ErrNameNotCanonical
-	}
+	// This section in vendor is commented because this treats the repository
+	// name as non-canonical even though it is canonical
+	// NOTE: This is intentional
+	// if named.String() != s {
+	// 	return nil, ErrNameNotCanonical
+	// }
 	return named, nil
 }
 
