@@ -25,8 +25,6 @@ github.com/appleboy/gin-jwt/v2
 # github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 ## explicit
 github.com/asaskevich/govalidator
-# github.com/astaxie/beego v1.11.1
-## explicit
 # github.com/cpuguy83/go-md2man/v2 v2.0.0
 ## explicit
 github.com/cpuguy83/go-md2man/v2/md2man
@@ -66,6 +64,7 @@ github.com/docker/go-connections/tlsconfig
 ## explicit
 github.com/docker/go-units
 # github.com/elazarl/go-bindata-assetfs v1.0.0
+## explicit
 github.com/elazarl/go-bindata-assetfs
 # github.com/emirpasic/gods v1.12.0
 github.com/emirpasic/gods/containers
@@ -96,7 +95,6 @@ github.com/gliderlabs/ssh
 github.com/go-playground/locales
 github.com/go-playground/locales/currency
 # github.com/go-playground/universal-translator v0.17.0
-## explicit
 github.com/go-playground/universal-translator
 # github.com/go-playground/validator/v10 v10.2.0
 github.com/go-playground/validator/v10
@@ -122,14 +120,7 @@ github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
 # github.com/golang/snappy v0.0.1
-## explicit
 github.com/golang/snappy
-# github.com/gorilla/context v1.1.1
-## explicit
-# github.com/gorilla/mux v1.7.2
-## explicit
-# github.com/gorilla/pat v0.0.0-20180118222023-199c85a7f6d1
-## explicit
 # github.com/gorilla/websocket v1.4.2
 ## explicit
 github.com/gorilla/websocket
@@ -162,8 +153,6 @@ github.com/jackc/pgx/v4/internal/sanitize
 github.com/jbenet/go-context/io
 # github.com/json-iterator/go v1.1.9
 github.com/json-iterator/go
-# github.com/julienschmidt/httprouter v1.2.0
-## explicit
 # github.com/kevinburke/ssh_config v0.0.0-20190725054713-01f96b0aa0cd
 github.com/kevinburke/ssh_config
 # github.com/klauspost/compress v1.10.5
@@ -176,12 +165,7 @@ github.com/klauspost/compress/zstd/internal/xxhash
 # github.com/kr/pty v1.1.8
 ## explicit
 github.com/kr/pty
-# github.com/labstack/echo v3.3.10+incompatible
-## explicit
-# github.com/labstack/gommon v0.2.8
-## explicit
 # github.com/leodido/go-urn v1.2.0
-## explicit
 github.com/leodido/go-urn
 # github.com/mattn/go-isatty v0.0.12
 github.com/mattn/go-isatty
@@ -216,19 +200,14 @@ github.com/src-d/gcfg
 github.com/src-d/gcfg/scanner
 github.com/src-d/gcfg/token
 github.com/src-d/gcfg/types
-# github.com/tidwall/gjson v1.3.5
-## explicit
 # github.com/ugorji/go/codec v1.1.7
 github.com/ugorji/go/codec
 # github.com/urfave/cli v1.22.4
 ## explicit
 github.com/urfave/cli
-# github.com/valyala/fasttemplate v1.0.1
-## explicit
 # github.com/xanzy/ssh-agent v0.2.1
 github.com/xanzy/ssh-agent
 # github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c
-## explicit
 github.com/xdg/scram
 # github.com/xdg/stringprep v1.0.0
 ## explicit
@@ -333,13 +312,9 @@ golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# golang.org/x/tools v0.0.0-20200409170454-77362c5149f0
-## explicit
 # golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
 golang.org/x/xerrors
 golang.org/x/xerrors/internal
-# google.golang.org/appengine v1.6.6
-## explicit
 # google.golang.org/genproto v0.0.0-20200507105951-43844f6eee31
 ## explicit
 google.golang.org/genproto/googleapis/rpc/status
@@ -415,10 +390,6 @@ google.golang.org/protobuf/runtime/protoimpl
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
-# gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15
-## explicit
-# gopkg.in/go-playground/validator.v9 v9.31.0
-## explicit
 # gopkg.in/src-d/go-billy.v4 v4.3.2
 gopkg.in/src-d/go-billy.v4
 gopkg.in/src-d/go-billy.v4/helper/chroot
