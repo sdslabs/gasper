@@ -13,6 +13,7 @@ install:
   - go get -u golang.org/x/lint/golint
 
 script:
+  - go mod vendor
   - make vet
   - make lint
   - make test
