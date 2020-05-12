@@ -3,6 +3,7 @@ package docker
 import (
 	"io"
 	"os"
+	"os/exec"
 
 	"github.com/docker/docker/api/types"
 	"golang.org/x/net/context"
@@ -36,5 +37,17 @@ func Pull(image string) error {
 	defer out.Close()
 
 	io.Copy(os.Stdout, out)
+	return nil
+}
+
+// DirectPull function directly pulls an image from DockerHUB using os/exec
+func DirectPull(image string) error {
+	cmd := exec.Command("docker", "pull", image)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil {
+		return err
+	}
 	return nil
 }

@@ -26,7 +26,7 @@ func checkAndPullImages(imageList ...string) {
 			continue
 		}
 		utils.LogInfo("Image %s not present locally, pulling from DockerHUB\n", image)
-		if err = docker.Pull(image); err != nil {
+		if err = docker.DirectPull(image); err != nil {
 			utils.LogError(err)
 		}
 	}
