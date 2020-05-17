@@ -29,7 +29,7 @@ func NewService() http.Handler {
 	router.Use(cors.New(corsConfig))
 	router.NoRoute(c.Handle404)
 
-	// Bind Frontend
+	// Bind frontend generated from https://github.com/sdslabs/SWS
 	router.GET("", func(c *gin.Context) {
 		c.Data(200, frontendBinder["index.html"].responseHeader, frontendBinder["index.html"].content)
 	})

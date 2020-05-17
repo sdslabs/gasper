@@ -29,6 +29,7 @@ var (
 	// request among multiple instances
 	balancedInstances = []string{
 		types.Master,
+		"gasper",
 	}
 
 	// masterBalancer load balances requests among multiple master instances
@@ -77,7 +78,6 @@ func reverseProxy(c *gin.Context) {
 
 	proxy := &httputil.ReverseProxy{Director: director}
 	proxy.ServeHTTP(c.Writer, c.Request)
-	return
 }
 
 // NewService returns a new instance of the current microservice
