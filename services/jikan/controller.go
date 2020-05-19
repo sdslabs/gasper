@@ -25,7 +25,7 @@ func streamHandler(c *gin.Context) {
 
 	metricsInterval, err := strconv.ParseInt(c.Query("interval"), 10, 64)
 	if err != nil {
-		metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
+		metricsInterval = 2 * int64(configs.ServiceConfig.AppMaker.MetricsInterval)
 	}
 
 	metricsCount, err := strconv.ParseInt(c.Query("count"), 10, 64)
@@ -40,12 +40,12 @@ func streamHandler(c *gin.Context) {
 			metrics := mongo.FetchContainerMetrics(types.M{
 				mongo.NameKey: appName,
 				mongo.TimestampKey: types.M{
-					"$gte": time.Now().Unix() - int64(configs.ServiceConfig.Mizu.MetricsInterval*time.Second),
+					"$gte": time.Now().Unix() - int64(configs.ServiceConfig.AppMaker.MetricsInterval*time.Second),
 				},
 			}, metricsCount)
 			chanStream <- metrics
-			if metricsInterval < int64(configs.ServiceConfig.Mizu.MetricsInterval) {
-				metricsInterval = 2 * int64(configs.ServiceConfig.Mizu.MetricsInterval)
+			if metricsInterval < int64(configs.ServiceConfig.AppMaker.MetricsInterval) {
+				metricsInterval = 2 * int64(configs.ServiceConfig.AppMaker.MetricsInterval)
 			}
 
 			time.Sleep(time.Second * time.Duration(metricsInterval))
