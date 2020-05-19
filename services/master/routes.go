@@ -30,8 +30,8 @@ func NewService() http.Handler {
 	router.NoRoute(c.Handle404)
 
 	// Bind frontend generated from https://github.com/sdslabs/SWS
-	router.GET("", func(c *gin.Context) {
-		c.Data(200, frontendBinder["index.html"].responseHeader, frontendBinder["index.html"].content)
+	router.GET("", func(ctx *gin.Context) {
+		ctx.Data(200, frontendBinder["index.html"].responseHeader, frontendBinder["index.html"].content)
 	})
 	for file, box := range frontendBinder {
 		// A deep copy of the filename and the box is made because as the loop iterator traverses
@@ -42,8 +42,8 @@ func NewService() http.Handler {
 		// the undesired override
 		fileDeepCopy := file
 		boxDeepCopy := box
-		router.GET("/"+fileDeepCopy, func(c *gin.Context) {
-			c.Data(200, boxDeepCopy.responseHeader, boxDeepCopy.content)
+		router.GET("/"+fileDeepCopy, func(ctx *gin.Context) {
+			ctx.Data(200, boxDeepCopy.responseHeader, boxDeepCopy.content)
 		})
 	}
 
