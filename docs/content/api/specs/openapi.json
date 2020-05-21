@@ -233,6 +233,11 @@
             "example": "192.168.208.206",
             "description": "IPv4 address of the node"
           },
+          "public_ip": {
+            "type": "string",
+            "example": "49.37.14.115",
+            "description": "Public IPv4 address of the node (if defined in config.toml of the node)"
+          },
           "name_servers": {
             "type": "array",
             "description": "The DNS NameServers used by the application's docker container",
@@ -398,6 +403,11 @@
             "type": "string",
             "description": "IPv4 address of the node where the database is deployed",
             "example": "192.168.208.208"
+          },
+          "public_ip": {
+            "type": "string",
+            "example": "49.37.14.115",
+            "description": "Public IPv4 address of the node (if defined in config.toml of the node)"
           },
           "port": {
             "type": "string",
@@ -1003,6 +1013,11 @@
                       "example": "192.168.208.206",
                       "description": "IPv4 address of the node"
                     },
+                    "public_ip": {
+                      "type": "string",
+                      "example": "49.37.14.115",
+                      "description": "Public IPv4 address of the node (if defined in config.toml of the node)"
+                    },
                     "name_servers": {
                       "type": "array",
                       "description": "The DNS NameServers used by the application's docker container",
@@ -1455,6 +1470,11 @@
                       "example": "192.168.208.206",
                       "description": "IPv4 address of the node"
                     },
+                    "public_ip": {
+                      "type": "string",
+                      "example": "49.37.14.115",
+                      "description": "Public IPv4 address of the node (if defined in config.toml of the node)"
+                    },
                     "name_servers": {
                       "type": "array",
                       "description": "The DNS NameServers used by the application's docker container",
@@ -1782,6 +1802,11 @@
                       "type": "string",
                       "example": "192.168.208.206",
                       "description": "IPv4 address of the node"
+                    },
+                    "public_ip": {
+                      "type": "string",
+                      "example": "49.37.14.115",
+                      "description": "Public IPv4 address of the node (if defined in config.toml of the node)"
                     },
                     "name_servers": {
                       "type": "array",
@@ -2537,6 +2562,11 @@
                       "type": "string",
                       "description": "IPv4 address of the node where the database is deployed",
                       "example": "192.168.208.208"
+                    },
+                    "public_ip": {
+                      "type": "string",
+                      "example": "49.37.14.115",
+                      "description": "Public IPv4 address of the node (if defined in config.toml of the node)"
                     },
                     "port": {
                       "type": "string",
