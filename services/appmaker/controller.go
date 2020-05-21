@@ -74,7 +74,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 			return nil, err
 		}
 		app.SetCloudflareID(resp.Result.ID)
-		app.SetHostIP(configs.CloudflareConfig.PublicIP)
+		app.SetPublicIP(configs.CloudflareConfig.PublicIP)
 	}
 
 	err = mongo.UpsertInstance(

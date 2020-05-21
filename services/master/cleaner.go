@@ -90,7 +90,12 @@ func rescheduleApplications(apps []types.M) {
 			continue
 		}
 		utils.LogInfo("Re-scheduling application %s to %s", name, instanceURL)
-		factory.CreateApplication(language, owner, instanceURL, dataBytes)
+
+		// TODO :-
+		// 1. Shift the below function call to a goroutine worker pool i.e fixed number of goroutines
+		// (maybe equal to number of CPU logical cores) to avoid CPU overload and thrashing
+		// 2. Check for errors and if any, reschedule that application to a different instance
+		go factory.CreateApplication(language, owner, instanceURL, dataBytes)
 	}
 }
 
