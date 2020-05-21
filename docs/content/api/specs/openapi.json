@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Gasper Kaze API",
+    "title": "Gasper Master API",
     "description": "Handles authentication, creation/management of applications, databases, users and also provides a superuser API. <br><br> Only a superuser can avail the superuser API. A superuser can **grant/revoke** superuser privileges to other users. A default  superuser is created every time a Gasper instance is launched whose credentials are defined in the `admin` section of `config.toml`, the main configuration file. A sample configuration file is available [here](https://github.com/sdslabs/gasper/blob/develop/config.sample.toml#L37).<br><br>\n**Note:-** Normally the applications and databases can only be managed by their owners but the superuser can bypass that check.<br><br>\n**PS:-** If you want to programmatically generate a client for this API, you can find the corresponding OpenAPI specifications [here](https://github.com/sdslabs/gasper/tree/develop/docs/content/api/specs). We recommend using [OpenAPI-Generator](https://openapi-generator.tech/) for generating clients.",
     "contact": {
       "name": "SDSLabs",
@@ -2061,7 +2061,7 @@
                     "url": {
                       "type": "string",
                       "description": "The URL endpoint for accessing the browser terminal instance in the form of domain_name:port",
-                      "example": "kaze.sdslabs.co:51000"
+                      "example": "master.sdslabs.co:51000"
                     },
                     "raw_url": {
                       "type": "string",
@@ -4833,7 +4833,7 @@
                     "success": {
                       "type": "boolean"
                     },
-                    "kaze": {
+                    "master": {
                       "type": "array",
                       "example": [
                         "192.168.208.206:3000"
@@ -4842,7 +4842,7 @@
                         "type": "string"
                       }
                     },
-                    "enrai": {
+                    "genproxy": {
                       "type": "array",
                       "example": [
                         "192.168.208.206:80"
@@ -4851,7 +4851,7 @@
                         "type": "string"
                       }
                     },
-                    "hikari": {
+                    "gendns": {
                       "type": "array",
                       "example": [
                         "192.168.208.206:53"
@@ -4905,7 +4905,7 @@
                         "type": "string"
                       }
                     },
-                    "iwa": {
+                    "genssh": {
                       "type": "array",
                       "example": [
                         "192.168.208.206:2222"
@@ -5010,11 +5010,11 @@
               "enum": [
                 "master",
                 "workers",
-                "kaze",
-                "enrai",
+                "master",
+                "genproxy",
                 "appmaker",
-                "iwa",
-                "hikari",
+                "genssh",
+                "gendns",
                 "mysql",
                 "mongodb",
                 "postgresql",
@@ -5039,7 +5039,7 @@
                     "success": {
                       "type": "boolean"
                     },
-                    "kaze": {
+                    "master": {
                       "type": "array",
                       "example": [
                         "192.168.208.206:3000"
