@@ -36,13 +36,13 @@ func setupAdmin() {
 }
 
 func setup() {
-	time.Sleep(5 * time.Second)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	err = client.Ping(ctx, nil)
 	if err != nil {
 		utils.Log("MongoDB connection was not established", utils.ErrorTAG)
 		utils.LogError(err)
+		time.Sleep(5 * time.Second)
 		setup()
 	} else {
 		utils.LogInfo("MongoDB Connection Established")
