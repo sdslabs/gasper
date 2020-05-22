@@ -16,11 +16,11 @@ var client = redis.NewClient(&redis.Options{
 })
 
 func setup() {
-	time.Sleep(5 * time.Second)
 	_, err := client.Ping().Result()
 	if err != nil {
 		utils.Log("Redis connection was not established", utils.ErrorTAG)
 		utils.LogError(err)
+		time.Sleep(5 * time.Second)
 		setup()
 	} else {
 		utils.LogInfo("Redis Connection Established")
