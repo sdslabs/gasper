@@ -13,7 +13,7 @@ import (
 var storepath, _ = os.Getwd()
 
 // Maps database name with its appropriate configuration
-var databaseMap = map[string]*types.DatabaseContainer{
+var databaseMap = map[string]types.DatabaseContainer{
 	types.MongoDB: {
 		Image:         configs.ImageConfig.Mongodb,
 		ContainerPort: configs.ServiceConfig.DbMaker.MongoDB.ContainerPort,
@@ -63,7 +63,7 @@ var databaseMap = map[string]*types.DatabaseContainer{
 
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(databaseType string) (string, types.ResponseError) {
-	if databaseMap[databaseType] == nil {
+	if _, found := databaseMap[databaseType]; !found {
 		return "", types.NewResErr(500, fmt.Sprintf("Invalid database type %s provided", databaseType), nil)
 	}
 
