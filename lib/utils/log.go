@@ -2,6 +2,8 @@ package utils
 
 import (
 	"fmt"
+	"os"
+	"sync"
 	"time"
 
 	"github.com/sdslabs/gasper/types"
@@ -21,53 +23,88 @@ const (
 
 // tag definitions
 const (
-	ErrorTAG = magenta + "[" + reset + red + "ERROR" + reset + magenta + "]"
-	InfoTAG  = magenta + "[" + reset + blue + "INFO" + reset + magenta + "]"
-	DebugTAG = magenta + "[" + reset + cyan + "DEBUG" + reset + magenta + "]"
+	ErrorTAG = 1
+	InfoTAG  = 2
+	DebugTAG = 3
 )
 
-func out(s, TAG string) {
+var tagToStringColored = map[int]string{
+	ErrorTAG: magenta + "[" + reset + red + "ERROR" + reset + magenta + "]" + reset,
+	InfoTAG:  magenta + "[" + reset + blue + "INFO" + reset + magenta + "]" + reset,
+	DebugTAG: magenta + "[" + reset + cyan + "DEBUG" + reset + magenta + "]" + reset,
+}
+
+var tagToString = map[int]string{
+	ErrorTAG: "[ERROR]",
+	InfoTAG:  "[INFO]",
+	DebugTAG: "[DEBUG]",
+}
+
+var (
+	logfile, _ = os.Create("gasper.log")
+	mutex      = sync.Mutex{}
+)
+
+func coloredContext(context string) string {
+	return magenta + "(" + reset + cyan + context + reset + magenta + ")" + reset
+}
+
+func out(context, message string, TAG int) {
 	currentTime := time.Now()
+	hours := fmt.Sprintf("%d", currentTime.Hour())
+	if currentTime.Hour() < 10 {
+		hours = "0" + hours
+	}
+	minutes := fmt.Sprintf("%d", currentTime.Minute())
+	if currentTime.Minute() < 10 {
+		minutes = "0" + minutes
+	}
+	seconds := fmt.Sprintf("%d", currentTime.Second())
+	if currentTime.Second() < 10 {
+		seconds = "0" + seconds
+	}
 	timeLog := fmt.Sprintf(
-		"%d-%d-%d %d:%d:%d",
+		"%d-%d-%d %s:%s:%s",
 		currentTime.Day(),
 		currentTime.Month(),
 		currentTime.Year(),
-		currentTime.Hour(),
-		currentTime.Minute(),
-		currentTime.Second(),
+		hours,
+		minutes,
+		seconds,
 	)
-	fmt.Println(TAG + reset + " " + yellow + timeLog + reset + lightRed + " >>> " + reset + green + s + reset)
+	fmt.Println(tagToStringColored[TAG] + " " + coloredContext(context) + " " + yellow + timeLog + reset + lightRed + " >>> " + reset + green + message + reset)
+	go func() {
+		mutex.Lock()
+		defer mutex.Unlock()
+		logfile.WriteString(fmt.Sprintf("%s (%s) %s >>> %s\n", tagToString[TAG], context, timeLog, message))
+	}()
 }
 
 // Log logs to the console with your custom TAG
-func Log(s, TAG string) {
-	out(s, TAG)
+func Log(context, message string, TAG int) {
+	out(context, message, TAG)
 }
 
 // LogInfo logs information to the console
-func LogInfo(f string, v ...interface{}) {
-	s := fmt.Sprintf(f, v...)
-	out(s, InfoTAG)
+func LogInfo(context, template string, args ...interface{}) {
+	out(context, fmt.Sprintf(template, args...), InfoTAG)
 }
 
 // LogDebug logs debug messages to console
-func LogDebug(f string, v ...interface{}) {
-	s := fmt.Sprintf(f, v...)
-	out(s, DebugTAG)
+func LogDebug(context, template string, args ...interface{}) {
+	out(context, fmt.Sprintf(template, args...), DebugTAG)
 }
 
 // LogError logs type error to console
-func LogError(e error) {
-	if e == nil {
+func LogError(context string, err error) {
+	if err == nil {
 		return
 	}
-	s := e.Error()
-	out(s, ErrorTAG)
+	out(context, err.Error(), ErrorTAG)
 }
 
 // LogResErr logs type ResponseError to console
-func LogResErr(e types.ResponseError) {
-	s := fmt.Sprintf("%d: %s\n%s", e.Status(), e.Message(), e.Verbose())
-	out(s, ErrorTAG)
+func LogResErr(context string, e types.ResponseError) {
+	message := fmt.Sprintf("%d: %s\n%s", e.Status(), e.Message(), e.Verbose())
+	out(context, message, ErrorTAG)
 }

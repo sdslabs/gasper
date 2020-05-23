@@ -43,11 +43,11 @@ func initServices() {
 	for service, launcher := range launcherBindings {
 		if launcher.Deploy {
 			g.Go(launcher.Start)
-			utils.LogInfo("%s Service Active\n", strings.Title(service))
+			utils.LogInfo("Main-1", "%s Service Active", strings.Title(service))
 		}
 	}
 	if err := g.Wait(); err != nil {
-		utils.LogError(err)
+		utils.LogError("Main-2", err)
 		os.Exit(1)
 	}
 }

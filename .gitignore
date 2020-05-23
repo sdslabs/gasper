@@ -16,3 +16,4 @@ site/
 .DS_Store
 coverage.txt
 releases/
+gasper.log

@@ -31,12 +31,12 @@ func rescheduleApplications(apps []types.M) {
 	// fetch n least loaded appmaker instances
 	instances, err := redis.GetLeastLoadedInstancesWithScores(redis.WorkerInstanceKey, n)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-Cleaner-1", err)
 		return
 	}
 
 	if len(instances) == 0 {
-		utils.LogError(errors.New("No instances available for re-scheduling"))
+		utils.LogError("Master-Cleaner-2", errors.New("No instances available for re-scheduling"))
 		return
 	}
 
@@ -74,7 +74,7 @@ func rescheduleApplications(apps []types.M) {
 		}
 		dataBytes, err := json.Marshal(app)
 		if err != nil {
-			utils.LogError(err)
+			utils.LogError("Master-Cleaner-3", err)
 			continue
 		}
 		name, ok := app[mongo.NameKey].(string)
@@ -89,7 +89,7 @@ func rescheduleApplications(apps []types.M) {
 		if !ok {
 			continue
 		}
-		utils.LogInfo("Re-scheduling application %s to %s", name, instanceURL)
+		utils.LogInfo("Master-Cleaner-4", "Re-scheduling application %s to %s", name, instanceURL)
 
 		// TODO :-
 		// 1. Shift the below function call to a goroutine worker pool i.e fixed number of goroutines
@@ -106,19 +106,19 @@ func inspectInstance(service, instance string) {
 	if service == types.GenDNS {
 		if !utils.IsGenDNSAlive(instance) {
 			if err := redis.RemoveServiceInstance(service, instance); err != nil {
-				utils.LogError(err)
+				utils.LogError("Master-Cleaner-5", err)
 			}
 		}
 		return
 	}
 	if utils.NotAlive(instance) {
 		if err := redis.RemoveServiceInstance(service, instance); err != nil {
-			utils.LogError(err)
+			utils.LogError("Master-Cleaner-6", err)
 		}
 		// Re-schedule applications for AppMaker microservice
 		if service == types.AppMaker {
 			if !strings.Contains(instance, ":") {
-				utils.LogError(fmt.Errorf("Instance %s is in invalid format", instance))
+				utils.LogError("Master-Cleaner-7", fmt.Errorf("Instance %s is in invalid format", instance))
 				return
 			}
 			instanceIP := strings.Split(instance, ":")[0]
@@ -134,7 +134,7 @@ func inspectInstance(service, instance string) {
 func removeDeadServiceInstances(service string) {
 	instances, err := redis.FetchServiceInstances(service)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-Cleaner-8", err)
 	}
 	for _, instance := range instances {
 		go inspectInstance(service, instance)

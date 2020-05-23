@@ -44,7 +44,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		if strings.Contains(nameServer, ":") {
 			app.AddNameServers(strings.Split(nameServer, ":")[0])
 		} else {
-			utils.LogError(fmt.Errorf("GenDNS instance %s is of invalid format", nameServer))
+			utils.LogError("AppMaker-Controller-1", fmt.Errorf("GenDNS instance %s is of invalid format", nameServer))
 		}
 	}
 

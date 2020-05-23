@@ -1,6 +1,7 @@
 package appmaker
 
 import (
+	"fmt"
 	"math"
 	"time"
 
@@ -15,7 +16,7 @@ import (
 func registerMetrics() {
 	apps, err := docker.ListContainers()
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("AppMaker-Monitor-1", err)
 		return
 	}
 	var parsedMetricsList []interface{}
@@ -23,13 +24,13 @@ func registerMetrics() {
 	for _, app := range apps {
 		metrics, err := docker.ContainerStats(app)
 		if err != nil {
-			utils.LogError(err)
+			utils.LogError("AppMaker-Monitor-2", err)
 			continue
 		}
 
 		containerStatus, err := docker.InspectContainerState(app)
 		if err != nil {
-			utils.LogError(err)
+			utils.LogError("AppMaker-Monitor-3", err)
 			continue
 		}
 
@@ -38,7 +39,7 @@ func registerMetrics() {
 		maxUsage := metrics.Memory.MaxUsage
 		memoryLimit := metrics.Memory.Limit
 		if memoryLimit == 0 {
-			// utils.Log("Container has stopped", utils.ErrorTAG)
+			utils.Log("AppMaker-Monitor-4", fmt.Sprintf("Container %s has stopped", app), utils.ErrorTAG)
 			// error needs to be handled in a better way
 			continue
 		}
@@ -47,7 +48,7 @@ func registerMetrics() {
 		cpuTime := metrics.CPU.CPUUsage.TotalUsage
 		onlineCPUs := metrics.CPU.OnlineCPUs
 		if onlineCPUs == 0 {
-			// utils.Log("Container has stopped", utils.ErrorTAG)
+			utils.Log("AppMaker-Monitor-5", fmt.Sprintf("Container %s has stopped", app), utils.ErrorTAG)
 			// error needs to be handled in a better way
 			continue
 		}
@@ -68,8 +69,8 @@ func registerMetrics() {
 	}
 
 	if _, err = mongo.BulkRegisterMetrics(parsedMetricsList); err != nil {
-		utils.Log("Failed to register metrics", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("AppMaker-Monitor-6", "Failed to register metrics", utils.ErrorTAG)
+		utils.LogError("AppMaker-Monitor-7", err)
 	}
 }
 

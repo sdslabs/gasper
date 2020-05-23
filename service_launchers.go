@@ -106,7 +106,7 @@ func startGenSSHService() error {
 		return nil
 	}
 	if runtime.GOOS == "windows" {
-		utils.LogInfo("GenSSH doesn't work on Windows, skipping its deployment")
+		utils.LogInfo("Main-Launchers-1", "GenSSH doesn't work on Windows, skipping its deployment")
 		return nil
 	}
 	return genssh.NewService().ListenAndServe()
@@ -118,9 +118,9 @@ func startGenProxyServiceWithSSL() error {
 	privateKey := configs.ServiceConfig.GenProxy.SSL.PrivateKey
 	err := buildHTTPServer(genproxy.NewService(), port).ListenAndServeTLS(certificate, privateKey)
 	if err != nil {
-		utils.Log("There was a problem deploying GenProxy Service with SSL", utils.ErrorTAG)
-		utils.Log("Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("Main-Launchers-2", "There was a problem deploying GenProxy Service with SSL", utils.ErrorTAG)
+		utils.Log("Main-Launchers-3", "Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
+		utils.LogError("Main-Launchers-4", err)
 		os.Exit(1)
 	}
 	return nil
