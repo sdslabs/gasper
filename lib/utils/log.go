@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -41,9 +42,13 @@ var tagToString = map[int]string{
 }
 
 var (
-	logfile, _ = os.Create("gasper.log")
-	mutex      = sync.Mutex{}
+	logfile *os.File
+	mutex   = sync.Mutex{}
 )
+
+func getTimeStamp() string {
+	return fmt.Sprintf("%v", time.Now().Unix())
+}
 
 func coloredContext(context string) string {
 	return magenta + "(" + reset + cyan + context + reset + magenta + ")" + reset
@@ -107,4 +112,12 @@ func LogError(context string, err error) {
 func LogResErr(context string, e types.ResponseError) {
 	message := fmt.Sprintf("%d: %s\n%s", e.Status(), e.Message(), e.Verbose())
 	out(context, message, ErrorTAG)
+}
+
+func init() {
+	if configs.GasperConfig.Debug {
+		logfile, _ = os.Create("gasper.log")
+	} else {
+		logfile, _ = os.Create("gasper-" + getTimeStamp() + ".log")
+	}
 }
