@@ -68,7 +68,6 @@ func getTokenHandler(config FalconClientGolang) {
 	json.Unmarshal([]byte(string(body)), &response)
 
 	TOKEN = response.AccessToken
-	// return string(response.AccessToken)
 }
 
 func refreshToken(config FalconClientGolang) {
@@ -97,7 +96,7 @@ func GetUserById(id string, config FalconClientGolang) (string, error) {
 
 func GetUserByUsername(username string, config FalconClientGolang) (string, error) {
 	token := getToken()
-	user_data, err := makeRequest(config.falconUrlResourceOwner+"username/"+username, token)
+	user_data, err := makeRequest(config.falconUrlResourceOwner+"/username/"+username, token)
 	if err != nil {
 		return "", fmt.Errorf("failed getting user info: %s", err.Error())
 	}
@@ -114,12 +113,6 @@ func GetUserByEmail(email string, config FalconClientGolang) (string, error) {
 }
 
 func GetLoggedInUser(config FalconClientGolang, hash string) (string, error) {
-	// hash := cookies[COOKIE_NAME]
-	// hash, _ := r.Cookie(COOKIE_NAME)
-	// fmt.Fprint(w, cookie)
-	// fmt.Println(hash)
-	// var hash string = strings.Split(cookie, "=")[1].(string)
-	// fmt.Println(hash)
 	if hash == "" {
 		return "", fmt.Errorf("cookie not found")
 	}

@@ -27,9 +27,6 @@ func authenticator(c *gin.Context) (interface{}, error) {
 	if err != nil || user == nil {
 		return nil, errFailedAuthentication
 	}
-	if !utils.CompareHashWithPassword(user.GetPassword(), auth.GetPassword()) {
-		return nil, errFailedAuthentication
-	}
 	return user, nil
 }
 

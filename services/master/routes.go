@@ -26,7 +26,7 @@ func NewService() http.Handler {
 		AllowAllOrigins:  true,
 		MaxAge:           12 * time.Hour,
 	}
-	router.Use(cors.New(corsConfig), m.FalconGuard())
+	router.Use(cors.New(corsConfig))
 	router.NoRoute(c.Handle404)
 
 	// Bind frontend generated from https://github.com/sdslabs/SWS
@@ -49,7 +49,7 @@ func NewService() http.Handler {
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/login", m.Register, m.JWT.LoginHandler)
+		auth.POST("/login", m.FalconGuard(), m.Register, m.JWT.LoginHandler)
 		auth.GET("/refresh", m.JWT.RefreshHandler)
 	}
 

@@ -24,11 +24,17 @@ func InitializeFalconConfig() {
 	falconConf = falconApi.New(clientID, clientSecret, falconURLAccessToken, falconURLResourceOwner, falconAccountsURL)
 }
 
-func getUser(cookie string, c *gin.Context) (string, error) {
-	if !strings.Contains(cookie, "SDSLabs") {
+func getUser(cookies string, c *gin.Context) (string, error) {
+	if !strings.Contains(cookies, SDSLabsCookie) {
 		return "", errors.New("User not logged in")
 	}
-	hash := strings.Split(cookie, "=")[1]
+	cookie := strings.Split(cookies, ";")
+	var hash string
+	for _, s := range cookie {
+		if strings.Contains(s, SDSLabsCookie) {
+			hash = strings.Trim(strings.Split(s, "=")[1], " ")
+		}
+	}
 	user, err := falconApi.GetLoggedInUser(falconConf, hash)
 	if err != nil {
 		return "", errors.New("error in falcon client")

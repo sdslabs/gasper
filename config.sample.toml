@@ -95,7 +95,7 @@ public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 
 
 ###############################
-#      Falcon configuration   #
+#   Falcon configuration      #
 ###############################
 [falcon]
 plugin = false
