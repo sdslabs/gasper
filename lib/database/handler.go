@@ -20,7 +20,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  27017,
 		Env:           configs.ServiceConfig.DbMaker.MongoDB.Env,
 		WorkDir:       "/data/db",
-		StoreDir:      filepath.Join(storepath, "mongodb-storage"),
+		StoreDir:      "weed-vol", /*filepath.Join(storepath, "mongodb-storage")*/
 		Name:          types.MongoDB,
 	},
 	types.MongoDBGasper: {
@@ -61,6 +61,74 @@ var databaseMap = map[string]types.DatabaseContainer{
 	},
 }
 
+var seaweedfsMap = map[string]*types.SeaweedfsContainer{
+	"SeaweedMaster": {
+		Image:          "chrislusf/seaweedfs",
+		Cmd:            []string{"master", "-ip=master"},
+		HostPort1:      9333,
+		ContainerPort1: 9333,
+		HostPort2:      19333,
+		ContainerPort2: 1933,
+		WorkDir:        "",
+		StoreDir:/*filepath.Join(storepath, "seaweed-master-storage")*/ "weed-voleee",
+		Name: "master",
+	},
+	"SeaweedVolume": {
+		Image:          "chrislusf/seaweedfs",
+		Cmd:            []string{"volume", "-mserver=master:9333", "-port=8080"},
+		HostPort1:      8080,
+		ContainerPort1: 8080,
+		HostPort2:      18080,
+		ContainerPort2: 18080,
+		WorkDir:        "",
+		StoreDir:       filepath.Join(storepath, "seaweed-volume-storage"),
+		Name:           "volume",
+	},
+	"SeaweedFiler": {
+		Image:          "chrislusf/seaweedfs",
+		Cmd:            []string{"filer", "-master=master:9333"},
+		HostPort1:      8888,
+		ContainerPort1: 8888,
+		HostPort2:      18888,
+		ContainerPort2: 18888,
+		WorkDir:        "/data/",
+		StoreDir:       filepath.Join(storepath, "seaweed-filer-storage"),
+		Name:           "filer",
+	},
+	"SeaweedCronjob": {
+		Image:          "chrislusf/seaweedfs",
+		Cmd:            []string{"cronjob"},
+		HostPort1:      8889,
+		ContainerPort1: 8889,
+		HostPort2:      18889,
+		ContainerPort2: 18889,
+		WorkDir:        "/data/",
+		StoreDir:       filepath.Join(storepath, "seaweed-cronjob-storage"),
+		Env:            map[string]interface{}{"CRON_SCHEDULE": "*/2 * * * * *", "WEED_MASTER": "master:9333"},
+	},
+	"SeaweedS3": {
+		Image:          "chrislusf/seaweedfs",
+		Cmd:            []string{"s3", "-filer=filer:8888"},
+		HostPort1:      8333,
+		ContainerPort1: 8333,
+		HostPort2:      18898,
+		ContainerPort2: 18898,
+		WorkDir:        "/data/",
+		StoreDir:       filepath.Join(storepath, "seaweed-s3-storage"),
+	},
+	"Seaweed": {
+		Image:          "chrislusf/seaweedfs",
+		Cmd:            []string{"server", "-filer=true"},
+		HostPort1:      9333,
+		ContainerPort1: 9333,
+		HostPort2:      19333,
+		ContainerPort2: 1933,
+		WorkDir:        "",
+		StoreDir:       filepath.Join(storepath, "seaweed-master-storage"),
+		Name:           "seaweed",
+	},
+}
+
 // SetupDBInstance sets up containers for database
 func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 	if _, found := databaseMap[databaseType]; !found {
@@ -68,6 +136,24 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 	}
 
 	containerID, err := docker.CreateDatabaseContainer(databaseMap[databaseType])
+	if err != nil {
+		return "", types.NewResErr(500, "container not created", err)
+	}
+
+	if err := docker.StartContainer(containerID); err != nil {
+		return "", types.NewResErr(500, "container not started", err)
+	}
+
+	return containerID, nil
+}
+
+// SetupSeaweedfsInstance sets up containers for database
+func SetupSeaweedfsInstance(seaweedType string) (string, types.ResponseError) {
+	if seaweedfsMap[seaweedType] == nil {
+		return "", types.NewResErr(500, fmt.Sprintf("Invalid seaweedfs type %s provided", seaweedType), nil)
+	}
+
+	containerID, err := docker.CreateSeaweedContainer(seaweedfsMap[seaweedType])
 	if err != nil {
 		return "", types.NewResErr(500, "container not created", err)
 	}

@@ -113,6 +113,63 @@ func CreateDatabaseContainer(containerCfg types.DatabaseContainer) (string, erro
 	return createdConf.ID, nil
 }
 
+// CreateSeaweedContainer creates a new container of the given container options, returns id of the container created
+func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, error) {
+	ctx := context.Background()
+	/*volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)*/
+	//_, err := cli.VolumeCreate(ctx, volumetypes.VolumesCreateBody{Driver: "seaweedfs", Name: "weed-volini", DriverOpts: map[string]string{"ReplicationGoal": ""}})
+	//print("EEEEEEEEEEE : ", types.NewResErr(500, "container not created", err))
+	// convert map to list of strings
+	envArr := []string{}
+	for key, value := range containerCfg.Env {
+		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
+	}
+
+	containerPortRule1 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort1))
+	containerPortRule2 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort2))
+
+	containerConfig := &container.Config{
+		WorkingDir: containerCfg.WorkDir,
+		Image:      containerCfg.Image,
+		ExposedPorts: nat.PortSet{
+			containerPortRule1: struct{}{},
+			containerPortRule2: struct{}{},
+		},
+		Env: envArr,
+		/*Volumes: map[string]struct{}{
+			volume: {},
+		},*/
+	}
+
+	containerConfig.Cmd = containerCfg.Cmd
+
+	hostConfig := &container.HostConfig{
+		Binds: []string{
+			/*volume,*/
+		},
+		PortBindings: nat.PortMap{
+			nat.Port(containerPortRule1): []nat.PortBinding{{
+				HostIP:   "",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort1)}},
+			nat.Port(containerPortRule2): []nat.PortBinding{{
+				HostIP:   "",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort2)}},
+		},
+	}
+
+	if containerCfg.Name != "master" {
+		hostConfig.Links = []string{
+			"master:master",
+		}
+	}
+
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
+	if err != nil {
+		return "", err
+	}
+	return createdConf.ID, nil
+}
+
 // StartContainer starts the container corresponding to given containerID
 func StartContainer(containerID string) error {
 	ctx := context.Background()
