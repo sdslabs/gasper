@@ -119,6 +119,7 @@ type Images struct {
 	Mongodb    string `toml:"mongodb"`
 	Postgresql string `toml:"postgresql"`
 	Redis      string `toml:"redis"`
+	Seaweedfs  string `toml:"chrislusf/seaweedfs"`
 }
 
 // Services is the configuration for all Services
