@@ -157,9 +157,9 @@ func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, err
 		},
 	}
 
-	if containerCfg.Name != "SeaweedMaster" {
+	if containerCfg.Name != types.SeaweedMaster {
 		hostConfig.Links = []string{
-			"SeaweedMaster:master",
+			fmt.Sprintf("%s:master", types.SeaweedMaster),
 		}
 	}
 

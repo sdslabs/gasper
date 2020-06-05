@@ -45,4 +45,19 @@ const (
 
 	// DefaultCPUs is the default number of CPUs allotted to a container
 	DefaultCPUs = 0.25
+
+	//SeaweedMaster is the master service for Seaweedfs
+	SeaweedMaster = "seaweed_master"
+
+	//SeaweedVolume is the volume service for Seaweedfs
+	SeaweedVolume = "seaweed_volume"
+
+	//SeaweedFiler is the filer service for Seaweedfs
+	SeaweedFiler = "seaweed_filer"
+
+	//SeaweedCronjob is the cronjob service for Seaweedfs
+	SeaweedCronjob = "seaweed_cronjob"
+
+	//SeaweedS3 is the Seaweed service that provides support for AmazonS3
+	SeaweedS3 = "seaweed_s3"
 )

@@ -95,11 +95,11 @@ func startMasterService() error {
 		setupDatabaseContainer(types.RedisGasper)
 	}
 	checkAndPullImages(configs.ImageConfig.Seaweedfs)
-	setupSeaweedfsContainer("SeaweedMaster")
-	setupSeaweedfsContainer("SeaweedVolume")
-	setupSeaweedfsContainer("SeaweedFiler")
-	setupSeaweedfsContainer("SeaweedCronjob")
-	setupSeaweedfsContainer("SeaweedS3")
+	setupSeaweedfsContainer(types.SeaweedMaster)
+	setupSeaweedfsContainer(types.SeaweedVolume)
+	setupSeaweedfsContainer(types.SeaweedFiler)
+	setupSeaweedfsContainer(types.SeaweedCronjob)
+	setupSeaweedfsContainer(types.SeaweedS3)
 	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()
 }
 
