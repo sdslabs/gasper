@@ -146,21 +146,3 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 
 	return containerID, nil
 }
-
-// SetupSeaweedfsInstance sets up containers for database
-func SetupSeaweedfsInstance(seaweedType string) (string, types.ResponseError) {
-	if seaweedfsMap[seaweedType] == nil {
-		return "", types.NewResErr(500, fmt.Sprintf("Invalid seaweedfs type %s provided", seaweedType), nil)
-	}
-
-	containerID, err := docker.CreateSeaweedContainer(seaweedfsMap[seaweedType])
-	if err != nil {
-		return "", types.NewResErr(500, "container not created", err)
-	}
-
-	if err := docker.StartContainer(containerID); err != nil {
-		return "", types.NewResErr(500, "container not started", err)
-	}
-
-	return containerID, nil
-}
