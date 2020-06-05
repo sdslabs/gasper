@@ -13,7 +13,7 @@ var storepath, _ = os.Getwd()
 
 // Maps seaweedfs's service name with its appropriate configuration
 var seaweedfsMap = map[string]*types.SeaweedfsContainer{
-	"SeaweedMaster": {
+	types.SeaweedMaster: {
 		Image:          "chrislusf/seaweedfs",
 		Cmd:            []string{"master", "-ip=master"},
 		HostPort1:      9333,
@@ -22,9 +22,9 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		ContainerPort2: 1933,
 		WorkDir:        "",
 		StoreDir:       filepath.Join(storepath, "seaweed-master-storage"),
-		Name:           "SeaweedMaster",
+		Name:           types.SeaweedMaster,
 	},
-	"SeaweedVolume": {
+	types.SeaweedVolume: {
 		Image:          "chrislusf/seaweedfs",
 		Cmd:            []string{"volume", "-mserver=master:9333", "-port=8080"},
 		HostPort1:      8080,
@@ -33,9 +33,9 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		ContainerPort2: 18080,
 		WorkDir:        "",
 		StoreDir:       filepath.Join(storepath, "seaweed-volume-storage"),
-		Name:           "SeaweedVolume",
+		Name:           types.SeaweedVolume,
 	},
-	"SeaweedFiler": {
+	types.SeaweedFiler: {
 		Image:          "chrislusf/seaweedfs",
 		Cmd:            []string{"filer", "-master=master:9333"},
 		HostPort1:      8888,
@@ -44,9 +44,9 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		ContainerPort2: 18888,
 		WorkDir:        "/data/",
 		StoreDir:       filepath.Join(storepath, "seaweed-filer-storage"),
-		Name:           "SeaweedFiler",
+		Name:           types.SeaweedFiler,
 	},
-	"SeaweedCronjob": {
+	types.SeaweedCronjob: {
 		Image:          "chrislusf/seaweedfs",
 		Cmd:            []string{"cronjob"},
 		HostPort1:      8889,
@@ -56,9 +56,9 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		WorkDir:        "/data/",
 		StoreDir:       filepath.Join(storepath, "seaweed-cronjob-storage"),
 		Env:            map[string]interface{}{"CRON_SCHEDULE": "*/2 * * * * *", "WEED_MASTER": "master:9333"},
-		Name:           "SeaweedCronjob",
+		Name:           types.SeaweedCronjob,
 	},
-	"SeaweedS3": {
+	types.SeaweedS3: {
 		Image:          "chrislusf/seaweedfs",
 		Cmd:            []string{"s3", "-filer=filer:8888"},
 		HostPort1:      8333,
@@ -67,7 +67,7 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		ContainerPort2: 18898,
 		WorkDir:        "/data/",
 		StoreDir:       filepath.Join(storepath, "seaweed-s3-storage"),
-		Name:           "SeaweedS3",
+		Name:           types.SeaweedS3,
 	},
 }
 
