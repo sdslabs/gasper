@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
@@ -116,7 +117,16 @@ func CreateDatabaseContainer(containerCfg types.DatabaseContainer) (string, erro
 // CreateSeaweedContainer creates a new container of the given container options, returns id of the container created
 func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, error) {
 	ctx := context.Background()
-	/*volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)*/
+	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
+
+	if containerCfg.Name == types.SeaweedFiler {
+		err := os.MkdirAll("seaweed/seaweed-filer-storage/filerldb2", 0777)
+		if err != nil {
+			println(err.Error())
+		}
+		println("DONE")
+	}
+
 	//_, err := cli.VolumeCreate(ctx, volumetypes.VolumesCreateBody{Driver: "seaweedfs", Name: "weed-volini", DriverOpts: map[string]string{"ReplicationGoal": ""}})
 	//print("EEEEEEEEEEE : ", types.NewResErr(500, "container not created", err))
 	// convert map to list of strings
@@ -129,23 +139,22 @@ func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, err
 	containerPortRule2 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort2))
 
 	containerConfig := &container.Config{
-		WorkingDir: containerCfg.WorkDir,
-		Image:      containerCfg.Image,
+		Image: containerCfg.Image,
 		ExposedPorts: nat.PortSet{
 			containerPortRule1: struct{}{},
 			containerPortRule2: struct{}{},
 		},
 		Env: envArr,
-		/*Volumes: map[string]struct{}{
+		Volumes: map[string]struct{}{
 			volume: {},
-		},*/
+		},
 	}
 
 	containerConfig.Cmd = containerCfg.Cmd
 
 	hostConfig := &container.HostConfig{
 		Binds: []string{
-			/*volume,*/
+			volume,
 		},
 		PortBindings: nat.PortMap{
 			nat.Port(containerPortRule1): []nat.PortBinding{{

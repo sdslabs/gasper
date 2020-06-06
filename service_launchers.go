@@ -101,6 +101,10 @@ func startMasterService() error {
 		setupDatabaseContainer(types.RedisGasper)
 	}
 	checkAndPullImages(configs.ImageConfig.Seaweedfs)
+	err := os.MkdirAll("seaweed/seaweed-filer-storage/filerldb2", 0777)
+	if err != nil {
+		println(err.Error())
+	}
 	setupSeaweedfsContainer(types.SeaweedMaster)
 	setupSeaweedfsContainer(types.SeaweedVolume)
 	setupSeaweedfsContainer(types.SeaweedFiler)
