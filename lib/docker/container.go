@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
@@ -118,14 +117,6 @@ func CreateDatabaseContainer(containerCfg types.DatabaseContainer) (string, erro
 func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
-
-	if containerCfg.Name == types.SeaweedFiler {
-		err := os.MkdirAll("seaweed/seaweed-filer-storage/filerldb2", 0777)
-		if err != nil {
-			println(err.Error())
-		}
-		println("DONE")
-	}
 
 	//_, err := cli.VolumeCreate(ctx, volumetypes.VolumesCreateBody{Driver: "seaweedfs", Name: "weed-volini", DriverOpts: map[string]string{"ReplicationGoal": ""}})
 	//print("EEEEEEEEEEE : ", types.NewResErr(500, "container not created", err))

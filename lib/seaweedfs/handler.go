@@ -21,7 +21,7 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		HostPort2:      19333,
 		ContainerPort2: 1933,
 		WorkDir:        "/data",
-		StoreDir:       filepath.Join(storepath, "seaweed/seaweed-master-storage"),
+		StoreDir:       filepath.Join(storepath, "seaweed", "seaweed-master-storage"),
 		Name:           types.SeaweedMaster,
 	},
 	types.SeaweedVolume: {
@@ -32,7 +32,7 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		HostPort2:      18080,
 		ContainerPort2: 18080,
 		WorkDir:        "/data",
-		StoreDir:       filepath.Join(storepath, "seaweed/seaweed-volume-storage"),
+		StoreDir:       filepath.Join(storepath, "seaweed", "seaweed-volume-storage"),
 		Name:           types.SeaweedVolume,
 	},
 	types.SeaweedFiler: {
@@ -54,7 +54,7 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		HostPort2:      18889,
 		ContainerPort2: 18889,
 		WorkDir:        "/data",
-		StoreDir:       filepath.Join(storepath, "seaweed/seaweed-cronjob-storage"),
+		StoreDir:       filepath.Join(storepath, "seaweed", "seaweed-cronjob-storage"),
 		Env:            map[string]interface{}{"CRON_SCHEDULE": "*/2 * * * * *", "WEED_MASTER": "master:9333"},
 		Name:           types.SeaweedCronjob,
 	},
@@ -66,7 +66,7 @@ var seaweedfsMap = map[string]*types.SeaweedfsContainer{
 		HostPort2:      18898,
 		ContainerPort2: 18898,
 		WorkDir:        "/data",
-		StoreDir:       filepath.Join(storepath, "seaweed/seaweed-s3-storage"),
+		StoreDir:       filepath.Join(storepath, "seaweed", "seaweed-s3-storage"),
 		Name:           types.SeaweedS3,
 	},
 }

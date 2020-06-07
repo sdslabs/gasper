@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/seaweedfs"
@@ -96,6 +97,37 @@ func setupDatabaseContainer(serviceName string) {
 			if err := docker.StartContainer(serviceName); err != nil {
 				utils.LogError("Main-Helper-17", err)
 			}
+		}
+	}
+}
+
+func checkAndInstallSeaweedDockerPlugin() {
+	plugins, err := docker.ListPlugins()
+	if err != nil {
+		utils.LogError(err)
+		os.Exit(1)
+	}
+	if !utils.Contains(plugins, "katharostech/seaweedfs-volume-plugin:latest") {
+		utils.LogInfo("Seaweedfs Docker plugin not found in host. Installing the plugin.")
+		rc, err := docker.InstallPlugin("katharostech/seaweedfs-volume-plugin", dockerTypes.PluginInstallOptions{
+			Disabled:             false,
+			AcceptAllPermissions: true,
+			Args:                 []string{"HOST=localhost:8888"},
+			RemoteRef:            "katharostech/seaweedfs-volume-plugin",
+		})
+		if err != nil {
+			utils.LogError(err)
+		}
+		print(rc.Read)
+	}
+	enabled, err := docker.IsPluginEnabled("katharostech/seaweedfs-volume-plugin")
+	if err != nil {
+		utils.LogError(err)
+	}
+	if !enabled {
+		err = docker.EnablePlugin("katharostech/seaweedfs-volume-plugin")
+		if err != nil {
+			utils.LogError(err)
 		}
 	}
 }
