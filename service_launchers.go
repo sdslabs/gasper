@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"runtime"
 
 	"github.com/sdslabs/gasper/configs"
@@ -95,10 +96,11 @@ func startMasterService() error {
 		setupDatabaseContainer(types.RedisGasper)
 	}
 	checkAndPullImages(configs.ImageConfig.Seaweedfs)
-	err := os.MkdirAll("seaweed/seaweed-filer-storage/filerldb2", 0777)
+	err := os.MkdirAll(filepath.Join("seaweed", "seaweed-filer-storage", "filerldb2"), 0777)
 	if err != nil {
 		println(err.Error())
 	}
+	checkAndInstallSeaweedDockerPlugin()
 	setupSeaweedfsContainer(types.SeaweedMaster)
 	setupSeaweedfsContainer(types.SeaweedVolume)
 	setupSeaweedfsContainer(types.SeaweedFiler)
