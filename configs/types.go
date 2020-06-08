@@ -115,6 +115,7 @@ type Images struct {
 	Python3    string `toml:"python3"`
 	Golang     string `toml:"golang"`
 	Ruby       string `toml:"ruby"`
+	Rust       string `toml:"rust"`
 	Mysql      string `toml:"mysql"`
 	Mongodb    string `toml:"mongodb"`
 	Postgresql string `toml:"postgresql"`
