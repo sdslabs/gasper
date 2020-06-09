@@ -87,14 +87,6 @@ func startAppMakerService() error {
 }
 
 func startMasterService() error {
-	if configs.ServiceConfig.Master.MongoDB.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Mongodb)
-		setupDatabaseContainer(types.MongoDBGasper)
-	}
-	if configs.ServiceConfig.Master.Redis.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Redis)
-		setupDatabaseContainer(types.RedisGasper)
-	}
 	checkAndPullImages(configs.ImageConfig.Seaweedfs)
 	err := os.MkdirAll(filepath.Join("seaweed", "seaweed-filer-storage", "filerldb2"), 0777)
 	if err != nil {
@@ -106,6 +98,14 @@ func startMasterService() error {
 	setupSeaweedfsContainer(types.SeaweedFiler)
 	setupSeaweedfsContainer(types.SeaweedCronjob)
 	setupSeaweedfsContainer(types.SeaweedS3)
+	if configs.ServiceConfig.Master.MongoDB.PlugIn {
+		checkAndPullImages(configs.ImageConfig.Mongodb)
+		setupDatabaseContainer(types.MongoDBGasper)
+	}
+	if configs.ServiceConfig.Master.Redis.PlugIn {
+		checkAndPullImages(configs.ImageConfig.Redis)
+		setupDatabaseContainer(types.RedisGasper)
+	}
 	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()
 }
 

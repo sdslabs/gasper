@@ -20,7 +20,7 @@ var databaseMap = map[string]*types.DatabaseContainer{
 		DatabasePort:  27017,
 		Env:           configs.ServiceConfig.DbMaker.MongoDB.Env,
 		WorkDir:       "/data/db",
-		StoreDir:      "weed-vol", /*filepath.Join(storepath, "mongodb-storage")*/
+		StoreDir:      filepath.Join(storepath, "mongodb-storage"), /*"weed-vol"*/
 		Name:          types.MongoDB,
 	},
 	types.MongoDBGasper: {
@@ -29,7 +29,7 @@ var databaseMap = map[string]*types.DatabaseContainer{
 		DatabasePort:  27017,
 		Env:           configs.ServiceConfig.Master.MongoDB.Env,
 		WorkDir:       "/data/db",
-		StoreDir:      filepath.Join(storepath, "gasper-mongodb-storage"),
+		StoreDir:      "gasper-mongodb-storage", /*filepath.Join(storepath, "gasper-mongodb-storage")*/
 		Name:          types.MongoDBGasper,
 	},
 	types.MySQL: {
@@ -46,7 +46,7 @@ var databaseMap = map[string]*types.DatabaseContainer{
 		ContainerPort: configs.ServiceConfig.Master.Redis.ContainerPort,
 		DatabasePort:  6379,
 		WorkDir:       "/data/",
-		StoreDir:      filepath.Join(storepath, "gasper-redis-storage"),
+		StoreDir:      "gasper-redis-storage", /*filepath.Join(storepath, "gasper-redis-storage")*/
 		Name:          types.RedisGasper,
 		Cmd:           []string{"redis-server", "--requirepass", configs.ServiceConfig.Master.Redis.Password},
 	},

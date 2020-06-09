@@ -10,6 +10,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
 )
@@ -73,6 +74,21 @@ func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, err
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
+	volumes, err := ListVolumes()
+	if err != nil {
+		return "", err
+	}
+	if !utils.Contains(volumes, containerCfg.StoreDir) {
+		utils.LogInfo("No %s volume found in host. Building the instance.", containerCfg.StoreDir)
+		volumename, err := CreateVolume(containerCfg.StoreDir, "katharostech/seaweedfs-volume-plugin")
+		if err != nil {
+			utils.Log(fmt.Sprintf("There was a problem deploying %s volume.", containerCfg.StoreDir), utils.ErrorTAG)
+			utils.LogError(err)
+		} else {
+			utils.LogInfo("%s volume has been deployed with name:\t%s \n", containerCfg.StoreDir, volumename)
+		}
+	}
+
 	envArr := []string{}
 	for key, value := range containerCfg.Env {
 		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
@@ -116,10 +132,8 @@ func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, err
 // CreateSeaweedContainer creates a new container of the given container options, returns id of the container created
 func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, error) {
 	ctx := context.Background()
-	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
+	//volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
-	//_, err := cli.VolumeCreate(ctx, volumetypes.VolumesCreateBody{Driver: "seaweedfs", Name: "weed-volini", DriverOpts: map[string]string{"ReplicationGoal": ""}})
-	//print("EEEEEEEEEEE : ", types.NewResErr(500, "container not created", err))
 	// convert map to list of strings
 	envArr := []string{}
 	for key, value := range containerCfg.Env {
@@ -136,17 +150,17 @@ func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, err
 			containerPortRule2: struct{}{},
 		},
 		Env: envArr,
-		Volumes: map[string]struct{}{
-			volume: {},
-		},
+		//Volumes: map[string]struct{}{
+		//	volume: {},
+		//},
 	}
 
 	containerConfig.Cmd = containerCfg.Cmd
 
 	hostConfig := &container.HostConfig{
-		Binds: []string{
-			volume,
-		},
+		//Binds: []string{
+		//	volume,
+		//},
 		PortBindings: nat.PortMap{
 			nat.Port(containerPortRule1): []nat.PortBinding{{
 				HostIP:   "",
