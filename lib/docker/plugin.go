@@ -43,6 +43,8 @@ func EnablePlugin(name string) error {
 func IsPluginEnabled(name string) (bool, error) {
 	ctx := context.Background()
 	plugin, _, err := cli.PluginInspectWithRaw(ctx, name)
+	if err != nil {
+		return false, err
+	}
 	return plugin.Enabled, err
-
 }
