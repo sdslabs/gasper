@@ -18,3 +18,4 @@ coverage.txt
 releases/
 gasper*.log
 seaweed/
+lizardfs/

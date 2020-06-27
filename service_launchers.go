@@ -2,7 +2,6 @@ package main
 
 import (
 	"os"
-	"path/filepath"
 	"runtime"
 
 	"github.com/sdslabs/gasper/configs"
@@ -93,17 +92,16 @@ func startAppMakerService() error {
 }
 
 func startMasterService() error {
-	checkAndPullImages(configs.ImageConfig.Seaweedfs)
-	err := os.MkdirAll(filepath.Join("seaweed", "seaweed-filer-storage", "filerldb2"), 0777)
-	if err != nil {
-		println(err.Error())
-	}
-	checkAndInstallSeaweedDockerPlugin()
-	setupSeaweedfsContainer(types.SeaweedMaster)
-	setupSeaweedfsContainer(types.SeaweedVolume)
-	setupSeaweedfsContainer(types.SeaweedFiler)
-	setupSeaweedfsContainer(types.SeaweedCronjob)
-	setupSeaweedfsContainer(types.SeaweedS3)
+	checkAndPullImages(configs.ImageConfig.Lizardfs)
+
+	setupLizardfsContainer(types.LizardfsMaster)
+	setupLizardfsContainer(types.LizardfsMasterShadow)
+	setupLizardfsContainer(types.LizardfsMetalogger)
+	setupLizardfsContainer(types.LizardfsChunkserver)
+	setupLizardfsContainer("client1")
+	//client1 is just to check whether everything is working. We can remove it in the final commit.
+	checkAndInstallLizardfsDockerPlugin()
+
 	if configs.ServiceConfig.Master.MongoDB.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDBGasper)

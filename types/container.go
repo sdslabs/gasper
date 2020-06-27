@@ -45,9 +45,9 @@ type DatabaseContainer struct {
 	Env M
 }
 
-// SeaweedfsContainer is the configuration for creating a container
+// LizardfsContainer is the configuration for creating a container
 // for running the filesystem
-type SeaweedfsContainer struct {
+type LizardfsContainer struct {
 	// Name of the container
 	Name string
 	// Docker image used for creating the container

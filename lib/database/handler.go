@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
@@ -20,7 +19,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  27017,
 		Env:           configs.ServiceConfig.DbMaker.MongoDB.Env,
 		WorkDir:       "/data/db",
-		StoreDir:      filepath.Join(storepath, "mongodb-storage"), /*"weed-vol"*/
+		StoreDir:      "mongodb-storage", /*filepath.Join(storepath, "mongodb-storage")*/
 		Name:          types.MongoDB,
 	},
 	types.MongoDBGasper: {
@@ -38,7 +37,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  3306,
 		Env:           configs.ServiceConfig.DbMaker.MySQL.Env,
 		WorkDir:       "/app",
-		StoreDir:      filepath.Join(storepath, "mysql-storage"),
+		StoreDir:      "mysql-storage", /*filepath.Join(storepath, "mysql-storage")*/
 		Name:          types.MySQL,
 	},
 	types.RedisGasper: {
@@ -56,7 +55,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  5432,
 		Env:           configs.ServiceConfig.DbMaker.PostgreSQL.Env,
 		WorkDir:       "/var/lib/postgresql/data",
-		StoreDir:      filepath.Join(storepath, "postgresql-storage"),
+		StoreDir:      "postgresql-storage", /*filepath.Join(storepath, "postgresql-storage")*/
 		Name:          types.PostgreSQL,
 	},
 }
