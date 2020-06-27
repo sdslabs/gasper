@@ -29,6 +29,6 @@ func ListVolumes() ([]string, error) {
 // CreateVolume creates a volume with given name and driver
 func CreateVolume(name string, driver string) (string, error) {
 	ctx := context.Background()
-	volume, err := cli.VolumeCreate(ctx, volumetypes.VolumesCreateBody{Driver: driver, Labels: map[string]string{}, Name: name, DriverOpts: map[string]string{"ReplicationGoal": ""}})
+	volume, err := cli.VolumeCreate(ctx, volumetypes.VolumesCreateBody{Driver: driver, Labels: map[string]string{}, Name: name, DriverOpts: map[string]string{}})
 	return volume.Name, err
 }

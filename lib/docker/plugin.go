@@ -48,3 +48,10 @@ func IsPluginEnabled(name string) (bool, error) {
 	}
 	return plugin.Enabled, err
 }
+
+//PluginSet sets plugin specific variables
+func PluginSet(name string, args []string) error {
+	ctx := context.Background()
+	err := cli.PluginSet(ctx, name, args)
+	return err
+}

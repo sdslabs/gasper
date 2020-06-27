@@ -79,10 +79,10 @@ func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, err
 		return "", err
 	}
 	if !utils.Contains(volumes, containerCfg.StoreDir) {
-		utils.LogInfo("No %s volume found in host. Building the instance.", containerCfg.StoreDir)
-		volumename, err := CreateVolume(containerCfg.StoreDir, "katharostech/seaweedfs-volume-plugin")
+		utils.LogInfo("No %s volume found in host. Creating the volume.", containerCfg.StoreDir)
+		volumename, err := CreateVolume(containerCfg.StoreDir, "kadimasolutions/lizardfs-volume-plugin")
 		if err != nil {
-			utils.Log(fmt.Sprintf("There was a problem deploying %s volume.", containerCfg.StoreDir), utils.ErrorTAG)
+			utils.Log(fmt.Sprintf("There was a problem creating %s volume.", containerCfg.StoreDir), utils.ErrorTAG)
 			utils.LogError(err)
 		} else {
 			utils.LogInfo("%s volume has been deployed with name:\t%s \n", containerCfg.StoreDir, volumename)
@@ -129,10 +129,10 @@ func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, err
 	return createdConf.ID, nil
 }
 
-// CreateSeaweedContainer creates a new container of the given container options, returns id of the container created
-func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, error) {
+// CreateLizardfsContainer creates a new container of the given container options, returns id of the container created
+func CreateLizardfsContainer(containerCfg *types.LizardfsContainer) (string, error) {
 	ctx := context.Background()
-	//volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
+	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
 	// convert map to list of strings
 	envArr := []string{}
@@ -140,40 +140,45 @@ func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, err
 		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
 	}
 
-	containerPortRule1 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort1))
-	containerPortRule2 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort2))
-
 	containerConfig := &container.Config{
 		Image: containerCfg.Image,
-		ExposedPorts: nat.PortSet{
-			containerPortRule1: struct{}{},
-			containerPortRule2: struct{}{},
-		},
-		Env: envArr,
-		//Volumes: map[string]struct{}{
-		//	volume: {},
-		//},
+		Env:   envArr,
 	}
 
 	containerConfig.Cmd = containerCfg.Cmd
 
-	hostConfig := &container.HostConfig{
-		//Binds: []string{
-		//	volume,
-		//},
-		PortBindings: nat.PortMap{
+	hostConfig := &container.HostConfig{}
+
+	if containerCfg.Name != "client1" {
+		hostConfig.Binds = []string{
+			volume,
+		}
+		containerConfig.Volumes = map[string]struct{}{
+			volume: {},
+		}
+	}
+
+	if containerCfg.Name == "mfsmaster" {
+		containerPortRule1 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort1))
+		containerConfig.ExposedPorts = nat.PortSet{
+			containerPortRule1: struct{}{},
+		}
+		hostConfig.PortBindings = nat.PortMap{
 			nat.Port(containerPortRule1): []nat.PortBinding{{
 				HostIP:   "",
 				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort1)}},
-			nat.Port(containerPortRule2): []nat.PortBinding{{
-				HostIP:   "",
-				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort2)}},
-		},
+		}
 	}
 
-	if containerCfg.Name != types.SeaweedMaster {
+	if containerCfg.Name == "client1" {
+		hostConfig.CapAdd = []string{"SYS_ADMIN"}
+		hostConfig.Devices = []container.DeviceMapping{{PathOnHost: "/dev/fuse", PathInContainer: "/dev/fuse", CgroupPermissions: "rwm"}}
+		hostConfig.SecurityOpt = []string{"apparmor:unconfined"}
+	}
+
+	if containerCfg.Name != "mfsmaster" {
 		hostConfig.Links = []string{
-			fmt.Sprintf("%s:master", types.SeaweedMaster),
+			fmt.Sprintf("%s:mfsmaster", "mfsmaster"),
 		}
 	}
 
