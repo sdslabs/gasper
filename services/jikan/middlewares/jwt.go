@@ -105,8 +105,8 @@ func init() {
 	// This keeps the middleware in check if the configuration is correct
 	// Prevents runtime errors
 	if err := JWT.MiddlewareInit(); err != nil {
-		utils.Log("Failed to initialize JWT middleware", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("Jikan-Middleware-1", "Failed to initialize JWT middleware", utils.ErrorTAG)
+		utils.LogError("Jikan-Middleware-2", err)
 		os.Exit(1)
 	}
 }

@@ -65,7 +65,7 @@ func streamHandler(c *gin.Context) {
 func NewService() *http.Server {
 	if !utils.IsValidPort(configs.ServiceConfig.Jikan.Port) {
 		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", configs.ServiceConfig.Jikan.Port)
-		utils.Log(msg, utils.ErrorTAG)
+		utils.Log("Jikan-Controller-1", msg, utils.ErrorTAG)
 		os.Exit(1)
 	}
 
