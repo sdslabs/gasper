@@ -15,8 +15,8 @@ import (
 )
 
 func handleError(err error) {
-	utils.Log("Failed to update DNS Record Storage", utils.ErrorTAG)
-	utils.LogError(err)
+	utils.Log("GenDNS-Updater-1", "Failed to update DNS Record Storage", utils.ErrorTAG)
+	utils.LogError("GenDNS-Updater-2", err)
 }
 
 // filterValidInstances filters the instances and returns
@@ -27,7 +27,7 @@ func filterValidInstances(reverseProxyInstances []string) []string {
 		if strings.Contains(instance, ":") {
 			filteredInstances = append(filteredInstances, instance)
 		} else {
-			utils.LogError(fmt.Errorf("Instance %s is of invalid format", instance))
+			utils.LogError("GenDNS-Updater-3", fmt.Errorf("Instance %s is of invalid format", instance))
 		}
 	}
 	return filteredInstances
@@ -45,7 +45,7 @@ func updateStorage() {
 
 	reverseProxyInstances = filterValidInstances(reverseProxyInstances)
 	if len(reverseProxyInstances) == 0 {
-		utils.Log("No valid GenProxy instances available", utils.ErrorTAG)
+		utils.Log("GenDNS-Updater-4", "No valid GenProxy instances available", utils.ErrorTAG)
 		return
 	}
 

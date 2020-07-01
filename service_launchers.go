@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/gasper/services/gendns"
 	"github.com/sdslabs/gasper/services/genproxy"
 	"github.com/sdslabs/gasper/services/genssh"
+	"github.com/sdslabs/gasper/services/jikan"
 	"github.com/sdslabs/gasper/services/master"
 	"github.com/sdslabs/gasper/types"
 )
@@ -50,6 +51,10 @@ var launcherBindings = map[string]*serviceLauncher{
 		Deploy: configs.ServiceConfig.DbMaker.Deploy,
 		Start:  startDbMakerService,
 	},
+	jikan.ServiceName: {
+		Deploy: configs.ServiceConfig.Jikan.Deploy,
+		Start:  startJikanService,
+	},
 }
 
 func startDbMakerService() error {
@@ -80,6 +85,7 @@ func startAppMakerService() error {
 		configs.ImageConfig.Python3,
 		configs.ImageConfig.Golang,
 		configs.ImageConfig.Ruby,
+		configs.ImageConfig.Rust,
 	}
 	checkAndPullImages(images...)
 	return startGrpcServer(appmaker.NewService(), configs.ServiceConfig.AppMaker.Port)
@@ -106,7 +112,7 @@ func startGenSSHService() error {
 		return nil
 	}
 	if runtime.GOOS == "windows" {
-		utils.LogInfo("GenSSH doesn't work on Windows, skipping its deployment")
+		utils.LogInfo("Main-Launchers-1", "GenSSH doesn't work on Windows, skipping its deployment")
 		return nil
 	}
 	return genssh.NewService().ListenAndServe()
@@ -118,10 +124,14 @@ func startGenProxyServiceWithSSL() error {
 	privateKey := configs.ServiceConfig.GenProxy.SSL.PrivateKey
 	err := buildHTTPServer(genproxy.NewService(), port).ListenAndServeTLS(certificate, privateKey)
 	if err != nil {
-		utils.Log("There was a problem deploying GenProxy Service with SSL", utils.ErrorTAG)
-		utils.Log("Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("Main-Launchers-2", "There was a problem deploying GenProxy Service with SSL", utils.ErrorTAG)
+		utils.Log("Main-Launchers-3", "Make sure the paths of certificate and private key are correct in `config.toml`", utils.ErrorTAG)
+		utils.LogError("Main-Launchers-4", err)
 		os.Exit(1)
 	}
 	return nil
+}
+
+func startJikanService() error {
+	return jikan.NewService().ListenAndServe()
 }

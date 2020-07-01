@@ -18,12 +18,12 @@ var client = redis.NewClient(&redis.Options{
 func setup() {
 	_, err := client.Ping().Result()
 	if err != nil {
-		utils.Log("Redis connection was not established", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("Redis-Connection-1", "Redis connection was not established", utils.ErrorTAG)
+		utils.LogError("Redis-Connection-2", err)
 		time.Sleep(5 * time.Second)
 		setup()
 	} else {
-		utils.LogInfo("Redis Connection Established")
+		utils.LogInfo("Redis-Connection-3", "Redis Connection Established")
 	}
 }
 

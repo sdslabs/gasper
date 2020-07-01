@@ -35,6 +35,9 @@ var pipeline = map[string]*applicationHandler{
 	"ruby": {
 		image: configs.ImageConfig.Ruby,
 	},
+	"rust": {
+		image: configs.ImageConfig.Rust,
+	},
 	"php": {
 		image:         configs.ImageConfig.Php,
 		confGenerator: configs.CreatePHPContainerConfig,

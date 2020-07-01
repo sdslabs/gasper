@@ -44,7 +44,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		if strings.Contains(nameServer, ":") {
 			app.AddNameServers(strings.Split(nameServer, ":")[0])
 		} else {
-			utils.LogError(fmt.Errorf("GenDNS instance %s is of invalid format", nameServer))
+			utils.LogError("AppMaker-Controller-1", fmt.Errorf("GenDNS instance %s is of invalid format", nameServer))
 		}
 	}
 
@@ -53,7 +53,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	}
 	resErr := pipeline[language].create(app)
 	if resErr != nil {
-		if resErr.Message() != "repository already exists" && resErr.Message() != "container not created" {
+		if resErr.Message() != "repository already exists" && resErr.Message() != "container already exists" {
 			go diskCleanup(app.GetName())
 		}
 		return nil, fmt.Errorf(resErr.Error())

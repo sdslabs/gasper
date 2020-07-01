@@ -83,8 +83,7 @@ var JWT = &jwt.GinJWTMiddleware{
 	Key:             []byte(configs.GasperConfig.Secret),
 	Timeout:         configs.JWTConfig.Timeout * time.Second,
 	MaxRefresh:      configs.JWTConfig.MaxRefresh * time.Second,
-	TokenLookup:     "header: Authorization",
-	TokenHeadName:   "Bearer",
+	TokenLookup:     "query:token",
 	TimeFunc:        time.Now,
 	Authenticator:   authenticator,
 	PayloadFunc:     payloadFunc,
@@ -106,8 +105,8 @@ func init() {
 	// This keeps the middleware in check if the configuration is correct
 	// Prevents runtime errors
 	if err := JWT.MiddlewareInit(); err != nil {
-		utils.Log("Master-JWT-1", "Failed to initialize JWT middleware", utils.ErrorTAG)
-		utils.LogError("Master-JWT-2", err)
+		utils.Log("Jikan-Middleware-1", "Failed to initialize JWT middleware", utils.ErrorTAG)
+		utils.LogError("Jikan-Middleware-2", err)
 		os.Exit(1)
 	}
 }
