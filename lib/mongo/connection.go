@@ -21,7 +21,7 @@ func setupAdmin() {
 	adminInfo := configs.AdminConfig
 	pwd, err := utils.HashPassword(adminInfo.Password)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Mongo-Connection-1", err)
 		os.Exit(1)
 	}
 	admin := &types.User{
@@ -31,8 +31,10 @@ func setupAdmin() {
 		Admin:    true,
 	}
 	filter := types.M{EmailKey: adminInfo.Email}
-	UpsertUser(filter, admin)
-	utils.LogInfo("%s (%s) has been given admin privileges", adminInfo.Username, adminInfo.Email)
+	if err := UpsertUser(filter, admin); err != nil {
+		utils.LogError("Mongo-Connection-2", err)
+	}
+	utils.LogInfo("Mongo-Connection-3", "%s (%s) has been given admin privileges", adminInfo.Username, adminInfo.Email)
 }
 
 func setup() {
@@ -40,12 +42,12 @@ func setup() {
 	defer cancel()
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		utils.Log("MongoDB connection was not established", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("Mongo-Connection-4", "MongoDB connection was not established", utils.ErrorTAG)
+		utils.LogError("Mongo-Connection-5", err)
 		time.Sleep(5 * time.Second)
 		setup()
 	} else {
-		utils.LogInfo("MongoDB Connection Established")
+		utils.LogInfo("Mongo-Connection-6", "MongoDB Connection Established")
 		setupAdmin()
 	}
 }

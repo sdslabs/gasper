@@ -22,13 +22,14 @@ func updateHostIP(oldIP, currentIP string) (interface{}, error) {
 // and re-registers all the microservices and applications deployed
 func updateState(currentIP string) {
 	utils.LogInfo(
-		"IP address of the machine changed from %s to %s\n",
+		"Master-State-1",
+		"IP address of the machine changed from %s to %s",
 		utils.HostIP,
 		currentIP)
 
 	_, err := updateHostIP(utils.HostIP, currentIP)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-State-2", err)
 		return
 	}
 	utils.HostIP = currentIP

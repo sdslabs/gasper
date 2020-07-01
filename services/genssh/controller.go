@@ -43,9 +43,9 @@ func sessionHandler(s ssh.Session) {
 	var cmd *exec.Cmd
 
 	if _, err := docker.InspectContainerState(s.User()); err != nil {
-		utils.LogError(err)
-		utils.LogInfo("Application %s's container not present in the current node", s.User())
-		utils.LogInfo("Attempting to a create a SSH bridge connection with the desired node")
+		utils.LogError("GenSSH-Controller-1", err)
+		utils.LogInfo("GenSSH-Controller-2", "Application %s's container not present in the current node", s.User())
+		utils.LogInfo("GenSSH-Controller-3", "Attempting to a create a SSH bridge connection with the desired node")
 
 		instanceURL, err := redis.FetchAppNode(s.User())
 		if err != nil {
@@ -107,15 +107,15 @@ func passwordHandler(ctx ssh.Context, password string) bool {
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	})
 	if err != nil {
-		utils.LogInfo("SSH login attempt failed due to unavailability of mongoDB service on host %s from IP %s", ctx.LocalAddr(), ctx.RemoteAddr())
-		utils.LogError(err)
+		utils.LogInfo("GenSSH-Controller-4", "SSH login attempt failed due to unavailability of mongoDB service on host %s from IP %s", ctx.LocalAddr(), ctx.RemoteAddr())
+		utils.LogError("GenSSH-Controller-5", err)
 		return false
 	}
 	if count == 1 {
-		utils.LogInfo(eventLog, "successful", ctx.User(), ctx.LocalAddr(), ctx.RemoteAddr())
+		utils.LogInfo("GenSSH-Controller-6", eventLog, "successful", ctx.User(), ctx.LocalAddr(), ctx.RemoteAddr())
 		return true
 	}
-	utils.LogInfo(eventLog, "failed", ctx.User(), ctx.LocalAddr(), ctx.RemoteAddr())
+	utils.LogInfo("GenSSH-Controller-7", eventLog, "failed", ctx.User(), ctx.LocalAddr(), ctx.RemoteAddr())
 	return false
 }
 
@@ -123,14 +123,14 @@ func passwordHandler(ctx ssh.Context, password string) bool {
 func NewService() *ssh.Server {
 	hostSigners, err := getHostSigners(configs.ServiceConfig.GenSSH.HostSigners)
 	if err != nil {
-		utils.Log("There was a problem deploying GenSSH SSH service", utils.ErrorTAG)
-		utils.Log("Make sure the paths of Private Keys is correct in `config.toml`", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("GenSSH-Controller-8", "There was a problem deploying GenSSH SSH service", utils.ErrorTAG)
+		utils.Log("GenSSH-Controller-9", "Make sure the paths of Private Keys is correct in `config.toml`", utils.ErrorTAG)
+		utils.LogError("GenSSH-Controller-10", err)
 		os.Exit(1)
 	}
 	if !utils.IsValidPort(configs.ServiceConfig.GenSSH.Port) {
-		msg := fmt.Sprintf("Port %d is invalid or already in use.\n", configs.ServiceConfig.GenSSH.Port)
-		utils.Log(msg, utils.ErrorTAG)
+		msg := fmt.Sprintf("Port %d is invalid or already in use", configs.ServiceConfig.GenSSH.Port)
+		utils.Log("GenSSH-Controller-11", msg, utils.ErrorTAG)
 		os.Exit(1)
 	}
 	return &ssh.Server{
