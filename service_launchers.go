@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/gasper/services/gendns"
 	"github.com/sdslabs/gasper/services/genproxy"
 	"github.com/sdslabs/gasper/services/genssh"
+	"github.com/sdslabs/gasper/services/jikan"
 	"github.com/sdslabs/gasper/services/master"
 	"github.com/sdslabs/gasper/types"
 )
@@ -49,6 +50,10 @@ var launcherBindings = map[string]*serviceLauncher{
 	dbmaker.ServiceName: {
 		Deploy: configs.ServiceConfig.DbMaker.Deploy,
 		Start:  startDbMakerService,
+	},
+	jikan.ServiceName: {
+		Deploy: configs.ServiceConfig.Jikan.Deploy,
+		Start:  startJikanService,
 	},
 }
 
@@ -125,4 +130,8 @@ func startGenProxyServiceWithSSL() error {
 		os.Exit(1)
 	}
 	return nil
+}
+
+func startJikanService() error {
+	return jikan.NewService().ListenAndServe()
 }
