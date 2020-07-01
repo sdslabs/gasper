@@ -130,7 +130,7 @@ func CreateApp(c *gin.Context) {
 
 	response, err := factory.CreateApplication(c.Param("language"), claims.GetEmail(), instanceURL, data)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-Controller-Application-1", err)
 		if strings.Contains(err.Error(), "authentication required") {
 			c.AbortWithStatusJSON(400, gin.H{
 				"success": false,
@@ -208,7 +208,7 @@ func RebuildApp(c *gin.Context) {
 
 	response, err := factory.RebuildApplication(appName, instanceURL)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-Controller-Application-2", err)
 		if strings.Contains(err.Error(), "authentication required") {
 			c.AbortWithStatusJSON(400, gin.H{
 				"success": false,

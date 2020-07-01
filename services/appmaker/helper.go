@@ -16,7 +16,7 @@ import (
 func storageCleanup(path string) error {
 	err := os.RemoveAll(path)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("AppMaker-Helper-1", err)
 	}
 	return err
 }
@@ -25,7 +25,7 @@ func storageCleanup(path string) error {
 func containerCleanup(appName string) error {
 	err := docker.DeleteContainer(appName)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("AppMaker-Helper-2", err)
 	}
 	return err
 }

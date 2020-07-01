@@ -17,17 +17,17 @@ func NewClient() *client.Client {
 	}
 	cli, err := client.NewEnvClient()
 	if err != nil {
-		utils.Log("Failed creating Docker Client", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("Docker-Connection-1", "Failed creating Docker Client", utils.ErrorTAG)
+		utils.LogError("Docker-Connection-2", err)
 		os.Exit(1)
 	}
 	_, err = cli.Ping(context.Background())
 	if err != nil {
-		utils.Log("Connection with Docker Daemon was not established", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("Docker-Connection-3", "Connection with Docker Daemon was not established", utils.ErrorTAG)
+		utils.LogError("Docker-Connection-4", err)
 		os.Exit(1)
 	}
-	utils.LogInfo("Docker Daemon Connection Established")
+	utils.LogInfo("Docker-Connection-5", "Docker Daemon Connection Established")
 	return cli
 }
 

@@ -20,7 +20,7 @@ func GetOutboundIP() (string, error) {
 	}
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
-		LogInfo("This node is not connected to any network")
+		LogInfo("Utils-Network-1", "This node is not connected to any network")
 		return "", err
 	}
 	defer conn.Close()
@@ -35,8 +35,8 @@ func NotAlive(url string) bool {
 	d := net.Dialer{Timeout: 5 * time.Second}
 	conn, err := d.Dial("tcp", url)
 	if err != nil {
-		Log("Health-Check failed for instance "+url, ErrorTAG)
-		LogError(err)
+		Log("Utils-Network-2", "Health-Check failed for instance "+url, ErrorTAG)
+		LogError("Utils-Network-3", err)
 		return true
 	}
 	defer conn.Close()
@@ -50,8 +50,8 @@ func IsGenDNSAlive(url string) bool {
 	m := dns.Msg{}
 	m.SetQuestion(target+".", dns.TypeA)
 	if _, _, err := c.Exchange(&m, url); err != nil {
-		Log("Health-Check failed for GenDNS instance "+url, ErrorTAG)
-		LogError(err)
+		Log("Utils-Network-4", "Health-Check failed for GenDNS instance "+url, ErrorTAG)
+		LogError("Utils-Network-5", err)
 		return false
 	}
 	return true

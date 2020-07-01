@@ -29,6 +29,24 @@ func NewService() http.Handler {
 	router.Use(cors.New(corsConfig))
 	router.NoRoute(c.Handle404)
 
+	// Bind frontend generated from https://github.com/sdslabs/SWS
+	router.GET("", func(ctx *gin.Context) {
+		ctx.Data(200, frontendBinder["index.html"].responseHeader, frontendBinder["index.html"].content)
+	})
+	for file, box := range frontendBinder {
+		// A deep copy of the filename and the box is made because as the loop iterator traverses
+		// all of the handler functions point to the last element of the map which is not correct
+		// This is due to the iterator occupying a single instance of heap memory and all handler
+		// functions pointing to that single heap memory instance
+		// Making a deep copy makes separate clones of heap memory instances thereby preventing
+		// the undesired override
+		fileDeepCopy := file
+		boxDeepCopy := box
+		router.GET("/"+fileDeepCopy, func(ctx *gin.Context) {
+			ctx.Data(200, boxDeepCopy.responseHeader, boxDeepCopy.content)
+		})
+	}
+
 	auth := router.Group("/auth")
 	{
 		auth.POST("/login", m.JWT.LoginHandler)

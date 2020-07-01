@@ -18,6 +18,7 @@ type DatabaseConfig struct {
 	CloudflareID  string `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
 	DbURL         string `json:"db_url,omitempty" bson:"db_url,omitempty"`
 	HostIP        string `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
+	PublicIP      string `json:"public_ip,omitempty" bson:"public_ip,omitempty"`
 	ContainerPort int    `json:"port,omitempty" bson:"port,omitempty"`
 	Owner         string `json:"owner,omitempty" bson:"owner,omitempty"`
 	Success       bool   `json:"success,omitempty" bson:"-"`
@@ -70,6 +71,12 @@ func (db *DatabaseConfig) SetDbURL(dbURL string) {
 // in its context
 func (db *DatabaseConfig) SetHostIP(IP string) {
 	db.HostIP = IP
+}
+
+// SetPublicIP sets the public IP address of the host in which the database is deployed
+// in its context
+func (db *DatabaseConfig) SetPublicIP(IP string) {
+	db.PublicIP = IP
 }
 
 // SetContainerPort sets the port in which the database server is running

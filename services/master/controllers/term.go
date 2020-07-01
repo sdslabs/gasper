@@ -38,7 +38,7 @@ func DeployWebTerminal(c *gin.Context) {
 
 	if !strings.Contains(instanceURL, ":") {
 		utils.SendServerErrorResponse(c,
-			fmt.Errorf("Instance URL of given application is of malformed format %s", instanceURL))
+			fmt.Errorf("Instance URL of application %s is of malformed format %s", appName, instanceURL))
 		return
 	}
 

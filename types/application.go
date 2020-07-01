@@ -73,6 +73,7 @@ type ApplicationConfig struct {
 	CloudflareID  string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
 	AppURL        string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
 	HostIP        string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
+	PublicIP      string                      `json:"public_ip,omitempty" bson:"public_ip,omitempty"`
 	SSHCmd        string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
 	Owner         string                      `json:"owner,omitempty" bson:"owner,omitempty"`
 	Success       bool                        `json:"success,omitempty" bson:"-"`
@@ -259,6 +260,12 @@ func (app *ApplicationConfig) SetSuccess(success bool) {
 // in its context
 func (app *ApplicationConfig) SetHostIP(IP string) {
 	app.HostIP = IP
+}
+
+// SetPublicIP sets the public IP address of the host in which the application is deployed
+// in its context
+func (app *ApplicationConfig) SetPublicIP(IP string) {
+	app.PublicIP = IP
 }
 
 // SetSSHCmd generates the command to SSH into an application's docker container

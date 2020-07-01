@@ -97,7 +97,7 @@ func CreateMongoDB(db types.Database) error {
 	conn := client.Database(db.GetName())
 
 	if err = createUser(ctx, conn, db); err != nil {
-		utils.LogError(err)
+		utils.LogError("Database-Mongo-Service-1", err)
 		if err = refreshMongoDBUser(ctx, conn, db); err != nil {
 			return fmt.Errorf("Error while creating the database : %s", err.Error())
 		}

@@ -19,20 +19,20 @@ func FetchDocs(collectionName string, filter types.M, opts ...*options.FindOptio
 
 	cur, err := collection.Find(ctx, filter, opts...)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Mongo-Read-1", err)
 		return nil
 	}
 	defer cur.Close(ctx)
 	for cur.Next(ctx) {
 		var result types.M
 		if err := cur.Decode(&result); err != nil {
-			utils.LogError(err)
+			utils.LogError("Mongo-Read-2", err)
 			return nil
 		}
 		data = append(data, result)
 	}
 	if err := cur.Err(); err != nil {
-		utils.LogError(err)
+		utils.LogError("Mongo-Read-3", err)
 		return nil
 	}
 	return data
