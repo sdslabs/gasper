@@ -16,4 +16,4 @@ site/
 .DS_Store
 coverage.txt
 releases/
-lizardfs/
+lizardfs-storage/
