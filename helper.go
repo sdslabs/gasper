@@ -12,7 +12,7 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/seaweedfs"
+	"github.com/sdslabs/gasper/lib/lizardfs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"google.golang.org/grpc"
 )
@@ -153,7 +153,7 @@ func setupLizardfsContainer(serviceName string) {
 
 	if !utils.Contains(containers, serviceName) {
 		utils.LogInfo("No %s instance found in host. Building the instance.", strings.Title(serviceName))
-		containerID, err := seaweedfs.SetupLizardfsInstance(serviceName)
+		containerID, err := lizardfs.SetupLizardfsInstance(serviceName)
 		if err != nil {
 			utils.Log(fmt.Sprintf("There was a problem deploying %s service.", strings.Title(serviceName)), utils.ErrorTAG)
 			utils.LogError(err)
@@ -169,7 +169,7 @@ func setupLizardfsContainer(serviceName string) {
 			if err != nil {
 				utils.LogError(err)
 			}
-			containerID, err := seaweedfs.SetupLizardfsInstance(serviceName)
+			containerID, err := lizardfs.SetupLizardfsInstance(serviceName)
 			if err != nil {
 				utils.Log(fmt.Sprintf("There was a problem deploying %s service even after restart.",
 					strings.Title(serviceName)), utils.ErrorTAG)

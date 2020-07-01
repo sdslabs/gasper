@@ -1,4 +1,4 @@
-package seaweedfs
+package lizardfs
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ var lizardfsMap = map[string]*types.LizardfsContainer{
 		ContainerPort1: 9421,
 		Name:           types.LizardfsMaster,
 		WorkDir:        "/var/lib/mfs",
-		StoreDir:       filepath.Join(storepath, "lizardfs", "master-storage"),
+		StoreDir:       filepath.Join(storepath, "lizardfs-storage", "master-storage"),
 	},
 	types.LizardfsMasterShadow: {
 		Image:    "katharostech/lizardfs",
@@ -28,14 +28,14 @@ var lizardfsMap = map[string]*types.LizardfsContainer{
 		Env:      map[string]interface{}{"MFSMASTER_PERSONALITY": "shadow"},
 		Name:     types.LizardfsMasterShadow,
 		WorkDir:  "/var/lib/mfs",
-		StoreDir: filepath.Join(storepath, "lizardfs", "master-shadow-storage"),
+		StoreDir: filepath.Join(storepath, "lizardfs-storage", "master-shadow-storage"),
 	},
 	types.LizardfsMetalogger: {
 		Image:    "katharostech/lizardfs",
 		Cmd:      []string{"metalogger"},
 		Name:     types.LizardfsMetalogger,
 		WorkDir:  "/var/lib/mfs",
-		StoreDir: filepath.Join(storepath, "lizardfs", "metalogger-storage"),
+		StoreDir: filepath.Join(storepath, "lizardfs-storage", "metalogger-storage"),
 	},
 	types.LizardfsChunkserver: {
 		Image:    "katharostech/lizardfs",
@@ -43,7 +43,7 @@ var lizardfsMap = map[string]*types.LizardfsContainer{
 		Env:      map[string]interface{}{"MFSHDD_1": "/mnt/mfshdd"},
 		Name:     types.LizardfsChunkserver,
 		WorkDir:  "/mnt/mfshdd",
-		StoreDir: filepath.Join(storepath, "lizardfs", "chunkserver-storage"),
+		StoreDir: filepath.Join(storepath, "lizardfs-storage", "chunkserver-storage"),
 	},
 	"client1": {
 		Image: "katharostech/lizardfs",
@@ -55,7 +55,7 @@ var lizardfsMap = map[string]*types.LizardfsContainer{
 // SetupLizardfsInstance sets up containers for database
 func SetupLizardfsInstance(serviceType string) (string, types.ResponseError) {
 	if lizardfsMap[serviceType] == nil {
-		return "", types.NewResErr(500, fmt.Sprintf("Invalid seaweedfs type %s provided", serviceType), nil)
+		return "", types.NewResErr(500, fmt.Sprintf("Invalid lizardfs type %s provided", serviceType), nil)
 	}
 	containerID, err := docker.CreateLizardfsContainer(lizardfsMap[serviceType])
 	if err != nil {
