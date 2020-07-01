@@ -53,7 +53,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	}
 	resErr := pipeline[language].create(app)
 	if resErr != nil {
-		if resErr.Message() != "repository already exists" && resErr.Message() != "container not created" {
+		if resErr.Message() != "repository already exists" && resErr.Message() != "container already exists" {
 			go diskCleanup(app.GetName())
 		}
 		return nil, fmt.Errorf(resErr.Error())

@@ -177,6 +177,7 @@ components:
             - python3
             - golang
             - ruby
+            - rust
         owner:
           type: string
           description: Owner of the application
@@ -370,6 +371,7 @@ components:
             - python3
             - golang
             - ruby
+            - rust
 
   securitySchemes:
     bearerAuth:
@@ -547,6 +549,7 @@ paths:
               - python3
               - golang
               - ruby
+              - rust
       security:
         - bearerAuth: []
       responses:
@@ -1216,6 +1219,7 @@ paths:
               - python3
               - golang
               - ruby
+              - rust
         - in: query
           name: docker_image
           description: Docker Image used in building the application's container

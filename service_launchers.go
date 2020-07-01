@@ -80,6 +80,7 @@ func startAppMakerService() error {
 		configs.ImageConfig.Python3,
 		configs.ImageConfig.Golang,
 		configs.ImageConfig.Ruby,
+		configs.ImageConfig.Rust,
 	}
 	checkAndPullImages(images...)
 	return startGrpcServer(appmaker.NewService(), configs.ServiceConfig.AppMaker.Port)
