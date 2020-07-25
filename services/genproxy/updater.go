@@ -59,7 +59,7 @@ func updateStorage() {
 	} else {
 		masterBalancer.Update(filterValidInstances(masterInstances))
 	}
-	storage.Replace(updateBody)
+	storage.Update(updateBody)
 }
 
 // ScheduleUpdate runs updateStorage on given intervals of time
