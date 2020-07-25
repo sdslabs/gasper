@@ -50,9 +50,9 @@ func stateCleanup(appName string) {
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	})
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("AppMaker-Helper-3", err)
 	}
 	if err := redis.RemoveApp(appName); err != nil {
-		utils.LogError(err)
+		utils.LogError("AppMaker-Helper-4", err)
 	}
 }
