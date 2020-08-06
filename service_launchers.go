@@ -131,8 +131,6 @@ func startMasterService() error {
 		checkAndPullImages(configs.ImageConfig.Redis)
 		setupDatabaseContainer(types.RedisGasper)
 	}
-	checkAndPullImages(configs.ImageConfig.Mysql)
-	setupDatabaseContainer(types.MySQL)
 
 	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()
 }
