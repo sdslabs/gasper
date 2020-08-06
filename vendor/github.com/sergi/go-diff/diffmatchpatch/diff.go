@@ -120,7 +120,7 @@ func (dmp *DiffMatchPatch) diffMainRunes(text1, text2 []rune, checklines bool, d
 
 	// Restore the prefix and suffix.
 	if len(commonprefix) != 0 {
-		diffs = append([]Diff{{DiffEqual, string(commonprefix)}}, diffs...)
+		diffs = append([]Diff{Diff{DiffEqual, string(commonprefix)}}, diffs...)
 	}
 	if len(commonsuffix) != 0 {
 		diffs = append(diffs, Diff{DiffEqual, string(commonsuffix)})
@@ -157,16 +157,16 @@ func (dmp *DiffMatchPatch) diffCompute(text1, text2 []rune, checklines bool, dea
 		}
 		// Shorter text is inside the longer text (speedup).
 		return []Diff{
-			{op, string(longtext[:i])},
-			{DiffEqual, string(shorttext)},
-			{op, string(longtext[i+len(shorttext):])},
+			Diff{op, string(longtext[:i])},
+			Diff{DiffEqual, string(shorttext)},
+			Diff{op, string(longtext[i+len(shorttext):])},
 		}
 	} else if len(shorttext) == 1 {
 		// Single character string.
 		// After the previous speedup, the character can't be an equality.
 		return []Diff{
-			{DiffDelete, string(text1)},
-			{DiffInsert, string(text2)},
+			Diff{DiffDelete, string(text1)},
+			Diff{DiffInsert, string(text2)},
 		}
 		// Check to see if the problem can be split in two.
 	} else if hm := dmp.diffHalfMatch(text1, text2); hm != nil {
@@ -368,8 +368,8 @@ func (dmp *DiffMatchPatch) diffBisect(runes1, runes2 []rune, deadline time.Time)
 	}
 	// Diff took too long and hit the deadline or number of diffs equals number of characters, no commonality at all.
 	return []Diff{
-		{DiffDelete, string(runes1)},
-		{DiffInsert, string(runes2)},
+		Diff{DiffDelete, string(runes1)},
+		Diff{DiffInsert, string(runes2)},
 	}
 }
 
@@ -1029,7 +1029,7 @@ func (dmp *DiffMatchPatch) DiffCleanupMerge(diffs []Diff) []Diff {
 						if x > 0 && diffs[x-1].Type == DiffEqual {
 							diffs[x-1].Text += string(textInsert[:commonlength])
 						} else {
-							diffs = append([]Diff{{DiffEqual, string(textInsert[:commonlength])}}, diffs...)
+							diffs = append([]Diff{Diff{DiffEqual, string(textInsert[:commonlength])}}, diffs...)
 							pointer++
 						}
 						textInsert = textInsert[commonlength:]

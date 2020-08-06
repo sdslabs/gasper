@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
@@ -19,7 +20,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  27017,
 		Env:           configs.ServiceConfig.DbMaker.MongoDB.Env,
 		WorkDir:       "/data/db",
-		StoreDir:      "mongodb-storage", /*filepath.Join(storepath, "mongodb-storage")*/
+		StoreDir:      filepath.Join(storepath, "mongodb-storage"),
 		Name:          types.MongoDB,
 	},
 	types.MongoDBGasper: {
@@ -28,7 +29,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  27017,
 		Env:           configs.ServiceConfig.Master.MongoDB.Env,
 		WorkDir:       "/data/db",
-		StoreDir:      "gasper-mongodb-storage", /*filepath.Join(storepath, "gasper-mongodb-storage")*/
+		StoreDir:      filepath.Join(storepath, "seaweed-mount", "gasper-mongodb-storage"),
 		Name:          types.MongoDBGasper,
 	},
 	types.MySQL: {
@@ -37,7 +38,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  3306,
 		Env:           configs.ServiceConfig.DbMaker.MySQL.Env,
 		WorkDir:       "/app",
-		StoreDir:      "mysql-storage", /*filepath.Join(storepath, "mysql-storage")*/
+		StoreDir:      filepath.Join(storepath, "seaweed-mount", "mysql-storage"),
 		Name:          types.MySQL,
 	},
 	types.RedisGasper: {
@@ -45,7 +46,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		ContainerPort: configs.ServiceConfig.Master.Redis.ContainerPort,
 		DatabasePort:  6379,
 		WorkDir:       "/data/",
-		StoreDir:      "gasper-redis-storage", /*filepath.Join(storepath, "gasper-redis-storage")*/
+		StoreDir:      filepath.Join(storepath, "seaweed-mount", "gasper-redis-storage"),
 		Name:          types.RedisGasper,
 		Cmd:           []string{"redis-server", "--requirepass", configs.ServiceConfig.Master.Redis.Password},
 	},
@@ -55,7 +56,7 @@ var databaseMap = map[string]types.DatabaseContainer{
 		DatabasePort:  5432,
 		Env:           configs.ServiceConfig.DbMaker.PostgreSQL.Env,
 		WorkDir:       "/var/lib/postgresql/data",
-		StoreDir:      "postgresql-storage", /*filepath.Join(storepath, "postgresql-storage")*/
+		StoreDir:      filepath.Join(storepath, "postgresql-storage"),
 		Name:          types.PostgreSQL,
 	},
 }
