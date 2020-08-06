@@ -8,6 +8,8 @@ require (
 	github.com/anmitsu/go-shlex v0.0.0-20200502080107-070676123096 // indirect
 	github.com/appleboy/gin-jwt/v2 v2.6.3
 	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
+	github.com/chrislusf/seaweedfs v0.0.0-20200806122253-4ecfa9879d8f
+	github.com/coreos/etcd v3.3.22+incompatible // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/creack/pty v1.1.10 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
@@ -21,11 +23,10 @@ require (
 	github.com/gliderlabs/ssh v0.3.0
 	github.com/go-redis/redis v6.15.7+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/golang/protobuf v1.4.1
+	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/hashicorp/go-multierror v1.1.0 // indirect
 	github.com/jackc/pgx/v4 v4.6.0
-	github.com/klauspost/compress v1.10.5 // indirect
 	github.com/kr/pty v1.1.8
 	github.com/miekg/dns v1.1.29
 	github.com/onsi/ginkgo v1.10.3 // indirect
@@ -40,7 +41,6 @@ require (
 	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
 	golang.org/x/sys v0.0.0-20200509044756-6aff5f38e54f // indirect
-	google.golang.org/genproto v0.0.0-20200507105951-43844f6eee31 // indirect
 	google.golang.org/grpc v1.29.1
 	gopkg.in/src-d/go-git.v4 v4.13.1
 )

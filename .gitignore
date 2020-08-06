@@ -17,3 +17,5 @@ site/
 coverage.txt
 releases/
 lizardfs-storage/
+seaweed/
+seaweed-mount/

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"net"
 	"net/http"
@@ -12,7 +11,6 @@ import (
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/lizardfs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"google.golang.org/grpc"
 )
@@ -102,49 +100,39 @@ func setupDatabaseContainer(serviceName string) {
 	}
 }
 
-func checkAndInstallLizardfsDockerPlugin() {
+func checkAndInstallSeaweedDockerPlugin() {
 	plugins, err := docker.ListPlugins()
 	if err != nil {
 		utils.LogError(err)
 		os.Exit(1)
 	}
-	if !utils.Contains(plugins, "kadimasolutions/lizardfs-volume-plugin:latest") {
-		utils.LogInfo("Lizardfs Docker plugin not found in host. Installing the plugin.")
-		rc, err := docker.InstallPlugin("kadimasolutions/lizardfs-volume-plugin", dockerTypes.PluginInstallOptions{
-			Disabled:             true,
+	if !utils.Contains(plugins, "katharostech/seaweedfs-volume-plugin:latest") {
+		utils.LogInfo("Seaweedfs Docker plugin not found in host. Installing the plugin.")
+		rc, err := docker.InstallPlugin("katharostech/seaweedfs-volume-plugin", dockerTypes.PluginInstallOptions{
+			Disabled:             false,
 			AcceptAllPermissions: true,
-			Args:                 []string{"HOST=0.0.0.0", "PORT=9421", "REMOTE_PATH=/"},
-			RemoteRef:            "kadimasolutions/lizardfs-volume-plugin",
+			Args:                 []string{"HOST=localhost:8888"},
+			RemoteRef:            "katharostech/seaweedfs-volume-plugin",
 		})
 		if err != nil {
-			println("1")
 			utils.LogError(err)
-			println("2")
-		} else {
-			println("3")
-			buf := new(bytes.Buffer)
-			buf.ReadFrom(rc)
-			newStr := buf.String()
-			fmt.Printf(newStr)
-			print(rc.Read)
-			println("4")
 		}
-
+		print(rc.Read)
 	}
-	enabled, err := docker.IsPluginEnabled("kadimasolutions/lizardfs-volume-plugin")
+	enabled, err := docker.IsPluginEnabled("katharostech/seaweedfs-volume-plugin")
 	if err != nil {
 		utils.LogError(err)
 	}
 	if !enabled {
-		err = docker.EnablePlugin("kadimasolutions/lizardfs-volume-plugin")
+		err = docker.EnablePlugin("katharostech/seaweedfs-volume-plugin")
 		if err != nil {
 			utils.LogError(err)
 		}
 	}
-
 }
 
-func setupLizardfsContainer(serviceName string) {
+/*
+func setupSeaweedfsContainer(serviceName string) {
 	containers, err := docker.ListContainers()
 	if err != nil {
 		utils.LogError(err)
@@ -153,7 +141,7 @@ func setupLizardfsContainer(serviceName string) {
 
 	if !utils.Contains(containers, serviceName) {
 		utils.LogInfo("No %s instance found in host. Building the instance.", strings.Title(serviceName))
-		containerID, err := lizardfs.SetupLizardfsInstance(serviceName)
+		containerID, err := seaweedfs.SetupSeaweedfsInstance(serviceName)
 		if err != nil {
 			utils.Log(fmt.Sprintf("There was a problem deploying %s service.", strings.Title(serviceName)), utils.ErrorTAG)
 			utils.LogError(err)
@@ -169,7 +157,7 @@ func setupLizardfsContainer(serviceName string) {
 			if err != nil {
 				utils.LogError(err)
 			}
-			containerID, err := lizardfs.SetupLizardfsInstance(serviceName)
+			containerID, err := seaweedfs.SetupSeaweedfsInstance(serviceName)
 			if err != nil {
 				utils.Log(fmt.Sprintf("There was a problem deploying %s service even after restart.",
 					strings.Title(serviceName)), utils.ErrorTAG)
@@ -184,4 +172,4 @@ func setupLizardfsContainer(serviceName string) {
 			}
 		}
 	}
-}
+}*/

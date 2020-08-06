@@ -46,15 +46,18 @@ const (
 	// DefaultCPUs is the default number of CPUs allotted to a container
 	DefaultCPUs = 0.25
 
-	//LizardfsMaster is the master service for Seaweedfs
-	LizardfsMaster = "mfsmaster"
+	//SeaweedMaster is the master service for Seaweedfs
+	SeaweedMaster = "seaweed_master"
 
-	//LizardfsMasterShadow is the volume service for Seaweedfs
-	LizardfsMasterShadow = "mfsmaster-shadow"
+	//SeaweedVolume is the volume service for Seaweedfs
+	SeaweedVolume = "seaweed_volume"
 
-	//LizardfsMetalogger is the filer service for Seaweedfs
-	LizardfsMetalogger = "metalogger"
+	//SeaweedFiler is the filer service for Seaweedfs
+	SeaweedFiler = "seaweed_filer"
 
-	//LizardfsChunkserver is the cronjob service for Seaweedfs
-	LizardfsChunkserver = "chunkserver"
+	//SeaweedCronjob is the cronjob service for Seaweedfs
+	SeaweedCronjob = "seaweed_cronjob"
+
+	//SeaweedS3 is the Seaweed service that provides support for AmazonS3
+	SeaweedS3 = "seaweed_s3"
 )

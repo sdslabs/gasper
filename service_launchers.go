@@ -1,10 +1,14 @@
 package main
 
 import (
+	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/seaweedfs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/appmaker"
 	"github.com/sdslabs/gasper/services/dbmaker"
@@ -86,15 +90,32 @@ func startAppMakerService() error {
 }
 
 func startMasterService() error {
-	checkAndPullImages(configs.ImageConfig.Lizardfs)
-
-	setupLizardfsContainer(types.LizardfsMaster)
-	setupLizardfsContainer(types.LizardfsMasterShadow)
-	setupLizardfsContainer(types.LizardfsMetalogger)
-	setupLizardfsContainer(types.LizardfsChunkserver)
-	setupLizardfsContainer("client1")
-	//client1 is just to check whether everything is working. We can remove it in the final commit.
-	checkAndInstallLizardfsDockerPlugin()
+	storepath, _ := os.Getwd()
+	println("******************************")
+	go seaweedfs.ShowSeaweedVersion()
+	println("******************************")
+	err := os.MkdirAll(filepath.Join(storepath, "seaweed"), 0777)
+	if err != nil {
+		println(err.Error())
+	}
+	go seaweedfs.StartSeaweedServer(filepath.Join(storepath, "seaweed"))
+	err = os.Mkdir(filepath.Join(storepath, "seaweed-mount"), 0777)
+	if err != nil {
+		println(err.Error())
+	}
+	err = os.Chmod(filepath.Join(storepath, "seaweed-mount"), 0777)
+	if err != nil {
+		println(err.Error())
+	}
+	_, err = http.Get("http://localhost:8888/")
+	for err != nil {
+		utils.Log("Couldn't connect to SeaweedFS's filer server. Will try again in two seconds.", utils.ErrorTAG)
+		utils.LogError(err)
+		time.Sleep(2 * time.Second)
+		_, err = http.Get("http://localhost:8888/")
+	}
+	go seaweedfs.MountDirectory(filepath.Join(storepath, "seaweed-mount"), "")
+	time.Sleep(5 * time.Second)
 
 	if configs.ServiceConfig.Master.MongoDB.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
@@ -104,6 +125,9 @@ func startMasterService() error {
 		checkAndPullImages(configs.ImageConfig.Redis)
 		setupDatabaseContainer(types.RedisGasper)
 	}
+	checkAndPullImages(configs.ImageConfig.Mysql)
+	setupDatabaseContainer(types.MySQL)
+
 	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()
 }
 
