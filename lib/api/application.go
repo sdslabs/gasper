@@ -52,7 +52,7 @@ func setupContainer(app types.Application, storedir string, setup chan types.Res
 	workdir := fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, app.GetName())
 
 	// create the container
-	containerID, err := docker.CreateApplicationContainer(&types.ApplicationContainer{
+	containerID, err := docker.CreateApplicationContainer(types.ApplicationContainer{
 		Name:            app.GetName(),
 		Image:           app.GetDockerImage(),
 		ApplicationPort: app.GetApplicationPort(),

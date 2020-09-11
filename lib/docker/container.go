@@ -15,7 +15,7 @@ import (
 )
 
 // CreateApplicationContainer creates a new container of the given container options, returns id of the container created
-func CreateApplicationContainer(containerCfg *types.ApplicationContainer) (string, error) {
+func CreateApplicationContainer(containerCfg types.ApplicationContainer) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
@@ -69,7 +69,7 @@ func CreateApplicationContainer(containerCfg *types.ApplicationContainer) (strin
 }
 
 // CreateDatabaseContainer function creates a new container of the given container options, returns id of the container created
-func CreateDatabaseContainer(containerCfg *types.DatabaseContainer) (string, error) {
+func CreateDatabaseContainer(containerCfg types.DatabaseContainer) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 

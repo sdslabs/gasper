@@ -12,6 +12,8 @@ import (
 	"github.com/sdslabs/gasper/types"
 )
 
+var path, _ = os.Getwd()
+
 // storageCleanup removes the application's local storage directory
 func storageCleanup(path string) error {
 	err := os.RemoveAll(path)
@@ -32,25 +34,25 @@ func containerCleanup(appName string) error {
 
 // diskCleanup cleans the specified application's container and local storage
 func diskCleanup(appName string) {
-	path, _ := os.Getwd()
 	appDir := filepath.Join(path, fmt.Sprintf("storage/%s", appName))
 	storeCleanupChan := make(chan error)
-	containerCleanupChan := make(chan error)
 	go func() {
 		storeCleanupChan <- storageCleanup(appDir)
 	}()
-	go func() {
-		containerCleanupChan <- containerCleanup(appName)
-	}()
+	containerCleanup(appName)
 	<-storeCleanupChan
-	<-containerCleanupChan
 }
 
 // stateCleanup removes the application's data from MongoDB and Redis
 func stateCleanup(appName string) {
-	mongo.DeleteInstance(types.M{
+	_, err := mongo.DeleteInstance(types.M{
 		mongo.NameKey:         appName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	})
-	redis.RemoveApp(appName)
+	if err != nil {
+		utils.LogError("AppMaker-Helper-3", err)
+	}
+	if err := redis.RemoveApp(appName); err != nil {
+		utils.LogError("AppMaker-Helper-4", err)
+	}
 }
