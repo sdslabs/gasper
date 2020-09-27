@@ -115,8 +115,8 @@ func startMasterService() error {
 	}
 	_, err = http.Get("http://localhost:8888/")
 	for err != nil {
-		utils.Log("Couldn't connect to SeaweedFS's filer server. Will try again in two seconds.", utils.ErrorTAG)
-		utils.LogError(err)
+		utils.Log("SeaweedFS", "Couldn't connect to SeaweedFS's filer server. Will try again in two seconds.", utils.ErrorTAG)
+		utils.LogError("SeaweedFS", err)
 		time.Sleep(2 * time.Second)
 		_, err = http.Get("http://localhost:8888/")
 	}
