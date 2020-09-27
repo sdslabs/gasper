@@ -1,10 +1,16 @@
 package main
 
 import (
+	"net/http"
 	"os"
+	"path/filepath"
 	"runtime"
+	"time"
+	"os/signal"
+	"syscall"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/seaweedfs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/appmaker"
 	"github.com/sdslabs/gasper/services/dbmaker"
@@ -92,6 +98,33 @@ func startAppMakerService() error {
 }
 
 func startMasterService() error {
+	storepath, _ := os.Getwd()
+	println("******************************")
+	go seaweedfs.ShowSeaweedVersion()
+	println("******************************")
+	err := os.MkdirAll(filepath.Join(storepath, "seaweed"), 0777)
+	if err != nil {
+		println(err.Error())
+	}
+	go seaweedfs.StartSeaweedServer(filepath.Join(storepath, "seaweed"))
+	err = os.Mkdir(filepath.Join(storepath, "seaweed-mount"), 0777)
+	if err != nil {
+		println(err.Error())
+	}
+	err = os.Chmod(filepath.Join(storepath, "seaweed-mount"), 0777)
+	if err != nil {
+		println(err.Error())
+	}
+	_, err = http.Get("http://localhost:8888/")
+	for err != nil {
+		utils.Log("SeaweedFS", "Couldn't connect to SeaweedFS's filer server. Will try again in two seconds.", utils.ErrorTAG)
+		utils.LogError("SeaweedFS", err)
+		time.Sleep(2 * time.Second)
+		_, err = http.Get("http://localhost:8888/")
+	}
+	go seaweedfs.MountDirectory(filepath.Join(storepath, "seaweed-mount"), "")
+	time.Sleep(5 * time.Second)
+
 	if configs.ServiceConfig.Master.MongoDB.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDBGasper)
@@ -100,7 +133,20 @@ func startMasterService() error {
 		checkAndPullImages(configs.ImageConfig.Redis)
 		setupDatabaseContainer(types.RedisGasper)
 	}
+	
+	SetupCloseHandler()
 	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()
+}
+
+func SetupCloseHandler() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		println("Ctrl+C pressed in Terminal. Please wait while gasper exits gracefully.")
+		StopDatabaseContainers()
+		os.Exit(0)
+	}()
 }
 
 func startGenProxyService() error {

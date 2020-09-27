@@ -98,3 +98,11 @@ func setupDatabaseContainer(serviceName string) {
 		}
 	}
 }
+
+func StopDatabaseContainers() {
+	err := docker.StopContainer("mongodb_gasper")
+	if err != nil {
+		utils.LogError("Main-Helper-17", err)
+	}
+}
+

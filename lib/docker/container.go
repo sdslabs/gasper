@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
@@ -73,6 +74,27 @@ func CreateDatabaseContainer(containerCfg types.DatabaseContainer) (string, erro
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
+	err := os.MkdirAll(containerCfg.StoreDir, 0777)
+	if err != nil {
+		println(err.Error())
+	}
+
+	err = os.Chmod(containerCfg.StoreDir, 0777)
+	if err != nil {
+		println(err.Error())
+	}
+
+	/*
+		_, err = http.Get("http://localhost:8888/")
+		for err != nil {
+			utils.Log("Couldn't connect to SeaweedFS's filer server. Will try again in two seconds.", utils.ErrorTAG)
+			utils.LogError(err)
+			time.Sleep(2 * time.Second)
+			_, err = http.Get("http://localhost:8888/")
+		}
+		go seaweedfs.MountDirectory(containerCfg.StoreDir, containerCfg.Name)
+	*/
+	time.Sleep(1 * time.Second)
 	envArr := []string{}
 	for key, value := range containerCfg.Env {
 		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
@@ -106,6 +128,61 @@ func CreateDatabaseContainer(containerCfg types.DatabaseContainer) (string, erro
 		},
 	}
 
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
+	if err != nil {
+		return "", err
+	}
+	return createdConf.ID, nil
+}
+
+// CreateSeaweedContainer creates a new container of the given container options, returns id of the container created
+func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, error) {
+	ctx := context.Background()
+	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
+
+	// convert map to list of strings
+	envArr := []string{}
+	for key, value := range containerCfg.Env {
+		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
+	}
+
+	containerPortRule1 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort1))
+	containerPortRule2 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort2))
+
+	containerConfig := &container.Config{
+		Image: containerCfg.Image,
+		ExposedPorts: nat.PortSet{
+			containerPortRule1: struct{}{},
+			containerPortRule2: struct{}{},
+		},
+		Env: envArr,
+		Volumes: map[string]struct{}{
+			volume: {},
+		},
+	}
+
+	containerConfig.Cmd = containerCfg.Cmd
+
+	hostConfig := &container.HostConfig{
+		Binds: []string{
+			volume,
+		},
+		PortBindings: nat.PortMap{
+			nat.Port(containerPortRule1): []nat.PortBinding{{
+				HostIP:   "",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort1)}},
+			nat.Port(containerPortRule2): []nat.PortBinding{{
+				HostIP:   "",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort2)}},
+		},
+	}
+	/*
+		if containerCfg.Name != types.SeaweedMaster {
+			hostConfig.Links = []string{
+				fmt.Sprintf("%s:master", types.SeaweedMaster),
+			}
+		}
+	*/
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
 	if err != nil {
 		return "", err

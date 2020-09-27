@@ -17,3 +17,8 @@ site/
 coverage.txt
 releases/
 gasper*.log
+seaweed/
+lizardfs/
+lizardfs-storage/
+seaweed/
+seaweed-mount/

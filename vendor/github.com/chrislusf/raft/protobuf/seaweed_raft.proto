@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package protobuf;
+option go_package = "github.com/chrislusf/raft/protobuf";
+
+message LogEntry {
+    uint64 Index = 1;
+    uint64 Term = 2;
+    string CommandName = 3;
+    bytes Command = 4; // for nop-command
+}
+
+message AppendEntriesRequest {
+    uint64 Term = 1;
+    uint64 PrevLogIndex = 2;
+    uint64 PrevLogTerm = 3;
+    uint64 CommitIndex = 4;
+    string LeaderName = 5;
+    repeated LogEntry Entries = 6;
+}
+
+message AppendEntriesResponse {
+    uint64 Term = 1;
+    uint64 Index = 2;
+    uint64 CommitIndex = 3;
+    bool Success = 4;
+}
+
+message RequestVoteRequest {
+    uint64 Term = 1;
+    uint64 LastLogIndex = 2;
+    uint64 LastLogTerm = 3;
+    string CandidateName = 4;
+}
+
+message RequestVoteResponse {
+    uint64 Term = 1;
+    bool VoteGranted = 2;
+}
+
+message SnapshotRecoveryRequest {
+    string LeaderName = 1;
+    uint64 LastIndex = 2;
+    uint64 LastTerm = 3;
+
+    message Peer {
+        string Name = 1;
+        string ConnectionString = 2;
+    }
+    repeated Peer Peers = 4;
+
+    bytes State = 5;
+}
+
+message SnapshotRecoveryResponse {
+    uint64 Term = 1;
+    bool Success = 2;
+    uint64 CommitIndex = 3;
+}
+
+message SnapshotRequest {
+    string LeaderName = 1;
+    uint64 LastIndex = 2;
+    uint64 LastTerm = 3;
+}
+
+message SnapshotResponse {
+    bool Success = 1;
+}
+
+service Raft {
+    rpc OnSendVoteRequest (RequestVoteRequest) returns (RequestVoteResponse) {
+    }
+    rpc OnSendAppendEntriesRequest (AppendEntriesRequest) returns (AppendEntriesResponse) {
+    }
+    rpc OnSendSnapshotRequest (SnapshotRequest) returns (SnapshotResponse) {
+    }
+    rpc OnSendSnapshotRecoveryRequest (SnapshotRecoveryRequest) returns (SnapshotRecoveryResponse) {
+    }
+}
