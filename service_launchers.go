@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"time"
+	"os/signal"
+	"syscall"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/seaweedfs"
@@ -131,8 +133,20 @@ func startMasterService() error {
 		checkAndPullImages(configs.ImageConfig.Redis)
 		setupDatabaseContainer(types.RedisGasper)
 	}
-
+	
+	SetupCloseHandler()
 	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()
+}
+
+func SetupCloseHandler() {
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		println("Ctrl+C pressed in Terminal. Please wait while gasper exits gracefully.")
+		StopDatabaseContainers()
+		os.Exit(0)
+	}()
 }
 
 func startGenProxyService() error {
