@@ -172,4 +172,78 @@ func setupSeaweedfsContainer(serviceName string) {
 			}
 		}
 	}
+}
+
+func checkAndInstallSeaweedDockerPlugin() {
+	plugins, err := docker.ListPlugins()
+	if err != nil {
+		utils.LogError(err)
+		os.Exit(1)
+	}
+	if !utils.Contains(plugins, "katharostech/seaweedfs-volume-plugin:latest") {
+		utils.LogInfo("Seaweedfs Docker plugin not found in host. Installing the plugin.")
+		rc, err := docker.InstallPlugin("katharostech/seaweedfs-volume-plugin", dockerTypes.PluginInstallOptions{
+			Disabled:             false,
+			AcceptAllPermissions: true,
+			Args:                 []string{"HOST=localhost:8888"},
+			RemoteRef:            "katharostech/seaweedfs-volume-plugin",
+		})
+		if err != nil {
+			utils.LogError(err)
+		}
+		print(rc.Read)
+	}
+	enabled, err := docker.IsPluginEnabled("katharostech/seaweedfs-volume-plugin")
+	if err != nil {
+		utils.LogError(err)
+	}
+	if !enabled {
+		err = docker.EnablePlugin("katharostech/seaweedfs-volume-plugin")
+		if err != nil {
+			utils.LogError(err)
+		}
+	}
+}
+
+
+func setupSeaweedfsContainer(serviceName string) {
+	containers, err := docker.ListContainers()
+	if err != nil {
+		utils.LogError(err)
+		os.Exit(1)
+	}
+
+	if !utils.Contains(containers, serviceName) {
+		utils.LogInfo("No %s instance found in host. Building the instance.", strings.Title(serviceName))
+		containerID, err := seaweedfs.SetupSeaweedfsInstance(serviceName)
+		if err != nil {
+			utils.Log(fmt.Sprintf("There was a problem deploying %s service.", strings.Title(serviceName)), utils.ErrorTAG)
+			utils.LogError(err)
+		} else {
+			utils.LogInfo("%s Container has been deployed with ID:\t%s \n", strings.Title(serviceName), containerID)
+		}
+	} else {
+		containerStatus, err := docker.InspectContainerState(serviceName)
+		if err != nil {
+			utils.Log("Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
+			utils.LogError(err)
+			err := docker.DeleteContainer(serviceName)
+			if err != nil {
+				utils.LogError(err)
+			}
+			containerID, err := seaweedfs.SetupSeaweedfsInstance(serviceName)
+			if err != nil {
+				utils.Log(fmt.Sprintf("There was a problem deploying %s service even after restart.",
+					strings.Title(serviceName)), utils.ErrorTAG)
+				utils.LogError(err)
+			} else {
+				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+			}
+		}
+		if !containerStatus.Running {
+			if err := docker.StartContainer(serviceName); err != nil {
+				utils.LogError(err)
+			}
+		}
+	}
 }*/
