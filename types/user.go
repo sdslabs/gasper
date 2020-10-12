@@ -17,6 +17,11 @@ func (auth *Login) GetPassword() string {
 	return auth.Password
 }
 
+// Email stores email id of a user
+type Email struct {
+	Email string `form:"email" json:"email" bson:"email" binding:"required"`
+}
+
 // User stores user related information
 type User struct {
 	Email    string `form:"email" json:"email" binding:"required" bson:"email" valid:"required~Field 'email' is required but was not provided,email"`
@@ -24,6 +29,7 @@ type User struct {
 	Username string `form:"username" json:"username" bson:"username" binding:"required" valid:"required~Field 'username' is required but was not provided,alphanum~Field 'username' should only have alphanumeric characters,stringlength(3|40)~Field 'username' should have length between 3 to 40 characters,lowercase~Field 'username' should have only lowercase characters"`
 	Admin    bool   `form:"admin" json:"admin" bson:"admin"`
 	Success  bool   `json:"success,omitempty" bson:"-"`
+	GctlUUID string `json:"gctl_uuid" bson:"gctl_uuid"`
 }
 
 // GetName returns the user's username
@@ -65,6 +71,16 @@ func (user *User) IsAdmin() bool {
 // SetSuccess defines the success of user creation
 func (user *User) SetSuccess(success bool) {
 	user.Success = success
+}
+
+// GetUUID returns the user's uuid
+func (user *User) GetUUID() string {
+	return user.GctlUUID
+}
+
+// SetUUID sets a unique id for authentication through gctl
+func (user *User) SetUUID(uuid string) {
+	user.GctlUUID = uuid
 }
 
 // PasswordUpdate is the request body for updating a user's password
