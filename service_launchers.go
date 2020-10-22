@@ -92,6 +92,18 @@ func startAppMakerService() error {
 }
 
 func startMasterService() error {
+
+	checkAndPullImages("chrislusf/seaweedfs")
+	err := os.MkdirAll("seaweed/seaweed-filer-storage/filerldb2", 0777)
+	if err != nil {
+		println(err.Error())
+	}
+	setupSeaweedfsContainer(types.SeaweedMaster)
+	setupSeaweedfsContainer(types.SeaweedVolume)
+	setupSeaweedfsContainer(types.SeaweedFiler)
+	setupSeaweedfsContainer(types.SeaweedCronjob)
+	setupSeaweedfsContainer(types.SeaweedS3)
+
 	if configs.ServiceConfig.Master.MongoDB.PlugIn {
 		checkAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDBGasper)

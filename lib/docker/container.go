@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"time"
 
 	dockerTypes "github.com/docker/docker/api/types"
@@ -104,6 +105,67 @@ func CreateDatabaseContainer(containerCfg types.DatabaseContainer) (string, erro
 				HostIP:   "0.0.0.0",
 				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort)}},
 		},
+	}
+
+	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
+	if err != nil {
+		return "", err
+	}
+	return createdConf.ID, nil
+}
+
+// CreateSeaweedContainer creates a new container of the given container options, returns id of the container created
+func CreateSeaweedContainer(containerCfg *types.SeaweedfsContainer) (string, error) {
+	ctx := context.Background()
+	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
+
+	if containerCfg.Name == types.SeaweedFiler {
+		err := os.MkdirAll("seaweed/seaweed-filer-storage/filerldb2", 0777)
+		if err != nil {
+			println(err.Error())
+		}
+	}
+
+	envArr := []string{}
+	for key, value := range containerCfg.Env {
+		envArr = append(envArr, fmt.Sprintf("%s=%v", key, value))
+	}
+
+	containerPortRule1 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort1))
+	containerPortRule2 := nat.Port(fmt.Sprintf(`%d/tcp`, containerCfg.HostPort2))
+
+	containerConfig := &container.Config{
+		Image: containerCfg.Image,
+		ExposedPorts: nat.PortSet{
+			containerPortRule1: struct{}{},
+			containerPortRule2: struct{}{},
+		},
+		Env: envArr,
+		Volumes: map[string]struct{}{
+			volume: {},
+		},
+	}
+
+	containerConfig.Cmd = containerCfg.Cmd
+
+	hostConfig := &container.HostConfig{
+		Binds: []string{
+			volume,
+		},
+		PortBindings: nat.PortMap{
+			nat.Port(containerPortRule1): []nat.PortBinding{{
+				HostIP:   "",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort1)}},
+			nat.Port(containerPortRule2): []nat.PortBinding{{
+				HostIP:   "",
+				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort2)}},
+		},
+	}
+
+	if containerCfg.Name != types.SeaweedMaster {
+		hostConfig.Links = []string{
+			fmt.Sprintf("%s:master", types.SeaweedMaster),
+		}
 	}
 
 	createdConf, err := cli.ContainerCreate(ctx, containerConfig, hostConfig, nil, containerCfg.Name)
