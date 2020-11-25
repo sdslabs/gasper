@@ -2393,6 +2393,15 @@
               "type": "integer",
               "example": 1
             }
+          },
+          {
+            "in": "query",
+            "name": "sparsity",
+            "description": "Fetch metrics in the last **x** intervals",
+            "schema": {
+              "type": "string",
+              "example": "Example"
+            }
           }
         ],
         "security": [

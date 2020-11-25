@@ -900,6 +900,12 @@ paths:
           schema:
             type: integer
             example: 1
+        - in: query
+          name: sparsity
+          description: Fetch metrics in the last **x** interval
+          schema:
+            type: string
+            example: "Example"
       security:
         - bearerAuth: []
       responses:
