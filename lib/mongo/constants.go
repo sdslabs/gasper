@@ -65,6 +65,9 @@ const (
 
 	// TimestampKey is the key holding the timestamp of when a metrics collection was inserted
 	TimestampKey = "timestamp"
+
+	//GctlUUIDKey is the key holding a unique key for authentication of user by jwt
+	GctlUUIDKey = "gctl_uuid"
 )
 
 // ErrNoDocuments is the error when no matching documents are found

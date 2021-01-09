@@ -40,6 +40,9 @@ const (
 	// GenProxySSL holds the name of `genproxy` microservice with SSL support
 	GenProxySSL = "genproxy_ssl"
 
+	// Jikan holds the name of `jikan` microservice
+	Jikan = "jikan"
+
 	// DefaultMemory is the default memory allotted to a container
 	DefaultMemory = 0.5
 

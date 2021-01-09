@@ -50,13 +50,13 @@ func registerApps(instances []types.M, currentIP string, config *configs.Generic
 		}
 		appBindingJSON, err := json.Marshal(appBind)
 		if err != nil {
-			utils.LogError(err)
+			utils.LogError("Master-Discovery-1", err)
 			continue
 		}
 		payload[instance[mongo.NameKey].(string)] = appBindingJSON
 	}
 	if err := redis.BulkRegisterApps(payload); err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-Discovery-2", err)
 	}
 }
 
@@ -69,13 +69,13 @@ func registerDatabases(instances []types.M, currentIP string, config *configs.Ge
 		}
 		dbBindingJSON, err := json.Marshal(dbBind)
 		if err != nil {
-			utils.LogError(err)
+			utils.LogError("Master-Discovery-3", err)
 			continue
 		}
 		payload[instance[mongo.NameKey].(string)] = dbBindingJSON
 	}
 	if err := redis.BulkRegisterDatabases(payload); err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-Discovery-4", err)
 	}
 }
 
@@ -93,7 +93,7 @@ func exposeService(service, currentIP string, config *configs.GenericService) {
 		float64(count),
 	)
 	if err != nil {
-		utils.LogError(err)
+		utils.LogError("Master-Discovery-5", err)
 		return
 	}
 	if instanceRegistrationBindings[service] != nil {

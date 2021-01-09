@@ -13,8 +13,8 @@ import (
 )
 
 func handleError(err error) {
-	utils.Log("Failed to update Record Storage", utils.ErrorTAG)
-	utils.LogError(err)
+	utils.Log("GenProxy-Updater-1", "Failed to update Record Storage", utils.ErrorTAG)
+	utils.LogError("GenProxy-Updater-2", err)
 }
 
 // filterValidInstances filters the instances and returns
@@ -25,7 +25,7 @@ func filterValidInstances(reverseProxyInstances []string) []string {
 		if strings.Contains(instance, ":") {
 			filteredInstances = append(filteredInstances, instance)
 		} else {
-			utils.LogError(fmt.Errorf("Instance %s is of invalid format", instance))
+			utils.LogError("GenProxy-Updater-3", fmt.Errorf("Instance %s is of invalid format", instance))
 		}
 	}
 	return filteredInstances
@@ -55,11 +55,11 @@ func updateStorage() {
 	// Create enrties for Master in the load balancer
 	masterInstances, err := redis.FetchServiceInstances(types.Master)
 	if err != nil {
-		utils.Log("Failed to fetch master instances", utils.ErrorTAG)
+		utils.Log("GenProxy-Updater-4", "Failed to fetch master instances", utils.ErrorTAG)
 	} else {
 		masterBalancer.Update(filterValidInstances(masterInstances))
 	}
-	storage.Replace(updateBody)
+	storage.Update(updateBody)
 }
 
 // ScheduleUpdate runs updateStorage on given intervals of time

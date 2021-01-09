@@ -25,7 +25,7 @@ func CreateRedisDB(db types.Database) error {
 		return fmt.Errorf("Error while creating the directory : %s", err)
 	}
 
-	containerID, err := docker.CreateDatabaseContainer(&types.DatabaseContainer{
+	containerID, err := docker.CreateDatabaseContainer(types.DatabaseContainer{
 		Image:         configs.ImageConfig.Redis,
 		ContainerPort: port,
 		DatabasePort:  6379,

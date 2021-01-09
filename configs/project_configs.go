@@ -65,6 +65,10 @@ var (
 			Deploy: ServiceConfig.GenDNS.Deploy,
 			Port:   ServiceConfig.GenDNS.Port,
 		},
+		types.Jikan: {
+			Deploy: ServiceConfig.Jikan.Deploy,
+			Port:   ServiceConfig.Jikan.Port,
+		},
 		types.MySQL: {
 			Deploy: ServiceConfig.DbMaker.MySQL.PlugIn && ServiceConfig.DbMaker.Deploy,
 			Port:   ServiceConfig.DbMaker.Port,

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
@@ -51,7 +52,7 @@ func setupContainer(app types.Application, storedir string, setup chan types.Res
 	workdir := fmt.Sprintf("%s/%s", configs.GasperConfig.ProjectRoot, app.GetName())
 
 	// create the container
-	containerID, err := docker.CreateApplicationContainer(&types.ApplicationContainer{
+	containerID, err := docker.CreateApplicationContainer(types.ApplicationContainer{
 		Name:            app.GetName(),
 		Image:           app.GetDockerImage(),
 		ApplicationPort: app.GetApplicationPort(),
@@ -65,7 +66,11 @@ func setupContainer(app types.Application, storedir string, setup chan types.Res
 	})
 
 	if err != nil {
-		setup <- types.NewResErr(500, "container not created", err)
+		if strings.HasPrefix(err.Error(), "Error response from daemon: Conflict.") {
+			setup <- types.NewResErr(500, "container already exists", err)
+		} else {
+			setup <- types.NewResErr(500, "container not created", err)
+		}
 		return
 	}
 

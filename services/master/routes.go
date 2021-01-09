@@ -21,7 +21,7 @@ func NewService() http.Handler {
 
 	corsConfig := cors.Config{
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Cookie"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Cookie", "Authorization-Type"},
 		AllowCredentials: false,
 		AllowAllOrigins:  true,
 		MaxAge:           12 * time.Hour,
@@ -53,10 +53,11 @@ func NewService() http.Handler {
 		auth.GET("/refresh", m.JWT.RefreshHandler)
 	}
 
-	router.GET("/instances", m.JWT.MiddlewareFunc(), c.FetchAllInstancesByUser)
+	router.GET("/instances", m.AuthRequired(), c.FetchAllInstancesByUser)
+	router.POST("/gctllogin", m.JWTGctl.MiddlewareFunc(), c.GctlLogin)
 
 	app := router.Group("/apps")
-	app.Use(m.JWT.MiddlewareFunc())
+	app.Use(m.AuthRequired())
 	{
 		app.POST("/:language", m.ValidateApplicationRequest, c.CreateApp)
 		app.GET("", c.FetchAppsByUser)
@@ -71,7 +72,7 @@ func NewService() http.Handler {
 	}
 
 	db := router.Group("/dbs")
-	db.Use(m.JWT.MiddlewareFunc())
+	db.Use(m.AuthRequired())
 	{
 		db.POST("/:database", m.ValidateDatabaseRequest, c.CreateDatabase)
 		db.GET("", c.FetchDatabasesByUser)
@@ -81,7 +82,7 @@ func NewService() http.Handler {
 	}
 
 	user := router.Group("/user")
-	user.Use(m.JWT.MiddlewareFunc())
+	user.Use(m.AuthRequired())
 	{
 		user.GET("", c.GetLoggedInUserInfo)
 		user.PUT("/password", c.UpdatePassword)
@@ -89,7 +90,7 @@ func NewService() http.Handler {
 	}
 
 	admin := router.Group("/admin")
-	admin.Use(m.JWT.MiddlewareFunc(), m.VerifyAdmin)
+	admin.Use(m.AuthRequired(), m.VerifyAdmin)
 	{
 		apps := admin.Group("/apps")
 		{

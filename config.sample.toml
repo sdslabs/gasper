@@ -118,6 +118,7 @@ python2 =  "docker.io/sdsws/python2:1.1"
 python3 = "docker.io/sdsws/python3:1.1"
 golang = "docker.io/sdsws/golang:1.1"
 ruby = "docker.io/sdsws/ruby:1.0"
+rust = "docker.io/sdsws/rust:1.0"
 mysql = "docker.io/wangxian/alpine-mysql:latest"
 mongodb = "docker.io/sdsws/alpine-mongo:latest"
 postgresql = "docker.io/postgres:12.2-alpine"
@@ -269,3 +270,12 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 # To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""
+
+
+###########################
+#   Jikan Configuration   #
+###########################
+
+[services.jikan]
+deploy = false   # Deploy Jikan?
+port = 3333

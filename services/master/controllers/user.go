@@ -2,12 +2,15 @@ package controllers
 
 import (
 	"errors"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
 	"github.com/sdslabs/gasper/types"
+	jwt "github.com/sdslabs/gin-jwt"
 )
 
 // GetUserInfo gets info regarding particular user
@@ -98,4 +101,85 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 	deleteUser(c, claims.GetEmail())
+}
+
+//GctlLogin validates the email id and alllow user to login in gctl
+func GctlLogin(c *gin.Context) {
+	claims := jwt.ExtractClaims(c)
+	if claims == nil {
+		utils.SendServerErrorResponse(c, errors.New("Failed to extract JWT claims"))
+		return
+	}
+	exp := claims["exp"].(float64)
+	tm := time.Unix(int64(exp), 0)
+
+	email := &types.Email{}
+	if err := c.Bind(email); err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	filter := types.M{mongo.EmailKey: email.Email}
+	count, err := mongo.CountUsers(filter)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	if count == 0 {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   "email not registered",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+		"expire":  tm,
+	})
+}
+
+//RevokeToken updates the uuid of user so that gctl token gets invalidated
+func RevokeToken(c *gin.Context) {
+	auth := &types.Login{}
+	if err := c.ShouldBind(auth); err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	user, err := mongo.FetchSingleUser(auth.GetEmail())
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	if user == nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   "email id is invalid",
+		})
+		return
+	}
+	if !utils.CompareHashWithPassword(user.GetPassword(), auth.GetPassword()) {
+		c.AbortWithStatusJSON(401, gin.H{
+			"success": false,
+			"error":   "password is invalid",
+		})
+		return
+	}
+	uuid := uuid.New()
+	err = mongo.UpdateUser(
+		types.M{mongo.EmailKey: user.GetEmail()},
+		types.M{mongo.GctlUUIDKey: uuid.String()},
+	)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "token revoked",
+	})
 }

@@ -265,7 +265,8 @@
               "python2",
               "python3",
               "golang",
-              "ruby"
+              "ruby",
+              "rust"
             ]
           },
           "owner": {
@@ -517,7 +518,8 @@
               "python2",
               "python3",
               "golang",
-              "ruby"
+              "ruby",
+              "rust"
             ]
           }
         }
@@ -928,7 +930,8 @@
                 "python2",
                 "python3",
                 "golang",
-                "ruby"
+                "ruby",
+                "rust"
               ]
             }
           }
@@ -1045,7 +1048,8 @@
                         "python2",
                         "python3",
                         "golang",
-                        "ruby"
+                        "ruby",
+                        "rust"
                       ]
                     },
                     "owner": {
@@ -1502,7 +1506,8 @@
                         "python2",
                         "python3",
                         "golang",
-                        "ruby"
+                        "ruby",
+                        "rust"
                       ]
                     },
                     "owner": {
@@ -1835,7 +1840,8 @@
                         "python2",
                         "python3",
                         "golang",
-                        "ruby"
+                        "ruby",
+                        "rust"
                       ]
                     },
                     "owner": {
@@ -3502,7 +3508,8 @@
                 "python2",
                 "python3",
                 "golang",
-                "ruby"
+                "ruby",
+                "rust"
               ]
             }
           },

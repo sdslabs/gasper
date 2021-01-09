@@ -3,7 +3,6 @@ package genproxy
 import (
 	"fmt"
 	"net/http"
-	"net/http/httputil"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +22,7 @@ const (
 var (
 	// storage stores the reverse proxy records in the form of Key : Value pairs
 	// with Application Name as the key and its URL(IP:Port) as the value
-	storage = types.NewRecordStorage()
+	storage = types.NewProxyStorage()
 
 	// balancedInstances are the services for which GenProxy load balances the
 	// request among multiple instances
@@ -53,13 +52,13 @@ func reverseProxy(c *gin.Context) {
 	}
 
 	name := strings.Split(c.Request.Host, ".")[0]
-	var target string
+	var proxy *types.ProxyInfo
 	var success bool
 
 	if utils.Contains(balancedInstances, name) {
-		target, success = masterBalancer.Get()
+		proxy, success = masterBalancer.Get()
 	} else {
-		target, success = storage.Get(name)
+		proxy, success = storage.Get(name)
 	}
 
 	if !success {
@@ -69,15 +68,7 @@ func reverseProxy(c *gin.Context) {
 		})
 		return
 	}
-
-	director := func(req *http.Request) {
-		req.URL.Scheme = "http"
-		req.URL.Host = target
-		req.Host = target
-	}
-
-	proxy := &httputil.ReverseProxy{Director: director}
-	proxy.ServeHTTP(c.Writer, c.Request)
+	proxy.Serve(c)
 }
 
 // NewService returns a new instance of the current microservice
