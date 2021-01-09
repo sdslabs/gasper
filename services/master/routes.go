@@ -49,10 +49,8 @@ func NewService() http.Handler {
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/login", m.LoginHandler)
-		auth.POST("/register", m.ValidateRegistration, c.Register)
-		auth.GET("/refresh", m.RefreshHandler)
-		auth.PUT("/revoke", c.RevokeToken)
+		auth.POST("/login", m.FalconGuard(), m.Register, m.JWT.LoginHandler)
+		auth.GET("/refresh", m.JWT.RefreshHandler)
 	}
 
 	router.GET("/instances", m.AuthRequired(), c.FetchAllInstancesByUser)

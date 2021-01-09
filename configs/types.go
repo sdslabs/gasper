@@ -26,6 +26,17 @@ type Cloudflare struct {
 	Token    string `toml:"api_token"`
 }
 
+// Falcon is the configuration for SDSLabs oauth2
+type Falcon struct {
+	PlugIn                        bool   `toml:"plugin"`
+	FalconClientID                string `toml:"falcon_client_id"`
+	FalconClientSecret            string `toml:"falcon_client_secret"`
+	FalconURLAccessToken          string `toml:"falcon_access_token_url"`
+	FalconURLResourceOwnerDetails string `toml:"falcon_resource_owner_url"`
+	FalconAccountsURL             string `toml:"falcon_accounts_url"`
+	RedirectURI                   string `toml:"redirect_uri"`
+}
+
 // Mongo is the configuration for mongodb storage
 type Mongo struct {
 	URL string `toml:"url"`
@@ -151,6 +162,7 @@ type GasperCfg struct {
 	JWT         JWT        `toml:"jwt"`
 	Admin       Admin      `toml:"admin"`
 	Cloudflare  Cloudflare `toml:"cloudflare"`
+	Falcon      Falcon     `toml:"falcon"`
 	Mongo       Mongo      `toml:"mongo"`
 	Redis       Redis      `toml:"redis"`
 	Images      Images     `toml:"images"`
