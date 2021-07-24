@@ -68,6 +68,9 @@ const (
 
 	//GctlUUIDKey is the key holding a unique key for authentication of user by jwt
 	GctlUUIDKey = "gctl_uuid"
+
+	// DatetimeKey is the key holding the timestamp of when the instance was created
+	DatetimeKey = "datetime"
 )
 
 // ErrNoDocuments is the error when no matching documents are found

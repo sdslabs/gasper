@@ -49,6 +49,7 @@ type GenericService struct {
 type AppMakerService struct {
 	GenericService
 	MetricsInterval time.Duration `toml:"metrics_interval"`
+	AppLimit        int           `toml:"app_limit"`
 }
 
 // MasterService is the default configuration for Master microservice
@@ -104,6 +105,7 @@ type DbMakerService struct {
 	MongoDB    DatabaseService `toml:"mongodb"`
 	PostgreSQL DatabaseService `toml:"postgresql"`
 	Redis      DatabaseService `toml:"redis"`
+	DBLimit    int             `toml:"db_limit"`
 }
 
 // JikanService is the configuration for Jikan microservice
@@ -130,6 +132,8 @@ type Images struct {
 // Services is the configuration for all Services
 type Services struct {
 	ExposureInterval time.Duration   `toml:"exposure_interval"`
+	RateInterval     time.Duration   `toml:"rate_interval"`
+	RateLimit        int             `toml:"rate_limit"`
 	Master           MasterService   `toml:"master"`
 	AppMaker         AppMakerService `toml:"appmaker"`
 	GenSSH           GenSSHService   `toml:"genssh"`

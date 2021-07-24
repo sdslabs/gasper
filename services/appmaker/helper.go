@@ -2,14 +2,13 @@ package appmaker
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
-
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
+	"os"
+	"path/filepath"
 )
 
 var path, _ = os.Getwd()
