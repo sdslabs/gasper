@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"math"
+	"time"
 )
 
 // Application is the interface for creating an application
@@ -76,6 +77,7 @@ type ApplicationConfig struct {
 	PublicIP      string                      `json:"public_ip,omitempty" bson:"public_ip,omitempty"`
 	SSHCmd        string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
 	Owner         string                      `json:"owner,omitempty" bson:"owner,omitempty"`
+	Datetime      time.Time                   `json:"datetime" bson:"datetime"`
 	Success       bool                        `json:"success,omitempty" bson:"-"`
 }
 
@@ -278,4 +280,9 @@ func (app *ApplicationConfig) SetSSHCmd(port int, appName, IP string) {
 // The owner is referenced by his/her email ID
 func (app *ApplicationConfig) SetOwner(owner string) {
 	app.Owner = owner
+}
+
+// SetDateTime sets the date on which the db was created
+func (app *ApplicationConfig) SetDateTime() {
+	app.Datetime = time.Now()
 }

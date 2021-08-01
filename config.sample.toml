@@ -124,6 +124,14 @@ redis = "docker.io/redis:6.0-rc3-alpine3.11"
 # the central registry-server with the status of its microservices.
 exposure_interval = 30
 
+# Rate limit of deploying number of app/DB per unit time
+# Set rate_limit = -1 if no rate limit is to be imposed
+rate_limit = 2
+
+# Time interval (in hours) for rate limiting for App/DB creation
+rate_interval = 24
+
+
 
 ############################
 #   Master Configuration   #
@@ -182,7 +190,9 @@ port = 4000
 # Time Interval (in seconds) in which metrics of all application containers
 # running in the current node are collected and stored in the central mongoDB database
 metrics_interval = 600
-
+# Hard Limits the total number of app instances that can be deployed by an user
+# Set app_limit = -1 if no hard limit is to be imposed
+app_limit = 10
 
 #############################
 #   DbMaker Configuration   #
@@ -191,6 +201,9 @@ metrics_interval = 600
 [services.dbmaker]
 deploy = false  # Deploy DbMaker?
 port = 9000
+# Hard Limits the total number of db instances that can be deployed by an user
+# Set db_limit = -1 if no hard limit is to be imposed
+db_limit= 10
 
 # Configuration for MySQL database server managed by `DbMaker`
 [services.dbmaker.mysql]

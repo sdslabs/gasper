@@ -187,3 +187,26 @@ func CountServiceInstances(service, hostIP string) (int64, error) {
 	}
 	return CountDocs(InstanceCollection, filter)
 }
+
+// CountInstancesByUser returns the number of specified instances by the user
+func CountInstancesByUser(owner string, instance string) int {
+	filter := types.M{
+		OwnerKey:        owner,
+		InstanceTypeKey: instance,
+	}
+	return len(FetchInstances(filter))
+}
+
+//CountInstanceInTimeFrame returns the number of instances created by a user
+func CountInstanceInTimeFrame(owner string, instance string, rate time.Duration) int {
+
+	filter := types.M{
+		OwnerKey:        owner,
+		InstanceTypeKey: instance,
+		DatetimeKey: types.M{
+			"$gt": time.Now().Add(time.Duration(-rate) * time.Hour),
+			"$lt": time.Now(),
+		},
+	}
+	return len(FetchInstances(filter))
+}

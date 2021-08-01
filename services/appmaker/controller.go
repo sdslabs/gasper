@@ -33,11 +33,32 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		return nil, err
 	}
 
+	user, err := mongo.FetchSingleUser(body.GetOwner())
+	if err != nil {
+		return nil, err
+	}
+
+	maxCount := configs.ServiceConfig.AppMaker.AppLimit
+	rateCount := configs.ServiceConfig.RateLimit
+	timeInterval := configs.ServiceConfig.RateInterval
+	if user.IsAdmin() == false && maxCount >= 0 {
+		rateLimitCount := mongo.CountInstanceInTimeFrame(body.GetOwner(), mongo.AppInstance, timeInterval)
+		totalCount := mongo.CountInstancesByUser(body.GetOwner(), mongo.AppInstance)
+		if totalCount < maxCount {
+			if rateLimitCount >= rateCount && rateCount >= 0 {
+				return nil, fmt.Errorf("Cannot deploy more than %d app instances in %d hours", rateCount, timeInterval)
+			}
+		} else {
+			return nil, fmt.Errorf("Cannot deploy more than %d app instances", maxCount)
+		}
+	}
+
 	app.SetLanguage(language)
 	app.SetOwner(body.GetOwner())
 	app.SetInstanceType(mongo.AppInstance)
 	app.SetHostIP(utils.HostIP)
 	app.SetNameServers(configs.GasperConfig.DNSServers)
+	app.SetDateTime()
 
 	gendnsNameServers, _ := redis.FetchServiceInstances(types.GenDNS)
 	for _, nameServer := range gendnsNameServers {

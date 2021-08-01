@@ -1,5 +1,9 @@
 package types
 
+import (
+	"time"
+)
+
 // Database is the interface for creating a database
 type Database interface {
 	GetName() string
@@ -10,18 +14,19 @@ type Database interface {
 
 // DatabaseConfig is the configuration required for creating a database
 type DatabaseConfig struct {
-	Name          string `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,lowercase~Field 'name' should have only lowercase characters"`
-	Password      string `json:"password" bson:"password" valid:"required~Field 'password' is required but was not provided"`
-	User          string `json:"user,omitempty" bson:"user,omitempty"`
-	InstanceType  string `json:"instance_type,omitempty" bson:"instance_type,omitempty"`
-	Language      string `json:"language,omitempty" bson:"language,omitempty"`
-	CloudflareID  string `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
-	DbURL         string `json:"db_url,omitempty" bson:"db_url,omitempty"`
-	HostIP        string `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
-	PublicIP      string `json:"public_ip,omitempty" bson:"public_ip,omitempty"`
-	ContainerPort int    `json:"port,omitempty" bson:"port,omitempty"`
-	Owner         string `json:"owner,omitempty" bson:"owner,omitempty"`
-	Success       bool   `json:"success,omitempty" bson:"-"`
+	Name          string    `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,lowercase~Field 'name' should have only lowercase characters"`
+	Password      string    `json:"password" bson:"password" valid:"required~Field 'password' is required but was not provided"`
+	User          string    `json:"user,omitempty" bson:"user,omitempty"`
+	InstanceType  string    `json:"instance_type,omitempty" bson:"instance_type,omitempty"`
+	Language      string    `json:"language,omitempty" bson:"language,omitempty"`
+	CloudflareID  string    `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
+	DbURL         string    `json:"db_url,omitempty" bson:"db_url,omitempty"`
+	HostIP        string    `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
+	PublicIP      string    `json:"public_ip,omitempty" bson:"public_ip,omitempty"`
+	ContainerPort int       `json:"port,omitempty" bson:"port,omitempty"`
+	Owner         string    `json:"owner,omitempty" bson:"owner,omitempty"`
+	Datetime      time.Time `json:"datetime" bson:"datetime"`
+	Success       bool      `json:"success,omitempty" bson:"-"`
 }
 
 // GetName returns the database's name
@@ -100,4 +105,9 @@ func (db *DatabaseConfig) SetOwner(owner string) {
 // SetSuccess defines the success of creating the database
 func (db *DatabaseConfig) SetSuccess(success bool) {
 	db.Success = success
+}
+
+// SetDateTime sets the date on which the app was created
+func (db *DatabaseConfig) SetDateTime() {
+	db.Datetime = time.Now()
 }
