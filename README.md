@@ -178,11 +178,11 @@ If you'd like to contribute to this project, refer to the [contributing document
 * Karanpreet Singh [@karan0299](https://github.com/karan0299)
 * Mohit Sharma [@Scar26](https://github.com/Scar26)
 
+Gasper Logo: Leshna Balara [@leshnabalara](https://github.com/leshnabalara)
+
 You can find the entire list of contributors [here](https://github.com/sdslabs/gasper/graphs/contributors)
 
 Created with 💖 by [SDSLabs](https://github.com/sdslabs)
-
-Logo credit - Leshna Balara [@leshnabalara](https://github.com/leshnabalara)
 
 ## Contact
 
