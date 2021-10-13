@@ -81,7 +81,7 @@ github.com/fatih/structs
 github.com/gin-contrib/cors
 # github.com/gin-contrib/sse v0.1.0
 github.com/gin-contrib/sse
-# github.com/gin-gonic/gin v1.6.3
+# github.com/gin-gonic/gin v1.7.0
 ## explicit
 github.com/gin-gonic/gin
 github.com/gin-gonic/gin/binding
@@ -96,7 +96,7 @@ github.com/go-playground/locales
 github.com/go-playground/locales/currency
 # github.com/go-playground/universal-translator v0.17.0
 github.com/go-playground/universal-translator
-# github.com/go-playground/validator/v10 v10.2.0
+# github.com/go-playground/validator/v10 v10.4.1
 github.com/go-playground/validator/v10
 # github.com/go-redis/redis v6.15.7+incompatible
 ## explicit
@@ -255,7 +255,7 @@ go.mongodb.org/mongo-driver/x/mongo/driver/session
 go.mongodb.org/mongo-driver/x/mongo/driver/topology
 go.mongodb.org/mongo-driver/x/mongo/driver/uuid
 go.mongodb.org/mongo-driver/x/mongo/driver/wiremessage
-# golang.org/x/crypto v0.0.0-20200429183012-4b2356b1ed79
+# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 ## explicit
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
@@ -273,6 +273,7 @@ golang.org/x/crypto/openpgp/packet
 golang.org/x/crypto/openpgp/s2k
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/poly1305
+golang.org/x/crypto/sha3
 golang.org/x/crypto/ssh
 golang.org/x/crypto/ssh/agent
 golang.org/x/crypto/ssh/internal/bcrypt_pbkdf
