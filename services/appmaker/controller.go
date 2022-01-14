@@ -41,15 +41,15 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	maxCount := configs.ServiceConfig.AppMaker.AppLimit
 	rateCount := configs.ServiceConfig.RateLimit
 	timeInterval := configs.ServiceConfig.RateInterval
-	if user.IsAdmin() == false && maxCount >= 0 {
+	if !user.IsAdmin() && maxCount >= 0 {
 		rateLimitCount := mongo.CountInstanceInTimeFrame(body.GetOwner(), mongo.AppInstance, timeInterval)
 		totalCount := mongo.CountInstancesByUser(body.GetOwner(), mongo.AppInstance)
 		if totalCount < maxCount {
 			if rateLimitCount >= rateCount && rateCount >= 0 {
-				return nil, fmt.Errorf("Cannot deploy more than %d app instances in %d hours", rateCount, timeInterval)
+				return nil, fmt.Errorf("cannot deploy more than %d app instances in %d hours", rateCount, timeInterval)
 			}
 		} else {
-			return nil, fmt.Errorf("Cannot deploy more than %d app instances", maxCount)
+			return nil, fmt.Errorf("cannot deploy more than %d app instances", maxCount)
 		}
 	}
 
@@ -70,7 +70,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	}
 
 	if pipeline[language] == nil {
-		return nil, fmt.Errorf("Language `%s` is not supported", language)
+		return nil, fmt.Errorf("language `%s` is not supported", language)
 	}
 	resErr := pipeline[language].create(app)
 	if resErr != nil {
@@ -142,32 +142,17 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 // Rebuild rebuilds an application
 func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.ResponseBody, error) {
 	appName := body.GetName()
-
 	app, err := mongo.FetchSingleApp(appName)
 	if err != nil {
 		return nil, err
 	}
 
-	diskCleanup(appName)
+	pullChanges := []string{"git", "pull", "origin", app.GetGitRepositoryBranch()}
+	_, err = docker.ExecProcess(app.ContainerID, pullChanges)
 
-	if pipeline[app.Language] == nil {
-		return nil, fmt.Errorf("Non-supported language `%s` specified for `%s`", app.Language, appName)
-	}
-
-	resErr := pipeline[app.Language].create(app)
-	if resErr != nil {
-		if resErr.Message() != "repository already exists" && resErr.Message() != "container not created" {
-			go diskCleanup(app.GetName())
-		}
-		return nil, fmt.Errorf(resErr.Error())
-	}
-
-	err = mongo.UpdateInstance(types.M{mongo.NameKey: appName}, app)
 	if err != nil {
 		return nil, err
 	}
-
-	app.SetSuccess(true)
 
 	response, err := json.Marshal(app)
 	return &pb.ResponseBody{Data: response}, err
