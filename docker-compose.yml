@@ -1,0 +1,36 @@
+version: '3'
+services:
+  mongo-gasper:
+    container_name: mongo-gasper
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mahak
+      - MONGO_INITDB_ROOT_PASSWORD=mahak
+    logging:
+      driver: "none"
+
+  
+  redis-gasper:
+    container_name: redis-gasper
+    image: redis
+    restart: always
+    command: >
+          redis-server --requirepass alphadose
+    logging:
+      driver: "none"
+  
+  gasper:
+    container_name: gasper
+    build:
+      args: 
+        - vers=v1.0
+      context: ./
+    image: gasper
+    depends_on:
+      - mongo-gasper
+      - redis-gasper
+    volumes:
+      - ".:/gasper:rw"
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "3000:3000"
