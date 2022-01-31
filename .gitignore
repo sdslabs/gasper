@@ -17,4 +17,3 @@ site/
 coverage.txt
 releases/
 gasper*.log
-public/
