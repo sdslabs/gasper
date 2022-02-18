@@ -34,6 +34,21 @@ func authenticator(c *gin.Context) (interface{}, error) {
 	return user, nil
 }
 
+// AuthenticatorForGctl doesn't authenticate. Authentication to be done in middleware before invoking this function.
+// This function only gets the user details.
+func authenticatorForGctl(c *gin.Context) (interface{}, error) {
+	auth := &types.GCTLToken{}
+	if err := c.ShouldBind(auth); err != nil {
+		return nil, errMissingCredentials
+	}
+	user, err := mongo.FetchSingleUser(auth.GetEmail())
+	if err != nil || user == nil {
+		return nil, errFailedAuthentication
+	}
+
+	return user, nil
+}
+
 func payloadFunc(data interface{}) jwt.MapClaims {
 	if user, ok := data.(*types.User); ok {
 		return jwt.MapClaims{
@@ -157,7 +172,7 @@ var JWTGctl = &jwt.GinJWTMiddleware{
 	TokenLookup:     "header: Authorization",
 	TokenHeadName:   "gctlToken",
 	TimeFunc:        time.Now,
-	Authenticator:   authenticator,
+	Authenticator:   authenticatorForGctl,
 	PayloadFunc:     payloadFuncForGctl,
 	IdentityHandler: identityHandlerForGctl,
 	Authorizator:    authorizatorForGctl,

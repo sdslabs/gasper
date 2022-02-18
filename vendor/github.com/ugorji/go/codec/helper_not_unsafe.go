@@ -1,3 +1,4 @@
+//go:build !go1.7 || safe || appengine
 // +build !go1.7 safe appengine
 
 // Copyright (c) 2012-2018 Ugorji Nwoke. All rights reserved.

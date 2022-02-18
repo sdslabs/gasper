@@ -1,8 +1,8 @@
 // Copyright (c) 2012-2018 Ugorji Nwoke. All rights reserved.
 // Use of this source code is governed by a MIT license found in the LICENSE file.
 
-// +build go1.12
-// +build safe
+//go:build go1.12 && safe
+// +build go1.12,safe
 
 package codec
 
