@@ -1,14 +1,19 @@
 package appmaker
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
+	"os"
+	"path/filepath"
+
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
-	"os"
-	"path/filepath"
 )
 
 var path, _ = os.Getwd()
@@ -54,4 +59,35 @@ func stateCleanup(appName string) {
 	if err := redis.RemoveApp(appName); err != nil {
 		utils.LogError("AppMaker-Helper-4", err)
 	}
+}
+
+func generateSSHKeys() ([]byte, []byte) {
+	// filename := "key"
+	bitSize := 4096
+
+	// Generate RSA key.
+	key, err := rsa.GenerateKey(rand.Reader, bitSize)
+	if err != nil {
+		panic(err)
+	}
+
+	// Extract public component.
+	pub := key.Public()
+
+	// Encode private key to PKCS#1 ASN.1 PEM.
+	pvtPEM := pem.EncodeToMemory(
+		&pem.Block{
+			Type:  "RSA PRIVATE KEY",
+			Bytes: x509.MarshalPKCS1PrivateKey(key),
+		},
+	)
+
+	// Encode public key to PKCS#1 ASN.1 PEM.
+	pubPEM := pem.EncodeToMemory(
+		&pem.Block{
+			Type:  "RSA PUBLIC KEY",
+			Bytes: x509.MarshalPKCS1PublicKey(pub.(*rsa.PublicKey)),
+		},
+	)
+	return pvtPEM, pubPEM
 }
