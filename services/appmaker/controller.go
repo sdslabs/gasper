@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/google/go-github/v41/github"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/cloudflare"
 	"github.com/sdslabs/gasper/lib/docker"
@@ -15,6 +16,7 @@ import (
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 )
 
@@ -201,4 +203,34 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 // NewService returns a new instance of the current microservice
 func NewService() *grpc.Server {
 	return factory.NewApplicationFactory(&server{})
+}
+
+func CreateRepository(repoName string) (*github.Key, error) {
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{
+			AccessToken: "",
+		}, //PAT token replacement?
+	)
+	client := github.NewClient(oauth2.NewClient(ctx, ts))
+
+	repo := &github.Repository{
+		Name:    github.String(repoName),
+		Private: github.Bool(true),
+	}
+	client.Repositories.Create(ctx, "", repo)
+
+	_, pubKey := generateSSHKeys()
+	deployCreds := pubKey //add ssh key, from server?
+
+	sshkey := &github.Key{
+		Key: &deployCreds,
+	} //will be changes if keys fetched from server
+
+	key, _, _ := client.Repositories.CreateKey(ctx, "gasper-user", repoName, sshkey)
+
+	deployKey, _, err := client.Repositories.GetKey(ctx, "gasper-user", repoName, *key.ID)
+
+	return deployKey, err
+
 }
