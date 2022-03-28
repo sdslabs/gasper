@@ -10,6 +10,7 @@ import (
 
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/lib/seaweedfs"
 	"github.com/sdslabs/gasper/lib/utils"
 	"google.golang.org/grpc"
 )
@@ -94,6 +95,47 @@ func setupDatabaseContainer(serviceName string) {
 		if !containerStatus.Running {
 			if err := docker.StartContainer(serviceName); err != nil {
 				utils.LogError("Main-Helper-17", err)
+			}
+		}
+	}
+}
+
+func setupSeaweedfsContainer(serviceName string) {
+	containers, err := docker.ListContainers()
+	if err != nil {
+		utils.LogError("Main-Helper-18", err)
+		os.Exit(1)
+	}
+
+	if !utils.Contains(containers, serviceName) {
+		utils.LogInfo("No %s instance found in host. Building the instance.", strings.Title(serviceName))
+		containerID, err := seaweedfs.SetupSeaweedfsInstance(serviceName)
+		if err != nil {
+			utils.Log("There was a problem deploying %s service.", strings.Title(serviceName), utils.ErrorTAG)
+			utils.LogError("Main-Helper-19", err)
+		} else {
+			utils.LogInfo("%s Container has been deployed with ID:\t%s \n", strings.Title(serviceName), containerID)
+		}
+	} else {
+		containerStatus, err := docker.InspectContainerState(serviceName)
+		if err != nil {
+			utils.Log("Error in fetching container state. Deleting container and deploying again.", strings.Title(serviceName), utils.ErrorTAG)
+			utils.LogError("Main-Helper-20", err)
+			err := docker.DeleteContainer(serviceName)
+			if err != nil {
+				utils.LogError("Main-Helper-21", err)
+			}
+			containerID, err := seaweedfs.SetupSeaweedfsInstance(serviceName)
+			if err != nil {
+				utils.Log("There was a problem deploying %s service even after restart.", strings.Title(serviceName), utils.ErrorTAG)
+				utils.LogError("Main-Helper-22", err)
+			} else {
+				utils.LogInfo("Container has been deployed with ID:\t%s \n", containerID)
+			}
+		}
+		if !containerStatus.Running {
+			if err := docker.StartContainer(serviceName); err != nil {
+				utils.LogError("Main-Helper-23", err)
 			}
 		}
 	}
