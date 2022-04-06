@@ -12,6 +12,7 @@ import (
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/services/appmaker"
 	"github.com/sdslabs/gasper/services/master/middlewares"
 	"github.com/sdslabs/gasper/types"
 )
@@ -288,5 +289,22 @@ func FetchMetrics(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"success": true,
 		"data":    metricsRecord,
+	})
+}
+
+func CreateRepository(c *gin.Context) {
+	appName := c.Param("app")
+	deployKey, err := appmaker.CreateRepository(appName)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf(" %s github repository could not be created", appName),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"success":   true,
+		"deployKey": deployKey,
 	})
 }
