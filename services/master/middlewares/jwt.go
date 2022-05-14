@@ -216,6 +216,14 @@ func LoginHandler(c *gin.Context) {
 	}
 }
 
+func AuthenticatorHandler(c *gin.Context) {
+	if strings.Contains(c.Request.Header.Get("Authorization-Type"), "gctlToken") {
+		JWTGctl.Authenticator(c)
+	} else {
+		JWT.Authenticator(c)
+	}
+}
+
 //RefreshHandler takes the gin context and executes RefreshHandler function according to authorization type
 func RefreshHandler(c *gin.Context) {
 	if strings.Contains(c.Request.Header.Get("Authorization"), "gctlToken") {
