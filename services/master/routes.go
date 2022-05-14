@@ -55,6 +55,7 @@ func NewService() http.Handler {
 		auth.PUT("/revoke", c.RevokeToken)
 	}
 
+	auth.POST("/pat", m.AuthRequired(), m.LoginHandler)
 	router.GET("/instances", m.AuthRequired(), c.FetchAllInstancesByUser)
 	router.POST("/gctllogin", m.JWTGctl.MiddlewareFunc(), c.GctlLogin)
 

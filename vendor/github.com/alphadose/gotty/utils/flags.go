@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/urfave/cli"
 	"github.com/fatih/structs"
+	"github.com/urfave/cli"
 	"github.com/yudai/hcl"
 
 	"github.com/alphadose/gotty/pkg/homedir"

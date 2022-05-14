@@ -1,3 +1,4 @@
+//go:build appengine
 // +build appengine
 
 // Copyright 2017 Manu Martinez-Almeida.  All rights reserved.

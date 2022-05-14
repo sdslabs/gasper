@@ -715,7 +715,7 @@ func (c *Conn) SendBatch(ctx context.Context, b *Batch) BatchResults {
 		stmtCache = stmtcache.New(c.pgConn, stmtcache.ModeDescribe, len(distinctUnpreparedQueries))
 	}
 
-	for sql, _ := range distinctUnpreparedQueries {
+	for sql := range distinctUnpreparedQueries {
 		_, err := stmtCache.Get(ctx, sql)
 		if err != nil {
 			return &batchResults{ctx: ctx, conn: c, err: err}

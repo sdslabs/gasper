@@ -99,3 +99,14 @@ func (pw *PasswordUpdate) GetOldPassword() string {
 func (pw *PasswordUpdate) GetNewPassword() string {
 	return pw.NewPassword
 }
+
+// GCTLToken is the request body for generating GCTLToken
+type GCTLToken struct {
+	Email string `form:"email" json:"email" bson:"email" binding:"required"`
+	Token string `form:"token" json:"token" bson:"token" binding:"required"`
+}
+
+// GetEmail returns the email of the user
+func (auth *GCTLToken) GetEmail() string {
+	return auth.Email
+}
