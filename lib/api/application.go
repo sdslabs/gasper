@@ -8,44 +8,9 @@ import (
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/git"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
-	gogit "gopkg.in/src-d/go-git.v4"
 )
-
-func cloneRepo(app types.Application, storedir string, clone chan types.ResponseError) {
-	err := os.MkdirAll(storedir, 0755)
-	if err != nil {
-		clone <- types.NewResErr(500, "storage directory not created", err)
-		return
-	}
-
-	if app.HasGitAccessToken() {
-		err = git.CloneWithToken(
-			app.GetGitRepositoryURL(),
-			app.GetGitRepositoryBranch(),
-			storedir,
-			app.GetGitAccessToken(),
-		)
-	} else {
-		err = git.Clone(
-			app.GetGitRepositoryURL(),
-			app.GetGitRepositoryBranch(),
-			storedir,
-		)
-	}
-
-	if err != nil {
-		if err == gogit.ErrRepositoryAlreadyExists {
-			clone <- types.NewResErr(500, "repository already exists", err)
-		} else {
-			clone <- types.NewResErr(500, "repository not cloned", err)
-		}
-		return
-	}
-	clone <- nil
-}
 
 func setupContainer(app types.Application, storedir string, setup chan types.ResponseError) {
 	confFileName := fmt.Sprintf("%s.gasper.conf", app.GetName())
@@ -106,15 +71,11 @@ func createBasicApplication(app types.Application) []types.ResponseError {
 	storepath, _ := os.Getwd()
 	storedir := filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
 	setup := make(chan types.ResponseError)
-	clone := make(chan types.ResponseError)
 
-	// Step 1: clone the repo in the storage
-	go cloneRepo(app, storedir, clone)
-
-	// Step 2: setup the container
+	// Step 1: setup the container
 	go setupContainer(app, storedir, setup)
 
-	return []types.ResponseError{<-setup, <-clone}
+	return []types.ResponseError{<-setup}
 }
 
 // SetupApplication sets up a basic container for the application with all the prerequisites
@@ -132,6 +93,21 @@ func SetupApplication(app types.Application) types.ResponseError {
 		if err != nil {
 			return err
 		}
+	}
+
+	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "init"})
+	if err != nil {
+		return types.NewResErr(500, "git init unsuccessful", err)
+	}
+
+	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "remote", "add", "origin", app.GetGitRepositoryURL()})
+	if err != nil {
+		return types.NewResErr(500, "setting remote unsuccessful", err)
+	}
+
+	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "pull", "origin", app.GetGitRepositoryBranch()})
+	if err != nil {
+		return types.NewResErr(500, "pulling contents unsuccessful", err)
 	}
 
 	if app.HasRcFile() {
