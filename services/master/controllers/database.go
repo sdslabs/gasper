@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"errors"
-
+    "fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -85,6 +85,31 @@ func DeleteDatabase(c *gin.Context) {
 	}
 
 	response, err := factory.DeleteDatabase(db, instanceURL)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	c.JSON(200, response)
+}
+
+// FetchDatabaseLogs returns the docker container logs of a Database via gRPC
+func FetchDatabaseLogs(c *gin.Context) {
+	db := c.Param("db")
+	instanceURL, err := redis.FetchDbNode(db)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("Database %s is not deployed at the moment", db),
+		})
+		return
+	}
+
+	filter := utils.QueryToFilter(c.Request.URL.Query())
+	if filter["tail"] == nil {
+		filter["tail"] = "-1"
+	}
+
+	response, err := factory.FetchDatabaseServerLogs(db, filter["tail"].(string), instanceURL)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return

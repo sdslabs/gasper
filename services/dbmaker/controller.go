@@ -142,7 +142,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.GenericRe
 
 // FetchLogs returns the docker logs from the specified database server's container
 func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogResponse, error) {
-	language := body.GetLanguage()
+	language, err := mongo.FetchDatabaseLanguage(body.GetName())
 	if pipeline[language] == nil {
 		return nil, fmt.Errorf("Database type `%s` is not supported", language)
 	}

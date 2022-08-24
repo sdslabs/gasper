@@ -236,7 +236,7 @@ func (m *GenericResponse) GetSuccess() bool {
 }
 
 type LogRequest struct {
-	Language             string   `protobuf:"bytes,1,opt,name=language,proto3" json:"language,omitempty"`
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Tail                 string   `protobuf:"bytes,2,opt,name=tail,proto3" json:"tail,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -268,9 +268,9 @@ func (m *LogRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_LogRequest proto.InternalMessageInfo
 
-func (m *LogRequest) GetLanguage() string {
+func (m *LogRequest) GetName() string {
 	if m != nil {
-		return m.Language
+		return m.Name
 	}
 	return ""
 }

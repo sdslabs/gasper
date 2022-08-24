@@ -80,6 +80,7 @@ func NewService() http.Handler {
 		db.GET("", c.FetchDatabasesByUser)
 		db.GET("/:db", m.IsDatabaseOwner, c.GetDatabaseInfo)
 		db.DELETE("/:db", m.IsDatabaseOwner, c.DeleteDatabase)
+		db.GET("/:db/logs", m.IsDatabaseOwner, c.FetchDatabaseLogs)
 		db.PATCH("/:db/transfer/:user", m.IsDatabaseOwner, c.TransferDatabaseOwnership)
 	}
 

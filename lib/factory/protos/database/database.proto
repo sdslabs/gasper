@@ -32,7 +32,7 @@ message GenericResponse {
 }
 
 message LogRequest {
-    string language = 1;
+    string name = 1;
     string tail = 2;
 }
 

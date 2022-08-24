@@ -60,7 +60,7 @@ func DeleteDatabase(name, instanceURL string) (*pb.GenericResponse, error) {
 }
 
 // FetchDatabaseServerLogs is a remote procedure call for fetching logs of a database server in a worker node
-func FetchDatabaseServerLogs(language, tail, instanceURL string) (*pb.LogResponse, error) {
+func FetchDatabaseServerLogs(name, tail, instanceURL string) (*pb.LogResponse, error) {
 	conn, err := grpc.Dial(
 		instanceURL,
 		grpc.WithInsecure(),
@@ -76,8 +76,8 @@ func FetchDatabaseServerLogs(language, tail, instanceURL string) (*pb.LogRespons
 	defer cancel()
 
 	res, err := client.FetchLogs(ctx, &pb.LogRequest{
-		Language: language,
-		Tail:     tail,
+		Name: name,
+		Tail: tail,
 	})
 	if err != nil {
 		return nil, err
