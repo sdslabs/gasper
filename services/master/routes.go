@@ -70,7 +70,7 @@ func NewService() http.Handler {
 		app.PATCH("/:app/rebuild", m.IsAppOwner, c.RebuildApp)
 		app.PATCH("/:app/transfer/:user", m.IsAppOwner, c.TransferApplicationOwnership)
 		app.GET("/:app/term", m.IsAppOwner, c.DeployWebTerminal)
-		app.GET("/:app/metrics", c.FetchMetrics)
+		app.GET("/:app/metrics", m.IsAppOwner, c.FetchApplicationMetrics)
 	}
 
 	db := router.Group("/dbs")
@@ -81,6 +81,7 @@ func NewService() http.Handler {
 		db.GET("/:db", m.IsDatabaseOwner, c.GetDatabaseInfo)
 		db.DELETE("/:db", m.IsDatabaseOwner, c.DeleteDatabase)
 		db.GET("/:db/logs", m.IsDatabaseOwner, c.FetchDatabaseLogs)
+		db.GET("/:db/metrics", m.IsDatabaseOwner, c.FetchDatabaseMetrics)
 		db.PATCH("/:db/transfer/:user", m.IsDatabaseOwner, c.TransferDatabaseOwnership)
 	}
 

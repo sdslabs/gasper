@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"errors"
-    "fmt"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -10,6 +10,8 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
 	"github.com/sdslabs/gasper/types"
+	"strconv"
+	"time"
 )
 
 // FetchDatabasesByUser returns all databases owned by a user
@@ -120,4 +122,69 @@ func FetchDatabaseLogs(c *gin.Context) {
 // TransferDatabaseOwnership transfers the ownership of a database to another user
 func TransferDatabaseOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("db"), mongo.DBInstance, c.Param("user"))
+}
+
+// FetchMetrics retrieves the metrics of a Database's container
+func FetchDatabaseMetrics(c *gin.Context) {
+	db := c.Param("db")
+	filter := utils.QueryToFilter(c.Request.URL.Query())
+	var timeSpan int64
+	var sparsity int64
+	for unit, converter := range timeConversionMap {
+		if val, ok := filter[unit].(string); ok {
+			timeVal, err := strconv.ParseInt(val, 10, 64)
+			if err != nil {
+				continue
+			}
+			timeSpan += timeVal * converter
+		}
+	}
+
+	metrics := mongo.FetchContainerMetrics(types.M{
+		mongo.NameKey: db,
+		mongo.TimestampKey: types.M{
+			"$gte": time.Now().Unix() - timeSpan,
+		},
+	}, -1)
+
+	if val, ok := filter["sparsityvalue"].(string); ok {
+		sparsityVal, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			sparsity = sparsityVal * timeConversionMap[filter["sparsityunit"].(string)]
+		}
+	}
+
+	uptimeRecord := []bool{}
+	CPURecord := []float64{}
+	memoryRecord := []float64{}
+
+	baseTimestamp := metrics[0]["timestamp"].(int64)
+	var downtimeIntensity int = 0
+	var currTimestamp int64
+
+	for i := range metrics {
+		currTimestamp = metrics[i]["timestamp"].(int64)
+		if !metrics[i]["alive"].(bool) {
+			downtimeIntensity++
+		}
+		if (baseTimestamp - currTimestamp) >= sparsity {
+			baseTimestamp = currTimestamp
+			if downtimeIntensity > 0 {
+				uptimeRecord = append(uptimeRecord, false)
+			} else {
+				uptimeRecord = append(uptimeRecord, true)
+			}
+			downtimeIntensity = 0
+			CPURecord = append(CPURecord, metrics[i]["cpu_usage"].(float64))
+			memoryRecord = append(memoryRecord, metrics[i]["memory_usage"].(float64))
+		}
+
+	}
+
+	metricsRecord := metricsRecord{uptimeRecord, CPURecord, memoryRecord}
+
+	c.JSON(200, gin.H{
+		"success": true,
+		"data":    metricsRecord,
+	})
 }

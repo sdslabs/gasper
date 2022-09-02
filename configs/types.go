@@ -101,11 +101,12 @@ type DatabaseService struct {
 // DbMakerService is the configuration for DbMaker microservice
 type DbMakerService struct {
 	GenericService
-	MySQL      DatabaseService `toml:"mysql"`
-	MongoDB    DatabaseService `toml:"mongodb"`
-	PostgreSQL DatabaseService `toml:"postgresql"`
-	Redis      DatabaseService `toml:"redis"`
-	DBLimit    int             `toml:"db_limit"`
+	MySQL           DatabaseService `toml:"mysql"`
+	MongoDB         DatabaseService `toml:"mongodb"`
+	PostgreSQL      DatabaseService `toml:"postgresql"`
+	Redis           DatabaseService `toml:"redis"`
+	DBLimit         int             `toml:"db_limit"`
+	MetricsInterval time.Duration   `toml:"metrics_interval"`
 }
 
 // JikanService is the configuration for Jikan microservice
