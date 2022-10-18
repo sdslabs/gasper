@@ -3,6 +3,9 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -10,8 +13,6 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
 	"github.com/sdslabs/gasper/types"
-	"strconv"
-	"time"
 )
 
 // FetchDatabasesByUser returns all databases owned by a user
@@ -140,12 +141,16 @@ func FetchDatabaseMetrics(c *gin.Context) {
 		}
 	}
 
+	language, _ := mongo.FetchDatabaseLanguage(db)
+
 	metrics := mongo.FetchContainerMetrics(types.M{
-		mongo.NameKey: db,
+		//temproary fix, currently showing logs of container rather than actual database
+		mongo.NameKey: language,
 		mongo.TimestampKey: types.M{
 			"$gte": time.Now().Unix() - timeSpan,
 		},
 	}, -1)
+
 
 	if val, ok := filter["sparsityvalue"].(string); ok {
 		sparsityVal, err := strconv.ParseInt(val, 10, 64)
