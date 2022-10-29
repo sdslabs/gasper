@@ -31,21 +31,21 @@ func CreateRepository(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
-			"message": err.Error(),
+			"error":   err.Error(),
 		})
 	}
-	repo, err := GitPush(pathToApplication.(string), repository.GetCloneURL())
+	_, err = GitPush(pathToApplication.(string), repository.GetCloneURL())
 
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
-			"message": err.Error(),
+			"error":   err.Error(),
 		})
 	}
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"message": repo,
+		"message": repository.GetCloneURL(),
 	})
 }
 
@@ -83,7 +83,6 @@ func CreateRepositoryGithub(repoName string) (*github.Repository, error) {
 }
 
 func GitInit(directoryPath string) (*git.Repository, error) {
-	// fmt.Println("GITINIT DONE")
 	var (
 		err error
 	)
