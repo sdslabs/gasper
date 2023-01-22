@@ -23,7 +23,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// Endpoint to create repository in GitHub
 func CreateRepository(c *gin.Context) {
+	//TODO: not able to receive params from GCTL query, request body is empty
+	//fmt.Println("--------------\nRequest Body", c.Request.Body, "\n----------------------")
+	//Endpoint works pefectly when called directly, not from GCTL
 	filters := utils.QueryToFilter(c.Request.URL.Query())
 	repoName, pathToApplication := filters["name"], filters["path"]
 	repository, err := CreateRepositoryGithub(repoName.(string))
@@ -49,6 +53,8 @@ func CreateRepository(c *gin.Context) {
 	})
 }
 
+//Needs an .env file with USERNAME and PAT
+//TODO: Shift env variables to config.toml
 func GoDotEnvVariable(key string) string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
