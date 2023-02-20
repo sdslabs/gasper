@@ -29,6 +29,7 @@ type Application interface {
 	GetContainerPort() int
 	HasConfGenerator() bool
 	InvokeConfGenerator(name, index string) string
+	// GetAppName() string
 }
 
 // Git stores the information related to the application's git repository
@@ -56,29 +57,42 @@ type Resources struct {
 	CPU float64 `json:"cpu" bson:"cpu" valid:"float~Field 'cpu' inside field 'resources' should be of type float"`
 }
 
+type RepositoryRequest struct {
+	Name string `json:"name" bson:"name" valid:"required~Field 'name' was required but was not provided"`
+	Path string `json:"path" bson:"path" valid:"required~Field 'path' was required but was not provided"`
+}
+
+type RepositoryResponse struct {
+	CloneURL string `json:"cloneurl" bson:"cloneurl"`
+	PAT      string `json:"pat" bson:"pat"`
+	Username string `json:"username" bson:"username"`
+}
+
 // ApplicationConfig is the configuration required for creating an application
 type ApplicationConfig struct {
-	Name          string                      `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
-	Password      string                      `json:"password" bson:"password" valid:"required~Field 'password' is required but was not provided"`
-	Git           Git                         `json:"git" bson:"git"`
-	Context       Context                     `json:"context" bson:"context"`
-	Resources     Resources                   `json:"resources,omitempty" bson:"resources,omitempty"`
-	Env           M                           `json:"env,omitempty" bson:"env,omitempty"`
-	NameServers   []string                    `json:"name_servers,omitempty" bson:"name_servers,omitempty"`
-	DockerImage   string                      `json:"docker_image" bson:"docker_image"`
-	ContainerID   string                      `json:"container_id" bson:"container_id"`
-	ContainerPort int                         `json:"container_port" bson:"container_port"`
-	ConfGenerator func(string, string) string `json:"-" bson:"-"`
-	Language      string                      `json:"language" bson:"language"`
-	InstanceType  string                      `json:"instance_type" bson:"instance_type"`
-	CloudflareID  string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
-	AppURL        string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
-	HostIP        string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
-	PublicIP      string                      `json:"public_ip,omitempty" bson:"public_ip,omitempty"`
-	SSHCmd        string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
-	Owner         string                      `json:"owner,omitempty" bson:"owner,omitempty"`
-	Datetime      time.Time                   `json:"datetime" bson:"datetime"`
-	Success       bool                        `json:"success,omitempty" bson:"-"`
+	Name               string                      `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
+	Password           string                      `json:"password" bson:"password" valid:"required~Field 'password' is required but was not provided"`
+	Git                Git                         `json:"git" bson:"git"`
+	Context            Context                     `json:"context" bson:"context"`
+	Resources          Resources                   `json:"resources,omitempty" bson:"resources,omitempty"`
+	Env                M                           `json:"env,omitempty" bson:"env,omitempty"`
+	NameServers        []string                    `json:"name_servers,omitempty" bson:"name_servers,omitempty"`
+	DockerImage        string                      `json:"docker_image" bson:"docker_image"`
+	ContainerID        string                      `json:"container_id" bson:"container_id"`
+	ContainerPort      int                         `json:"container_port" bson:"container_port"`
+	ConfGenerator      func(string, string) string `json:"-" bson:"-"`
+	Language           string                      `json:"language" bson:"language"`
+	InstanceType       string                      `json:"instance_type" bson:"instance_type"`
+	CloudflareID       string                      `json:"cloudflare_id,omitempty" bson:"cloudflare_id,omitempty"`
+	AppURL             string                      `json:"app_url,omitempty" bson:"app_url,omitempty"`
+	HostIP             string                      `json:"host_ip,omitempty" bson:"host_ip,omitempty"`
+	PublicIP           string                      `json:"public_ip,omitempty" bson:"public_ip,omitempty"`
+	SSHCmd             string                      `json:"ssh_cmd,omitempty" bson:"ssh_cmd,omitempty"`
+	Owner              string                      `json:"owner,omitempty" bson:"owner,omitempty"`
+	Datetime           time.Time                   `json:"datetime" bson:"datetime"`
+	Success            bool                        `json:"success,omitempty" bson:"-"`
+	RepositoryRequest  RepositoryRequest           `json:"repository_request" bson:"repository_request"`
+	RepositoryResponse RepositoryResponse          `json:"repository_response" bson:"repository_response"`
 }
 
 // GetName returns the application's name

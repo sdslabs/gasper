@@ -149,7 +149,7 @@ func DeleteUser(c *gin.Context) {
 	deleteUser(c, claims.GetEmail())
 }
 
-//GctlLogin validates the email id and alllow user to login in gctl
+// GctlLogin validates the email id and alllow user to login in gctl
 func GctlLogin(c *gin.Context) {
 	claims := jwt.ExtractClaims(c)
 	if claims == nil {
@@ -186,7 +186,7 @@ func GctlLogin(c *gin.Context) {
 	})
 }
 
-//RevokeToken updates the uuid of user so that gctl token gets invalidated
+// RevokeToken updates the uuid of user so that gctl token gets invalidated
 func RevokeToken(c *gin.Context) {
 	auth := &types.Login{}
 	if err := c.ShouldBind(auth); err != nil {
