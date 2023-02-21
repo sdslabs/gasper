@@ -59,7 +59,6 @@ type Resources struct {
 
 type RepositoryRequest struct {
 	Name string `json:"name" bson:"name" valid:"required~Field 'name' was required but was not provided"`
-	Path string `json:"path" bson:"path" valid:"required~Field 'path' was required but was not provided"`
 }
 
 type RepositoryResponse struct {

@@ -22,7 +22,6 @@ func CreateRepository(c *gin.Context) {
 			"error":   err.Error(),
 		})
 	}
-
 	var data *types.RepositoryRequest = &types.RepositoryRequest{}
 	if err != nil {
 		utils.SendServerErrorResponse(c, errors.New("failed to extract data from Request Body"))
