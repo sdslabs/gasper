@@ -237,6 +237,7 @@ func FetchMetrics(c *gin.Context) {
 	appName := c.Param("app")
 	filter := utils.QueryToFilter(c.Request.URL.Query())
 	var timeSpan int64
+	var sparsity int64
 	for unit, converter := range timeConversionMap {
 		if val, ok := filter[unit].(string); ok {
 			timeVal, err := strconv.ParseInt(val, 10, 64)
@@ -254,7 +255,12 @@ func FetchMetrics(c *gin.Context) {
 		},
 	}, -1)
 
-	sparsity := timeConversionMap[filter["sparsity"].(string)]
+	if val, ok := filter["sparsityvalue"].(string); ok {
+		sparsityVal, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			sparsity = sparsityVal * timeConversionMap[filter["sparsityunit"].(string)]
+		}
+	}
 
 	uptimeRecord := []bool{}
 	CPURecord := []float64{}
@@ -277,10 +283,9 @@ func FetchMetrics(c *gin.Context) {
 				uptimeRecord = append(uptimeRecord, true)
 			}
 			downtimeIntensity = 0
+			CPURecord = append(CPURecord, metrics[i]["cpu_usage"].(float64))
+		    memoryRecord = append(memoryRecord, metrics[i]["memory_usage"].(float64))
 		}
-
-		CPURecord = append(CPURecord, metrics[i]["cpu_usage"].(float64))
-		memoryRecord = append(memoryRecord, metrics[i]["memory_usage"].(float64))
 	}
 
 	metricsRecord := metricsRecord{uptimeRecord, CPURecord, memoryRecord}
