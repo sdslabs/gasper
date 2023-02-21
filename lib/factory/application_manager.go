@@ -141,9 +141,11 @@ func CreateGithubRepository(repoName string) (*types.RepositoryResponse, error) 
 	}
 	repo, _, err := client.Repositories.Create(context.Background(), "", repo)
 	response := &types.RepositoryResponse{
-		CloneURL: *repo.CloneURL,
-		PAT:      configs.GithubConfig.PAT,
-		Username: configs.GithubConfig.Username,
+		CloneURL:   *repo.CloneURL,
+		PAT:        configs.GithubConfig.PAT,
+		Username:   configs.GithubConfig.Username,
+		Repository: repoName,
+		Email:      configs.GithubConfig.Email,
 	}
 	return response, err
 }

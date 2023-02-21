@@ -63,9 +63,11 @@ type RepositoryRequest struct {
 }
 
 type RepositoryResponse struct {
-	CloneURL string `json:"cloneurl" bson:"cloneurl"`
-	PAT      string `json:"pat" bson:"pat"`
-	Username string `json:"username" bson:"username"`
+	CloneURL   string `json:"cloneurl" bson:"cloneurl"`
+	PAT        string `json:"pat" bson:"pat"`
+	Username   string `json:"username" bson:"username"`
+	Repository string `json:"repository" bson:"repository"`
+	Email      string `json:"email" bson:"email"`
 }
 
 // ApplicationConfig is the configuration required for creating an application

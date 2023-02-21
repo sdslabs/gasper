@@ -41,7 +41,7 @@ func CreateRepository(c *gin.Context) {
 			"error":   err.Error(),
 		})
 	}
-	response, err := factory.CreateGithubRepository(claims.Username + "-" + data.Name)
+	response, err := factory.CreateGithubRepository(claims.Username + data.Name)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
