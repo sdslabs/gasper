@@ -255,6 +255,15 @@ func FetchMetrics(c *gin.Context) {
 		},
 	}, -1)
 
+	// handle empty metrics
+	if len(metrics) == 0 {
+		c.JSON(200, types.M{
+			"success": true,
+			"data":    []types.M{},
+		})
+		return
+	}
+
 	if val, ok := filter["sparsityvalue"].(string); ok {
 		sparsityVal, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
@@ -265,7 +274,6 @@ func FetchMetrics(c *gin.Context) {
 	uptimeRecord := []bool{}
 	CPURecord := []float64{}
 	memoryRecord := []float64{}
-
 	baseTimestamp := metrics[0]["timestamp"].(int64)
 	var downtimeIntensity int = 0
 	var currTimestamp int64
