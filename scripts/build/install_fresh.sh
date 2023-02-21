@@ -11,7 +11,7 @@ printf "🔨 Installing fresh\n"
 mkdir -p bin
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cd $tmp_dir
-GOPATH=$tmp_dir go get github.com/pilu/fresh
+GOPATH=$tmp_dir go install github.com/pilu/fresh@latest
 cp $tmp_dir/bin/fresh $project_dir/bin/fresh
 rm -rf $tmp_dir
 
