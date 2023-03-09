@@ -29,7 +29,6 @@ type Application interface {
 	GetContainerPort() int
 	HasConfGenerator() bool
 	InvokeConfGenerator(name, index string) string
-	// GetAppName() string
 }
 
 // Git stores the information related to the application's git repository
