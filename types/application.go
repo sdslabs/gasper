@@ -57,7 +57,7 @@ type Resources struct {
 }
 
 type RepositoryRequest struct {
-	Name string `json:"name" bson:"name" valid:"required~Field 'name' was required but was not provided"`
+	Name string `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
 }
 
 type RepositoryResponse struct {

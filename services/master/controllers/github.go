@@ -22,12 +22,8 @@ func CreateRepository(c *gin.Context) {
 			"error":   err.Error(),
 		})
 	}
-	var data *types.RepositoryRequest = &types.RepositoryRequest{}
-	if err != nil {
-		utils.SendServerErrorResponse(c, errors.New("failed to extract data from Request Body"))
-		return
-	}
 
+	var data *types.RepositoryRequest = &types.RepositoryRequest{}
 	claims := middlewares.ExtractClaims(c)
 	if claims == nil {
 		utils.SendServerErrorResponse(c, errors.New("failed to extract JWT claims"))
