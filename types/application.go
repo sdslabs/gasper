@@ -56,6 +56,18 @@ type Resources struct {
 	CPU float64 `json:"cpu" bson:"cpu" valid:"float~Field 'cpu' inside field 'resources' should be of type float"`
 }
 
+type RepositoryRequest struct {
+	Name string `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`
+}
+
+type RepositoryResponse struct {
+	CloneURL   string `json:"cloneurl" bson:"cloneurl"`
+	PAT        string `json:"pat" bson:"pat"`
+	Username   string `json:"username" bson:"username"`
+	Repository string `json:"repository" bson:"repository"`
+	Email      string `json:"email" bson:"email"`
+}
+
 // ApplicationConfig is the configuration required for creating an application
 type ApplicationConfig struct {
 	Name          string                      `json:"name" bson:"name" valid:"required~Field 'name' is required but was not provided,alphanum~Field 'name' should only have alphanumeric characters,stringlength(3|40)~Field 'name' should have length between 3 to 40 characters,lowercase~Field 'name' should have only lowercase characters"`

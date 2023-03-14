@@ -280,3 +280,12 @@ entrypoint_ip = ""
 [services.jikan]
 deploy = false   # Deploy Jikan?
 port = 3333
+
+############################
+#   Github Configuration   #
+############################
+
+[github]
+username = "gasper-github-username"
+email = "gasper-mail-id"
+pat = "personal-access-token"

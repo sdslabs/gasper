@@ -3,7 +3,11 @@ package factory
 import (
 	"context"
 
+	"github.com/google/go-github/v41/github"
+	"github.com/sdslabs/gasper/configs"
 	pb "github.com/sdslabs/gasper/lib/factory/protos/application"
+	"github.com/sdslabs/gasper/types"
+	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
 )
 
@@ -118,4 +122,30 @@ func NewApplicationFactory(bindings pb.ApplicationFactoryServer) *grpc.Server {
 	)
 	pb.RegisterApplicationFactoryServer(srv, bindings)
 	return srv
+}
+
+// CreateGithubRepository returns a git clone URL after creating a new repository
+func CreateGithubRepository(repoName string) (*types.RepositoryResponse, error) {
+	tc := oauth2.NewClient(
+		context.Background(),
+		oauth2.StaticTokenSource(
+			&oauth2.Token{
+				AccessToken: configs.GithubConfig.PAT, //PAT
+			},
+		),
+	)
+	client := github.NewClient(tc)
+	repo := &github.Repository{
+		Name:    github.String(repoName),
+		Private: github.Bool(true),
+	}
+	repo, _, err := client.Repositories.Create(context.Background(), "", repo)
+	response := &types.RepositoryResponse{
+		CloneURL:   *repo.CloneURL,
+		PAT:        configs.GithubConfig.PAT,
+		Username:   configs.GithubConfig.Username,
+		Repository: repoName,
+		Email:      configs.GithubConfig.Email,
+	}
+	return response, err
 }

@@ -35,6 +35,9 @@ var (
 	// JWTConfig is the configuration for json web auth token
 	JWTConfig = GasperConfig.JWT
 
+	//GithubConfig is the authentication configuration for the Gasper Github user
+	GithubConfig = GasperConfig.Github
+
 	// ServiceMap is the configuration binding the service name to its
 	// deployment status and port
 	ServiceMap = map[string]*GenericService{

@@ -17,4 +17,4 @@ site/
 coverage.txt
 releases/
 gasper*.log
-vendor
+vendor/

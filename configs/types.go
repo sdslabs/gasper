@@ -143,6 +143,12 @@ type Services struct {
 	Jikan            JikanService    `toml:"jikan"`
 }
 
+type Github struct {
+	Username string `toml:"username"`
+	Email    string `toml:"email"`
+	PAT      string `toml:"pat"`
+}
+
 // GasperCfg is the configuration for the entire project
 type GasperCfg struct {
 	Debug       bool       `toml:"debug"`
@@ -159,4 +165,5 @@ type GasperCfg struct {
 	Redis       Redis      `toml:"redis"`
 	Images      Images     `toml:"images"`
 	Services    Services   `toml:"services"`
+	Github      Github     `toml:"github"`
 }

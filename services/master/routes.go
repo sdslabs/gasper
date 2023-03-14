@@ -57,6 +57,7 @@ func NewService() http.Handler {
 
 	router.GET("/instances", m.AuthRequired(), c.FetchAllInstancesByUser)
 	router.POST("/gctllogin", m.JWTGctl.MiddlewareFunc(), c.GctlLogin)
+	router.POST("/github", m.AuthRequired(), c.CreateRepository)
 
 	app := router.Group("/apps")
 	app.Use(m.AuthRequired())
