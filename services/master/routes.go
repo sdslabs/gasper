@@ -70,7 +70,7 @@ func NewService() http.Handler {
 		app.PATCH("/:app/rebuild", m.IsAppOwner, c.RebuildApp)
 		app.PATCH("/:app/transfer/:user", m.IsAppOwner, c.TransferApplicationOwnership)
 		app.GET("/:app/term", m.IsAppOwner, c.DeployWebTerminal)
-		app.GET("/:app/metrics", c.FetchMetrics)
+		app.GET("/:app/metrics", m.IsAppOwner, c.FetchMetrics)
 	}
 
 	db := router.Group("/dbs")
