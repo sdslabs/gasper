@@ -93,6 +93,10 @@ type ApplicationConfig struct {
 	Success       bool                        `json:"success,omitempty" bson:"-"`
 }
 
+type ApplicationRemote struct {
+	GitURL string `json:"giturl" bson:"giturl"`
+}
+
 // GetName returns the application's name
 func (app *ApplicationConfig) GetName() string {
 	return app.Name
