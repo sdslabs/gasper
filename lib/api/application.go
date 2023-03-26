@@ -100,7 +100,15 @@ func SetupApplication(app types.Application) types.ResponseError {
 		return types.NewResErr(500, "git init unsuccessful", err)
 	}
 
-	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "remote", "add", "origin", app.GetGitRepositoryURL()})
+	var cloneURL string
+	if len(app.GetGitAccessToken()) > 0 {
+		split := strings.Split(app.GetGitRepositoryURL(), "//")
+		cloneURL = fmt.Sprintf("https://oauth2:%s@%s", app.GetGitAccessToken() , split[1])
+	} else {
+		cloneURL = app.GetGitRepositoryURL()
+	}
+
+	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "remote", "add", "origin", cloneURL})
 	if err != nil {
 		return types.NewResErr(500, "setting remote unsuccessful", err)
 	}
