@@ -320,8 +320,6 @@ func FetchAppRemote (c *gin.Context) {
 		GitURL: config.Git.RepoURL,
 	}
 
-	fmt.Println(response)
-
 	responseBody := new(bytes.Buffer)
 	json.NewEncoder(responseBody).Encode(response)
 	c.Data(200, "application/json", responseBody.Bytes())

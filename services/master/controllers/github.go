@@ -7,6 +7,7 @@ import (
 	_ "io/ioutil"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
@@ -42,6 +43,17 @@ func CreateRepository(c *gin.Context) {
 			"success": false,
 			"error":   err.Error(),
 		})
+	}
+	responseBody := new(bytes.Buffer)
+	json.NewEncoder(responseBody).Encode(response)
+	c.Data(200, "application/json", responseBody.Bytes())
+}
+
+func FetchPAT (c *gin.Context) {
+	response := &types.AccessToken{
+		PAT: configs.GithubConfig.PAT,
+		Username: configs.GithubConfig.Username,
+		Email: configs.GithubConfig.Email,
 	}
 	responseBody := new(bytes.Buffer)
 	json.NewEncoder(responseBody).Encode(response)

@@ -97,6 +97,15 @@ type ApplicationRemote struct {
 	GitURL string `json:"giturl" bson:"giturl"`
 }
 
+type AccessToken struct {
+	// PAT for pushing code to repository
+	PAT string `json:"pat" bson:"pat"`
+	// Username of Gasper Github user
+	Username string `json:"username" bson:"username"`
+	// Email id of Gasper Github user
+	Email string `json:"email" bson:"email"`
+}
+
 // GetName returns the application's name
 func (app *ApplicationConfig) GetName() string {
 	return app.Name
