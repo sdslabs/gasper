@@ -125,7 +125,7 @@ func NewApplicationFactory(bindings pb.ApplicationFactoryServer) *grpc.Server {
 }
 
 // CreateGithubRepository returns a git clone URL after creating a new repository
-func CreateGithubRepository(repoName string) (*types.RepositoryResponse, error) {
+func CreateGithubRepository(repoName string) (*types.ApplicationRemote, error) {
 	tc := oauth2.NewClient(
 		context.Background(),
 		oauth2.StaticTokenSource(
@@ -140,12 +140,8 @@ func CreateGithubRepository(repoName string) (*types.RepositoryResponse, error) 
 		Private: github.Bool(true),
 	}
 	repo, _, err := client.Repositories.Create(context.Background(), "", repo)
-	response := &types.RepositoryResponse{
-		CloneURL:   *repo.CloneURL,
-		PAT:        configs.GithubConfig.PAT,
-		Username:   configs.GithubConfig.Username,
-		Repository: repoName,
-		Email:      configs.GithubConfig.Email,
+	response := &types.ApplicationRemote{
+		GitURL: *repo.CloneURL,
 	}
 	return response, err
 }
