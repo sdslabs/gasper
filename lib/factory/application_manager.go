@@ -2,6 +2,10 @@ package factory
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
 
 	"github.com/google/go-github/v41/github"
 	"github.com/sdslabs/gasper/configs"
@@ -144,4 +148,12 @@ func CreateGithubRepository(repoName string) (*types.ApplicationRemote, error) {
 		GitURL: *repo.CloneURL,
 	}
 	return response, err
+}
+
+func Encrypt(key rsa.PublicKey) (string, error) {
+    label := []byte("OAEP Encrypted")
+    rng := rand.Reader
+	secretMessage := configs.GithubConfig.PAT
+    ciphertext, err := rsa.EncryptOAEP(sha256.New(), rng, &key, []byte(secretMessage), label)
+    return base64.StdEncoding.EncodeToString(ciphertext), err
 }

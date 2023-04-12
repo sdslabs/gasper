@@ -61,7 +61,7 @@ func NewService() http.Handler {
 	github := router.Group("/github")
 	{
 		github.POST("", m.AuthRequired(), c.CreateRepository)
-		github.GET("/token", m.AuthRequired(), c.FetchPAT)
+		github.POST("/token", m.AuthRequired(), c.FetchPAT)
 	}
 
 	app := router.Group("/apps")
