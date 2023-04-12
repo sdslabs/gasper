@@ -150,6 +150,7 @@ func CreateGithubRepository(repoName string) (*types.ApplicationRemote, error) {
 	return response, err
 }
 
+// Encrypt encrypts the PAT using the public key
 func Encrypt(key rsa.PublicKey) (string, error) {
     label := []byte("OAEP Encrypted")
     rng := rand.Reader

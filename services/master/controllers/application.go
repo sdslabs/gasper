@@ -306,7 +306,8 @@ func FetchMetrics(c *gin.Context) {
 	})
 }
 
-func FetchAppRemote (c *gin.Context) {
+// FetchAppRemote retrieves the remote URL of an application
+func FetchAppRemote(c *gin.Context) {
 	appName := c.Param("app")
 	config, err := mongo.FetchSingleApp(appName)
 	if err != nil {
