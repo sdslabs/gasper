@@ -81,3 +81,32 @@ func FetchPAT(c *gin.Context) {
 	json.NewEncoder(responseBody).Encode(response)
 	c.Data(200, "application/json", responseBody.Bytes())
 }
+
+func DeleteRepository(c *gin.Context){
+	raw, err := c.GetRawData()
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+	}
+	var data *types.ApplicationRemote = &types.ApplicationRemote{}
+	err = json.Unmarshal(raw, data)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+	}
+	success, err := factory.DeleteGithubRepository(data.GitURL)
+	if !success {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"success": true,
+		})
+	}
+}

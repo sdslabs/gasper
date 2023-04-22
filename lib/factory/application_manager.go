@@ -7,6 +7,8 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 
+	"strings"
+
 	"github.com/google/go-github/v41/github"
 	"github.com/sdslabs/gasper/configs"
 	pb "github.com/sdslabs/gasper/lib/factory/protos/application"
@@ -148,6 +150,26 @@ func CreateGithubRepository(repoName string) (*types.ApplicationRemote, error) {
 		GitURL: *repo.CloneURL,
 	}
 	return response, err
+}
+
+// DeleteGithubRepository deletes the specified repository
+func DeleteGithubRepository(repoURL string) (bool, error) {
+	tc := oauth2.NewClient(
+		context.Background(),
+		oauth2.StaticTokenSource(
+			&oauth2.Token{
+				AccessToken: configs.GithubConfig.PAT, //PAT
+			},
+		),
+	)
+	parts := strings.Split(repoURL, "/")
+    repoName := strings.TrimSuffix(parts[len(parts)-1], ".git")
+	client := github.NewClient(tc)
+	_, err := client.Repositories.Delete(context.Background(), configs.GithubConfig.Username, repoName)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Encrypt encrypts the PAT using the public key
