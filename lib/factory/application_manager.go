@@ -2,6 +2,12 @@ package factory
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"encoding/base64"
+
+	"strings"
 
 	"github.com/google/go-github/v41/github"
 	"github.com/sdslabs/gasper/configs"
@@ -125,7 +131,7 @@ func NewApplicationFactory(bindings pb.ApplicationFactoryServer) *grpc.Server {
 }
 
 // CreateGithubRepository returns a git clone URL after creating a new repository
-func CreateGithubRepository(repoName string) (*types.RepositoryResponse, error) {
+func CreateGithubRepository(repoName string) (*types.ApplicationRemote, error) {
 	tc := oauth2.NewClient(
 		context.Background(),
 		oauth2.StaticTokenSource(
@@ -140,12 +146,37 @@ func CreateGithubRepository(repoName string) (*types.RepositoryResponse, error) 
 		Private: github.Bool(true),
 	}
 	repo, _, err := client.Repositories.Create(context.Background(), "", repo)
-	response := &types.RepositoryResponse{
-		CloneURL:   *repo.CloneURL,
-		PAT:        configs.GithubConfig.PAT,
-		Username:   configs.GithubConfig.Username,
-		Repository: repoName,
-		Email:      configs.GithubConfig.Email,
+	response := &types.ApplicationRemote{
+		GitURL: *repo.CloneURL,
 	}
 	return response, err
+}
+
+// DeleteGithubRepository deletes the specified repository
+func DeleteGithubRepository(repoURL string) (bool, error) {
+	tc := oauth2.NewClient(
+		context.Background(),
+		oauth2.StaticTokenSource(
+			&oauth2.Token{
+				AccessToken: configs.GithubConfig.PAT, //PAT
+			},
+		),
+	)
+	parts := strings.Split(repoURL, "/")
+    repoName := strings.TrimSuffix(parts[len(parts)-1], ".git")
+	client := github.NewClient(tc)
+	_, err := client.Repositories.Delete(context.Background(), configs.GithubConfig.Username, repoName)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// Encrypt encrypts the PAT using the public key
+func Encrypt(key rsa.PublicKey) (string, error) {
+    label := []byte("OAEP Encrypted")
+    rng := rand.Reader
+	secretMessage := configs.GithubConfig.PAT
+    ciphertext, err := rsa.EncryptOAEP(sha256.New(), rng, &key, []byte(secretMessage), label)
+    return base64.StdEncoding.EncodeToString(ciphertext), err
 }
