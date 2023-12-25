@@ -24,7 +24,8 @@ $ curl -X POST \
 },
 "context":{
     "index":"public/index.php",
-    "build": ["composer install"]
+    "build": ["composer install"],
+    "port": 80
 }
 }'
 
