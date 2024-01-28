@@ -55,3 +55,14 @@ func stateCleanup(appName string) {
 		utils.LogError("AppMaker-Helper-4", err)
 	}
 }
+
+func fetchAllApplicationNames() []string {
+	apps := mongo.FetchDocs(mongo.InstanceCollection, types.M{
+		mongo.InstanceTypeKey: mongo.AppInstance,
+	})
+	var appNames []string
+	for _, app := range apps {
+		appNames = append(appNames, app[mongo.NameKey].(string))
+	}
+	return appNames
+}

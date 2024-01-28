@@ -49,6 +49,7 @@ type GenericService struct {
 type AppMakerService struct {
 	GenericService
 	MetricsInterval time.Duration `toml:"metrics_interval"`
+	HealthInterval  time.Duration `toml:"health_interval"`
 	AppLimit        int           `toml:"app_limit"`
 }
 

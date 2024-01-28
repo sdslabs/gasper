@@ -159,3 +159,11 @@ func ContainerStats(containerID string) (*types.Stats, error) {
 	err = json.Unmarshal(body, containerStatsInterface)
 	return containerStatsInterface, err
 }
+
+// ContainerRestart restarts the container corresponding to given containerID
+func ContainerRestart(containerID string) error {
+	ctx := context.Background()
+	return cli.ContainerRestart(ctx, containerID, nil)
+}
+
+
