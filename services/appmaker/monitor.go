@@ -80,3 +80,29 @@ func ScheduleMetricsCollection() {
 	scheduler := utils.NewScheduler(interval, registerMetrics)
 	scheduler.RunAsync()
 }
+
+// checkContainerHealth checks the health of the containers and restarts the unhealthy ones
+func checkContainerHealth(){
+	apps := fetchAllApplicationNames()
+	for _, app := range apps {
+		containerStatus, err := docker.InspectContainerHealth(app)
+		if err != nil {
+			utils.LogError("AppMaker-Monitor-9", err)
+			continue
+		}
+		// If container is unhealthy, log the error and restart the container
+		if containerStatus == docker.Container_Unhealthy{
+			utils.Log("AppMaker-Monitor-10", fmt.Sprintf("Container %s has stopped", app), utils.ErrorTAG)
+			if err := docker.ContainerRestart(app); err != nil {
+				utils.LogError("AppMaker-Monitor-11", err)
+			}
+		}
+	}
+}
+
+// ScheduleHealthCheck runs the checkContainerHealthHandler at the given health interval
+func ScheduleHealthCheck() {
+	interval := configs.ServiceConfig.AppMaker.HealthInterval * time.Second
+	scheduler := utils.NewScheduler(interval, checkContainerHealth)
+	scheduler.RunAsync()
+}

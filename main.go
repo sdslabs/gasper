@@ -23,6 +23,7 @@ func initMaster() {
 func initAppMaker() {
 	if configs.ServiceConfig.AppMaker.Deploy {
 		go appmaker.ScheduleMetricsCollection()
+		go appmaker.ScheduleHealthCheck()
 	}
 }
 
