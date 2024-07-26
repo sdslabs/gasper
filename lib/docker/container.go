@@ -165,5 +165,3 @@ func ContainerRestart(containerID string) error {
 	ctx := context.Background()
 	return cli.ContainerRestart(ctx, containerID, nil)
 }
-
-
