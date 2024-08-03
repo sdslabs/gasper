@@ -92,7 +92,7 @@ It ain't.... (complete the rest yourself)
 
 ## Documentation
 
-You can find the complete documentation of Gasper at [https://gasper-docs.netlify.com/](https://gasper-docs.netlify.com/)
+You can find the complete documentation of Gasper at [https://gasper-docs.netlify.app/](https://gasper-docs.netlify.app/)
 
 ## Dependencies
 
