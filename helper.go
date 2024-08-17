@@ -14,23 +14,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-func checkAndPullImages(imageList ...string) {
-	availableImages, err := docker.ListImages()
-	if err != nil {
-		utils.LogError("Main-Helper-1", err)
-		os.Exit(1)
-	}
-	for _, image := range imageList {
-		imageWithoutRepoName := strings.Replace(image, "docker.io/", "", -1)
-		if utils.Contains(availableImages, image) || utils.Contains(availableImages, imageWithoutRepoName) {
-			continue
-		}
-		utils.LogInfo("Main-Helper-2", "Image %s not present locally, pulling from DockerHUB", image)
-		if err = docker.DirectPull(image); err != nil {
-			utils.LogError("Main-Helper-3", err)
-		}
-	}
-}
 
 func startGrpcServer(server *grpc.Server, port int) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
