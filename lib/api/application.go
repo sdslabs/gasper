@@ -21,7 +21,7 @@ func setupContainer(app types.Application, storedir string, setup chan types.Res
 		Name:            app.GetName(),
 		Image:           app.GetDockerImage(),
 		ApplicationPort: app.GetApplicationPort(),
-		ContainerPort:   app.GetContainerPort(),	
+		ContainerPort:   app.GetContainerPort(),
 		WorkDir:         workdir,
 		StoreDir:        storedir,
 		Env:             app.GetEnvVars(),
