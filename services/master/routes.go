@@ -82,6 +82,7 @@ func NewService() http.Handler {
 		db.GET("/:db", m.IsDatabaseOwner, c.GetDatabaseInfo)
 		db.DELETE("/:db", m.IsDatabaseOwner, c.DeleteDatabase)
 		db.PATCH("/:db/transfer/:user", m.IsDatabaseOwner, c.TransferDatabaseOwnership)
+		db.GET("/:db/redislogs",m.IsDatabaseOwner,c.GetRedisLogs)
 	}
 
 	user := router.Group("/user")
