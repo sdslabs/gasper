@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/types"
 	"google.golang.org/grpc"
 )
 
@@ -95,6 +96,47 @@ func setupDatabaseContainer(serviceName string) {
 			if err := docker.StartContainer(serviceName); err != nil {
 				utils.LogError("Main-Helper-17", err)
 			}
+		}
+	}
+	// Setting up general logging for MySQL
+	if serviceName == types.MySQL {
+		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", "echo '[mysqld]' >> /etc/my.cnf;echo 'general_log = 1' >> /etc/my.cnf; echo 'general_log_file = /var/log/mysql/general.log' >> /etc/my.cnf"})
+		if err != nil {
+			utils.LogError("Main-Helper-17", err)
+		}
+		err = docker.ContainerRestart(serviceName)
+		if err != nil {
+			utils.LogError("Main-Helper-18", err)
+		}
+	}
+	if serviceName == types.PostgreSQL {
+		postgresConfig := `
+		logging_collector = on
+		log_directory = 'pg_log'
+		log_filename = 'postgresql_log.log'
+		log_statement = 'all'
+		log_duration = on
+		log_min_duration_statement = 0
+		`
+		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", fmt.Sprintf("echo %s >> postgresql.conf", postgresConfig)})
+		if err != nil {
+			utils.LogError("Main-Helper-19", err)
+		}
+		err = docker.ContainerRestart(serviceName)
+		if err != nil {
+			utils.LogError("Main-Helper-20", err)
+		}
+	}
+	if serviceName == types.MongoDB {
+		command := []string{"sh", "-c", "echo '\nsystemLog:' >> /etc/mongod.conf;echo '   destination: file' >> /etc/mongod.conf;echo '   logAppend: true' >> /etc/mongod.conf;echo '   path: /var/log/mongodb/mongodb.log' >> /etc/mongod.conf;echo '   verbosity: 1' >> /etc/mongod.conf;"}
+		output, err := docker.ExecProcess(serviceName, command)
+		if err != nil {
+			utils.LogError("DATABASE SET UP ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
+		}
+		command = []string{"sh", "-c", "mongod --config /etc/mongod.conf --replSet rs0"}
+		output, err = docker.ExecProcess(serviceName, command)
+		if err != nil {
+			utils.LogError("DATABASE SET UP ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
 		}
 	}
 }

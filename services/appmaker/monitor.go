@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
 
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -67,6 +68,15 @@ func registerMetrics() {
 
 		parsedMetricsList = append(parsedMetricsList, parsedMetrics)
 	}
+    // Log database logs 
+	for _, app := range apps {
+		if app == types.MySQL || app == types.PostgreSQL || app==types.MongoDB{
+			err = database.LogDB(app)
+			if err != nil {
+				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("Error in getting logs of %s:,%s",app,err))
+			}
+		}
+	} 
 
 	if _, err = mongo.BulkRegisterMetrics(parsedMetricsList); err != nil {
 		utils.Log("AppMaker-Monitor-6", "Failed to register metrics", utils.ErrorTAG)
