@@ -53,7 +53,13 @@ func registerMetrics() {
 			// error needs to be handled in a better way
 			continue
 		}
-
+		var logs string
+		if app == types.MySQL || app == types.PostgreSQL || app == types.MongoDB {
+			logs, err = database.LogDB(app)
+			if err != nil {
+				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("Error in getting logs of %s:,%s", app, err))
+			}
+		}
 		parsedMetrics := types.Metrics{
 			Name:           app,
 			Alive:          containerStatus.Running,
@@ -64,19 +70,11 @@ func registerMetrics() {
 			OnlineCPUs:     onlineCPUs,
 			CPUUsage:       cpuTime / (math.Pow(10, 9) * onlineCPUs),
 			HostIP:         utils.HostIP,
+			Logs:           logs,
 		}
 
 		parsedMetricsList = append(parsedMetricsList, parsedMetrics)
 	}
-    // Log database logs 
-	for _, app := range apps {
-		if app == types.MySQL || app == types.PostgreSQL || app==types.MongoDB{
-			err = database.LogDB(app)
-			if err != nil {
-				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("Error in getting logs of %s:,%s",app,err))
-			}
-		}
-	} 
 
 	if _, err = mongo.BulkRegisterMetrics(parsedMetricsList); err != nil {
 		utils.Log("AppMaker-Monitor-6", "Failed to register metrics", utils.ErrorTAG)

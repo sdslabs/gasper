@@ -7,7 +7,6 @@ import (
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
-	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 )
 
@@ -81,7 +80,7 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 }
 
 // LogDB logs the database logs (tail 10) after metrics interval i.e. 1 minute
-func LogDB(service string) error {
+func LogDB(service string) (string, error) {
 	var log_location string
 	switch service {
 	case types.MySQL:
@@ -93,10 +92,9 @@ func LogDB(service string) error {
 	case types.MongoDB:
 		log_location = "/var/log/mongodb/mongodb.log"
 	}
-	log_string, err := docker.ExecProcessWthStream(service, []string{"sh", "-c", fmt.Sprintf("tail -n 10 %s",log_location)})
+	log_string, err := docker.ExecProcessWthStream(service, []string{"sh", "-c", fmt.Sprintf("tail -n 10 %s", log_location)})
 	if err != nil {
-		return err
+		return "", err
 	}
-	utils.LogInfo(fmt.Sprintf("Database-%s-log",service), log_string)
-	return nil
+	return log_string, nil
 }
