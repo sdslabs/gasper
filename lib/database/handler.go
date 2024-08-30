@@ -87,12 +87,12 @@ func LogDB(service string) (string, error) {
 		log_location = "/var/log/mysql/general.log"
 
 	case types.PostgreSQL:
-		log_location = "/var/lib/postgresql/data/pg_log/postgres.log"
+		log_location = "/var/lib/postgresql/data/pg_log/postgresql_log.log"
 
 	case types.MongoDB:
 		log_location = "/var/log/mongodb/mongodb.log"
 	}
-	log_string, err := docker.ExecProcessWthStream(service, []string{"sh", "-c", fmt.Sprintf("tail -n 10 %s", log_location)})
+	log_string, err := docker.ExecProcessWthStream(service, []string{"sh", "-c", fmt.Sprintf("cat %s", log_location)})
 	if err != nil {
 		return "", err
 	}

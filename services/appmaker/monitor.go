@@ -8,6 +8,7 @@ import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -71,6 +72,13 @@ func registerMetrics() {
 			CPUUsage:       cpuTime / (math.Pow(10, 9) * onlineCPUs),
 			HostIP:         utils.HostIP,
 			Logs:           logs,
+		}
+		if app == types.MySQL || app == types.PostgreSQL || app == types.MongoDB {
+			err = mongo.UpdateOneWithUpsert(mongo.MetricsCollection, types.M{"name": app}, parsedMetrics, options.Update().SetUpsert(true))
+			if err != nil {
+				utils.LogError("AppMaker-Monitor-13", fmt.Errorf("Error in updating metrics of %s:,%s", app, err))
+			}
+			continue
 		}
 
 		parsedMetricsList = append(parsedMetricsList, parsedMetrics)

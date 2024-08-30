@@ -118,7 +118,7 @@ func setupDatabaseContainer(serviceName string) {
 		log_duration = on
 		log_min_duration_statement = 0
 		`
-		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", fmt.Sprintf("echo %s >> postgresql.conf", postgresConfig)})
+		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", fmt.Sprintf("echo %s >> /var/lib/postgresql/data/postgresql.conf", postgresConfig)})
 		if err != nil {
 			utils.LogError("Main-Helper-19", err)
 		}
@@ -131,12 +131,12 @@ func setupDatabaseContainer(serviceName string) {
 		command := []string{"sh", "-c", "echo '\nsystemLog:' >> /etc/mongod.conf;echo '   destination: file' >> /etc/mongod.conf;echo '   logAppend: true' >> /etc/mongod.conf;echo '   path: /var/log/mongodb/mongodb.log' >> /etc/mongod.conf;echo '   verbosity: 1' >> /etc/mongod.conf;"}
 		output, err := docker.ExecProcess(serviceName, command)
 		if err != nil {
-			utils.LogError("DATABASE SET UP ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
+			utils.LogError("Main-Helper-21 ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
 		}
 		command = []string{"sh", "-c", "mongod --config /etc/mongod.conf --replSet rs0"}
 		output, err = docker.ExecProcess(serviceName, command)
 		if err != nil {
-			utils.LogError("DATABASE SET UP ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
+			utils.LogError("Main-Helper-22 ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
 		}
 	}
 }
