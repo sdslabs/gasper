@@ -100,7 +100,12 @@ func setupDatabaseContainer(serviceName string) {
 	}
 	// Setting up general logging for MySQL
 	if serviceName == types.MySQL {
-		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", "echo '[mysqld]' >> /etc/my.cnf;echo 'general_log = 1' >> /etc/my.cnf; echo 'general_log_file = /var/log/mysql/general.log' >> /etc/my.cnf"})
+		mysqlConfig := `
+[mysqld]
+general_log = 1
+general_log_file = /var/log/mysql/general.log
+		`
+		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", fmt.Sprintf("echo '%s' >> /etc/my.cnf", mysqlConfig)})
 		if err != nil {
 			utils.LogError("Main-Helper-17", err)
 		}
@@ -128,7 +133,14 @@ func setupDatabaseContainer(serviceName string) {
 		}
 	}
 	if serviceName == types.MongoDB {
-		command := []string{"sh", "-c", "echo '\nsystemLog:' >> /etc/mongod.conf;echo '   destination: file' >> /etc/mongod.conf;echo '   logAppend: true' >> /etc/mongod.conf;echo '   path: /var/log/mongodb/mongodb.log' >> /etc/mongod.conf;echo '   verbosity: 1' >> /etc/mongod.conf;"}
+		mongoConfig := `
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb/mongodb.log
+  verbosity: 1 `
+		// command := []string{"sh", "-c", "echo '\nsystemLog:' >> /etc/mongod.conf;echo '   destination: file' >> /etc/mongod.conf;echo '   logAppend: true' >> /etc/mongod.conf;echo '   path: /var/log/mongodb/mongodb.log' >> /etc/mongod.conf;echo '   verbosity: 1' >> /etc/mongod.conf;"}
+		command := []string{"sh", "-c", fmt.Sprintf("echo '%s' >> /etc/mongod.conf", mongoConfig)}
 		output, err := docker.ExecProcess(serviceName, command)
 		if err != nil {
 			utils.LogError("Main-Helper-21 ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
