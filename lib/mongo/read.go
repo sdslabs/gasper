@@ -197,7 +197,7 @@ func CountInstancesByUser(owner string, instance string) int {
 	return len(FetchInstances(filter))
 }
 
-//CountInstanceInTimeFrame returns the number of instances created by a user
+// CountInstanceInTimeFrame returns the number of instances created by a user
 func CountInstanceInTimeFrame(owner string, instance string, rate time.Duration) int {
 
 	filter := types.M{

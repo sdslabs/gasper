@@ -11,6 +11,7 @@ import (
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
+	"github.com/sdslabs/gasper/services/appmaker"
 	"google.golang.org/grpc"
 )
 
@@ -58,42 +59,38 @@ func buildHTTPServer(handler http.Handler, port int) *http.Server {
 }
 
 func setupDatabaseContainer(serviceName string) {
-	containers, err := docker.ListContainers()
-	if err != nil {
-		utils.LogError("Main-Helper-6", err)
-		os.Exit(1)
-	}
+	containers := appmaker.FetchAllApplicationNames()
 
 	if !utils.Contains(containers, serviceName) {
-		utils.LogInfo("Main-Helper-7", "No %s instance found in host. Building the instance.", strings.Title(serviceName))
+		utils.LogInfo("Main-Helper-6", "No %s instance found in host. Building the instance.", strings.Title(serviceName))
 		containerID, err := database.SetupDBInstance(serviceName)
 		if err != nil {
-			utils.Log("Main-Helper-8", fmt.Sprintf("There was a problem deploying %s service.", strings.Title(serviceName)), utils.ErrorTAG)
-			utils.LogError("Main-Helper-9", err)
+			utils.Log("Main-Helper-7", fmt.Sprintf("There was a problem deploying %s service.", strings.Title(serviceName)), utils.ErrorTAG)
+			utils.LogError("Main-Helper-8", err)
 		} else {
-			utils.LogInfo("Main-Helper-10", "%s Container has been deployed with ID:\t%s", strings.Title(serviceName), containerID)
+			utils.LogInfo("Main-Helper-9", "%s Container has been deployed with ID:\t%s", strings.Title(serviceName), containerID)
 		}
 	} else {
 		containerStatus, err := docker.InspectContainerState(serviceName)
 		if err != nil {
-			utils.Log("Main-Helper-11", "Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
-			utils.LogError("Main-Helper-12", err)
+			utils.Log("Main-Helper-10", "Error in fetching container state. Deleting container and deploying again.", utils.ErrorTAG)
+			utils.LogError("Main-Helper-11", err)
 			err := docker.DeleteContainer(serviceName)
 			if err != nil {
-				utils.LogError("Main-Helper-13", err)
+				utils.LogError("Main-Helper-12", err)
 			}
 			containerID, err := database.SetupDBInstance(serviceName)
 			if err != nil {
-				utils.Log("Main-Helper-14", fmt.Sprintf("There was a problem deploying %s service even after restart.",
+				utils.Log("Main-Helper-13", fmt.Sprintf("There was a problem deploying %s service even after restart.",
 					strings.Title(serviceName)), utils.ErrorTAG)
-				utils.LogError("Main-Helper-15", err)
+				utils.LogError("Main-Helper-14", err)
 			} else {
-				utils.LogInfo("Main-Helper-16", "Container has been deployed with ID:\t%s", containerID)
+				utils.LogInfo("Main-Helper-15", "Container has been deployed with ID:\t%s", containerID)
 			}
 		}
 		if !containerStatus.Running {
 			if err := docker.StartContainer(serviceName); err != nil {
-				utils.LogError("Main-Helper-17", err)
+				utils.LogError("Main-Helper-16", err)
 			}
 		}
 	}

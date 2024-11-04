@@ -126,6 +126,8 @@ func StopContainer(containerID string) error {
 }
 
 // ListContainers lists all containers
+// Deprecated : It returns all the containers running on the system, even those which are not monitored by gasper
+// Instead use appmaker.FetchAllApplicationNames()
 func ListContainers() ([]string, error) {
 	ctx := context.Background()
 	containers, err := cli.ContainerList(ctx, dockerTypes.ContainerListOptions{All: true})
