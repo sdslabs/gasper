@@ -103,6 +103,10 @@ components:
         password:
           type: string
           description: Password required for SSH access to the application's docker container
+        docker_image:
+          type: string
+          description: Docker image used in building the application's container
+          example: sdsws/node:2.0
         git:
           $ref: '#/components/schemas/Git'
         context:

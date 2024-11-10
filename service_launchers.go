@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/appmaker"
 	"github.com/sdslabs/gasper/services/dbmaker"
@@ -59,19 +60,19 @@ var launcherBindings = map[string]*serviceLauncher{
 
 func startDbMakerService() error {
 	if configs.ServiceConfig.DbMaker.MySQL.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Mysql)
+		docker.CheckAndPullImages(configs.ImageConfig.Mysql)
 		setupDatabaseContainer(types.MySQL)
 	}
 	if configs.ServiceConfig.DbMaker.MongoDB.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Mongodb)
+		docker.CheckAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDB)
 	}
 	if configs.ServiceConfig.DbMaker.PostgreSQL.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Postgresql)
+		docker.CheckAndPullImages(configs.ImageConfig.Postgresql)
 		setupDatabaseContainer(types.PostgreSQL)
 	}
 	if configs.ServiceConfig.DbMaker.Redis.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Redis)
+		docker.CheckAndPullImages(configs.ImageConfig.Redis)
 	}
 	return startGrpcServer(dbmaker.NewService(), configs.ServiceConfig.DbMaker.Port)
 }
@@ -87,17 +88,17 @@ func startAppMakerService() error {
 		configs.ImageConfig.Ruby,
 		configs.ImageConfig.Rust,
 	}
-	checkAndPullImages(images...)
+		docker.CheckAndPullImages(images...)
 	return startGrpcServer(appmaker.NewService(), configs.ServiceConfig.AppMaker.Port)
 }
 
 func startMasterService() error {
 	if configs.ServiceConfig.Master.MongoDB.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Mongodb)
+		docker.CheckAndPullImages(configs.ImageConfig.Mongodb)
 		setupDatabaseContainer(types.MongoDBGasper)
 	}
 	if configs.ServiceConfig.Master.Redis.PlugIn {
-		checkAndPullImages(configs.ImageConfig.Redis)
+		docker.CheckAndPullImages(configs.ImageConfig.Redis)
 		setupDatabaseContainer(types.RedisGasper)
 	}
 	return buildHTTPServer(master.NewService(), configs.ServiceConfig.Master.Port).ListenAndServe()

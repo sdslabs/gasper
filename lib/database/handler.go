@@ -78,3 +78,23 @@ func SetupDBInstance(databaseType string) (string, types.ResponseError) {
 
 	return containerID, nil
 }
+
+// LogDB logs the database logs (tail 10) after metrics interval i.e. 1 minute
+func LogDB(service string) (string, error) {
+	var log_location string
+	switch service {
+	case types.MySQL:
+		log_location = "/var/log/mysql/general.log"
+
+	case types.PostgreSQL:
+		log_location = "/var/lib/postgresql/data/pg_log/postgresql_log.log"
+
+	case types.MongoDB:
+		log_location = "/var/log/mongodb/mongodb.log"
+	}
+	log_string, err := docker.ExecProcessWthStream(service, []string{"sh", "-c", fmt.Sprintf("cat %s", log_location)})
+	if err != nil {
+		return "", err
+	}
+	return log_string, nil
+}

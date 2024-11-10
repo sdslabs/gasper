@@ -65,3 +65,11 @@ func UpdateMany(collectionName string, filter types.M, data interface{}) (interf
 func UpdateInstances(filter types.M, data interface{}) (interface{}, error) {
 	return UpdateMany(InstanceCollection, filter, data)
 }
+
+func UpdateOneWithUpsert(collectionName string, filter types.M, data interface{}, option *options.UpdateOptions) error {
+	collection := link.Collection(collectionName)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_,err=collection.UpdateOne(ctx, filter, types.M{"$set": data}, option)
+	return err
+}

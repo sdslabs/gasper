@@ -32,7 +32,7 @@ func CreateRedisDB(db types.Database) error {
 		WorkDir:       "/data/",
 		StoreDir:      filepath.Join(storepath, "redis-storage", db.GetName()),
 		Name:          db.GetName(),
-		Cmd:           []string{"redis-server", "--requirepass", db.GetPassword()},
+		Cmd:           []string{"redis-server", "--logfile", "/data/redis-server.log", "--requirepass", db.GetPassword()},
 	})
 
 	if err != nil {
@@ -59,4 +59,13 @@ func DeleteRedisDB(databaseName string) error {
 		return fmt.Errorf("Error while deleting the database directory : %s", err)
 	}
 	return nil
+}
+
+// GetLogs returns logs of a RedisDB container
+func GetLogs(databaseName string) (string, error) {
+	logs, err := docker.ExecProcessWthStream(databaseName, []string{"sh", "-c", "cat /data/redis-server.log"})
+	if err != nil {
+		return "", types.NewResErr(500, "Command not executed", err)
+	}
+	return logs, nil
 }

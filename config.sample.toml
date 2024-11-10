@@ -107,9 +107,9 @@ python3 = "docker.io/sdsws/python3:latest"
 golang = "docker.io/sdsws/golang:latest"
 ruby = "docker.io/sdsws/ruby:latest"
 rust = "docker.io/sdsws/rust:latest"
-mysql = "docker.io/wangxian/alpine-mysql:latest"
+mysql = "docker.io/mysql:latest"
 mongodb = "docker.io/sdsws/alpine-mongo:latest"
-postgresql = "docker.io/postgres:12.2-alpine"
+postgresql = "docker.io/postgres:latest"
 redis = "docker.io/redis:6.0-rc3-alpine3.11"
 
 

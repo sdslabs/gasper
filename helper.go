@@ -15,23 +15,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-func checkAndPullImages(imageList ...string) {
-	availableImages, err := docker.ListImages()
-	if err != nil {
-		utils.LogError("Main-Helper-1", err)
-		os.Exit(1)
-	}
-	for _, image := range imageList {
-		imageWithoutRepoName := strings.Replace(image, "docker.io/", "", -1)
-		if utils.Contains(availableImages, image) || utils.Contains(availableImages, imageWithoutRepoName) {
-			continue
-		}
-		utils.LogInfo("Main-Helper-2", "Image %s not present locally, pulling from DockerHUB", image)
-		if err = docker.DirectPull(image); err != nil {
-			utils.LogError("Main-Helper-3", err)
-		}
-	}
-}
 
 func startGrpcServer(server *grpc.Server, port int) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
@@ -92,6 +75,59 @@ func setupDatabaseContainer(serviceName string) {
 			if err := docker.StartContainer(serviceName); err != nil {
 				utils.LogError("Main-Helper-16", err)
 			}
+		}
+	}
+	// Setting up general logging for MySQL
+	if serviceName == types.MySQL {
+		mysqlConfig := `
+[mysqld]
+general_log = 1
+general_log_file = /var/log/mysql/general.log
+		`
+		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", fmt.Sprintf("echo '%s' >> /etc/my.cnf", mysqlConfig)})
+		if err != nil {
+			utils.LogError("Main-Helper-17", err)
+		}
+		err = docker.ContainerRestart(serviceName)
+		if err != nil {
+			utils.LogError("Main-Helper-18", err)
+		}
+	}
+	if serviceName == types.PostgreSQL {
+		postgresConfig := `
+		logging_collector = on
+		log_directory = 'pg_log'
+		log_filename = 'postgresql_log.log'
+		log_statement = 'all'
+		log_duration = on
+		log_min_duration_statement = 0
+		`
+		_, err := docker.ExecProcess(serviceName, []string{"sh", "-c", fmt.Sprintf("echo %s >> /var/lib/postgresql/data/postgresql.conf", postgresConfig)})
+		if err != nil {
+			utils.LogError("Main-Helper-19", err)
+		}
+		err = docker.ContainerRestart(serviceName)
+		if err != nil {
+			utils.LogError("Main-Helper-20", err)
+		}
+	}
+	if serviceName == types.MongoDB {
+		mongoConfig := `
+systemLog:
+  destination: file
+  logAppend: true
+  path: /var/log/mongodb/mongodb.log
+  verbosity: 1 `
+		// command := []string{"sh", "-c", "echo '\nsystemLog:' >> /etc/mongod.conf;echo '   destination: file' >> /etc/mongod.conf;echo '   logAppend: true' >> /etc/mongod.conf;echo '   path: /var/log/mongodb/mongodb.log' >> /etc/mongod.conf;echo '   verbosity: 1' >> /etc/mongod.conf;"}
+		command := []string{"sh", "-c", fmt.Sprintf("echo '%s' >> /etc/mongod.conf", mongoConfig)}
+		output, err := docker.ExecProcess(serviceName, command)
+		if err != nil {
+			utils.LogError("Main-Helper-21 ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
+		}
+		command = []string{"sh", "-c", "mongod --config /etc/mongod.conf --replSet rs0"}
+		output, err = docker.ExecProcess(serviceName, command)
+		if err != nil {
+			utils.LogError("Main-Helper-22 ", fmt.Errorf("Failed to update mongod.conf: %v, output: %s", err, output))
 		}
 	}
 }

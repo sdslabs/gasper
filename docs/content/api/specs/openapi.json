@@ -133,6 +133,10 @@
             "type": "string",
             "description": "Password required for SSH access to the application's docker container"
           },
+          "docker_image": {
+            "type": "",
+            "description": "Docker image used in building the application's container"
+          },
           "git": {
             "$ref": "#/components/schemas/Git"
           },

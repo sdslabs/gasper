@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/api"
 	"github.com/sdslabs/gasper/lib/cloudflare"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/factory"
@@ -68,18 +69,37 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 			utils.LogError("AppMaker-Controller-1", fmt.Errorf("GenDNS instance %s is of invalid format", nameServer))
 		}
 	}
-
+	
 	if pipeline[language] == nil {
 		return nil, fmt.Errorf("language `%s` is not supported", language)
 	}
-	resErr := pipeline[language].create(app)
-	if resErr != nil {
-		if resErr.Message() != "repository already exists" && resErr.Message() != "container already exists" {
-			go diskCleanup(app.GetName())
+	utils.LogError("AppMaker-Controller-1", fmt.Errorf("%s", app.GetDockerImage()))
+	
+	if app.GetDockerImage() != "" {
+		utils.LogError("AppMaker-Controller-1", fmt.Errorf("docker img"))
+		docker.CheckAndPullImages(app.GetDockerImage())
+		containerPort, err := utils.GetFreePort()
+		if err != nil {
+			return nil, types.NewResErr(500, "No free port available", err)
 		}
-		return nil, fmt.Errorf(resErr.Error())
-	}
+		app.SetContainerPort(containerPort)	
 
+		errList := api.CreateBasicApplication(app)
+		for _, err := range errList {
+			if err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		utils.LogError("AppMaker-Controller-1", fmt.Errorf("git img"))
+		resErr := pipeline[language].create(app)
+		if resErr != nil {
+			if resErr.Message() != "repository already exists" && resErr.Message() != "container already exists" {
+				go diskCleanup(app.GetName())
+			}
+			return nil, fmt.Errorf(resErr.Error())
+		}
+	}
 	sshEntrypointIP := configs.ServiceConfig.GenSSH.EntrypointIP
 	if len(sshEntrypointIP) == 0 {
 		sshEntrypointIP = utils.HostIP

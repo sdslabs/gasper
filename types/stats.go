@@ -35,4 +35,5 @@ type Metrics struct {
 	ReadTime       int64   `json:"timestamp" bson:"timestamp"`
 	Alive          bool    `json:"alive" bson:"alive"`
 	HostIP         string  `json:"host_ip" bson:"host_ip"`
+	Logs           string  `json:"logs" bson:"logs"`
 }

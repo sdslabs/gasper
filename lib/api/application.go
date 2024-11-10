@@ -67,7 +67,7 @@ func setupContainer(app types.Application, storedir string, setup chan types.Res
 }
 
 // createBasicApplication spawns a new container with the application of a particular service
-func createBasicApplication(app types.Application) []types.ResponseError {
+func CreateBasicApplication(app types.Application) []types.ResponseError {
 	storepath, _ := os.Getwd()
 	storedir := filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
 	setup := make(chan types.ResponseError)
@@ -87,7 +87,7 @@ func SetupApplication(app types.Application) types.ResponseError {
 
 	app.SetContainerPort(containerPort)
 
-	errList := createBasicApplication(app)
+	errList := CreateBasicApplication(app)
 
 	for _, err := range errList {
 		if err != nil {

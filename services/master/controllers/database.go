@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
@@ -95,4 +96,21 @@ func DeleteDatabase(c *gin.Context) {
 // TransferDatabaseOwnership transfers the ownership of a database to another user
 func TransferDatabaseOwnership(c *gin.Context) {
 	transferOwnership(c, c.Param("db"), mongo.DBInstance, c.Param("user"))
+}
+
+func GetRedisLogs(c *gin.Context) {
+	db := c.Param("db")
+	logs, err := database.GetLogs(db)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"success": true,
+		"data":    logs,
+	})
+	
 }
