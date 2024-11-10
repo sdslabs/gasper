@@ -12,9 +12,9 @@ import (
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/appmaker"
+	"github.com/sdslabs/gasper/types"
 	"google.golang.org/grpc"
 )
-
 
 func startGrpcServer(server *grpc.Server, port int) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
