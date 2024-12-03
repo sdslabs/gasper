@@ -57,7 +57,12 @@ func NewService() http.Handler {
 
 	router.GET("/instances", m.AuthRequired(), c.FetchAllInstancesByUser)
 	router.POST("/gctllogin", m.JWTGctl.MiddlewareFunc(), c.GctlLogin)
-	router.POST("/github", m.AuthRequired(), c.CreateRepository)
+	
+	github := router.Group("/github")
+	{
+		github.POST("", m.AuthRequired(), c.CreateRepository)
+		github.POST("/token", m.AuthRequired(), c.FetchPAT)
+	}
 
 	app := router.Group("/apps")
 	app.Use(m.AuthRequired())
@@ -72,6 +77,7 @@ func NewService() http.Handler {
 		app.PATCH("/:app/transfer/:user", m.IsAppOwner, c.TransferApplicationOwnership)
 		app.GET("/:app/term", m.IsAppOwner, c.DeployWebTerminal)
 		app.GET("/:app/metrics", m.IsAppOwner, c.FetchMetrics)
+		app.GET("/:app/remote", m.IsAppOwner, c.FetchAppRemote)
 	}
 
 	db := router.Group("/dbs")
