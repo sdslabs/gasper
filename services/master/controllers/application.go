@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -302,4 +304,24 @@ func FetchMetrics(c *gin.Context) {
 		"success": true,
 		"data":    metricsRecord,
 	})
+}
+
+// FetchAppRemote retrieves the remote URL of an application
+func FetchAppRemote(c *gin.Context) {
+	appName := c.Param("app")
+	config, err := mongo.FetchSingleApp(appName)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+	}
+	
+	response := &types.ApplicationRemote{
+		GitURL: config.Git.RepoURL,
+	}
+
+	responseBody := new(bytes.Buffer)
+	json.NewEncoder(responseBody).Encode(response)
+	c.Data(200, "application/json", responseBody.Bytes())
 }
