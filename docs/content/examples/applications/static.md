@@ -20,7 +20,8 @@ $ curl -X POST \
 	"repo_url": "https://github.com/sdslabs/hangman-js-game"
 },
 "context":{
-    "index":"hangman.html"
+    "index":"hangman.html",
+    "port":80
 }
 }'
 
