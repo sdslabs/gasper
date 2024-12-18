@@ -99,16 +99,16 @@ public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 ###################################
 
 [images]
-static = "docker.io/sdsws/static:latest"
-php = "docker.io/sdsws/php:latest"
-nodejs = "docker.io/sdsws/node:latest"
-python2 =  "docker.io/sdsws/python2:latest"
-python3 = "docker.io/sdsws/python3:latest"
-golang = "docker.io/sdsws/golang:latest"
-ruby = "docker.io/sdsws/ruby:latest"
-rust = "docker.io/sdsws/rust:latest"
+static = "docker.io/sdslabs/static:latest"
+php = "docker.io/sdslabs/php:latest"
+nodejs = "docker.io/sdslabs/node:latest"
+python2 =  "docker.io/sdslabs/python2:latest"
+python3 = "docker.io/sdslabs/python3:latest"
+golang = "docker.io/sdslabs/golang:latest"
+ruby = "docker.io/sdslabs/ruby:latest"
+rust = "docker.io/sdslabs/rust:latest"
 mysql = "docker.io/mysql:latest"
-mongodb = "docker.io/sdsws/alpine-mongo:latest"
+mongodb = "docker.io/sdslabs/alpine-mongo:latest"
 postgresql = "docker.io/postgres:latest"
 redis = "docker.io/redis:6.0-rc3-alpine3.11"
 

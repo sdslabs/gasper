@@ -292,7 +292,7 @@ func FetchMetrics(c *gin.Context) {
 			}
 			downtimeIntensity = 0
 			CPURecord = append(CPURecord, metrics[i]["cpu_usage"].(float64))
-		    memoryRecord = append(memoryRecord, metrics[i]["memory_usage"].(float64))
+			memoryRecord = append(memoryRecord, metrics[i]["memory_usage"].(float64))
 		}
 	}
 

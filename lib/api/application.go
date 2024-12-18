@@ -95,7 +95,7 @@ func SetupApplication(app types.Application) types.ResponseError {
 		}
 	}
 
-	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "init"})
+	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "init"})
 	if err != nil {
 		return types.NewResErr(500, "git init unsuccessful", err)
 	}
@@ -103,17 +103,17 @@ func SetupApplication(app types.Application) types.ResponseError {
 	var cloneURL string
 	if len(app.GetGitAccessToken()) > 0 {
 		split := strings.Split(app.GetGitRepositoryURL(), "//")
-		cloneURL = fmt.Sprintf("https://oauth2:%s@%s", app.GetGitAccessToken() , split[1])
+		cloneURL = fmt.Sprintf("https://oauth2:%s@%s", app.GetGitAccessToken(), split[1])
 	} else {
 		cloneURL = app.GetGitRepositoryURL()
 	}
 
-	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "remote", "add", "origin", cloneURL})
+	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "remote", "add", "origin", cloneURL})
 	if err != nil {
 		return types.NewResErr(500, "setting remote unsuccessful", err)
 	}
 
-	_, err = docker.ExecProcess(app.GetContainerID(), []string{"git", "pull", "origin", app.GetGitRepositoryBranch()})
+	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "pull", "origin", app.GetGitRepositoryBranch()})
 	if err != nil {
 		return types.NewResErr(500, "pulling contents unsuccessful", err)
 	}
