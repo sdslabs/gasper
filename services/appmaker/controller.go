@@ -69,12 +69,12 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 			utils.LogError("AppMaker-Controller-1", fmt.Errorf("GenDNS instance %s is of invalid format", nameServer))
 		}
 	}
-	
+
 	if pipeline[language] == nil {
 		return nil, fmt.Errorf("language `%s` is not supported", language)
 	}
 	utils.LogError("AppMaker-Controller-1", fmt.Errorf("%s", app.GetDockerImage()))
-	
+
 	if app.GetDockerImage() != "" {
 		utils.LogError("AppMaker-Controller-1", fmt.Errorf("docker img"))
 		docker.CheckAndPullImages(app.GetDockerImage())
@@ -82,7 +82,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		if err != nil {
 			return nil, types.NewResErr(500, "No free port available", err)
 		}
-		app.SetContainerPort(containerPort)	
+		app.SetContainerPort(containerPort)
 
 		errList := api.CreateBasicApplication(app)
 		for _, err := range errList {
@@ -159,7 +159,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	return &pb.ResponseBody{Data: response}, err
 }
 
-// Rebuild rebuilds an application
+// Rebuild stops all currently running processes ,rebuilds and restarts an application
 func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.ResponseBody, error) {
 	appName := body.GetName()
 	app, err := mongo.FetchSingleApp(appName)
@@ -167,9 +167,12 @@ func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.Response
 		return nil, err
 	}
 
-	pullChanges := []string{"git", "pull", "origin", app.GetGitRepositoryBranch()}
-	_, err = docker.ExecProcess(app.ContainerID, pullChanges)
+	err = api.StopAllProcesses(app)
+	if err != nil {
+		return nil, err
+	}
 
+	err = api.RunBuildAndStartCommands(app)
 	if err != nil {
 		return nil, err
 	}

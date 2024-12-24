@@ -73,9 +73,9 @@ func BulkUpdateApps(c *gin.Context) {
 
 // UpdateAppByName updates the app getting name from url params
 func UpdateAppByName(c *gin.Context) {
-	app := c.Param("app")
+	appName := c.Param("app")
 	filter := types.M{
-		mongo.NameKey:         app,
+		mongo.NameKey:         appName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
 	var data types.M
