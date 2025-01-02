@@ -118,12 +118,17 @@ func SetupApplication(app types.Application) types.ResponseError {
 		return types.NewResErr(500, "pulling contents unsuccessful", err)
 	}
 
+	return RunBuildAndStartCommands(app)
+
+}
+
+func RunBuildAndStartCommands(app types.Application) types.ResponseError {
 	if app.HasRcFile() {
 		cmd := []string{"sh", "-c",
 			fmt.Sprintf(`chmod 755 ./%s &> /proc/1/fd/1 && ./%s &> /proc/1/fd/1`,
 				configs.GasperConfig.RcFile, configs.GasperConfig.RcFile)}
 
-		_, err = docker.ExecDetachedProcess(app.GetContainerID(), cmd)
+		_, err := docker.ExecDetachedProcess(app.GetContainerID(), cmd)
 		if err != nil {
 			// this error cannot be ignored; the chances of error here are very less
 			// but if an error arises, this means there's some issue with "execing"
@@ -134,6 +139,13 @@ func SetupApplication(app types.Application) types.ResponseError {
 	} else {
 		go buildAndRun(app)
 	}
+	return nil
+}
 
+func StopAllProcesses(app types.Application) types.ResponseError {
+	_, err := docker.ExecProcessWthStream(app.GetContainerID(), []string{"kill", "-TERM", "-1"})
+	if err != nil {
+		return types.NewResErr(500, "Unable to stop processes running inside the container", err)
+	}
 	return nil
 }
