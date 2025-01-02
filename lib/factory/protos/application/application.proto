@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package application;
 
+option go_package = "./application";
+
 service ApplicationFactory {
     rpc Create (RequestBody) returns (ResponseBody) {}
     rpc Delete (NameHolder) returns (DeletionResponse) {}

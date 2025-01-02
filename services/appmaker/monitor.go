@@ -55,7 +55,7 @@ func registerMetrics() {
 		if app == types.MySQL || app == types.PostgreSQL || app == types.MongoDB {
 			logs, err = database.LogDB(app)
 			if err != nil {
-				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("Error in getting logs of %s:,%s", app, err))
+				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("error in getting logs of %s:,%s", app, err))
 			}
 		}
 		parsedMetrics := types.Metrics{
@@ -73,7 +73,7 @@ func registerMetrics() {
 		if app == types.MySQL || app == types.PostgreSQL || app == types.MongoDB {
 			err = mongo.UpdateOneWithUpsert(mongo.MetricsCollection, types.M{"name": app}, parsedMetrics, options.Update().SetUpsert(true))
 			if err != nil {
-				utils.LogError("AppMaker-Monitor-13", fmt.Errorf("Error in updating metrics of %s:,%s", app, err))
+				utils.LogError("AppMaker-Monitor-13", fmt.Errorf("error in updating metrics of %s:,%s", app, err))
 			}
 			continue
 		}

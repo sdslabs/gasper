@@ -23,6 +23,7 @@ var immutableFields = []string{
 	"cloudflare_id",
 	"app_url",
 	"docker_image",
+	"repo_url",
 }
 
 func validateUpdatePayload(data types.M) error {
@@ -32,6 +33,13 @@ func validateUpdatePayload(data types.M) error {
 			res += fmt.Sprintf("Field `%s` is immutable; ", field)
 		}
 	}
+
+	if data["git"] != nil {
+		if data["git"].(map[string]interface{})["repo_url"] != nil {
+			res += "Field git.repo_url is immutable; "
+		}
+	}
+
 	if res != "" {
 		return errors.New(res)
 	}

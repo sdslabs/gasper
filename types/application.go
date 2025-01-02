@@ -38,10 +38,22 @@ type Git struct {
 	Branch      string `json:"branch,omitempty" bson:"branch,omitempty"`
 }
 
+type UpdateGit struct {
+	AccessToken string `json:"access_token,omitempty" bson:"access_token,omitempty"`
+	Branch      string `json:"branch,omitempty" bson:"branch,omitempty"`
+}
+
 // Context stores the information related to building and running an application
 type Context struct {
 	Index  string   `json:"index" bson:"index" valid:"required~Field 'index' inside field 'context' was required but was not provided"`
 	Port   int      `json:"port" bson:"port" valid:"port~Field 'port' inside field 'context' is not a valid port"`
+	RcFile bool     `json:"rc_file" bson:"rc_file"`
+	Build  []string `json:"build,omitempty" bson:"build,omitempty"`
+	Run    []string `json:"run,omitempty" bson:"run,omitempty"`
+}
+
+type UpdateContext struct {
+	Index  string   `json:"index" bson:"index"`
 	RcFile bool     `json:"rc_file" bson:"rc_file"`
 	Build  []string `json:"build,omitempty" bson:"build,omitempty"`
 	Run    []string `json:"run,omitempty" bson:"run,omitempty"`
@@ -91,6 +103,14 @@ type ApplicationConfig struct {
 	Owner         string                      `json:"owner,omitempty" bson:"owner,omitempty"`
 	Datetime      time.Time                   `json:"datetime" bson:"datetime"`
 	Success       bool                        `json:"success,omitempty" bson:"-"`
+}
+
+type UpdatePayload struct {
+	Password  string        `json:"password" bson:"password"`
+	Git       UpdateGit     `json:"git" bson:"git"`
+	Context   UpdateContext `json:"context" bson:"context"`
+	Resources Resources     `json:"resources,omitempty" bson:"resources,omitempty"`
+	Env       M             `json:"env,omitempty" bson:"env,omitempty"`
 }
 
 // GetName returns the application's name
