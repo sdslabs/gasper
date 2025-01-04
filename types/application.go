@@ -39,8 +39,8 @@ type Git struct {
 }
 
 type UpdateGit struct {
-	AccessToken string `json:"access_token,omitempty" bson:"access_token,omitempty"`
-	Branch      string `json:"branch,omitempty" bson:"branch,omitempty"`
+	AccessToken *string `json:"access_token,omitempty" bson:"access_token,omitempty"`
+	Branch      *string `json:"branch,omitempty" bson:"branch,omitempty"`
 }
 
 // Context stores the information related to building and running an application
@@ -53,10 +53,10 @@ type Context struct {
 }
 
 type UpdateContext struct {
-	Index  string   `json:"index" bson:"index"`
-	RcFile bool     `json:"rc_file" bson:"rc_file"`
-	Build  []string `json:"build,omitempty" bson:"build,omitempty"`
-	Run    []string `json:"run,omitempty" bson:"run,omitempty"`
+	Index  *string   `json:"index" bson:"index" `
+	RcFile *bool     `json:"rc_file" bson:"rc_file"`
+	Build  *[]string `json:"build,omitempty" bson:"build,omitempty"`
+	Run    *[]string `json:"run,omitempty" bson:"run,omitempty"`
 }
 
 // Resources defines the resources requested by an application
@@ -106,11 +106,11 @@ type ApplicationConfig struct {
 }
 
 type UpdatePayload struct {
-	Password  string        `json:"password" bson:"password"`
-	Git       UpdateGit     `json:"git" bson:"git"`
-	Context   UpdateContext `json:"context" bson:"context"`
-	Resources Resources     `json:"resources,omitempty" bson:"resources,omitempty"`
-	Env       M             `json:"env,omitempty" bson:"env,omitempty"`
+	Password  *string        `json:"password" bson:"password"`
+	Git       *UpdateGit     `json:"git" bson:"git"`
+	Context   *UpdateContext `json:"context" bson:"context"`
+	Resources *Resources     `json:"resources,omitempty" bson:"resources,omitempty"`
+	Env       *M             `json:"env,omitempty" bson:"env,omitempty"`
 }
 
 // GetName returns the application's name

@@ -23,9 +23,12 @@ var immutableFields = []string{
 	"cloudflare_id",
 	"app_url",
 	"docker_image",
-	"repo_url",
+	// "repo_url",
 }
 
+// ValidateUpdatePayload was used to validate the update payload
+// Deprecated : This is no longer used as the update payload is now parsed into a struct
+// Instead use middleware.ValidateApplicationUpdateRequest instead
 func validateUpdatePayload(data types.M) error {
 	res := ""
 	for _, field := range immutableFields {
@@ -34,16 +37,49 @@ func validateUpdatePayload(data types.M) error {
 		}
 	}
 
-	if data["git"] != nil {
-		if data["git"].(map[string]interface{})["repo_url"] != nil {
-			res += "Field git.repo_url is immutable; "
-		}
-	}
-
 	if res != "" {
 		return errors.New(res)
 	}
 	return nil
+}
+
+// UpdateData updates the data of an application using the update request payload
+func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) {
+	fmt.Println(*data)
+	if data.Password != nil {
+		fmt.Println(*data.Password)
+		app.Password = *data.Password
+	}
+	if data.Git != nil {
+		if data.Git.AccessToken != nil {
+			app.Git.AccessToken = *data.Git.AccessToken
+		}
+		if data.Git.Branch != nil {
+			app.Git.Branch = *data.Git.Branch
+		}
+	}
+	if data.Context != nil {
+		if data.Context.Index != nil {
+			app.Context.Index = *data.Context.Index
+		}
+		if data.Context.RcFile != nil {
+			app.Context.RcFile = *data.Context.RcFile
+		}
+		if data.Context.Build != nil {
+			app.Context.Build = *data.Context.Build
+		}
+		if data.Context.Run != nil {
+			app.Context.Run = *data.Context.Run
+		}
+
+	}
+	if data.Env != nil {
+		app.Env = *data.Env
+	}
+	if data.Resources != nil {
+		// set resources of docker containers
+	}
+
 }
 
 func fetchInstances(c *gin.Context, instance string) {

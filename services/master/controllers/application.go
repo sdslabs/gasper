@@ -78,10 +78,8 @@ func UpdateAppByName(c *gin.Context) {
 		mongo.NameKey:         appName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
-	var data types.M
-	c.BindJSON(&data)
-
-	err := validateUpdatePayload(data)
+	var data types.UpdatePayload
+	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
@@ -89,8 +87,16 @@ func UpdateAppByName(c *gin.Context) {
 		})
 		return
 	}
+	app, err := mongo.FetchSingleApp(appName)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+	}
+	UpdateData(app, &data)
 
-	err = mongo.UpdateInstance(filter, data)
+	err = mongo.UpdateInstance(filter, app)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
