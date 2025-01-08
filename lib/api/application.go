@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/docker/docker/api/types/container"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -122,6 +123,60 @@ func SetupApplication(app types.Application) types.ResponseError {
 
 }
 
+func UpdateContainer(app types.Application) types.ResponseError {
+
+	updateConfig := container.UpdateConfig{
+		Resources: container.Resources{
+			Memory:   app.GetMemoryLimit(), // 512 MB
+			NanoCPUs: app.GetCPULimit(),    // 0.25 CPU
+		},
+	}
+
+	err := docker.UpdateContainerResources(app.GetContainerID(), updateConfig)
+	if err != nil {
+		return types.NewResErr(500, "updating container resources unsuccessful", err)
+	}
+	return nil
+}
+
+func UpdateApplication(app types.Application) types.ResponseError {
+
+	// get the new Github Access Token if any
+	var cloneURL string
+	if len(app.GetGitAccessToken()) > 0 {
+		split := strings.Split(app.GetGitRepositoryURL(), "//")
+		cloneURL = fmt.Sprintf("https://oauth2:%s@%s", app.GetGitAccessToken(), split[1])
+	} else {
+		cloneURL = app.GetGitRepositoryURL()
+	}
+
+	//update githubaccesstoken in git
+	_, err := docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "remote", "set-url", "origin", cloneURL})
+	if err != nil {
+		return types.NewResErr(500, "Updating cloneURL in git unsuccessful", err)
+	}
+
+	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "fetch"})
+	if err != nil {
+		return types.NewResErr(500, "Updating cloneURL in git unsuccessful", err)
+	}
+
+	// create and checkout to new branch if any
+	// git switch -C new-branch --track origin/new-branch
+	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "switch", "-C", app.GetGitRepositoryBranch(), "origin/" + app.GetGitRepositoryBranch()})
+	if err != nil {
+		return types.NewResErr(500, "Updating cloneURL in git unsuccessful", err)
+	}
+
+	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "pull", "origin", app.GetGitRepositoryBranch()})
+	if err != nil {
+		return types.NewResErr(500, "pulling contents unsuccessful", err)
+	}
+
+	return RunBuildAndStartCommands(app)
+
+}
+
 func RunBuildAndStartCommands(app types.Application) types.ResponseError {
 	if app.HasRcFile() {
 		cmd := []string{"sh", "-c",
@@ -145,7 +200,7 @@ func RunBuildAndStartCommands(app types.Application) types.ResponseError {
 func StopAllProcesses(app types.Application) types.ResponseError {
 	_, err := docker.ExecProcessWthStream(app.GetContainerID(), []string{"kill", "-TERM", "-1"})
 	if err != nil {
-		return types.NewResErr(500, "Unable to stop processes running inside the container", err)
+		utils.LogError("Unable to stop processes running inside the container", err)
 	}
 	return nil
 }

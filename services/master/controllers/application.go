@@ -78,10 +78,8 @@ func UpdateAppByName(c *gin.Context) {
 		mongo.NameKey:         appName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	}
-	var data types.M
-	c.BindJSON(&data)
-
-	err := validateUpdatePayload(data)
+	var data types.UpdatePayload
+	err := c.ShouldBindJSON(&data)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
@@ -89,12 +87,52 @@ func UpdateAppByName(c *gin.Context) {
 		})
 		return
 	}
-
-	err = mongo.UpdateInstance(filter, data)
+	instanceURL, err := redis.FetchAppNode(appName)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("Application %s is not deployed at the moment", appName),
+		})
+		return
+	}
+	app, err := mongo.FetchSingleApp(appName)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+	}
+	err = UpdateData(app, &data)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
+
+	err = mongo.UpdateInstance(filter, app)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	response, err := factory.UpdateApplication(appName, instanceURL)
+	if err != nil {
+		utils.LogError("Master-Controller-Application-3", err)
+		if strings.Contains(err.Error(), "authentication required") {
+			c.AbortWithStatusJSON(400, gin.H{
+				"success": false,
+				"error":   "Invalid git repository url or access token",
+			})
+		} else if strings.Contains(err.Error(), "invalid reference") {
+			c.AbortWithStatusJSON(400, gin.H{
+				"success": false,
+				"error":   "Invalid git branch provided",
+			})
+		} else {
+			utils.SendServerErrorResponse(c, err)
+		}
+		return
+	}
+	c.Data(200, "application/json", response)
 
 	c.JSON(200, gin.H{
 		"success": true,

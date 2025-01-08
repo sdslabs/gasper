@@ -22,7 +22,9 @@ import (
 // ServiceName is the name of the current microservice
 const ServiceName = types.AppMaker
 
-type server struct{}
+type server struct {
+	pb.UnimplementedApplicationFactoryServer
+}
 
 // Create creates an application
 func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.ResponseBody, error) {
@@ -97,7 +99,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 			if resErr.Message() != "repository already exists" && resErr.Message() != "container already exists" {
 				go diskCleanup(app.GetName())
 			}
-			return nil, fmt.Errorf(resErr.Error())
+			return nil, fmt.Errorf("%s", resErr.Error())
 		}
 	}
 	sshEntrypointIP := configs.ServiceConfig.GenSSH.EntrypointIP
@@ -154,6 +156,36 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	}
 
 	app.SetSuccess(true)
+
+	response, err := json.Marshal(app)
+	return &pb.ResponseBody{Data: response}, err
+}
+
+func (s *server) Update(ctx context.Context, body *pb.NameHolder) (*pb.ResponseBody, error) {
+	appName := body.GetName()
+	app, err := mongo.FetchSingleApp(appName)
+	if err != nil {
+		return nil, err
+	}
+
+	err = api.StopAllProcesses(app)
+	if err != nil {
+		if strings.Contains(err.Error(), "No such process") {
+			utils.LogError("No processes running in container", err)
+		} else {
+			return nil, err
+		}
+	}
+
+	err = api.UpdateContainer(app)
+	if err != nil {
+		return nil, err
+	}
+
+	err = api.UpdateApplication(app)
+	if err != nil {
+		return nil, err
+	}
 
 	response, err := json.Marshal(app)
 	return &pb.ResponseBody{Data: response}, err

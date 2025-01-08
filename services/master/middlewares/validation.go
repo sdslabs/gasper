@@ -90,6 +90,30 @@ func ValidateApplicationRequest(c *gin.Context) {
 	c.Next()
 }
 
+func ValidateApplicationUpdateRequest(c *gin.Context) {
+	requestBody := getBodyFromContext(c)
+	updatePayload := &types.UpdatePayload{}
+
+	err := json.Unmarshal(requestBody, updatePayload)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	if result, err := validator.ValidateStruct(updatePayload); !result {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.Next()
+}
+
 // ValidateDatabaseRequest validates the request for creating databases
 func ValidateDatabaseRequest(c *gin.Context) {
 	requestBody := getBodyFromContext(c)

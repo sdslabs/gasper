@@ -70,6 +70,6 @@ func UpdateOneWithUpsert(collectionName string, filter types.M, data interface{}
 	collection := link.Collection(collectionName)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_,err=collection.UpdateOne(ctx, filter, types.M{"$set": data}, option)
+	_, err = collection.UpdateOne(ctx, filter, types.M{"$set": data}, option)
 	return err
 }

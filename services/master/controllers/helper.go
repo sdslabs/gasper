@@ -3,6 +3,9 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"math"
+	"runtime"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -23,8 +26,12 @@ var immutableFields = []string{
 	"cloudflare_id",
 	"app_url",
 	"docker_image",
+	// "repo_url",
 }
 
+// ValidateUpdatePayload was used to validate the update payload
+// Deprecated : This is no longer used as the update payload is now parsed into a struct
+// Instead use middleware.ValidateApplicationUpdateRequest instead
 func validateUpdatePayload(data types.M) error {
 	res := ""
 	for _, field := range immutableFields {
@@ -32,8 +39,62 @@ func validateUpdatePayload(data types.M) error {
 			res += fmt.Sprintf("Field `%s` is immutable; ", field)
 		}
 	}
+
 	if res != "" {
 		return errors.New(res)
+	}
+	return nil
+}
+
+// UpdateData updates the data of an application using the update request payload
+func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
+	totalCPU := runtime.NumCPU()
+	var sysInfo syscall.Sysinfo_t
+	if err := syscall.Sysinfo(&sysInfo); err == nil {
+		utils.LogError("Error fetching system info:", err)
+	}
+	totalMemory := sysInfo.Totalram / uint64(math.Pow(1024, 3))
+
+	if data.Password != nil {
+		app.Password = *data.Password
+	}
+	if data.Git != nil {
+		if data.Git.AccessToken != nil {
+			app.Git.AccessToken = *data.Git.AccessToken
+		}
+		if data.Git.Branch != nil {
+			app.Git.Branch = *data.Git.Branch
+		}
+	}
+	if data.Context != nil {
+		if data.Context.Index != nil {
+			app.Context.Index = *data.Context.Index
+		}
+		if data.Context.RcFile != nil {
+			app.Context.RcFile = *data.Context.RcFile
+		}
+		if data.Context.Build != nil {
+			app.Context.Build = *data.Context.Build
+		}
+		if data.Context.Run != nil {
+			app.Context.Run = *data.Context.Run
+		}
+	}
+	if data.Resources != nil {
+		if data.Resources.CPU > 0 && data.Resources.CPU <= float64(totalCPU-1) { // 1 CPU reserved for system
+			app.Resources.CPU = data.Resources.CPU
+		} else if data.Resources.CPU > float64(totalCPU-1) && data.Resources.CPU <= float64(totalCPU) {
+			return errors.New("cpu value too high, risks system failure")
+		} else {
+			return errors.New("invalid cpu value")
+		}
+		if data.Resources.Memory > 0 && data.Resources.Memory <= float64(totalMemory-1) { // 1 GB reserved for system
+			app.Resources.Memory = data.Resources.Memory
+		} else if data.Resources.Memory > float64(totalMemory-1) && data.Resources.Memory <= float64(totalMemory) {
+			return errors.New("memory value too high, risks system failure")
+		} else {
+			return errors.New("invalid memory value")
+		}
 	}
 	return nil
 }

@@ -65,7 +65,7 @@ func NewService() http.Handler {
 		app.POST("/:language", m.ValidateApplicationRequest, c.CreateApp)
 		app.GET("", c.FetchAppsByUser)
 		app.GET("/:app", m.IsAppOwner, c.GetApplicationInfo)
-		app.PUT("/:app", m.IsAppOwner, c.UpdateAppByName)
+		app.PUT("/:app", m.IsAppOwner, m.ValidateApplicationUpdateRequest, c.UpdateAppByName)
 		app.DELETE("/:app", m.IsAppOwner, c.DeleteApp)
 		app.GET("/:app/logs", m.IsAppOwner, c.FetchAppLogs)
 		app.PATCH("/:app/rebuild", m.IsAppOwner, c.RebuildApp)
@@ -82,7 +82,7 @@ func NewService() http.Handler {
 		db.GET("/:db", m.IsDatabaseOwner, c.GetDatabaseInfo)
 		db.DELETE("/:db", m.IsDatabaseOwner, c.DeleteDatabase)
 		db.PATCH("/:db/transfer/:user", m.IsDatabaseOwner, c.TransferDatabaseOwnership)
-		db.GET("/:db/redislogs",m.IsDatabaseOwner,c.GetRedisLogs)
+		db.GET("/:db/redislogs", m.IsDatabaseOwner, c.GetRedisLogs)
 	}
 
 	user := router.Group("/user")
