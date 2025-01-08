@@ -3,6 +3,9 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"math"
+	"runtime"
+	"syscall"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -44,10 +47,15 @@ func validateUpdatePayload(data types.M) error {
 }
 
 // UpdateData updates the data of an application using the update request payload
-func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) {
-	fmt.Println(*data)
+func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
+	totalCPU := runtime.NumCPU()
+	var sysInfo syscall.Sysinfo_t
+	if err := syscall.Sysinfo(&sysInfo); err == nil {
+		utils.LogError("Error fetching system info:", err)
+	}
+	totalMemory := sysInfo.Totalram / uint64(math.Pow(1024, 3))
+
 	if data.Password != nil {
-		fmt.Println(*data.Password)
 		app.Password = *data.Password
 	}
 	if data.Git != nil {
@@ -71,15 +79,24 @@ func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) {
 		if data.Context.Run != nil {
 			app.Context.Run = *data.Context.Run
 		}
-
-	}
-	if data.Env != nil {
-		app.Env = *data.Env
 	}
 	if data.Resources != nil {
-		// set resources of docker containers
+		if data.Resources.CPU > 0 && data.Resources.CPU <= float64(totalCPU-1) { // 1 CPU reserved for system
+			app.Resources.CPU = data.Resources.CPU
+		} else if data.Resources.CPU > float64(totalCPU-1) && data.Resources.CPU <= float64(totalCPU) {
+			return errors.New("cpu value too high, risks system failure")
+		} else {
+			return errors.New("invalid cpu value")
+		}
+		if data.Resources.Memory > 0 && data.Resources.Memory <= float64(totalMemory-1) { // 1 GB reserved for system
+			app.Resources.Memory = data.Resources.Memory
+		} else if data.Resources.Memory > float64(totalMemory-1) && data.Resources.Memory <= float64(totalMemory) {
+			return errors.New("memory value too high, risks system failure")
+		} else {
+			return errors.New("invalid memory value")
+		}
 	}
-
+	return nil
 }
 
 func fetchInstances(c *gin.Context, instance string) {

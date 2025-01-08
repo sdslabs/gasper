@@ -110,7 +110,6 @@ type UpdatePayload struct {
 	Git       *UpdateGit     `json:"git" bson:"git"`
 	Context   *UpdateContext `json:"context" bson:"context"`
 	Resources *Resources     `json:"resources,omitempty" bson:"resources,omitempty"`
-	Env       *M             `json:"env,omitempty" bson:"env,omitempty"`
 }
 
 // GetName returns the application's name

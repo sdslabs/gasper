@@ -39,6 +39,29 @@ func CreateApplication(language, owner, instanceURL string, data []byte) ([]byte
 	return res.GetData(), nil
 }
 
+func UpdateApplication(name, instanceURL string) ([]byte, error) {
+	conn, err := grpc.Dial(
+		instanceURL,
+		grpc.WithInsecure(),
+		grpc.WithPerRPCCredentials(authCredentials),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	client := pb.NewApplicationFactoryClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	res, err := client.Update(ctx, &pb.NameHolder{Name: name})
+	if err != nil {
+		return nil, err
+	}
+
+	return res.GetData(), nil
+}
+
 // RebuildApplication is a remote procedure call for rebuilding an application in a worker node
 func RebuildApplication(name, instanceURL string) ([]byte, error) {
 	conn, err := grpc.Dial(

@@ -161,6 +161,36 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	return &pb.ResponseBody{Data: response}, err
 }
 
+func (s *server) Update(ctx context.Context, body *pb.NameHolder) (*pb.ResponseBody, error) {
+	appName := body.GetName()
+	app, err := mongo.FetchSingleApp(appName)
+	if err != nil {
+		return nil, err
+	}
+
+	err = api.StopAllProcesses(app)
+	if err != nil {
+		if strings.Contains(err.Error(), "No such process") {
+			utils.LogError("No processes running in container", err)
+		} else {
+			return nil, err
+		}
+	}
+
+	err = api.UpdateContainer(app)
+	if err != nil {
+		return nil, err
+	}
+
+	err = api.UpdateApplication(app)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := json.Marshal(app)
+	return &pb.ResponseBody{Data: response}, err
+}
+
 // Rebuild stops all currently running processes ,rebuilds and restarts an application
 func (s *server) Rebuild(ctx context.Context, body *pb.NameHolder) (*pb.ResponseBody, error) {
 	appName := body.GetName()

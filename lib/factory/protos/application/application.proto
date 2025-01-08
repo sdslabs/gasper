@@ -9,6 +9,7 @@ service ApplicationFactory {
     rpc Delete (NameHolder) returns (DeletionResponse) {}
     rpc Rebuild (NameHolder) returns (ResponseBody) {}
     rpc FetchLogs (LogRequest) returns (LogResponse) {}
+    rpc Update (NameHolder) returns (ResponseBody) {}
 }
 
 message RequestBody {

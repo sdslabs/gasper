@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.28.3
-// source: application.proto
+// source: application/application.proto
 
 package application
 
@@ -23,6 +23,7 @@ const (
 	ApplicationFactory_Delete_FullMethodName    = "/application.ApplicationFactory/Delete"
 	ApplicationFactory_Rebuild_FullMethodName   = "/application.ApplicationFactory/Rebuild"
 	ApplicationFactory_FetchLogs_FullMethodName = "/application.ApplicationFactory/FetchLogs"
+	ApplicationFactory_Update_FullMethodName    = "/application.ApplicationFactory/Update"
 )
 
 // ApplicationFactoryClient is the client API for ApplicationFactory service.
@@ -33,6 +34,7 @@ type ApplicationFactoryClient interface {
 	Delete(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*DeletionResponse, error)
 	Rebuild(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
 	FetchLogs(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
+	Update(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
 }
 
 type applicationFactoryClient struct {
@@ -83,6 +85,16 @@ func (c *applicationFactoryClient) FetchLogs(ctx context.Context, in *LogRequest
 	return out, nil
 }
 
+func (c *applicationFactoryClient) Update(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResponseBody)
+	err := c.cc.Invoke(ctx, ApplicationFactory_Update_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApplicationFactoryServer is the server API for ApplicationFactory service.
 // All implementations must embed UnimplementedApplicationFactoryServer
 // for forward compatibility.
@@ -91,6 +103,7 @@ type ApplicationFactoryServer interface {
 	Delete(context.Context, *NameHolder) (*DeletionResponse, error)
 	Rebuild(context.Context, *NameHolder) (*ResponseBody, error)
 	FetchLogs(context.Context, *LogRequest) (*LogResponse, error)
+	Update(context.Context, *NameHolder) (*ResponseBody, error)
 	mustEmbedUnimplementedApplicationFactoryServer()
 }
 
@@ -112,6 +125,9 @@ func (UnimplementedApplicationFactoryServer) Rebuild(context.Context, *NameHolde
 }
 func (UnimplementedApplicationFactoryServer) FetchLogs(context.Context, *LogRequest) (*LogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchLogs not implemented")
+}
+func (UnimplementedApplicationFactoryServer) Update(context.Context, *NameHolder) (*ResponseBody, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
 func (UnimplementedApplicationFactoryServer) mustEmbedUnimplementedApplicationFactoryServer() {}
 func (UnimplementedApplicationFactoryServer) testEmbeddedByValue()                            {}
@@ -206,6 +222,24 @@ func _ApplicationFactory_FetchLogs_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApplicationFactory_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NameHolder)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApplicationFactoryServer).Update(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApplicationFactory_Update_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApplicationFactoryServer).Update(ctx, req.(*NameHolder))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApplicationFactory_ServiceDesc is the grpc.ServiceDesc for ApplicationFactory service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -229,7 +263,11 @@ var ApplicationFactory_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "FetchLogs",
 			Handler:    _ApplicationFactory_FetchLogs_Handler,
 		},
+		{
+			MethodName: "Update",
+			Handler:    _ApplicationFactory_Update_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "application.proto",
+	Metadata: "application/application.proto",
 }

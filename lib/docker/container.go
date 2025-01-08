@@ -10,6 +10,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/go-connections/nat"
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/types"
 	"golang.org/x/net/context"
 )
@@ -166,4 +167,16 @@ func ContainerStats(containerID string) (*types.Stats, error) {
 func ContainerRestart(containerID string) error {
 	ctx := context.Background()
 	return cli.ContainerRestart(ctx, containerID, nil)
+}
+
+func UpdateContainerResources(containerID string, updateConfig container.UpdateConfig) error {
+	ctx := context.Background()
+	resp, err := cli.ContainerUpdate(ctx, containerID, updateConfig)
+	if err != nil {
+		return err
+	}
+	for _, warning := range resp.Warnings {
+		utils.Log("Docker-Conatiner-1", warning, utils.ErrorTAG)
+	}
+	return nil
 }
