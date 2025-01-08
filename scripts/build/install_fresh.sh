@@ -12,6 +12,7 @@ mkdir -p bin
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 cd $tmp_dir
 GOPATH=$tmp_dir go install github.com/pilu/fresh@latest
+chmod -R u+rw $tmp_dir
 cp $tmp_dir/bin/fresh $project_dir/bin/fresh
 rm -rf $tmp_dir
 

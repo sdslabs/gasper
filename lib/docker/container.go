@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"time"
+	"os"
 
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -19,6 +20,21 @@ import (
 func CreateApplicationContainer(containerCfg types.ApplicationContainer) (string, error) {
 	ctx := context.Background()
 	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
+
+	// Create the host directory for bind mount with appropriate permissions
+    err := os.MkdirAll(containerCfg.StoreDir, 0755)
+    if err != nil {
+        return "", fmt.Errorf("failed to create directory: %w", err)
+    }
+	// Set proper permissions for the host directory
+	err = os.Chown(containerCfg.StoreDir, os.Getuid(), os.Getgid())
+	if err != nil { 
+		return "", fmt.Errorf("failed to set ownership: %w", err)
+	}
+	err = os.Chmod(containerCfg.StoreDir, 0755)
+	if err != nil { 
+		return "", fmt.Errorf("failed to set permissions: %w", err)
+	}
 
 	// convert map to list of strings
 	envArr := []string{}

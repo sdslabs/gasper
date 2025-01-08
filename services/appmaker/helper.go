@@ -34,13 +34,18 @@ func containerCleanup(appName string) error {
 
 // diskCleanup cleans the specified application's container and local storage
 func diskCleanup(appName string) {
+	err := containerCleanup(appName)
+	if err != nil {
+		utils.LogError("AppMaker-Helper-5", fmt.Errorf("container cleanup failed for %s: %w", appName, err))
+		return
+	}
+	
 	appDir := filepath.Join(path, fmt.Sprintf("storage/%s", appName))
-	storeCleanupChan := make(chan error)
-	go func() {
-		storeCleanupChan <- storageCleanup(appDir)
-	}()
-	containerCleanup(appName)
-	<-storeCleanupChan
+	err = storageCleanup(appDir)
+	if err != nil {
+		utils.LogError("AppMaker-Helper-6", fmt.Errorf("storage cleanup failed for %s: %w", appName, err))
+		return
+	}
 }
 
 // stateCleanup removes the application's data from MongoDB and Redis
