@@ -1,9 +1,7 @@
 package appmaker
 
 import (
-	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/sdslabs/gasper/lib/docker"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -15,8 +13,8 @@ import (
 var path, _ = os.Getwd()
 
 // storageCleanup removes the application's local storage directory
-func storageCleanup(path string) error {
-	err := os.RemoveAll(path)
+func storageCleanup(appName string) error {
+	err := docker.DeleteStorage(appName)
 	if err != nil {
 		utils.LogError("AppMaker-Helper-1", err)
 	}
@@ -34,10 +32,9 @@ func containerCleanup(appName string) error {
 
 // diskCleanup cleans the specified application's container and local storage
 func diskCleanup(appName string) {
-	appDir := filepath.Join(path, fmt.Sprintf("storage/%s", appName))
 	storeCleanupChan := make(chan error)
 	go func() {
-		storeCleanupChan <- storageCleanup(appDir)
+		storeCleanupChan <- storageCleanup(appName)
 	}()
 	containerCleanup(appName)
 	<-storeCleanupChan

@@ -22,3 +22,13 @@ func DeleteContainer(containerID string) error {
 
 	return nil
 }
+
+// DeleteStorage deletes the volume storage from the disk
+func DeleteStorage(appName string) error {
+	ctx := context.Background()
+	err := cli.VolumeRemove(ctx,appName, true)
+	if err != nil {
+		return err
+	}
+	return nil
+}
