@@ -2,8 +2,6 @@ package api
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/docker/docker/api/types/container"
@@ -69,8 +67,7 @@ func setupContainer(app types.Application, storedir string, setup chan types.Res
 
 // createBasicApplication spawns a new container with the application of a particular service
 func CreateBasicApplication(app types.Application) []types.ResponseError {
-	storepath, _ := os.Getwd()
-	storedir := filepath.Join(storepath, fmt.Sprintf("storage/%s", app.GetName()))
+	storedir := app.GetName()
 	setup := make(chan types.ResponseError)
 
 	// Step 1: setup the container

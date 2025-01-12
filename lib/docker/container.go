@@ -8,6 +8,7 @@ import (
 
 	dockerTypes "github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/mount"
 	"github.com/docker/go-connections/nat"
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -18,7 +19,6 @@ import (
 // CreateApplicationContainer creates a new container of the given container options, returns id of the container created
 func CreateApplicationContainer(containerCfg types.ApplicationContainer) (string, error) {
 	ctx := context.Background()
-	volume := fmt.Sprintf("%s:%s", containerCfg.StoreDir, containerCfg.WorkDir)
 
 	// convert map to list of strings
 	envArr := []string{}
@@ -35,9 +35,6 @@ func CreateApplicationContainer(containerCfg types.ApplicationContainer) (string
 			containerPortRule: struct{}{},
 		},
 		Env: envArr,
-		Volumes: map[string]struct{}{
-			volume: {},
-		},
 		Healthcheck: &container.HealthConfig{
 			Test:     []string{"CMD-SHELL", fmt.Sprintf("curl --fail --silent http://localhost:%d/ || exit 1", containerCfg.ApplicationPort)},
 			Interval: configs.ServiceConfig.AppMaker.MetricsInterval * time.Second,
@@ -47,8 +44,12 @@ func CreateApplicationContainer(containerCfg types.ApplicationContainer) (string
 	}
 
 	hostConfig := &container.HostConfig{
-		Binds: []string{
-			volume,
+		Mounts: []mount.Mount{
+			{
+				Type:   mount.TypeVolume,
+				Source: containerCfg.StoreDir,
+				Target: containerCfg.WorkDir,
+			},
 		},
 		DNS: containerCfg.NameServers,
 		PortBindings: nat.PortMap{
