@@ -207,6 +207,24 @@ func DeleteApp(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// DeleteAppUsingAppName deletes an application via gRPC using appName as a parameter
+func DeleteAppUsingAppname(c *gin.Context,appName string){
+	instanceURL, err := redis.FetchAppNode(appName)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("Application %s is not deployed at the moment", appName),
+		})
+		return
+	}
+
+	_, err = factory.DeleteApplication(appName, instanceURL)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+}
+
 // FetchAppLogs returns the docker container logs of an application via gRPC
 func FetchAppLogs(c *gin.Context) {
 	appName := c.Param("app")

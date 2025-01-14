@@ -6,6 +6,7 @@ import (
 	"math"
 	"runtime"
 	"syscall"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -189,6 +190,11 @@ func Handle404(c *gin.Context) {
 	})
 }
 
+
+func deleteinstance(c *gin.Context,appName string,wg *sync.WaitGroup) {
+	defer wg.Done()
+	DeleteAppUsingAppname(c,appName)
+}
 // deleteUser deletes the user from database
 func deleteUser(c *gin.Context, userEmail string) {
 	filter := types.M{
@@ -197,12 +203,19 @@ func deleteUser(c *gin.Context, userEmail string) {
 	instanceFilter := types.M{
 		mongo.OwnerKey: userEmail,
 	}
-	update := types.M{
-		"deleted": true,
-	}
-	go mongo.UpdateInstances(instanceFilter, update)
 
-	err := mongo.UpdateUser(filter, update)
+	instancesInfo := mongo.FetchInstances(instanceFilter)
+	var wg sync.WaitGroup
+	for _, instanceData := range instancesInfo {
+		appName := instanceData["name"].(string)
+		wg.Add(1) 
+		go deleteinstance(c,appName, &wg)
+	}
+
+	wg.Wait() 	
+	go mongo.DeleteInstances(instanceFilter)
+
+	_,err := mongo.DeleteUser(filter)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
