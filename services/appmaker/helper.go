@@ -33,11 +33,10 @@ func containerCleanup(appName string) error {
 // diskCleanup cleans the specified application's container and local storage
 func diskCleanup(appName string) {
 	storeCleanupChan := make(chan error)
+	containerCleanup(appName)
 	go func() {
 		storeCleanupChan <- storageCleanup(appName)
 	}()
-	containerCleanup(appName)
-	<-storeCleanupChan
 }
 
 // stateCleanup removes the application's data from MongoDB and Redis

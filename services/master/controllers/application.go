@@ -18,8 +18,13 @@ import (
 
 type metricsRecord struct {
 	UptimeRecord []bool    `json:"uptime_record"`
-	CPURecord    []float64 `json:"cpu_record"`
-	MemoryRecord []float64 `json:"memory_record"`
+	TimeStamp  []int64 `json:"time_stamp"`
+	CPUUsage    []float64 `json:"cpu_usage"`
+	MemoryUsage []float64 `json:"memory_usage"`
+	HostIP []string `json:"host_ip"`
+	OnlineCPUs []float64 `json:"online_cpus"`
+	MaxMemoryUsage []float64 `json:"max_memory_usage"`
+	MemoryLimit []float64 `json:"memory_limit"`
 }
 
 // FetchAppsByUser returns all applications owned by a user
@@ -207,6 +212,24 @@ func DeleteApp(c *gin.Context) {
 	c.JSON(200, response)
 }
 
+// DeleteAppUsingAppName deletes an application via gRPC using appName as a parameter
+func DeleteAppUsingAppname(c *gin.Context,appName string){
+	instanceURL, err := redis.FetchAppNode(appName)
+	if err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("Application %s is not deployed at the moment", appName),
+		})
+		return
+	}
+
+	_, err = factory.DeleteApplication(appName, instanceURL)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+}
+
 // FetchAppLogs returns the docker container logs of an application via gRPC
 func FetchAppLogs(c *gin.Context) {
 	appName := c.Param("app")
@@ -310,8 +333,13 @@ func FetchMetrics(c *gin.Context) {
 	}
 
 	uptimeRecord := []bool{}
-	CPURecord := []float64{}
-	memoryRecord := []float64{}
+	CPUUsage := []float64{}
+	memoryUsage := []float64{}
+	timeStamp := []int64{}
+	hostIP := []string{}
+	onlineCPUs := []float64{}
+	maxMemoryUsage := []float64{}
+	memoryLimit := []float64{}
 	baseTimestamp := metrics[0]["timestamp"].(int64)
 	var downtimeIntensity int = 0
 	var currTimestamp int64
@@ -329,12 +357,17 @@ func FetchMetrics(c *gin.Context) {
 				uptimeRecord = append(uptimeRecord, true)
 			}
 			downtimeIntensity = 0
-			CPURecord = append(CPURecord, metrics[i]["cpu_usage"].(float64))
-			memoryRecord = append(memoryRecord, metrics[i]["memory_usage"].(float64))
+			CPUUsage = append(CPUUsage, metrics[i]["cpu_usage"].(float64))
+			memoryUsage= append(memoryUsage, metrics[i]["memory_usage"].(float64))
+			timeStamp = append(timeStamp, metrics[i]["timestamp"].(int64))
+			hostIP = append(hostIP, metrics[i]["host_ip"].(string))
+			onlineCPUs = append(onlineCPUs, metrics[i]["online_cpus"].(float64))
+			maxMemoryUsage = append(maxMemoryUsage, metrics[i]["max_memory_usage"].(float64))
+			memoryLimit = append(memoryLimit, metrics[i]["memory_limit"].(float64))
 		}
 	}
 
-	metricsRecord := metricsRecord{uptimeRecord, CPURecord, memoryRecord}
+	metricsRecord := metricsRecord{uptimeRecord,timeStamp, CPUUsage, memoryUsage, hostIP, onlineCPUs, maxMemoryUsage, memoryLimit}
 
 	c.JSON(200, gin.H{
 		"success": true,
