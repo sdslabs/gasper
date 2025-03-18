@@ -91,6 +91,7 @@ func createRecord(name, instanceType string) (*SingleResponse, error) {
 		Name:    fmt.Sprintf("%s.%s", name, instanceType),
 		Type:    "A",
 		Content: publicIP,
+		Proxied: true,
 	}
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {

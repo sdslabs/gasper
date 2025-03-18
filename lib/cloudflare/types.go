@@ -54,4 +54,6 @@ type singlePayload struct {
 	Name string `json:"name,omitempty"`
 	// IP address of the deployed application
 	Content string `json:"content,omitempty"`
+	// Proxy status
+	Proxied bool `json:"proxied,omitempty"`
 }
