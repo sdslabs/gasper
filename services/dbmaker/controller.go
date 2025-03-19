@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/cloudflare"
 	"github.com/sdslabs/gasper/lib/factory"
@@ -68,7 +69,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 		return nil, err
 	}
 
-	db.SetDbURL(fmt.Sprintf("%s.%s.%s", db.GetName(), cloudflare.DatabaseInstance, configs.GasperConfig.Domain))
+	db.SetDbURL(fmt.Sprintf("%s-%s-gasper.%s", db.GetName(), cloudflare.DatabaseInstance, configs.GasperConfig.Domain))
 
 	if configs.CloudflareConfig.PlugIn {
 		resp, err := cloudflare.CreateDatabaseRecord(db.GetName())

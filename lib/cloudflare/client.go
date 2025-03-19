@@ -88,7 +88,7 @@ func createRecord(name, instanceType string) (*SingleResponse, error) {
 	}
 
 	payload := &singlePayload{
-		Name:    fmt.Sprintf("%s.%s", name, instanceType),
+		Name:    fmt.Sprintf("%s-%s-gasper", name, instanceType),
 		Type:    "A",
 		Content: publicIP,
 		Proxied: true,

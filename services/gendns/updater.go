@@ -63,7 +63,7 @@ func updateStorage() {
 	sort.Strings(apps)
 
 	for index, app := range apps {
-		fqdn := fmt.Sprintf("%s.app.%s.", app, configs.GasperConfig.Domain)
+		fqdn := fmt.Sprintf("%s-app-gasper.%s.", app, configs.GasperConfig.Domain)
 		address := strings.Split(reverseProxyInstances[index%instanceNum], ":")[0]
 		updateBody[fqdn] = address
 	}
@@ -84,7 +84,7 @@ func updateStorage() {
 			continue
 		}
 		if strings.Contains(dbInfoStruct.Server, ":") {
-			fqdn := fmt.Sprintf("%s.db.%s.", db, configs.GasperConfig.Domain)
+			fqdn := fmt.Sprintf("%s-db-gasper.%s.", db, configs.GasperConfig.Domain)
 			updateBody[fqdn] = strings.Split(dbInfoStruct.Server, ":")[0]
 		}
 	}
