@@ -51,7 +51,7 @@ func reverseProxy(c *gin.Context) {
 		return
 	}
 
-	name := strings.Split(c.Request.Host, ".")[0]
+	name := strings.Split((strings.Split(c.Request.Host, ".")[0]), "-")[0]
 	var proxy *types.ProxyInfo
 	var success bool
 
