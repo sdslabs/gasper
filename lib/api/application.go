@@ -155,14 +155,14 @@ func UpdateApplication(app types.Application) types.ResponseError {
 
 	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "fetch"})
 	if err != nil {
-		return types.NewResErr(500, "Updating cloneURL in git unsuccessful", err)
+		return types.NewResErr(500, "git fetch unsuccessful", err)
 	}
 
 	// create and checkout to new branch if any
 	// git switch -C new-branch --track origin/new-branch
 	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "switch", "-C", app.GetGitRepositoryBranch(), "origin/" + app.GetGitRepositoryBranch()})
 	if err != nil {
-		return types.NewResErr(500, "Updating cloneURL in git unsuccessful", err)
+		return types.NewResErr(500, "git switch unsuccessful", err)
 	}
 
 	_, err = docker.ExecProcessWthStream(app.GetContainerID(), []string{"git", "pull", "origin", app.GetGitRepositoryBranch()})
