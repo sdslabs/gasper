@@ -227,7 +227,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.DeletionR
 	go diskCleanup(appName)
 
 	if configs.CloudflareConfig.PlugIn {
-		go cloudflare.DeleteRecord(appName, mongo.AppInstance)
+		go cloudflare.DeleteApplicationRecord(appName)
 	}
 
 	_, err := mongo.DeleteInstance(filter)
