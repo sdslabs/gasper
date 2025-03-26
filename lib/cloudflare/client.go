@@ -184,8 +184,8 @@ func updateRecord(name, instanceType string, payload *singlePayload) (*SingleRes
 	return data, nil
 }
 
-// DeleteRecord deletes the DNS record for an application in the given zone
-func DeleteRecord(name, instanceType string) (*GenericResponse, error) {
+// deleteRecord deletes the DNS record for an application in the given zone
+func deleteRecord(name, instanceType string) (*GenericResponse, error) {
 	zoneID, err := getZoneID()
 	if err != nil {
 		return nil, err
@@ -218,4 +218,14 @@ func DeleteRecord(name, instanceType string) (*GenericResponse, error) {
 		return nil, formatErrorResponse(data.Errors)
 	}
 	return data, nil
+}
+
+// DeleteApplicationRecord deletes the DNS record for an application
+func DeleteApplicationRecord(name string) (*GenericResponse, error) {
+	return deleteRecord(name, ApplicationInstance)
+}
+
+// DeleteDatabaseRecord deletes the DNS record for a database
+func DeleteDatabaseRecord(name string) (*GenericResponse, error) {
+	return deleteRecord(name, DatabaseInstance)
 }
