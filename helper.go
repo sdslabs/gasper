@@ -42,7 +42,18 @@ func buildHTTPServer(handler http.Handler, port int) *http.Server {
 }
 
 func setupDatabaseContainer(serviceName string) {
-	containers := appmaker.FetchAllApplicationNames()
+
+	var containers []string
+	var err error
+	if serviceName == types.MongoDBGasper || serviceName == types.RedisGasper {
+		containers, err = docker.ListContainers()
+		if err != nil {
+			utils.LogError("Main-Helper-5.5", fmt.Errorf("Error Fetching List of Running Containers: %v", err))
+			return
+		}
+	} else {
+		containers = appmaker.FetchAllApplicationNames()
+	}
 
 	if !utils.Contains(containers, serviceName) {
 		utils.LogInfo("Main-Helper-6", "No %s instance found in host. Building the instance.", strings.Title(serviceName))
