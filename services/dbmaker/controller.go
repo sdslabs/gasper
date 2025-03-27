@@ -138,6 +138,11 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.GenericRe
 		mongo.InstanceTypeKey: mongo.DBInstance,
 	}
 	_, err = mongo.DeleteInstance(filter)
+
+	if configs.CloudflareConfig.PlugIn {
+		go cloudflare.DeleteDatabaseRecord(body.GetName())
+	}
+
 	return &pb.GenericResponse{Success: true}, err
 }
 
