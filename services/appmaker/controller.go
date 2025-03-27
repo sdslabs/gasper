@@ -108,7 +108,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	}
 	app.SetSSHCmd(configs.ServiceConfig.GenSSH.Port, app.GetName(), sshEntrypointIP)
 
-	app.SetAppURL(fmt.Sprintf("%s.%s.%s", app.GetName(), cloudflare.ApplicationInstance, configs.GasperConfig.Domain))
+	app.SetAppURL(fmt.Sprintf("%s-%s-gasper.%s", app.GetName(), cloudflare.ApplicationInstance, configs.GasperConfig.Domain))
 
 	if configs.CloudflareConfig.PlugIn {
 		resp, err := cloudflare.CreateApplicationRecord(app.GetName())
@@ -227,7 +227,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.DeletionR
 	go diskCleanup(appName)
 
 	if configs.CloudflareConfig.PlugIn {
-		go cloudflare.DeleteRecord(appName, mongo.AppInstance)
+		go cloudflare.DeleteApplicationRecord(appName)
 	}
 
 	_, err := mongo.DeleteInstance(filter)

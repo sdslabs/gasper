@@ -170,6 +170,7 @@ func ContainerRestart(containerID string) error {
 	return cli.ContainerRestart(ctx, containerID, nil)
 }
 
+// UpdateContainerResources updates the resources of the container corresponding to given containerID
 func UpdateContainerResources(containerID string, updateConfig container.UpdateConfig) error {
 	ctx := context.Background()
 	resp, err := cli.ContainerUpdate(ctx, containerID, updateConfig)

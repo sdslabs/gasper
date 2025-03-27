@@ -30,7 +30,7 @@ func getZoneID() (string, error) {
 // getRecordID returns the ID of the desired record
 func getRecordID(name, instanceType string) (string, error) {
 	res, err := FetchRecords(types.M{
-		"name": fmt.Sprintf("%s.%s.%s", name, instanceType, domain),
+		"name": fmt.Sprintf("%s-%s-gasper.%s", name, instanceType, domain),
 	})
 	if err != nil {
 		return "", err
