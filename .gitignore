@@ -2,6 +2,7 @@
 tmp/
 # Config file
 config.toml
+logs/
 storage/
 mysql-storage/
 mongodb-storage/
