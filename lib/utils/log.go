@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -42,8 +43,10 @@ var tagToString = map[int]string{
 }
 
 var (
-	logfile *os.File
-	mutex   = sync.Mutex{}
+	storepath, _ = os.Getwd()
+	logdir       = "logs"
+	logfile      *os.File
+	mutex        = sync.Mutex{}
 )
 
 func getTimeStamp() string {
@@ -115,9 +118,17 @@ func LogResErr(context string, e types.ResponseError) {
 }
 
 func init() {
-	if configs.GasperConfig.Debug {
-		logfile, _ = os.Create("gasper.log")
-	} else {
-		logfile, _ = os.Create("gasper-" + getTimeStamp() + ".log")
+	path := ""
+	if _, err := os.Stat(logdir); os.IsNotExist(err) {
+		err = os.Mkdir(logdir, os.ModePerm)
+		if err != nil {
+			LogError("Utils-Log-1", err)
+		}
 	}
+	if configs.GasperConfig.Debug {
+		path = filepath.Join(storepath, logdir, "gasper.log")
+	} else {
+		path = filepath.Join(storepath, logdir, "gasper-"+getTimeStamp()+".log")
+	}
+	logfile, _ = os.Create(path)
 }

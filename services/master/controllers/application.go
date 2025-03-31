@@ -17,14 +17,14 @@ import (
 )
 
 type metricsRecord struct {
-	UptimeRecord []bool    `json:"uptime_record"`
-	TimeStamp  []int64 `json:"time_stamp"`
-	CPUUsage    []float64 `json:"cpu_usage"`
-	MemoryUsage []float64 `json:"memory_usage"`
-	HostIP []string `json:"host_ip"`
-	OnlineCPUs []float64 `json:"online_cpus"`
-	MaxMemoryUsage []float64 `json:"max_memory_usage"`
-	MemoryLimit []float64 `json:"memory_limit"`
+	UptimeRecord   bool    `json:"uptime_record"`
+	TimeStamp      int64   `json:"time_stamp"`
+	CPUUsage       float64 `json:"cpu_usage"`
+	MemoryUsage    float64 `json:"memory_usage"`
+	HostIP         string  `json:"host_ip"`
+	OnlineCPUs     float64 `json:"online_cpus"`
+	MaxMemoryUsage float64 `json:"max_memory_usage"`
+	MemoryLimit    float64 `json:"memory_limit"`
 }
 
 // FetchAppsByUser returns all applications owned by a user
@@ -213,7 +213,7 @@ func DeleteApp(c *gin.Context) {
 }
 
 // DeleteAppUsingAppName deletes an application via gRPC using appName as a parameter
-func DeleteAppUsingAppname(c *gin.Context,appName string){
+func DeleteAppUsingAppname(c *gin.Context, appName string) {
 	instanceURL, err := redis.FetchAppNode(appName)
 	if err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
@@ -243,11 +243,15 @@ func FetchAppLogs(c *gin.Context) {
 	}
 
 	filter := utils.QueryToFilter(c.Request.URL.Query())
-	if filter["tail"] == nil {
-		filter["tail"] = "-1"
+	val := filter["tail"]
+	if val == nil || val == "" {
+		val = "-1"
+	} else if _, err := strconv.Atoi(val.(string)); err != nil {
+		utils.SendServerErrorResponse(c, errors.New("invalid tail value "+val.(string)))
+		return
 	}
 
-	response, err := factory.FetchApplicationLogs(appName, filter["tail"].(string), instanceURL)
+	response, err := factory.FetchApplicationLogs(appName, val.(string), instanceURL)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
@@ -332,45 +336,42 @@ func FetchMetrics(c *gin.Context) {
 		}
 	}
 
-	uptimeRecord := []bool{}
-	CPUUsage := []float64{}
-	memoryUsage := []float64{}
-	timeStamp := []int64{}
-	hostIP := []string{}
-	onlineCPUs := []float64{}
-	maxMemoryUsage := []float64{}
-	memoryLimit := []float64{}
 	baseTimestamp := metrics[0]["timestamp"].(int64)
 	var downtimeIntensity int = 0
 	var currTimestamp int64
 
+	records := []metricsRecord{}
 	for i := range metrics {
 		currTimestamp = metrics[i]["timestamp"].(int64)
+		metricsRecord := metricsRecord{}
 		if !metrics[i]["alive"].(bool) {
 			downtimeIntensity++
 		}
 		if (baseTimestamp - currTimestamp) >= sparsity {
+			//
+
 			baseTimestamp = currTimestamp
 			if downtimeIntensity > 0 {
-				uptimeRecord = append(uptimeRecord, false)
+				//
+				metricsRecord.UptimeRecord = false
 			} else {
-				uptimeRecord = append(uptimeRecord, true)
+				//
+				metricsRecord.UptimeRecord = false
 			}
 			downtimeIntensity = 0
-			CPUUsage = append(CPUUsage, metrics[i]["cpu_usage"].(float64))
-			memoryUsage= append(memoryUsage, metrics[i]["memory_usage"].(float64))
-			timeStamp = append(timeStamp, metrics[i]["timestamp"].(int64))
-			hostIP = append(hostIP, metrics[i]["host_ip"].(string))
-			onlineCPUs = append(onlineCPUs, metrics[i]["online_cpus"].(float64))
-			maxMemoryUsage = append(maxMemoryUsage, metrics[i]["max_memory_usage"].(float64))
-			memoryLimit = append(memoryLimit, metrics[i]["memory_limit"].(float64))
+			metricsRecord.CPUUsage = metrics[i]["cpu_usage"].(float64)
+			metricsRecord.MemoryUsage = metrics[i]["memory_usage"].(float64)
+			metricsRecord.TimeStamp = metrics[i]["timestamp"].(int64)
+			metricsRecord.HostIP = metrics[i]["host_ip"].(string)
+			metricsRecord.OnlineCPUs = metrics[i]["online_cpus"].(float64)
+			metricsRecord.MaxMemoryUsage = metrics[i]["max_memory_usage"].(float64)
+			metricsRecord.MemoryLimit = metrics[i]["memory_limit"].(float64)
 		}
+		records = append(records, metricsRecord)
 	}
-
-	metricsRecord := metricsRecord{uptimeRecord,timeStamp, CPUUsage, memoryUsage, hostIP, onlineCPUs, maxMemoryUsage, memoryLimit}
 
 	c.JSON(200, gin.H{
 		"success": true,
-		"data":    metricsRecord,
+		"data":    records,
 	})
 }
