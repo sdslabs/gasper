@@ -20,6 +20,14 @@ var disallowedApplicationNames = []string{
 	types.MongoDB,
 	types.DbMaker,
 	types.GenSSH,
+	"php",
+	"nodejs",
+	"static",
+	"python2",
+	"python3",
+	"golang",
+	"ruby",
+	"rust",
 }
 
 var disallowedDatabaseNames = []string{
@@ -31,6 +39,14 @@ var disallowedDatabaseNames = []string{
 	"information_schema",
 	"performance_schema",
 	"sys",
+	"php",
+	"nodejs",
+	"static",
+	"python2",
+	"python3",
+	"golang",
+	"ruby",
+	"rust",
 }
 
 func isUniqueInstance(instanceName, instanceType string) (bool, error) {
