@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"runtime"
-	"syscall"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +12,7 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
 	"github.com/sdslabs/gasper/types"
+	"github.com/shirou/gopsutil/v4/mem"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -50,12 +50,11 @@ func validateUpdatePayload(data types.M) error {
 // UpdateData updates the data of an application using the update request payload
 func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 	totalCPU := runtime.NumCPU()
-	var sysInfo syscall.Sysinfo_t
-	if err := syscall.Sysinfo(&sysInfo); err == nil {
-		utils.LogError("Error fetching system info:", err)
+	vMemory, err := mem.VirtualMemory()
+	if err != nil {
+		utils.LogError("Error fetching memory", err)
 	}
-	totalMemory := sysInfo.Totalram / uint64(math.Pow(1024, 3))
-
+	totalMemory := float64(vMemory.Total) / math.Pow(1024, 3)
 	if data.Password != nil {
 		app.Password = *data.Password
 	}
@@ -81,7 +80,7 @@ func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 			app.Context.Run = *data.Context.Run
 		}
 	}
-	if data.Resources != nil {
+	if data.Resources != nil && err == nil {
 		if data.Resources.CPU > 0 && data.Resources.CPU <= float64(totalCPU-1) { // 1 CPU reserved for system
 			app.Resources.CPU = data.Resources.CPU
 		} else if data.Resources.CPU > float64(totalCPU-1) && data.Resources.CPU <= float64(totalCPU) {
@@ -89,9 +88,9 @@ func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 		} else {
 			return errors.New("invalid cpu value")
 		}
-		if data.Resources.Memory > 0 && data.Resources.Memory <= float64(totalMemory-1) { // 1 GB reserved for system
+		if data.Resources.Memory > 0 && data.Resources.Memory <= totalMemory-1 { // 1 GB reserved for system
 			app.Resources.Memory = data.Resources.Memory
-		} else if data.Resources.Memory > float64(totalMemory-1) && data.Resources.Memory <= float64(totalMemory) {
+		} else if data.Resources.Memory > totalMemory-1 && data.Resources.Memory <= totalMemory {
 			return errors.New("memory value too high, risks system failure")
 		} else {
 			return errors.New("invalid memory value")
@@ -190,11 +189,11 @@ func Handle404(c *gin.Context) {
 	})
 }
 
-
-func deleteinstance(c *gin.Context,appName string,wg *sync.WaitGroup) {
+func deleteinstance(c *gin.Context, appName string, wg *sync.WaitGroup) {
 	defer wg.Done()
-	DeleteAppUsingAppname(c,appName)
+	DeleteAppUsingAppname(c, appName)
 }
+
 // deleteUser deletes the user from database
 func deleteUser(c *gin.Context, userEmail string) {
 	filter := types.M{
@@ -208,14 +207,14 @@ func deleteUser(c *gin.Context, userEmail string) {
 	var wg sync.WaitGroup
 	for _, instanceData := range instancesInfo {
 		appName := instanceData["name"].(string)
-		wg.Add(1) 
-		go deleteinstance(c,appName, &wg)
+		wg.Add(1)
+		go deleteinstance(c, appName, &wg)
 	}
 
-	wg.Wait() 	
+	wg.Wait()
 	go mongo.DeleteInstances(instanceFilter)
 
-	_,err := mongo.DeleteUser(filter)
+	_, err := mongo.DeleteUser(filter)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
