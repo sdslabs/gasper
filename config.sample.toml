@@ -88,7 +88,7 @@ max_refresh = 2419200 # 28 days
 
 [cloudflare]
 # API Token used for creating/updating Cloudflare's DNS records.
-# This token must have the scopes ZONE:ZONE:EDIT and ZONE:DNS:EDIT.
+# This token must have the scopes ZONE:ZONE:READ, ZONE:ZONE:EDIT and ZONE:DNS:EDIT and Account:Account Settings:READ
 api_token = ""
 plugin = false  # Use Cloudflare Plugin?
 public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
