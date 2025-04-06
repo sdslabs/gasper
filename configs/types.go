@@ -51,6 +51,8 @@ type AppMakerService struct {
 	MetricsInterval time.Duration `toml:"metrics_interval"`
 	HealthInterval  time.Duration `toml:"health_interval"`
 	AppLimit        int           `toml:"app_limit"`
+	MaxMemory       float64          `toml:"max_memory"`
+	MaxCPU		  float64           `toml:"max_cpu"`
 }
 
 // MasterService is the default configuration for Master microservice
