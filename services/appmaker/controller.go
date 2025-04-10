@@ -44,8 +44,8 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 	maxCount := configs.ServiceConfig.AppMaker.AppLimit
 	rateCount := configs.ServiceConfig.RateLimit
 	timeInterval := configs.ServiceConfig.RateInterval
-	if !user.IsAdmin(){
-		if maxCount >= 0{
+	if !user.IsAdmin() {
+		if maxCount >= 0 {
 			rateLimitCount := mongo.CountInstanceInTimeFrame(body.GetOwner(), mongo.AppInstance, timeInterval)
 			totalCount := mongo.CountInstancesByUser(body.GetOwner(), mongo.AppInstance)
 			if totalCount < maxCount {
@@ -56,13 +56,13 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 				return nil, fmt.Errorf("cannot deploy more than %d app instances", maxCount)
 			}
 		}
-		if app.Resources.Memory > configs.ServiceConfig.AppMaker.MaxMemory {
-			return nil, fmt.Errorf("memory limit cannot exceed %f MB", configs.ServiceConfig.AppMaker.MaxMemory)
+		if app.Resources.Memory > configs.ServiceConfig.AppMaker.MaxContainerMemory {
+			return nil, fmt.Errorf("memory limit cannot exceed %f", configs.ServiceConfig.AppMaker.MaxContainerMemory)
 		}
-		if app.Resources.CPU > configs.ServiceConfig.AppMaker.MaxCPU {
-			return nil, fmt.Errorf("cpu limit cannot exceed %f", configs.ServiceConfig.AppMaker.MaxCPU)
+		if app.Resources.CPU > configs.ServiceConfig.AppMaker.MaxContainerCPU {
+			return nil, fmt.Errorf("cpu limit cannot exceed %f", configs.ServiceConfig.AppMaker.MaxContainerCPU)
 		}
-	}	
+	}
 
 	app.SetLanguage(language)
 	app.SetOwner(body.GetOwner())
