@@ -20,7 +20,8 @@ $ curl -X POST \
 "name":"sampleruby",
 "password":"sampleruby",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails",
+    "branch":"master"
 },
 "context":{
     "index":"bin/rails",
@@ -38,7 +39,8 @@ $ curl -X POST \
     "name": "sampleruby",
     "password": "sampleruby",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails",
+        "branch": "master"
     },
     "context": {
         "index": "bin/rails",
@@ -61,11 +63,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/ruby:1.0",
+    "docker_image": "sdslabs/ruby:latest",
     "container_id": "dd4d4199b81120abe58fb80dca355eba639e1caf8fb37ade02c9a53ee40634a0",
     "container_port": 55673,
     "language": "ruby",
     "instance_type": "application",
+    "app_url": "sampleruby-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 sampleruby@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
@@ -95,7 +98,8 @@ $ curl -X POST \
 "name":"sampleruby",
 "password":"sampleruby",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails",
+    "branch":"master"
 },
 "context":{
     "index":"bin/rails",
@@ -112,7 +116,8 @@ $ curl -X POST \
     "name": "sampleruby",
     "password": "sampleruby",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-ruby-on-rails",
+        "branch": "master"
     },
     "context": {
         "index": "bin/rails",
@@ -128,11 +133,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/ruby:1.0",
+    "docker_image": "sdslabs/ruby:latest",
     "container_id": "2e1b2165f93836d8021465802857692f37b51515361e78d13d201fde645d753f",
     "container_port": 56041,
     "language": "ruby",
     "instance_type": "application",
+    "app_url": "sampleruby-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 sampleruby@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",

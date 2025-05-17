@@ -20,7 +20,8 @@ $ curl -X POST \
 "name":"advancedphp",
 "password":"advancedphp",
 "git": {
-	"repo_url": "https://github.com/alphadose/MVC-Project"
+	"repo_url": "https://github.com/alphadose/MVC-Project",
+    "branch":"master"
 },
 "context":{
     "index":"public/index.php",
@@ -33,7 +34,8 @@ $ curl -X POST \
     "name": "advancedphp",
     "password": "advancedphp",
     "git": {
-        "repo_url": "https://github.com/alphadose/MVC-Project"
+        "repo_url": "https://github.com/alphadose/MVC-Project",
+        "branch": "master"
     },
     "context": {
         "index": "public/index.php",
@@ -52,11 +54,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/php:3.0",
+    "docker_image": "sdslabs/php:latest",
     "container_id": "f37749b727988833dda70714539ee1ce7f167abe66d78300553f6843a8af39e2",
     "container_port": 50475,
     "language": "php",
     "instance_type": "application",
+    "app_url": "advancedphp-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 advancedphp@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
@@ -83,7 +86,8 @@ $ curl -X POST \
 "name":"advancedphp",
 "password":"advancedphp",
 "git": {
-	"repo_url": "https://github.com/alphadose/MVC-Project"
+	"repo_url": "https://github.com/alphadose/MVC-Project",
+    "branch":"master"
 },
 "context":{
     "index":"public/index.php",
@@ -95,7 +99,8 @@ $ curl -X POST \
     "name": "advancedphp",
     "password": "advancedphp",
     "git": {
-        "repo_url": "https://github.com/alphadose/MVC-Project"
+        "repo_url": "https://github.com/alphadose/MVC-Project",
+        "branch": "master"
     },
     "context": {
         "index": "public/index.php",
@@ -111,11 +116,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/php:3.0",
+    "docker_image": "sdslabs/php:latest",
     "container_id": "d4a54b0800eb8e8bbcea007275746180e5c193b23fc0e1f4f184abf9b984165b",
     "container_port": 51223,
     "language": "php",
     "instance_type": "application",
+    "app_url": "advancedphp-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 advancedphp@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
