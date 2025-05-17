@@ -17,7 +17,8 @@ $ curl -X POST \
 "name":"static",
 "password":"static",
 "git": {
-	"repo_url": "https://github.com/sdslabs/hangman-js-game"
+	"repo_url": "https://github.com/sdslabs/hangman-js-game",
+    "branch":"master"
 },
 "context":{
     "index":"hangman.html",
@@ -26,10 +27,11 @@ $ curl -X POST \
 }'
 
 {
-    "name": "static",
-    "password": "static",
+    "name": "samplestatic",
+    "password": "samplestatic",
     "git": {
-        "repo_url": "https://github.com/sdslabs/hangman-js-game"
+        "repo_url": "https://github.com/sdslabs/hangman-js-game",
+        "branch": "master"
     },
     "context": {
         "index": "hangman.html",
@@ -45,11 +47,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/static:2.0",
+    "docker_image": "sdslabs/static:latest",
     "container_id": "a05900527ad4b7175be438d8d28707cda39df3b94806d35f92949fd0b3d134db",
     "container_port": 65499,
     "language": "static",
     "instance_type": "application",
+    "app_url": "samplestatic-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 static@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",

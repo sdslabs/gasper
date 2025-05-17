@@ -8,16 +8,17 @@ The docker images used by Gasper for creating application containers and databas
 ###################################
 
 [images]
-static = "docker.io/sdsws/static:2.0"
-php = "docker.io/sdsws/php:3.0"
-nodejs = "docker.io/sdsws/node:2.1"
-python2 =  "docker.io/sdsws/python2:1.1"
-python3 = "docker.io/sdsws/python3:1.1"
-golang = "docker.io/sdsws/golang:1.1"
-ruby = "docker.io/sdsws/ruby:1.0"
-mysql = "docker.io/wangxian/alpine-mysql:latest"
-mongodb = "docker.io/sdsws/alpine-mongo:latest"
-postgresql = "docker.io/postgres:12.2-alpine"
+static = "docker.io/sdslabs/static:latest"
+php = "docker.io/sdslabs/php:latest"
+nodejs = "docker.io/sdslabs/node:latest"
+python2 =  "docker.io/sdslabs/python2:latest"
+python3 = "docker.io/sdslabs/python3:latest"
+golang = "docker.io/sdslabs/golang:latest"
+ruby = "docker.io/sdslabs/ruby:latest"
+rust = "docker.io/sdslabs/rust:latest"
+mysql = "docker.io/mysql:latest"
+mongodb = "docker.io/sdslabs/alpine-mongo:latest"
+postgresql = "docker.io/postgres:latest"
 redis = "docker.io/redis:6.0-rc3-alpine3.11"
 ```
 

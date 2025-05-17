@@ -93,6 +93,45 @@
           }
         }
       },
+      "UpdateContext": {
+        "type": "object",
+        "required": [
+          "index"
+        ],
+        "properties": {
+          "index": {
+            "type": "string",
+            "description": "Entrypoint for an application",
+            "example": "index.js"
+          },
+          "rc_file": {
+            "type": "boolean",
+            "description": "Is a Run Commands file present in the application's git repository's root directory?",
+            "default": false
+          },
+          "build": {
+            "type": "array",
+            "description": "Commands for installing application dependencies",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "npm install",
+              "grunt build"
+            ]
+          },
+          "run": {
+            "type": "array",
+            "description": "Commands for running the application",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "node index.js"
+            ]
+          }
+        }
+      },
       "Git": {
         "type": "object",
         "required": [
@@ -104,6 +143,24 @@
             "description": "Git Repository URL of the application",
             "example": "https://github.com/sdslabs/gasper"
           },
+          "access_token": {
+            "type": "string",
+            "description": "Access token for cloning the application's git repository"
+          },
+          "branch": {
+            "type": "string",
+            "description": "Specific branch to clone",
+            "default": "master",
+            "example": "master"
+          }
+        }
+      },
+      "UpdateGit": {
+        "type": "object",
+        "required": [
+          "repo_url"
+        ],
+        "properties": {
           "access_token": {
             "type": "string",
             "description": "Access token for cloning the application's git repository"
@@ -170,6 +227,50 @@
           }
         }
       },
+      "UpdateApplication": {
+        "type": "object",
+        "required": [
+          "password",
+          "git",
+          "context"
+        ],
+        "properties": {
+          "password": {
+            "type": "string",
+            "description": "Password required for SSH access to the application's docker container"
+          },
+          "docker_image": {
+            "type": "",
+            "description": "Docker image used in building the application's container"
+          },
+          "git": {
+            "$ref": "#/components/schemas/UpdateGit"
+          },
+          "context": {
+            "$ref": "#/components/schemas/UpdateContext"
+          },
+          "resources": {
+            "type": "object",
+            "description": "Resources required by the application",
+            "properties": {
+              "cpu": {
+                "type": "number",
+                "format": "float",
+                "example": 0.25,
+                "description": "Number of virtual CPUs"
+              },
+              "memory": {
+                "type": "number",
+                "format": "float",
+                "example": 0.5,
+                "description": "Memory in GigaBytes (GB)"
+              }
+            }
+          }
+        }
+
+      }
+      ,
       "CreatedApplication": {
         "type": "object",
         "properties": {
@@ -225,12 +326,12 @@
           "docker_image": {
             "type": "string",
             "description": "Docker image used in building the application's container",
-            "example": "sdsws/node:2.0"
+            "example": "sdslabs/node:latest"
           },
           "app_url": {
             "type": "string",
             "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
-            "example": "alphadose.app.sdslabs.co"
+            "example": "alphadose-app-gasper.sdslabs.co"
           },
           "host_ip": {
             "type": "string",
@@ -402,7 +503,7 @@
           "db_url": {
             "type": "string",
             "description": "The domain name of the database (DNS entry is managed by GenDNS 💡)",
-            "example": "alphadose.db.sdslabs.co"
+            "example": "alphadose-db-gasper.sdslabs.co"
           },
           "host_ip": {
             "type": "string",
@@ -1008,12 +1109,12 @@
                     "docker_image": {
                       "type": "string",
                       "description": "Docker image used in building the application's container",
-                      "example": "sdsws/node:2.0"
+                      "example": "sdslabs/node:latest"
                     },
                     "app_url": {
                       "type": "string",
                       "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
-                      "example": "alphadose.app.sdslabs.co"
+                      "example": "alphadose-app-gasper.sdslabs.co"
                     },
                     "host_ip": {
                       "type": "string",
@@ -1372,7 +1473,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Application"
+                "$ref": "#/components/schemas/UpdateApplication"
               }
             }
           }
@@ -1466,12 +1567,12 @@
                     "docker_image": {
                       "type": "string",
                       "description": "Docker image used in building the application's container",
-                      "example": "sdsws/node:2.0"
+                      "example": "sdslabs/node:latest"
                     },
                     "app_url": {
                       "type": "string",
                       "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
-                      "example": "alphadose.app.sdslabs.co"
+                      "example": "alphadose-app-gasper.sdslabs.co"
                     },
                     "host_ip": {
                       "type": "string",
@@ -1800,12 +1901,12 @@
                     "docker_image": {
                       "type": "string",
                       "description": "Docker image used in building the application's container",
-                      "example": "sdsws/node:2.0"
+                      "example": "sdslabs/node:latest"
                     },
                     "app_url": {
                       "type": "string",
                       "description": "The domain name of the application (DNS entry is managed by GenDNS 💡)",
-                      "example": "alphadose.app.sdslabs.co"
+                      "example": "alphadose-app-gasper.sdslabs.co"
                     },
                     "host_ip": {
                       "type": "string",
@@ -2566,7 +2667,7 @@
                     "db_url": {
                       "type": "string",
                       "description": "The domain name of the database (DNS entry is managed by GenDNS 💡)",
-                      "example": "alphadose.db.sdslabs.co"
+                      "example": "alphadose-db-gasper.sdslabs.co"
                     },
                     "host_ip": {
                       "type": "string",
@@ -3523,7 +3624,7 @@
             "description": "Docker Image used in building the application's container",
             "schema": {
               "type": "string",
-              "example": "sdsws/node:2.0"
+              "example": "sdslabs/node:latest"
             }
           },
           {

@@ -20,7 +20,8 @@ $ curl -X POST \
 "name":"sampledjango",
 "password":"sampledjango",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-django"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-django",
+    "branch":"master"
 },
 "context":{
     "index":"todo/manage.py",
@@ -57,11 +58,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/python3:1.1",
+    "docker_image": "sdslabs/python3:latest",
     "container_id": "8f2a04bb54f0b90a911b05d3fb1ae73ff240c2e5a5093609d393f7c426de4755",
     "container_port": 53358,
     "language": "python3",
     "instance_type": "application",
+    "app_url": "sampledjango-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 sampledjango@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
@@ -88,7 +90,8 @@ $ curl -X POST \
 "name":"sampledjango2",
 "password":"sampledjango2",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-django"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-django",
+    "branch":"master"
 },
 "context":{
     "index":"todo/manage.py",
@@ -101,7 +104,8 @@ $ curl -X POST \
     "name": "sampledjango",
     "password": "sampledjango",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-django"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-django",
+        "branch": "master"
     },
     "context": {
         "index": "todo/manage.py",
@@ -117,11 +121,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/python3:1.1",
+    "docker_image": "sdslabs/python3:latest",
     "container_id": "48ada540a6296b184470eb192e4b543f195ab5f67615ec12318d3e8d01e05edf",
     "container_port": 53672,
     "language": "python3",
-    "instance_type": "application",
+    "instance_type": "application",    
+    "app_url": "sampledjango-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 sampledjango@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",

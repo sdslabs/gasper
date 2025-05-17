@@ -20,7 +20,8 @@ $ curl -X POST \
 "name":"sampleflask",
 "password":"sampleflask",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-flask"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-flask",
+    "branch":"master"
 },
 "context":{
     "index":"run.py",
@@ -56,11 +57,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/python3:1.1",
+    "docker_image": "sdslabs/python3:latest",
     "container_id": "b9521abaa377f5cdf525eb3e3fbe083719f8bee7f8500863b079310f69f4a413",
     "container_port": 52687,
     "language": "python3",
     "instance_type": "application",
+    "app_url": "sampleflask-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 sampleflask@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
@@ -87,7 +89,8 @@ $ curl -X POST \
 "name":"sampleflask",
 "password":"sampleflask",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-flask"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-flask",
+    "branch":"master"
 },
 "context":{
     "index":"run.py",
@@ -100,7 +103,8 @@ $ curl -X POST \
     "name": "sampleflask",
     "password": "sampleflask",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-flask"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-flask",
+        "branch": "master"
     },
     "context": {
         "index": "run.py",
@@ -116,11 +120,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/python3:1.1",
+    "docker_image": "sdslabs/python3:latest",
     "container_id": "574c8b5d8c9e8a14baa10f207723c2083ff28d008b9302a6bb3a6662cb7b06a8",
     "container_port": 52811,
     "language": "python3",
     "instance_type": "application",
+    "app_url": "sampleflask-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 sampleflask@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",

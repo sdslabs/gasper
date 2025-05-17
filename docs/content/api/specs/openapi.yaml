@@ -106,7 +106,7 @@ components:
         docker_image:
           type: string
           description: Docker image used in building the application's container
-          example: sdsws/node:2.0
+          example: sdslabs/node:latest
         git:
           $ref: '#/components/schemas/Git'
         context:
@@ -146,11 +146,11 @@ components:
         docker_image:
           type: string
           description: Docker image used in building the application's container
-          example: sdsws/node:2.0
+          example: sdslabs/node:latest
         app_url:
           type: string
           description: The domain name of the application (DNS entry is managed by GenDNS 💡)
-          example: alphadose.app.sdslabs.co
+          example: alphadose-app-gasper.sdslabs.co
         host_ip:
           type: string
           example: 192.168.208.206
@@ -1229,7 +1229,7 @@ paths:
           description: Docker Image used in building the application's container
           schema:
             type: string
-            example: sdsws/node:2.0
+            example: sdslabs/node:latest
         - in: query
           name: host_ip
           description: IPv4 address of the node in which the application is deployed

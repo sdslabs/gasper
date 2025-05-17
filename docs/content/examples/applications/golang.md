@@ -20,7 +20,8 @@ $ curl -X POST \
 "name":"samplego",
 "password":"samplego",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-golang"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-golang",
+    "branch":"master"
 },
 "context":{
     "index":"main.go",
@@ -52,11 +53,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/golang:1.1",
+    "docker_image": "sdslabs/golang:latest",
     "container_id": "e0d2b784cab9c6cc4c360c81953502d757447a70a7d84bc944cc05819d2ee818",
     "container_port": 55147,
     "language": "golang",
     "instance_type": "application",
+    "app_url": "samplego-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 samplego@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
@@ -83,7 +85,8 @@ $ curl -X POST \
 "name":"samplego",
 "password":"samplego",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-golang"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-golang",
+    "branch":"master"
 },
 "context":{
     "index":"main.go",
@@ -96,7 +99,8 @@ $ curl -X POST \
     "name": "samplego",
     "password": "samplego",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-golang"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-golang",
+        "branch": "master"
     },
     "context": {
         "index": "main.go",
@@ -112,11 +116,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/golang:1.1",
+    "docker_image": "sdslabs/golang:latest",
     "container_id": "0c4b1ec05fe65fcb0b3ef168244d38ae9fab4d0bc22e2e0d5a39badeedce31e7",
     "container_port": 55229,
     "language": "golang",
     "instance_type": "application",
+    "app_url": "samplego-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 samplego@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
