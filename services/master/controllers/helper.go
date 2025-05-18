@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
@@ -51,6 +52,12 @@ func validateUpdatePayload(data types.M) error {
 func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 	totalCPU := runtime.NumCPU()
 	vMemory, err := mem.VirtualMemory()
+
+	user, err := mongo.FetchSingleUserWithoutPassword(app.Owner)
+	if err != nil {
+		return errors.New("Error Fetching Owner of App")
+	}
+
 	if err != nil {
 		utils.LogError("Error fetching memory", err)
 	}
@@ -82,14 +89,22 @@ func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 	}
 	if data.Resources != nil && err == nil {
 		if data.Resources.CPU > 0 && data.Resources.CPU <= float64(totalCPU-1) { // 1 CPU reserved for system
-			app.Resources.CPU = data.Resources.CPU
+			if user.IsAdmin() || data.Resources.CPU <= configs.ServiceConfig.AppMaker.MaxContainerCPU {
+				app.Resources.CPU = data.Resources.CPU
+			} else {
+				return fmt.Errorf("cpu limit cannot exceed %f", configs.ServiceConfig.AppMaker.MaxContainerCPU)
+			}
 		} else if data.Resources.CPU > float64(totalCPU-1) && data.Resources.CPU <= float64(totalCPU) {
 			return errors.New("cpu value too high, risks system failure")
 		} else {
 			return errors.New("invalid cpu value")
 		}
 		if data.Resources.Memory > 0 && data.Resources.Memory <= totalMemory-1 { // 1 GB reserved for system
-			app.Resources.Memory = data.Resources.Memory
+			if user.IsAdmin() || data.Resources.Memory <= configs.ServiceConfig.AppMaker.MaxContainerMemory {
+				app.Resources.Memory = data.Resources.Memory
+			} else {
+				return fmt.Errorf("memory limit cannot exceed %f", configs.ServiceConfig.AppMaker.MaxContainerMemory)
+			}
 		} else if data.Resources.Memory > totalMemory-1 && data.Resources.Memory <= totalMemory {
 			return errors.New("memory value too high, risks system failure")
 		} else {
