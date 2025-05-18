@@ -20,7 +20,8 @@ $ curl -X POST \
 "name":"samplenode",
 "password":"samplenode",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-nodejs"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-nodejs",
+    "branch":"master"
 },
 "context":{
     "index":"main.js",
@@ -56,11 +57,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/node:2.1",
+    "docker_image": "sdslabs/node:latest",
     "container_id": "dc04aea7dbef287b5bfa597120773c4ff5b5309d3a39235055ff80e9ffbee00f",
     "container_port": 51952,
     "language": "nodejs",
     "instance_type": "application",
+    "app_url": "samplenode-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 samplenode@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
@@ -87,7 +89,8 @@ $ curl -X POST \
 "name":"samplenode",
 "password":"samplenode",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-nodejs"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-nodejs",
+    "branch":"master"
 },
 "context":{
     "index":"main.js",
@@ -100,7 +103,8 @@ $ curl -X POST \
     "name": "samplenode",
     "password": "samplenode",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-nodejs"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-nodejs",
+        "branch": "master"
     },
     "context": {
         "index": "main.js",
@@ -116,11 +120,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/node:2.1",
+    "docker_image": "sdslabs/node:latest",
     "container_id": "5e025f17c9d5c11f93609f7d019b3efbdc44ccef598a6e6564973da895e5e366",
     "container_port": 51720,
     "language": "nodejs",
     "instance_type": "application",
+    "app_url": "samplenode-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 samplenode1@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",

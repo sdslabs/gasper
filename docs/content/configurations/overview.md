@@ -98,7 +98,7 @@ max_refresh = 2419200 # 28 days
 
 [cloudflare]
 # API Token used for creating/updating Cloudflare's DNS records.
-# This token must have the scopes ZONE:ZONE:EDIT and ZONE:DNS:EDIT.
+# This token must have the scopes ZONE:ZONE:READ, ZONE:ZONE:EDIT, ZONE:DNS:EDIT and ACCOUNT:ACCOUNT SETTINGS:READ.
 api_token = ""
 plugin = false  # Use Cloudflare Plugin?
 public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
@@ -109,16 +109,17 @@ public_ip = ""  # IPv4 address for Cloudflare's DNS records to point to.
 ###################################
 
 [images]
-static = "docker.io/sdsws/static:2.0"
-php = "docker.io/sdsws/php:3.0"
-nodejs = "docker.io/sdsws/node:2.1"
-python2 =  "docker.io/sdsws/python2:1.1"
-python3 = "docker.io/sdsws/python3:1.1"
-golang = "docker.io/sdsws/golang:1.1"
-ruby = "docker.io/sdsws/ruby:1.0"
-mysql = "docker.io/wangxian/alpine-mysql:latest"
-mongodb = "docker.io/sdsws/alpine-mongo:latest"
-postgresql = "docker.io/postgres:12.2-alpine"
+static = "docker.io/sdslabs/static:latest"
+php = "docker.io/sdslabs/php:latest"
+nodejs = "docker.io/sdslabs/node:latest"
+python2 =  "docker.io/sdslabs/python2:latest"
+python3 = "docker.io/sdslabs/python3:latest"
+golang = "docker.io/sdslabs/golang:latest"
+ruby = "docker.io/sdslabs/ruby:latest"
+rust = "docker.io/sdslabs/rust:latest"
+mysql = "docker.io/mysql:latest"
+mongodb = "docker.io/sdslabs/alpine-mongo:latest"
+postgresql = "docker.io/postgres:latest"
 redis = "docker.io/redis:6.0-rc3-alpine3.11"
 
 
@@ -132,6 +133,13 @@ redis = "docker.io/redis:6.0-rc3-alpine3.11"
 # Time Interval (in seconds) in which the current node updates
 # the central registry-server with the status of its microservices.
 exposure_interval = 30
+
+# Rate limit of deploying number of app/DB per unit time
+# Set rate_limit = -1 if no rate limit is to be imposed
+rate_limit = 2
+
+# Time interval (in hours) for rate limiting for App/DB creation
+rate_interval = 24
 
 
 ############################
@@ -188,9 +196,17 @@ private_key = "/home/user/privkey.pem"  # Private Key Location
 [services.appmaker]
 deploy = true   # Deploy AppMaker?
 port = 4000
+
 # Time Interval (in seconds) in which metrics of all application containers
 # running in the current node are collected and stored in the central mongoDB database
 metrics_interval = 600
+
+# Time Interval (in seconds) in which health is checked of all application containers and if unhealthy, they are restarted
+health_interval = 300
+
+# Hard Limits the total number of app instances that can be deployed by an user
+# Set app_limit = -1 if no hard limit is to be imposed
+app_limit = 10
 
 
 #############################
@@ -200,6 +216,10 @@ metrics_interval = 600
 [services.dbmaker]
 deploy = false  # Deploy DbMaker?
 port = 9000
+
+# Hard Limits the total number of db instances that can be deployed by an user
+# Set db_limit = -1 if no hard limit is to be imposed
+db_limit= 10
 
 # Configuration for MySQL database server managed by `DbMaker`
 [services.dbmaker.mysql]
@@ -267,4 +287,22 @@ passphrase = ""   # Passphrase (if any) for decrypting the Private Key
 # To be used when the current node is only accessible by a jump host or
 # behind some network forwarding rule or proxy setup.
 entrypoint_ip = ""
+
+
+###########################
+#   Jikan Configuration   #
+###########################
+
+[services.jikan]
+deploy = false   # Deploy Jikan?
+port = 3333
+
+############################
+#   Github Configuration   #
+############################
+
+[github]
+username = "gasper-github-username"
+email = "gasper-mail-id"
+pat = "personal-access-token"
 ```

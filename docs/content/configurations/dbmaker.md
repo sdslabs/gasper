@@ -12,6 +12,10 @@ The following section deals with the configuration of DbMaker
 [services.dbmaker]
 deploy = false  # Deploy DbMaker?
 port = 9000
+
+# Hard Limits the total number of db instances that can be deployed by an user
+# Set db_limit = -1 if no hard limit is to be imposed
+db_limit= 10
 ```
 
 !!!warning

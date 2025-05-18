@@ -20,7 +20,8 @@ $ curl -X POST \
 "name":"samplerust",
 "password":"samplerust",
 "git": {
-    "repo_url":"https://github.com/sdslabs/gasper-sample-rust"
+    "repo_url":"https://github.com/sdslabs/gasper-sample-rust",
+    "branch":"master"
 },
 "context":{
     "index": "src/main.rs",
@@ -39,7 +40,8 @@ $ curl -X POST \
     "name": "samplerust",
     "password": "samplerust",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-rust"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-rust",
+        "branch": "master"
     },
     "context": {
         "index": "src/main.rs",
@@ -60,12 +62,12 @@ $ curl -X POST \
         "8.8.8.8",
         "8.8.4.4"
     ],
-    "docker_image": "sdsws/rust:1.0",
+    "docker_image": "sdslabs/rust:latest",
     "container_id": "2b9b1f772259c4c6e81aebc3d0e5aca941695bb923ef55652eb73a6b45765c61",
     "container_port": 53341,
     "language": "rust",
     "instance_type": "application",
-    "app_url": "samplerust.app.sdslabs.co",
+    "app_url": "samplerust-app-gasper.sdslabs.co",
     "host_ip": "192.168.29.250",
     "ssh_cmd": "ssh -p 2222 samplerust@192.168.29.250",
     "owner": "anish.mukherjee1996@gmail.com",
@@ -95,7 +97,8 @@ $ curl -X POST \
 "name":"samplerust",
 "password":"samplerust",
 "git": {
-    "repo_url":"https://github.com/sdslabs/gasper-sample-rust"
+    "repo_url":"https://github.com/sdslabs/gasper-sample-rust",
+    "branch":"master"
 },
 "context":{
     "index": "src/main.rs",
@@ -113,7 +116,8 @@ $ curl -X POST \
     "name": "samplerust",
     "password": "samplerust",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-rust"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-rust",
+        "branch": "master"
     },
     "context": {
         "index": "src/main.rs",
@@ -128,12 +132,12 @@ $ curl -X POST \
         "8.8.8.8",
         "8.8.4.4"
     ],
-    "docker_image": "sdsws/rust:1.0",
+    "docker_image": "sdslabs/rust:latest",
     "container_id": "917423498cc1d1d344a00069da6d453fdcdd7848d502a43063f852a4bd8afb94",
     "container_port": 53473,
     "language": "rust",
     "instance_type": "application",
-    "app_url": "samplerust.app.sdslabs.co",
+    "app_url": "samplerust-app-gasper.sdslabs.co",
     "host_ip": "192.168.29.250",
     "ssh_cmd": "ssh -p 2222 samplerust@192.168.29.250",
     "owner": "anish.mukherjee1996@gmail.com",

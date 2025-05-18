@@ -33,7 +33,7 @@ $ ./gasper --conf ./config.toml
 ```
 
 !!!warning
-    Make sure that Docker, Redis and MongoDB are running on your system before executing the above command
+    Make sure that Docker is running on your system before executing the above command
 
 ## Login and Token Retrieval
 After Gasper is up and successfully running, lets deploy a sample application using [curl](https://curl.haxx.se/)
@@ -74,7 +74,8 @@ $ curl -X POST \
 "name":"test",
 "password":"test",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-php"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-php",,
+    "branch":"master"
 },
 "context":{
     "index":"index.php"
@@ -85,7 +86,8 @@ $ curl -X POST \
     "name": "test",
     "password": "test",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-php"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-php",
+        "branch": "master"
     },
     "context": {
         "index": "index.php",
@@ -101,7 +103,7 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/php:3.0",
+    "docker_image": "sdslabs/php:latest",
     "container_id": "fe04f8d7cbbdfa100ac9f03c8bdcec7b3d3246aa189dc0264c7d2af1cb92308b",
     "container_port": 64128,
     "language": "php",

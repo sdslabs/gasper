@@ -17,7 +17,8 @@ $ curl -X POST \
 "name":"simplephp",
 "password":"simplephp",
 "git": {
-	"repo_url": "https://github.com/sdslabs/gasper-sample-php"
+	"repo_url": "https://github.com/sdslabs/gasper-sample-php",
+    "branch":"master"
 },
 "context":{
     "index":"index.php",
@@ -29,7 +30,8 @@ $ curl -X POST \
     "name": "simplephp",
     "password": "simplephp",
     "git": {
-        "repo_url": "https://github.com/sdslabs/gasper-sample-php"
+        "repo_url": "https://github.com/sdslabs/gasper-sample-php",
+        "branch": "master"
     },
     "context": {
         "index": "index.php",
@@ -45,11 +47,12 @@ $ curl -X POST \
         "192.168.108.122",
         "10.43.3.24"
     ],
-    "docker_image": "sdsws/php:3.0",
+    "docker_image": "sdslabs/php:latest",
     "container_id": "c447c03399e5b23b860c6bfd932fa6a7f93e9ff6d7001d0cd4064f1554752cc3",
     "container_port": 49599,
     "language": "php",
     "instance_type": "application",
+    "app_url": "simplephp-app-gasper.sdslabs.co",
     "host_ip": "10.43.3.24",
     "ssh_cmd": "ssh -p 2222 simplephp@10.43.3.24",
     "owner": "anish.mukherjee1996@gmail.com",
