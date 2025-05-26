@@ -103,6 +103,29 @@ func ValidateApplicationRequest(c *gin.Context) {
 		})
 		return
 	}
+	if app.Resources.CPU == 0 {
+		app.Resources.CPU = types.DefaultCPUs
+	}
+	if app.Resources.Memory == 0 {
+		app.Resources.Memory = types.DefaultMemory
+	}
+
+	ok, err := utils.ValidateCPUvalue(app.Resources.CPU)
+	if !ok && err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	ok, err = utils.ValidateRAMvalue(app.Resources.Memory)
+	if !ok && err != nil {
+		c.AbortWithStatusJSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
 	c.Next()
 }
 
