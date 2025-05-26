@@ -3,8 +3,6 @@ package controllers
 import (
 	"errors"
 	"fmt"
-	"math"
-	"runtime"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +10,6 @@ import (
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
 	"github.com/sdslabs/gasper/types"
-	"github.com/shirou/gopsutil/v4/mem"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -49,12 +46,6 @@ func validateUpdatePayload(data types.M) error {
 
 // UpdateData updates the data of an application using the update request payload
 func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
-	// totalCPU := runtime.NumCPU()
-	// vMemory, err := mem.VirtualMemory()
-	// if err != nil {
-	// 	utils.LogError("Error fetching memory", err)
-	// }
-	// totalMemory := float64(vMemory.Total) / math.Pow(1024, 3)
 	if data.Password != nil {
 		app.Password = *data.Password
 	}
@@ -80,30 +71,15 @@ func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 			app.Context.Run = *data.Context.Run
 		}
 	}
-	// if data.Resources != nil && err == nil {
-	// 	if data.Resources.CPU > 0 && data.Resources.CPU <= float64(totalCPU-1) { // 1 CPU reserved for system
-	// 		app.Resources.CPU = data.Resources.CPU
-	// 	} else if data.Resources.CPU > float64(totalCPU-1) && data.Resources.CPU <= float64(totalCPU) {
-	// 		return errors.New("cpu value too high, risks system failure")
-	// 	} else {
-	// 		return errors.New("invalid cpu value")
-	// 	}
-	// 	if data.Resources.Memory > 0 && data.Resources.Memory <= totalMemory-1 { // 1 GB reserved for system
-	// 		app.Resources.Memory = data.Resources.Memory
-	// 	} else if data.Resources.Memory > totalMemory-1 && data.Resources.Memory <= totalMemory {
-	// 		return errors.New("memory value too high, risks system failure")
-	// 	} else {
-	// 		return errors.New("invalid memory value")
-	// 	}
-	// }
+
 	if data.Resources != nil {
-		ok, err := validateCPUvalue(data.Resources.CPU)
+		ok, err := utils.ValidateCPUvalue(data.Resources.CPU)
 		if ok && err == nil {
 			app.Resources.CPU = data.Resources.CPU
 		} else {
 			return err
 		}
-		ok, err = validateRAMvalue(data.Resources.Memory)
+		ok, err = utils.ValidateRAMvalue(data.Resources.Memory)
 		if ok && err == nil {
 			app.Resources.Memory = data.Resources.Memory
 		} else {
@@ -111,34 +87,6 @@ func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 		}
 	}
 	return nil
-}
-
-func validateCPUvalue(cpu float64) (bool, error) {
-	totalCPU := runtime.NumCPU()
-	if cpu > 0 && cpu <= float64(totalCPU-1) { // 1 CPU reserved for system
-		return true, nil
-	} else if cpu > float64(totalCPU-1) && cpu <= float64(totalCPU) {
-		return false, errors.New("cpu value too high, risks system failure")
-	} else {
-		return false, errors.New("invalid cpu value")
-	}
-}
-
-// validateRAMvalue checks if the Memory value entered by the use is within bounds of 0 < value < TotalRAM-1
-func validateRAMvalue(memory float64) (bool, error) {
-	vMemory, err := mem.VirtualMemory()
-	if err != nil {
-		utils.LogError("Error fetching memory", err)
-		return false, errors.New("Unable to assign Memory value")
-	}
-	totalMemory := float64(vMemory.Total) / math.Pow(1024, 3)
-	if memory > 0 && memory <= totalMemory-1 { // 1 GB reserved for system
-		return true, nil
-	} else if memory > totalMemory-1 && memory <= totalMemory {
-		return false, errors.New("memory value too high, risks system failure")
-	} else {
-		return false, errors.New("invalid memory value")
-	}
 }
 
 func fetchInstances(c *gin.Context, instance string) {
