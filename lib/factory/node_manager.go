@@ -3,7 +3,6 @@ package factory
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	pb "github.com/sdslabs/gasper/lib/factory/protos/application"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -11,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// GracefulUp starts all stopped application containers in the given worker node
+// GracefulUp starts all stopped application containers in the given worker node, and creates apps whose containers are not present
 func GracefulUp(instanceURL string, appsOnNode []types.ApplicationConfig) (bool, error) {
 	conn, err := grpc.Dial(
 		instanceURL,
@@ -37,7 +36,7 @@ func GracefulUp(instanceURL string, appsOnNode []types.ApplicationConfig) (bool,
 
 	for _, app := range appsOnNode {
 		if !utils.Contains(res.Data, app.Name) {
-			fmt.Println("Creating app ", app.Name)
+			utils.LogInfo("APP", "Creating App %s on node %s", app.Name, instanceURL)
 			data, err := json.Marshal(app)
 			if err != nil {
 				return false, err

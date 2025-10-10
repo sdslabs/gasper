@@ -139,27 +139,29 @@ func DeleteUserByAdmin(c *gin.Context) {
 }
 
 func UpNode(c *gin.Context) {
-	fmt.Println("master - upnode called")
 	var data types.UpNodeRequest
+	var appsOnNode []types.ApplicationConfig
+	var appOnNode types.ApplicationConfig
+	res := gin.H{}
+
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	instanceURL := data.NodeAddress
+	instanceURL := data.NodeIP
 	hostIP, _, err := net.SplitHostPort(instanceURL)
+
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	filter := map[string]interface{}{
+	apps := mongo.FetchAppInfo(types.M{
 		"host_ip": hostIP,
-	}
-	var appsOnNode []types.ApplicationConfig
-	var appOnNode types.ApplicationConfig
-	dataMapArray := mongo.FetchAppInfo(filter)
-	for _, dataMap := range dataMapArray {
-		temp, _ := json.Marshal(dataMap)
+	})
+
+	for _, app := range apps {
+		temp, _ := json.Marshal(app)
 		json.Unmarshal(temp, &appOnNode)
 		appsOnNode = append(appsOnNode, appOnNode)
 	}
@@ -170,9 +172,8 @@ func UpNode(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"success": ans,
-	})
+	res["success"] = ans
+	c.JSON(200, res)
 }
 
 func DownNode(c *gin.Context) {

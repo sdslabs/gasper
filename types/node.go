@@ -2,7 +2,7 @@ package types
 
 type UpNodeRequest struct {
 	//ip:port of the node
-	NodeAddress string `json:"node_address" binding:"required"`
+	NodeIP string `json:"node_ip" binding:"required"`
 }
 
 type Response struct {
