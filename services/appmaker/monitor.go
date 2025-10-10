@@ -39,7 +39,7 @@ func registerMetrics() {
 		maxUsage := metrics.Memory.MaxUsage
 		memoryLimit := metrics.Memory.Limit
 		if memoryLimit == 0 {
-			utils.Log("AppMaker-Monitor-3", fmt.Sprintf("Container %s has stopped", app), utils.ErrorTAG)
+			utils.Log("AppMaker-Monitor-3", fmt.Sprintf("Container %s has stopped", containerName), utils.ErrorTAG)
 			// error needs to be handled in a better way
 			continue
 		}
@@ -48,7 +48,7 @@ func registerMetrics() {
 		cpuTime := metrics.CPU.CPUUsage.TotalUsage
 		onlineCPUs := metrics.CPU.OnlineCPUs
 		if onlineCPUs == 0 {
-			utils.Log("AppMaker-Monitor-4", fmt.Sprintf("Container %s has stopped", app), utils.ErrorTAG)
+			utils.Log("AppMaker-Monitor-4", fmt.Sprintf("Container %s has stopped", containerName), utils.ErrorTAG)
 			// error needs to be handled in a better way
 			continue
 		}
@@ -56,7 +56,7 @@ func registerMetrics() {
 		if containerName == types.MySQL || containerName == types.PostgreSQL || containerName == types.MongoDB {
 			logs, err = database.LogDB(containerId)
 			if err != nil {
-				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("error in getting logs of %s:,%s", app, err))
+				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("error in getting logs of %s:,%s", containerName, err))
 			}
 		}
 		parsedMetrics := types.Metrics{
