@@ -26,6 +26,16 @@ type server struct {
 	pb.UnimplementedApplicationFactoryServer
 }
 
+func (s *server) StartStoppedAppContainers(ctx context.Context, body *pb.ContainerRequestBody) (*pb.ContainerResponseBody, error) {
+	CheckContainerHealth()
+
+	data, err := docker.ListContainers()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ContainerResponseBody{Data: data}, err
+}
+
 // Create creates an application
 func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.ResponseBody, error) {
 	language := body.GetLanguage()

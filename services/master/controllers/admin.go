@@ -1,8 +1,13 @@
 package controllers
 
 import (
+	"encoding/json"
+	"fmt"
+	"net"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -131,4 +136,49 @@ func GetNodesByName(c *gin.Context) {
 // DeleteUserByAdmin deletes the user from database
 func DeleteUserByAdmin(c *gin.Context) {
 	deleteUser(c, c.Param("user"))
+}
+
+func UpNode(c *gin.Context) {
+	fmt.Println("master - upnode called")
+	var data types.UpNodeRequest
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	instanceURL := data.NodeAddress
+	hostIP, _, err := net.SplitHostPort(instanceURL)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	filter := map[string]interface{}{
+		"host_ip": hostIP,
+	}
+	var appsOnNode []types.ApplicationConfig
+	var appOnNode types.ApplicationConfig
+	dataMapArray := mongo.FetchAppInfo(filter)
+	for _, dataMap := range dataMapArray {
+		temp, _ := json.Marshal(dataMap)
+		json.Unmarshal(temp, &appOnNode)
+		appsOnNode = append(appsOnNode, appOnNode)
+	}
+
+	ans, err := factory.GracefulUp(instanceURL, appsOnNode)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"success": ans,
+	})
+}
+
+func DownNode(c *gin.Context) {
+	fmt.Println("DownNode called")
+	c.JSON(200, gin.H{
+		"success": true,
+		"message": "Node is being taken down",
+	})
 }

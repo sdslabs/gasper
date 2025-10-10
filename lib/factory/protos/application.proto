@@ -10,6 +10,16 @@ service ApplicationFactory {
     rpc Rebuild (NameHolder) returns (ResponseBody) {}
     rpc FetchLogs (LogRequest) returns (LogResponse) {}
     rpc Update (NameHolder) returns (ResponseBody) {}
+    rpc StartStoppedAppContainers (ContainerRequestBody) returns (ContainerResponseBody) {}
+}
+
+
+message ContainerRequestBody {
+    string instanceURL = 1;
+}
+
+message ContainerResponseBody {
+    repeated string data = 1;
 }
 
 message RequestBody {

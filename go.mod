@@ -26,7 +26,7 @@ require (
 	golang.org/x/oauth2 v0.23.0
 	golang.org/x/sync v0.10.0
 	google.golang.org/grpc v1.69.2
-	google.golang.org/protobuf v1.36.1
+	google.golang.org/protobuf v1.36.10
 	gopkg.in/src-d/go-git.v4 v4.13.1
 )
 
