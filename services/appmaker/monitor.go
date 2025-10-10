@@ -1,7 +1,6 @@
 package appmaker
 
 import (
-	"encoding/json"
 	"fmt"
 	"math"
 	"time"
@@ -17,18 +16,19 @@ import (
 )
 
 func registerMetrics() {
-	apps := FetchAllApplicationNames()
-
+	apps := FetchAllApplicationNamesOnNode(utils.HostIP)
 	var parsedMetricsList []interface{}
 
 	for _, app := range apps {
-		metrics, err := docker.ContainerStats(app)
+		containerId := app.ContainerID
+		containerName := app.Name
+		metrics, err := docker.ContainerStats(containerId)
 		if err != nil {
 			utils.LogError("AppMaker-Monitor-1", err)
 			continue
 		}
 
-		containerStatus, err := docker.InspectContainerState(app)
+		containerStatus, err := docker.InspectContainerState(containerId)
 		if err != nil {
 			utils.LogError("AppMaker-Monitor-2", err)
 			continue
@@ -53,14 +53,14 @@ func registerMetrics() {
 			continue
 		}
 		var logs string
-		if app == types.MySQL || app == types.PostgreSQL || app == types.MongoDB {
-			logs, err = database.LogDB(app)
+		if containerName == types.MySQL || containerName == types.PostgreSQL || containerName == types.MongoDB {
+			logs, err = database.LogDB(containerId)
 			if err != nil {
 				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("error in getting logs of %s:,%s", app, err))
 			}
 		}
 		parsedMetrics := types.Metrics{
-			Name:           app,
+			Name:           containerName,
 			Alive:          containerStatus.Running,
 			ReadTime:       time.Now().Unix(),
 			MemoryUsage:    memoryUsage / memoryLimit,
@@ -71,10 +71,10 @@ func registerMetrics() {
 			HostIP:         utils.HostIP,
 			Logs:           logs,
 		}
-		if app == types.MySQL || app == types.PostgreSQL || app == types.MongoDB {
+		if containerName == types.MySQL || containerName == types.PostgreSQL || containerName == types.MongoDB {
 			err = mongo.UpdateOneWithUpsert(mongo.MetricsCollection, types.M{"name": app}, parsedMetrics, options.Update().SetUpsert(true))
 			if err != nil {
-				utils.LogError("AppMaker-Monitor-13", fmt.Errorf("error in updating metrics of %s:,%s", app, err))
+				utils.LogError("AppMaker-Monitor-13", fmt.Errorf("error in updating metrics of %s:,%s", containerName, err))
 			}
 			continue
 		}
@@ -97,20 +97,9 @@ func ScheduleMetricsCollection() {
 
 // checkContainerHealth checks the health of the containers and restarts the unhealthy ones
 func CheckContainerHealth() {
-	//use host filter to run health check only on apps of this host
-	apps := mongo.FetchAppInfo(types.M{mongo.HostIPKey: utils.HostIP})
+	apps := FetchAllApplicationNamesOnNode(utils.HostIP)
 	for _, app := range apps {
-		var appObject types.ApplicationConfig
-		temp, err := json.Marshal(app)
-		if err != nil {
-			utils.LogError("AppMaker-Monitor-8", err)
-		}
-		err = json.Unmarshal(temp, &appObject)
-		if err != nil {
-			utils.LogError("AppMaker-Monitor-8", err)
-		}
-		containerID := appObject.ContainerID
-
+		containerID := app.ContainerID
 		containerStatus, err := docker.InspectContainerHealth(containerID)
 		if err != nil {
 			utils.LogError("AppMaker-Monitor-9", err)
@@ -118,7 +107,7 @@ func CheckContainerHealth() {
 		}
 		// If container is unhealthy, log the error and restart the container
 		if containerStatus == docker.Container_Unhealthy {
-			utils.Log("AppMaker-Monitor-10", fmt.Sprintf("Container %s has stopped...restarting", containerID), utils.ErrorTAG)
+			utils.Log("AppMaker-Monitor-10", fmt.Sprintf("Container %s has stopped...Restarting", containerID), utils.ErrorTAG)
 			if err := docker.ContainerRestart(containerID); err != nil {
 				utils.LogError("AppMaker-Monitor-11", err)
 			}

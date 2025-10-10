@@ -1,6 +1,7 @@
 package appmaker
 
 import (
+	"encoding/json"
 	"os"
 
 	"github.com/sdslabs/gasper/lib/docker"
@@ -54,7 +55,6 @@ func stateCleanup(appName string) {
 }
 
 func FetchAllApplicationNames() []string {
-
 	apps := mongo.FetchDocs(mongo.InstanceCollection, types.M{
 		mongo.InstanceTypeKey: mongo.AppInstance,
 	})
@@ -63,4 +63,24 @@ func FetchAllApplicationNames() []string {
 		appNames = append(appNames, app[mongo.NameKey].(string))
 	}
 	return appNames
+}
+
+func FetchAllApplicationNamesOnNode(hostIP string) []types.ApplicationConfig {
+	apps := mongo.FetchAppInfo(types.M{mongo.HostIPKey: hostIP})
+	var appObjects []types.ApplicationConfig
+	for _, app := range apps {
+		var appObject types.ApplicationConfig
+		temp, err := json.Marshal(app)
+		if err != nil {
+			utils.LogError("Marshalling Error", err)
+			continue
+		}
+		err = json.Unmarshal(temp, &appObject)
+		if err != nil {
+			utils.LogError("Unmarshalling Error", err)
+			continue
+		}
+		appObjects = append(appObjects, appObject)
+	}
+	return appObjects
 }
