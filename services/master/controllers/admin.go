@@ -215,11 +215,11 @@ func ShiftNode(c *gin.Context) {
 		return
 	}
 
-	targetIp, _, err := net.SplitHostPort(targetAddress)
-	if err != nil {
-		utils.SendServerErrorResponse(c, err)
-		return
-	}
+	// targetIp, _, err := net.SplitHostPort(targetAddress)
+	// if err != nil {
+	// 	utils.SendServerErrorResponse(c, err)
+	// 	return
+	// }
 
 	appsOnNode, err := FetchAllApplicationsOnNode(hostIP)
 	if err != nil {
@@ -227,13 +227,13 @@ func ShiftNode(c *gin.Context) {
 		return
 	}
 
-	ans, err := factory.GracefulDown(hostIP, appsOnNode)
+	ans, err := factory.GracefulDown(hostAddress, appsOnNode)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	ans, err = factory.GracefulUp(targetIp, appsOnNode)
+	ans, err = factory.GracefulUp(targetAddress, appsOnNode)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
