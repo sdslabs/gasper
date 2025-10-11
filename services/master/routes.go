@@ -122,6 +122,7 @@ func NewService() http.Handler {
 			nodes.GET("/:type", c.GetNodesByName)
 			nodes.POST("/up", c.UpNode)
 			nodes.POST("/down", c.DownNode)
+			nodes.POST("/shift", c.ShiftNode)
 		}
 	}
 

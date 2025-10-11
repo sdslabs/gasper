@@ -164,7 +164,7 @@ var JWTGctl = &jwt.GinJWTMiddleware{
 	Unauthorized:    unauthorized,
 }
 
-//AuthRequired returns middleware according to type of request
+// AuthRequired returns middleware according to type of request
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if strings.Contains(c.Request.Header.Get("Authorization"), "gctlToken") {
@@ -192,7 +192,7 @@ func ExtractClaims(c *gin.Context) *types.User {
 	return user
 }
 
-//LoginHandler takes the gin context and executes LoginHandler function according to authorization type
+// LoginHandler takes the gin context and executes LoginHandler function according to authorization type
 func LoginHandler(c *gin.Context) {
 	if strings.Contains(c.Request.Header.Get("Authorization-Type"), "gctlToken") {
 		JWTGctl.LoginHandler(c)
@@ -201,7 +201,7 @@ func LoginHandler(c *gin.Context) {
 	}
 }
 
-//RefreshHandler takes the gin context and executes RefreshHandler function according to authorization type
+// RefreshHandler takes the gin context and executes RefreshHandler function according to authorization type
 func RefreshHandler(c *gin.Context) {
 	if strings.Contains(c.Request.Header.Get("Authorization"), "gctlToken") {
 		JWTGctl.RefreshHandler(c)

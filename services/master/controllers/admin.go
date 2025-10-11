@@ -151,7 +151,7 @@ func UpNode(c *gin.Context) {
 		return
 	}
 
-	appsOnNode, err := FetchAllApplicationNamesOnNode(hostIP)
+	appsOnNode, err := FetchAllApplicationsOnNode(hostIP)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
@@ -182,13 +182,58 @@ func DownNode(c *gin.Context) {
 		return
 	}
 
-	appsOnNode, err := FetchAllApplicationNamesOnNode(hostIP)
+	appsOnNode, err := FetchAllApplicationsOnNode(hostIP)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
 	ans, err := factory.GracefulDown(instanceURL, appsOnNode)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	res["success"] = ans
+	c.JSON(200, res)
+}
+
+func ShiftNode(c *gin.Context) {
+	var data types.ShiftNodeRequest
+	res := gin.H{}
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	hostAddress := data.HostIp
+	targetAddress := data.TargetIp
+
+	hostIP, _, err := net.SplitHostPort(hostAddress)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	targetIp, _, err := net.SplitHostPort(targetAddress)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	appsOnNode, err := FetchAllApplicationsOnNode(hostIP)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	ans, err := factory.GracefulDown(hostIP, appsOnNode)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	ans, err = factory.GracefulUp(targetIp, appsOnNode)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return

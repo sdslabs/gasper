@@ -112,5 +112,5 @@ func GetRedisLogs(c *gin.Context) {
 		"success": true,
 		"data":    logs,
 	})
-	
+
 }

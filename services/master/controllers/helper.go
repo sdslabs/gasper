@@ -124,7 +124,7 @@ func FetchAllInstancesByUser(c *gin.Context) {
 	})
 }
 
-func FetchAllApplicationNamesOnNode(hostIP string) ([]types.ApplicationConfig, error) {
+func FetchAllApplicationsOnNode(hostIP string) ([]types.ApplicationConfig, error) {
 	apps := mongo.FetchAppInfo(types.M{mongo.HostIPKey: hostIP})
 	var appObjects []types.ApplicationConfig
 	for _, app := range apps {
