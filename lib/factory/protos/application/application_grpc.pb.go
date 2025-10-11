@@ -37,7 +37,7 @@ type ApplicationFactoryClient interface {
 	Rebuild(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
 	FetchLogs(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	Update(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
-	StartStoppedAppContainers(ctx context.Context, in *ContainerRequestBody, opts ...grpc.CallOption) (*ContainerResponseBody, error)
+	StartStoppedAppContainers(ctx context.Context, in *DownNodeRequestBody, opts ...grpc.CallOption) (*ContainerResponseBody, error)
 	StopAppContainers(ctx context.Context, in *DownNodeRequestBody, opts ...grpc.CallOption) (*DeletionResponse, error)
 }
 
@@ -99,7 +99,7 @@ func (c *applicationFactoryClient) Update(ctx context.Context, in *NameHolder, o
 	return out, nil
 }
 
-func (c *applicationFactoryClient) StartStoppedAppContainers(ctx context.Context, in *ContainerRequestBody, opts ...grpc.CallOption) (*ContainerResponseBody, error) {
+func (c *applicationFactoryClient) StartStoppedAppContainers(ctx context.Context, in *DownNodeRequestBody, opts ...grpc.CallOption) (*ContainerResponseBody, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ContainerResponseBody)
 	err := c.cc.Invoke(ctx, ApplicationFactory_StartStoppedAppContainers_FullMethodName, in, out, cOpts...)
@@ -128,7 +128,7 @@ type ApplicationFactoryServer interface {
 	Rebuild(context.Context, *NameHolder) (*ResponseBody, error)
 	FetchLogs(context.Context, *LogRequest) (*LogResponse, error)
 	Update(context.Context, *NameHolder) (*ResponseBody, error)
-	StartStoppedAppContainers(context.Context, *ContainerRequestBody) (*ContainerResponseBody, error)
+	StartStoppedAppContainers(context.Context, *DownNodeRequestBody) (*ContainerResponseBody, error)
 	StopAppContainers(context.Context, *DownNodeRequestBody) (*DeletionResponse, error)
 	mustEmbedUnimplementedApplicationFactoryServer()
 }
@@ -155,7 +155,7 @@ func (UnimplementedApplicationFactoryServer) FetchLogs(context.Context, *LogRequ
 func (UnimplementedApplicationFactoryServer) Update(context.Context, *NameHolder) (*ResponseBody, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedApplicationFactoryServer) StartStoppedAppContainers(context.Context, *ContainerRequestBody) (*ContainerResponseBody, error) {
+func (UnimplementedApplicationFactoryServer) StartStoppedAppContainers(context.Context, *DownNodeRequestBody) (*ContainerResponseBody, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartStoppedAppContainers not implemented")
 }
 func (UnimplementedApplicationFactoryServer) StopAppContainers(context.Context, *DownNodeRequestBody) (*DeletionResponse, error) {
@@ -273,7 +273,7 @@ func _ApplicationFactory_Update_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _ApplicationFactory_StartStoppedAppContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContainerRequestBody)
+	in := new(DownNodeRequestBody)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -285,7 +285,7 @@ func _ApplicationFactory_StartStoppedAppContainers_Handler(srv interface{}, ctx 
 		FullMethod: ApplicationFactory_StartStoppedAppContainers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApplicationFactoryServer).StartStoppedAppContainers(ctx, req.(*ContainerRequestBody))
+		return srv.(ApplicationFactoryServer).StartStoppedAppContainers(ctx, req.(*DownNodeRequestBody))
 	}
 	return interceptor(ctx, in, info, handler)
 }

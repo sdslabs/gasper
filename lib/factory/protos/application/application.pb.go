@@ -486,14 +486,14 @@ const file_application_proto_rawDesc = "" +
 	"\x04tail\x18\x02 \x01(\tR\x04tail\";\n" +
 	"\vLogResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x12\n" +
-	"\x04data\x18\x02 \x03(\tR\x04data2\x9a\x04\n" +
+	"\x04data\x18\x02 \x03(\tR\x04data2\x99\x04\n" +
 	"\x12ApplicationFactory\x12?\n" +
 	"\x06Create\x12\x18.application.RequestBody\x1a\x19.application.ResponseBody\"\x00\x12B\n" +
 	"\x06Delete\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00\x12?\n" +
 	"\aRebuild\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12@\n" +
 	"\tFetchLogs\x12\x17.application.LogRequest\x1a\x18.application.LogResponse\"\x00\x12>\n" +
-	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12d\n" +
-	"\x19StartStoppedAppContainers\x12!.application.ContainerRequestBody\x1a\".application.ContainerResponseBody\"\x00\x12V\n" +
+	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12c\n" +
+	"\x19StartStoppedAppContainers\x12 .application.DownNodeRequestBody\x1a\".application.ContainerResponseBody\"\x00\x12V\n" +
 	"\x11StopAppContainers\x12 .application.DownNodeRequestBody\x1a\x1d.application.DeletionResponse\"\x00B\x0fZ\r./applicationb\x06proto3"
 
 var (
@@ -526,7 +526,7 @@ var file_application_proto_depIdxs = []int32{
 	5, // 2: application.ApplicationFactory.Rebuild:input_type -> application.NameHolder
 	7, // 3: application.ApplicationFactory.FetchLogs:input_type -> application.LogRequest
 	5, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
-	0, // 5: application.ApplicationFactory.StartStoppedAppContainers:input_type -> application.ContainerRequestBody
+	1, // 5: application.ApplicationFactory.StartStoppedAppContainers:input_type -> application.DownNodeRequestBody
 	1, // 6: application.ApplicationFactory.StopAppContainers:input_type -> application.DownNodeRequestBody
 	4, // 7: application.ApplicationFactory.Create:output_type -> application.ResponseBody
 	6, // 8: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse

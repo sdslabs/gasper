@@ -186,6 +186,16 @@ func ContainerRestart(containerID string) error {
 	return cli.ContainerRestart(ctx, containerID, nil)
 }
 
+func BulkContainerRestart(containerIDs []string) error {
+	for _, app := range containerIDs {
+		err := ContainerRestart(app)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // UpdateContainerResources updates the resources of the container corresponding to given containerID
 func UpdateContainerResources(containerID string, updateConfig container.UpdateConfig) error {
 	ctx := context.Background()

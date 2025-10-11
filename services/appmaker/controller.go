@@ -26,8 +26,12 @@ type server struct {
 	pb.UnimplementedApplicationFactoryServer
 }
 
-func (s *server) StartStoppedAppContainers(ctx context.Context, body *pb.ContainerRequestBody) (*pb.ContainerResponseBody, error) {
-	CheckContainerHealth()
+func (s *server) StartStoppedAppContainers(ctx context.Context, body *pb.DownNodeRequestBody) (*pb.ContainerResponseBody, error) {
+	appsOnNode := body.GetData()
+	err := docker.BulkContainerRestart(appsOnNode)
+	if err != nil {
+		return nil, err
+	}
 
 	data, err := docker.ListContainers()
 	if err != nil {

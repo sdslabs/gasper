@@ -27,8 +27,15 @@ func GracefulUp(instanceURL string, appsOnNode []types.ApplicationConfig) (bool,
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	res, err := client.StartStoppedAppContainers(ctx, &pb.ContainerRequestBody{
+	var appNamesOnNode []string
+
+	for _, app := range appsOnNode {
+		appNamesOnNode = append(appNamesOnNode, app.Name)
+	}
+
+	res, err := client.StartStoppedAppContainers(ctx, &pb.DownNodeRequestBody{
 		InstanceURL: instanceURL,
+		Data:        appNamesOnNode,
 	})
 	if err != nil {
 		return false, err
@@ -51,7 +58,6 @@ func GracefulUp(instanceURL string, appsOnNode []types.ApplicationConfig) (bool,
 			}
 		}
 	}
-
 	return true, nil
 }
 
