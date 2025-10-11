@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
@@ -121,6 +122,26 @@ func FetchAllInstancesByUser(c *gin.Context) {
 		"success": true,
 		"data":    mongo.FetchDocs(mongo.InstanceCollection, filter, opts),
 	})
+}
+
+func FetchAllApplicationNamesOnNode(hostIP string) ([]types.ApplicationConfig, error) {
+	apps := mongo.FetchAppInfo(types.M{mongo.HostIPKey: hostIP})
+	var appObjects []types.ApplicationConfig
+	for _, app := range apps {
+		var appObject types.ApplicationConfig
+		temp, err := json.Marshal(app)
+		if err != nil {
+			utils.LogError("Marshalling Error", err)
+			return nil, err
+		}
+		err = json.Unmarshal(temp, &appObject)
+		if err != nil {
+			utils.LogError("Unmarshalling Error", err)
+			return nil, err
+		}
+		appObjects = append(appObjects, appObject)
+	}
+	return appObjects, nil
 }
 
 func fetchInstancesByUser(c *gin.Context, instanceType string) {

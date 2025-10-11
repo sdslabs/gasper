@@ -8,6 +8,7 @@ import (
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/database"
 	"github.com/sdslabs/gasper/lib/docker"
+	"github.com/sdslabs/gasper/services/master/controllers"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/sdslabs/gasper/lib/mongo"
@@ -16,7 +17,11 @@ import (
 )
 
 func registerMetrics() {
-	apps := FetchAllApplicationNamesOnNode(utils.HostIP)
+	apps, err := controllers.FetchAllApplicationNamesOnNode(utils.HostIP)
+	if err != nil {
+		utils.LogError("AppMaker-Monitor-1", err)
+		return
+	}
 	var parsedMetricsList []interface{}
 
 	for _, app := range apps {
@@ -56,7 +61,7 @@ func registerMetrics() {
 		if containerName == types.MySQL || containerName == types.PostgreSQL || containerName == types.MongoDB {
 			logs, err = database.LogDB(containerId)
 			if err != nil {
-				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("error in getting logs of %s:,%s", containerName, err))
+				utils.LogError("AppMaker-Monitor-12", fmt.Errorf("error in getting logs of %s:,%s", &containerName, err))
 			}
 		}
 		parsedMetrics := types.Metrics{
@@ -97,7 +102,12 @@ func ScheduleMetricsCollection() {
 
 // checkContainerHealth checks the health of the containers and restarts the unhealthy ones
 func CheckContainerHealth() {
-	apps := FetchAllApplicationNamesOnNode(utils.HostIP)
+	apps, err := controllers.FetchAllApplicationNamesOnNode(utils.HostIP)
+	if err != nil {
+		utils.LogError("AppMaker-Monitor-8", err)
+		return
+	}
+
 	for _, app := range apps {
 		containerID := app.ContainerID
 		containerStatus, err := docker.InspectContainerHealth(containerID)

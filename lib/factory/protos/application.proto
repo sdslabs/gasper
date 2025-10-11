@@ -11,11 +11,17 @@ service ApplicationFactory {
     rpc FetchLogs (LogRequest) returns (LogResponse) {}
     rpc Update (NameHolder) returns (ResponseBody) {}
     rpc StartStoppedAppContainers (ContainerRequestBody) returns (ContainerResponseBody) {}
+    rpc StopAppContainers (DownNodeRequestBody) returns (DeletionResponse) {}
 }
 
 
 message ContainerRequestBody {
     string instanceURL = 1;
+}
+
+message DownNodeRequestBody {
+    string instanceURL = 1;
+    repeated string data = 2;
 }
 
 message ContainerResponseBody {

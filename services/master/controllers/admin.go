@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
-	"fmt"
 	"net"
 
 	"github.com/gin-gonic/gin"
@@ -140,8 +138,6 @@ func DeleteUserByAdmin(c *gin.Context) {
 
 func UpNode(c *gin.Context) {
 	var data types.UpNodeRequest
-	var appsOnNode []types.ApplicationConfig
-	var appOnNode types.ApplicationConfig
 	res := gin.H{}
 
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -150,20 +146,15 @@ func UpNode(c *gin.Context) {
 	}
 	instanceURL := data.NodeIP
 	hostIP, _, err := net.SplitHostPort(instanceURL)
-
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	apps := mongo.FetchAppInfo(types.M{
-		"host_ip": hostIP,
-	})
-
-	for _, app := range apps {
-		temp, _ := json.Marshal(app)
-		json.Unmarshal(temp, &appOnNode)
-		appsOnNode = append(appsOnNode, appOnNode)
+	appsOnNode, err := FetchAllApplicationNamesOnNode(hostIP)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
 	}
 
 	ans, err := factory.GracefulUp(instanceURL, appsOnNode)
@@ -177,9 +168,32 @@ func UpNode(c *gin.Context) {
 }
 
 func DownNode(c *gin.Context) {
-	fmt.Println("DownNode called")
-	c.JSON(200, gin.H{
-		"success": true,
-		"message": "Node is being taken down",
-	})
+	var data types.UpNodeRequest
+	res := gin.H{}
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+	instanceURL := data.NodeIP
+	hostIP, _, err := net.SplitHostPort(instanceURL)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	appsOnNode, err := FetchAllApplicationNamesOnNode(hostIP)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	ans, err := factory.GracefulDown(instanceURL, appsOnNode)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	res["success"] = ans
+	c.JSON(200, res)
 }

@@ -65,6 +65,58 @@ func (x *ContainerRequestBody) GetInstanceURL() string {
 	return ""
 }
 
+type DownNodeRequestBody struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	InstanceURL   string                 `protobuf:"bytes,1,opt,name=instanceURL,proto3" json:"instanceURL,omitempty"`
+	Data          []string               `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DownNodeRequestBody) Reset() {
+	*x = DownNodeRequestBody{}
+	mi := &file_application_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DownNodeRequestBody) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DownNodeRequestBody) ProtoMessage() {}
+
+func (x *DownNodeRequestBody) ProtoReflect() protoreflect.Message {
+	mi := &file_application_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DownNodeRequestBody.ProtoReflect.Descriptor instead.
+func (*DownNodeRequestBody) Descriptor() ([]byte, []int) {
+	return file_application_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DownNodeRequestBody) GetInstanceURL() string {
+	if x != nil {
+		return x.InstanceURL
+	}
+	return ""
+}
+
+func (x *DownNodeRequestBody) GetData() []string {
+	if x != nil {
+		return x.Data
+	}
+	return nil
+}
+
 type ContainerResponseBody struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Data          []string               `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
@@ -74,7 +126,7 @@ type ContainerResponseBody struct {
 
 func (x *ContainerResponseBody) Reset() {
 	*x = ContainerResponseBody{}
-	mi := &file_application_proto_msgTypes[1]
+	mi := &file_application_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -86,7 +138,7 @@ func (x *ContainerResponseBody) String() string {
 func (*ContainerResponseBody) ProtoMessage() {}
 
 func (x *ContainerResponseBody) ProtoReflect() protoreflect.Message {
-	mi := &file_application_proto_msgTypes[1]
+	mi := &file_application_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -99,7 +151,7 @@ func (x *ContainerResponseBody) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ContainerResponseBody.ProtoReflect.Descriptor instead.
 func (*ContainerResponseBody) Descriptor() ([]byte, []int) {
-	return file_application_proto_rawDescGZIP(), []int{1}
+	return file_application_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ContainerResponseBody) GetData() []string {
@@ -120,7 +172,7 @@ type RequestBody struct {
 
 func (x *RequestBody) Reset() {
 	*x = RequestBody{}
-	mi := &file_application_proto_msgTypes[2]
+	mi := &file_application_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -132,7 +184,7 @@ func (x *RequestBody) String() string {
 func (*RequestBody) ProtoMessage() {}
 
 func (x *RequestBody) ProtoReflect() protoreflect.Message {
-	mi := &file_application_proto_msgTypes[2]
+	mi := &file_application_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -145,7 +197,7 @@ func (x *RequestBody) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RequestBody.ProtoReflect.Descriptor instead.
 func (*RequestBody) Descriptor() ([]byte, []int) {
-	return file_application_proto_rawDescGZIP(), []int{2}
+	return file_application_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *RequestBody) GetLanguage() string {
@@ -178,7 +230,7 @@ type ResponseBody struct {
 
 func (x *ResponseBody) Reset() {
 	*x = ResponseBody{}
-	mi := &file_application_proto_msgTypes[3]
+	mi := &file_application_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -190,7 +242,7 @@ func (x *ResponseBody) String() string {
 func (*ResponseBody) ProtoMessage() {}
 
 func (x *ResponseBody) ProtoReflect() protoreflect.Message {
-	mi := &file_application_proto_msgTypes[3]
+	mi := &file_application_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -203,7 +255,7 @@ func (x *ResponseBody) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResponseBody.ProtoReflect.Descriptor instead.
 func (*ResponseBody) Descriptor() ([]byte, []int) {
-	return file_application_proto_rawDescGZIP(), []int{3}
+	return file_application_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ResponseBody) GetData() []byte {
@@ -222,7 +274,7 @@ type NameHolder struct {
 
 func (x *NameHolder) Reset() {
 	*x = NameHolder{}
-	mi := &file_application_proto_msgTypes[4]
+	mi := &file_application_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -234,7 +286,7 @@ func (x *NameHolder) String() string {
 func (*NameHolder) ProtoMessage() {}
 
 func (x *NameHolder) ProtoReflect() protoreflect.Message {
-	mi := &file_application_proto_msgTypes[4]
+	mi := &file_application_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -247,7 +299,7 @@ func (x *NameHolder) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NameHolder.ProtoReflect.Descriptor instead.
 func (*NameHolder) Descriptor() ([]byte, []int) {
-	return file_application_proto_rawDescGZIP(), []int{4}
+	return file_application_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *NameHolder) GetName() string {
@@ -266,7 +318,7 @@ type DeletionResponse struct {
 
 func (x *DeletionResponse) Reset() {
 	*x = DeletionResponse{}
-	mi := &file_application_proto_msgTypes[5]
+	mi := &file_application_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -278,7 +330,7 @@ func (x *DeletionResponse) String() string {
 func (*DeletionResponse) ProtoMessage() {}
 
 func (x *DeletionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_application_proto_msgTypes[5]
+	mi := &file_application_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -291,7 +343,7 @@ func (x *DeletionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletionResponse.ProtoReflect.Descriptor instead.
 func (*DeletionResponse) Descriptor() ([]byte, []int) {
-	return file_application_proto_rawDescGZIP(), []int{5}
+	return file_application_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DeletionResponse) GetSuccess() bool {
@@ -311,7 +363,7 @@ type LogRequest struct {
 
 func (x *LogRequest) Reset() {
 	*x = LogRequest{}
-	mi := &file_application_proto_msgTypes[6]
+	mi := &file_application_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -323,7 +375,7 @@ func (x *LogRequest) String() string {
 func (*LogRequest) ProtoMessage() {}
 
 func (x *LogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_application_proto_msgTypes[6]
+	mi := &file_application_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -336,7 +388,7 @@ func (x *LogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogRequest.ProtoReflect.Descriptor instead.
 func (*LogRequest) Descriptor() ([]byte, []int) {
-	return file_application_proto_rawDescGZIP(), []int{6}
+	return file_application_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LogRequest) GetName() string {
@@ -363,7 +415,7 @@ type LogResponse struct {
 
 func (x *LogResponse) Reset() {
 	*x = LogResponse{}
-	mi := &file_application_proto_msgTypes[7]
+	mi := &file_application_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -375,7 +427,7 @@ func (x *LogResponse) String() string {
 func (*LogResponse) ProtoMessage() {}
 
 func (x *LogResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_application_proto_msgTypes[7]
+	mi := &file_application_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -388,7 +440,7 @@ func (x *LogResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogResponse.ProtoReflect.Descriptor instead.
 func (*LogResponse) Descriptor() ([]byte, []int) {
-	return file_application_proto_rawDescGZIP(), []int{7}
+	return file_application_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *LogResponse) GetSuccess() bool {
@@ -411,7 +463,10 @@ const file_application_proto_rawDesc = "" +
 	"\n" +
 	"\x11application.proto\x12\vapplication\"8\n" +
 	"\x14ContainerRequestBody\x12 \n" +
-	"\vinstanceURL\x18\x01 \x01(\tR\vinstanceURL\"+\n" +
+	"\vinstanceURL\x18\x01 \x01(\tR\vinstanceURL\"K\n" +
+	"\x13DownNodeRequestBody\x12 \n" +
+	"\vinstanceURL\x18\x01 \x01(\tR\vinstanceURL\x12\x12\n" +
+	"\x04data\x18\x02 \x03(\tR\x04data\"+\n" +
 	"\x15ContainerResponseBody\x12\x12\n" +
 	"\x04data\x18\x01 \x03(\tR\x04data\"S\n" +
 	"\vRequestBody\x12\x1a\n" +
@@ -431,14 +486,15 @@ const file_application_proto_rawDesc = "" +
 	"\x04tail\x18\x02 \x01(\tR\x04tail\";\n" +
 	"\vLogResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x12\n" +
-	"\x04data\x18\x02 \x03(\tR\x04data2\xc2\x03\n" +
+	"\x04data\x18\x02 \x03(\tR\x04data2\x9a\x04\n" +
 	"\x12ApplicationFactory\x12?\n" +
 	"\x06Create\x12\x18.application.RequestBody\x1a\x19.application.ResponseBody\"\x00\x12B\n" +
 	"\x06Delete\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00\x12?\n" +
 	"\aRebuild\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12@\n" +
 	"\tFetchLogs\x12\x17.application.LogRequest\x1a\x18.application.LogResponse\"\x00\x12>\n" +
 	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12d\n" +
-	"\x19StartStoppedAppContainers\x12!.application.ContainerRequestBody\x1a\".application.ContainerResponseBody\"\x00B\x0fZ\r./applicationb\x06proto3"
+	"\x19StartStoppedAppContainers\x12!.application.ContainerRequestBody\x1a\".application.ContainerResponseBody\"\x00\x12V\n" +
+	"\x11StopAppContainers\x12 .application.DownNodeRequestBody\x1a\x1d.application.DeletionResponse\"\x00B\x0fZ\r./applicationb\x06proto3"
 
 var (
 	file_application_proto_rawDescOnce sync.Once
@@ -452,32 +508,35 @@ func file_application_proto_rawDescGZIP() []byte {
 	return file_application_proto_rawDescData
 }
 
-var file_application_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_application_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_application_proto_goTypes = []any{
 	(*ContainerRequestBody)(nil),  // 0: application.ContainerRequestBody
-	(*ContainerResponseBody)(nil), // 1: application.ContainerResponseBody
-	(*RequestBody)(nil),           // 2: application.RequestBody
-	(*ResponseBody)(nil),          // 3: application.ResponseBody
-	(*NameHolder)(nil),            // 4: application.NameHolder
-	(*DeletionResponse)(nil),      // 5: application.DeletionResponse
-	(*LogRequest)(nil),            // 6: application.LogRequest
-	(*LogResponse)(nil),           // 7: application.LogResponse
+	(*DownNodeRequestBody)(nil),   // 1: application.DownNodeRequestBody
+	(*ContainerResponseBody)(nil), // 2: application.ContainerResponseBody
+	(*RequestBody)(nil),           // 3: application.RequestBody
+	(*ResponseBody)(nil),          // 4: application.ResponseBody
+	(*NameHolder)(nil),            // 5: application.NameHolder
+	(*DeletionResponse)(nil),      // 6: application.DeletionResponse
+	(*LogRequest)(nil),            // 7: application.LogRequest
+	(*LogResponse)(nil),           // 8: application.LogResponse
 }
 var file_application_proto_depIdxs = []int32{
-	2, // 0: application.ApplicationFactory.Create:input_type -> application.RequestBody
-	4, // 1: application.ApplicationFactory.Delete:input_type -> application.NameHolder
-	4, // 2: application.ApplicationFactory.Rebuild:input_type -> application.NameHolder
-	6, // 3: application.ApplicationFactory.FetchLogs:input_type -> application.LogRequest
-	4, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
+	3, // 0: application.ApplicationFactory.Create:input_type -> application.RequestBody
+	5, // 1: application.ApplicationFactory.Delete:input_type -> application.NameHolder
+	5, // 2: application.ApplicationFactory.Rebuild:input_type -> application.NameHolder
+	7, // 3: application.ApplicationFactory.FetchLogs:input_type -> application.LogRequest
+	5, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
 	0, // 5: application.ApplicationFactory.StartStoppedAppContainers:input_type -> application.ContainerRequestBody
-	3, // 6: application.ApplicationFactory.Create:output_type -> application.ResponseBody
-	5, // 7: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
-	3, // 8: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
-	7, // 9: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
-	3, // 10: application.ApplicationFactory.Update:output_type -> application.ResponseBody
-	1, // 11: application.ApplicationFactory.StartStoppedAppContainers:output_type -> application.ContainerResponseBody
-	6, // [6:12] is the sub-list for method output_type
-	0, // [0:6] is the sub-list for method input_type
+	1, // 6: application.ApplicationFactory.StopAppContainers:input_type -> application.DownNodeRequestBody
+	4, // 7: application.ApplicationFactory.Create:output_type -> application.ResponseBody
+	6, // 8: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
+	4, // 9: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
+	8, // 10: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
+	4, // 11: application.ApplicationFactory.Update:output_type -> application.ResponseBody
+	2, // 12: application.ApplicationFactory.StartStoppedAppContainers:output_type -> application.ContainerResponseBody
+	6, // 13: application.ApplicationFactory.StopAppContainers:output_type -> application.DeletionResponse
+	7, // [7:14] is the sub-list for method output_type
+	0, // [0:7] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -494,7 +553,7 @@ func file_application_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_application_proto_rawDesc), len(file_application_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

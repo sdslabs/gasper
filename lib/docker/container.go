@@ -127,6 +127,22 @@ func StopContainer(containerID string) error {
 	return cli.ContainerStop(ctx, containerID, nil)
 }
 
+// BulkStopContainers stops all containers in the given list of container names and skips those which are not present on the node anyways.
+func BulkStopContainers(containerNames []string) error {
+	allContainers, err := ListContainers()
+	if err != nil {
+		return err
+	}
+	for _, containerID := range containerNames {
+		if utils.Contains(allContainers, containerID) {
+			if err := StopContainer(containerID); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 // ListContainers lists all containers
 // Deprecated : It returns all the containers running on the system, even those which are not monitored by gasper
 // Instead use appmaker.FetchAllApplicationNames()

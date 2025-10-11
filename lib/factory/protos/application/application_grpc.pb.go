@@ -25,6 +25,7 @@ const (
 	ApplicationFactory_FetchLogs_FullMethodName                 = "/application.ApplicationFactory/FetchLogs"
 	ApplicationFactory_Update_FullMethodName                    = "/application.ApplicationFactory/Update"
 	ApplicationFactory_StartStoppedAppContainers_FullMethodName = "/application.ApplicationFactory/StartStoppedAppContainers"
+	ApplicationFactory_StopAppContainers_FullMethodName         = "/application.ApplicationFactory/StopAppContainers"
 )
 
 // ApplicationFactoryClient is the client API for ApplicationFactory service.
@@ -37,6 +38,7 @@ type ApplicationFactoryClient interface {
 	FetchLogs(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	Update(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
 	StartStoppedAppContainers(ctx context.Context, in *ContainerRequestBody, opts ...grpc.CallOption) (*ContainerResponseBody, error)
+	StopAppContainers(ctx context.Context, in *DownNodeRequestBody, opts ...grpc.CallOption) (*DeletionResponse, error)
 }
 
 type applicationFactoryClient struct {
@@ -107,6 +109,16 @@ func (c *applicationFactoryClient) StartStoppedAppContainers(ctx context.Context
 	return out, nil
 }
 
+func (c *applicationFactoryClient) StopAppContainers(ctx context.Context, in *DownNodeRequestBody, opts ...grpc.CallOption) (*DeletionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeletionResponse)
+	err := c.cc.Invoke(ctx, ApplicationFactory_StopAppContainers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApplicationFactoryServer is the server API for ApplicationFactory service.
 // All implementations must embed UnimplementedApplicationFactoryServer
 // for forward compatibility.
@@ -117,6 +129,7 @@ type ApplicationFactoryServer interface {
 	FetchLogs(context.Context, *LogRequest) (*LogResponse, error)
 	Update(context.Context, *NameHolder) (*ResponseBody, error)
 	StartStoppedAppContainers(context.Context, *ContainerRequestBody) (*ContainerResponseBody, error)
+	StopAppContainers(context.Context, *DownNodeRequestBody) (*DeletionResponse, error)
 	mustEmbedUnimplementedApplicationFactoryServer()
 }
 
@@ -144,6 +157,9 @@ func (UnimplementedApplicationFactoryServer) Update(context.Context, *NameHolder
 }
 func (UnimplementedApplicationFactoryServer) StartStoppedAppContainers(context.Context, *ContainerRequestBody) (*ContainerResponseBody, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartStoppedAppContainers not implemented")
+}
+func (UnimplementedApplicationFactoryServer) StopAppContainers(context.Context, *DownNodeRequestBody) (*DeletionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StopAppContainers not implemented")
 }
 func (UnimplementedApplicationFactoryServer) mustEmbedUnimplementedApplicationFactoryServer() {}
 func (UnimplementedApplicationFactoryServer) testEmbeddedByValue()                            {}
@@ -274,6 +290,24 @@ func _ApplicationFactory_StartStoppedAppContainers_Handler(srv interface{}, ctx 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApplicationFactory_StopAppContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownNodeRequestBody)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApplicationFactoryServer).StopAppContainers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApplicationFactory_StopAppContainers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApplicationFactoryServer).StopAppContainers(ctx, req.(*DownNodeRequestBody))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApplicationFactory_ServiceDesc is the grpc.ServiceDesc for ApplicationFactory service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -304,6 +338,10 @@ var ApplicationFactory_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StartStoppedAppContainers",
 			Handler:    _ApplicationFactory_StartStoppedAppContainers_Handler,
+		},
+		{
+			MethodName: "StopAppContainers",
+			Handler:    _ApplicationFactory_StopAppContainers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
