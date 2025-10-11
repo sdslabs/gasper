@@ -17,7 +17,7 @@ import (
 )
 
 func registerMetrics() {
-	apps, err := controllers.FetchAllApplicationNamesOnNode(utils.HostIP)
+	apps, err := controllers.FetchAllApplicationsOnNode(utils.HostIP)
 	if err != nil {
 		utils.LogError("AppMaker-Monitor-1", err)
 		return
@@ -102,7 +102,7 @@ func ScheduleMetricsCollection() {
 
 // checkContainerHealth checks the health of the containers and restarts the unhealthy ones
 func CheckContainerHealth() {
-	apps, err := controllers.FetchAllApplicationNamesOnNode(utils.HostIP)
+	apps, err := controllers.FetchAllApplicationsOnNode(utils.HostIP)
 	if err != nil {
 		utils.LogError("AppMaker-Monitor-8", err)
 		return
