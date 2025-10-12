@@ -2,6 +2,7 @@ package docker
 
 import (
 	"github.com/docker/docker/api/types"
+	"github.com/sdslabs/gasper/lib/utils"
 	"golang.org/x/net/context"
 )
 
@@ -20,6 +21,21 @@ func DeleteContainer(containerID string) error {
 		return err
 	}
 
+	return nil
+}
+
+func BulkDeleteContainers(containerNames []string) error {
+	allContainers, err := ListContainers()
+	if err != nil {
+		return err
+	}
+	for _, containerID := range containerNames {
+		if utils.Contains(allContainers, containerID) {
+			if err := DeleteContainer(containerID); err != nil {
+				return err
+			}
+		}
+	}
 	return nil
 }
 

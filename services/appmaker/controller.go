@@ -47,6 +47,16 @@ func (s *server) StopAppContainers(ctx context.Context, body *pb.DownNodeRequest
 	return &pb.DeletionResponse{Success: true}, nil
 }
 
+func (s *server) DeleteAppContainers(ctx context.Context, body *pb.DownNodeRequestBody) (*pb.DeletionResponse, error) {
+	appsOnNode := body.GetData()
+
+	err := docker.BulkDeleteContainers(appsOnNode)
+	if err != nil {
+		return &pb.DeletionResponse{Success: false}, err
+	}
+	return &pb.DeletionResponse{Success: true}, nil
+}
+
 // Create creates an application
 func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.ResponseBody, error) {
 	language := body.GetLanguage()

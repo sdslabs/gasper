@@ -83,7 +83,12 @@ func GracefulDown(instanceURL string, appsOnNode []types.ApplicationConfig) (boo
 		appNamesOnNode = append(appNamesOnNode, app.Name)
 	}
 
-	res, err := client.StopAppContainers(ctx, &pb.DownNodeRequestBody{
+	// res, err := client.StopAppContainers(ctx, &pb.DownNodeRequestBody{
+	// 	InstanceURL: instanceURL,
+	// 	Data:        appNamesOnNode,
+	// })
+
+	res, err := client.DeleteAppContainers(ctx, &pb.DownNodeRequestBody{
 		InstanceURL: instanceURL,
 		Data:        appNamesOnNode,
 	})

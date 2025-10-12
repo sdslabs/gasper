@@ -13,3 +13,9 @@ type ShiftNodeRequest struct {
 type Response struct {
 	Message string `json:"message"`
 }
+
+type RemoveContainerList struct {
+	RemoveVolumes bool
+	RemoveLinks   bool
+	Force         bool
+}
