@@ -28,10 +28,7 @@ type server struct {
 
 func (s *server) StartStoppedAppContainers(ctx context.Context, body *pb.DownNodeRequestBody) (*pb.ContainerResponseBody, error) {
 	appsOnNode := body.GetData()
-	err := docker.BulkContainerRestart(appsOnNode)
-	if err != nil {
-		return nil, err
-	}
+	docker.BulkContainerRestart(appsOnNode)
 
 	data, err := docker.ListContainers()
 	if err != nil {
