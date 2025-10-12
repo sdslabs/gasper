@@ -12,6 +12,7 @@ service ApplicationFactory {
     rpc Update (NameHolder) returns (ResponseBody) {}
     rpc StartStoppedAppContainers (DownNodeRequestBody) returns (ContainerResponseBody) {}
     rpc StopAppContainers (DownNodeRequestBody) returns (DeletionResponse) {}
+    rpc DeleteAppContainers (DownNodeRequestBody) returns (DeletionResponse) {}
 }
 
 

@@ -486,7 +486,7 @@ const file_application_proto_rawDesc = "" +
 	"\x04tail\x18\x02 \x01(\tR\x04tail\";\n" +
 	"\vLogResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x12\n" +
-	"\x04data\x18\x02 \x03(\tR\x04data2\x99\x04\n" +
+	"\x04data\x18\x02 \x03(\tR\x04data2\xf3\x04\n" +
 	"\x12ApplicationFactory\x12?\n" +
 	"\x06Create\x12\x18.application.RequestBody\x1a\x19.application.ResponseBody\"\x00\x12B\n" +
 	"\x06Delete\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00\x12?\n" +
@@ -494,7 +494,8 @@ const file_application_proto_rawDesc = "" +
 	"\tFetchLogs\x12\x17.application.LogRequest\x1a\x18.application.LogResponse\"\x00\x12>\n" +
 	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12c\n" +
 	"\x19StartStoppedAppContainers\x12 .application.DownNodeRequestBody\x1a\".application.ContainerResponseBody\"\x00\x12V\n" +
-	"\x11StopAppContainers\x12 .application.DownNodeRequestBody\x1a\x1d.application.DeletionResponse\"\x00B\x0fZ\r./applicationb\x06proto3"
+	"\x11StopAppContainers\x12 .application.DownNodeRequestBody\x1a\x1d.application.DeletionResponse\"\x00\x12X\n" +
+	"\x13DeleteAppContainers\x12 .application.DownNodeRequestBody\x1a\x1d.application.DeletionResponse\"\x00B\x0fZ\r./applicationb\x06proto3"
 
 var (
 	file_application_proto_rawDescOnce sync.Once
@@ -528,15 +529,17 @@ var file_application_proto_depIdxs = []int32{
 	5, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
 	1, // 5: application.ApplicationFactory.StartStoppedAppContainers:input_type -> application.DownNodeRequestBody
 	1, // 6: application.ApplicationFactory.StopAppContainers:input_type -> application.DownNodeRequestBody
-	4, // 7: application.ApplicationFactory.Create:output_type -> application.ResponseBody
-	6, // 8: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
-	4, // 9: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
-	8, // 10: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
-	4, // 11: application.ApplicationFactory.Update:output_type -> application.ResponseBody
-	2, // 12: application.ApplicationFactory.StartStoppedAppContainers:output_type -> application.ContainerResponseBody
-	6, // 13: application.ApplicationFactory.StopAppContainers:output_type -> application.DeletionResponse
-	7, // [7:14] is the sub-list for method output_type
-	0, // [0:7] is the sub-list for method input_type
+	1, // 7: application.ApplicationFactory.DeleteAppContainers:input_type -> application.DownNodeRequestBody
+	4, // 8: application.ApplicationFactory.Create:output_type -> application.ResponseBody
+	6, // 9: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
+	4, // 10: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
+	8, // 11: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
+	4, // 12: application.ApplicationFactory.Update:output_type -> application.ResponseBody
+	2, // 13: application.ApplicationFactory.StartStoppedAppContainers:output_type -> application.ContainerResponseBody
+	6, // 14: application.ApplicationFactory.StopAppContainers:output_type -> application.DeletionResponse
+	6, // 15: application.ApplicationFactory.DeleteAppContainers:output_type -> application.DeletionResponse
+	8, // [8:16] is the sub-list for method output_type
+	0, // [0:8] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
