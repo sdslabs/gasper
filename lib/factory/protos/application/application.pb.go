@@ -317,7 +317,7 @@ func (x *LogResponse) GetData() []string {
 	return nil
 }
 
-type DownNodeRequestBody struct {
+type UpNodePayload struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	InstanceURL   string                 `protobuf:"bytes,1,opt,name=instanceURL,proto3" json:"instanceURL,omitempty"`
 	Data          []string               `protobuf:"bytes,2,rep,name=data,proto3" json:"data,omitempty"`
@@ -325,20 +325,20 @@ type DownNodeRequestBody struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DownNodeRequestBody) Reset() {
-	*x = DownNodeRequestBody{}
+func (x *UpNodePayload) Reset() {
+	*x = UpNodePayload{}
 	mi := &file_application_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DownNodeRequestBody) String() string {
+func (x *UpNodePayload) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DownNodeRequestBody) ProtoMessage() {}
+func (*UpNodePayload) ProtoMessage() {}
 
-func (x *DownNodeRequestBody) ProtoReflect() protoreflect.Message {
+func (x *UpNodePayload) ProtoReflect() protoreflect.Message {
 	mi := &file_application_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -350,46 +350,46 @@ func (x *DownNodeRequestBody) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DownNodeRequestBody.ProtoReflect.Descriptor instead.
-func (*DownNodeRequestBody) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpNodePayload.ProtoReflect.Descriptor instead.
+func (*UpNodePayload) Descriptor() ([]byte, []int) {
 	return file_application_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *DownNodeRequestBody) GetInstanceURL() string {
+func (x *UpNodePayload) GetInstanceURL() string {
 	if x != nil {
 		return x.InstanceURL
 	}
 	return ""
 }
 
-func (x *DownNodeRequestBody) GetData() []string {
+func (x *UpNodePayload) GetData() []string {
 	if x != nil {
 		return x.Data
 	}
 	return nil
 }
 
-type ContainerResponseBody struct {
+type ContainerList struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Data          []string               `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ContainerResponseBody) Reset() {
-	*x = ContainerResponseBody{}
+func (x *ContainerList) Reset() {
+	*x = ContainerList{}
 	mi := &file_application_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ContainerResponseBody) String() string {
+func (x *ContainerList) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ContainerResponseBody) ProtoMessage() {}
+func (*ContainerList) ProtoMessage() {}
 
-func (x *ContainerResponseBody) ProtoReflect() protoreflect.Message {
+func (x *ContainerList) ProtoReflect() protoreflect.Message {
 	mi := &file_application_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -401,12 +401,12 @@ func (x *ContainerResponseBody) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ContainerResponseBody.ProtoReflect.Descriptor instead.
-func (*ContainerResponseBody) Descriptor() ([]byte, []int) {
+// Deprecated: Use ContainerList.ProtoReflect.Descriptor instead.
+func (*ContainerList) Descriptor() ([]byte, []int) {
 	return file_application_proto_rawDescGZIP(), []int{7}
 }
 
-func (x *ContainerResponseBody) GetData() []string {
+func (x *ContainerList) GetData() []string {
 	if x != nil {
 		return x.Data
 	}
@@ -435,19 +435,19 @@ const file_application_proto_rawDesc = "" +
 	"\x04tail\x18\x02 \x01(\tR\x04tail\";\n" +
 	"\vLogResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x12\n" +
-	"\x04data\x18\x02 \x03(\tR\x04data\"K\n" +
-	"\x13DownNodeRequestBody\x12 \n" +
+	"\x04data\x18\x02 \x03(\tR\x04data\"E\n" +
+	"\rUpNodePayload\x12 \n" +
 	"\vinstanceURL\x18\x01 \x01(\tR\vinstanceURL\x12\x12\n" +
-	"\x04data\x18\x02 \x03(\tR\x04data\"+\n" +
-	"\x15ContainerResponseBody\x12\x12\n" +
-	"\x04data\x18\x01 \x03(\tR\x04data2\xc1\x03\n" +
+	"\x04data\x18\x02 \x03(\tR\x04data\"#\n" +
+	"\rContainerList\x12\x12\n" +
+	"\x04data\x18\x01 \x03(\tR\x04data2\xa9\x03\n" +
 	"\x12ApplicationFactory\x12?\n" +
 	"\x06Create\x12\x18.application.RequestBody\x1a\x19.application.ResponseBody\"\x00\x12B\n" +
 	"\x06Delete\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00\x12?\n" +
 	"\aRebuild\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12@\n" +
 	"\tFetchLogs\x12\x17.application.LogRequest\x1a\x18.application.LogResponse\"\x00\x12>\n" +
-	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12c\n" +
-	"\x19StartStoppedAppContainers\x12 .application.DownNodeRequestBody\x1a\".application.ContainerResponseBody\"\x00B\x0fZ\r./applicationb\x06proto3"
+	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12K\n" +
+	"\x0fStartContainers\x12\x1a.application.UpNodePayload\x1a\x1a.application.ContainerList\"\x00B\x0fZ\r./applicationb\x06proto3"
 
 var (
 	file_application_proto_rawDescOnce sync.Once
@@ -463,14 +463,14 @@ func file_application_proto_rawDescGZIP() []byte {
 
 var file_application_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_application_proto_goTypes = []any{
-	(*RequestBody)(nil),           // 0: application.RequestBody
-	(*ResponseBody)(nil),          // 1: application.ResponseBody
-	(*NameHolder)(nil),            // 2: application.NameHolder
-	(*DeletionResponse)(nil),      // 3: application.DeletionResponse
-	(*LogRequest)(nil),            // 4: application.LogRequest
-	(*LogResponse)(nil),           // 5: application.LogResponse
-	(*DownNodeRequestBody)(nil),   // 6: application.DownNodeRequestBody
-	(*ContainerResponseBody)(nil), // 7: application.ContainerResponseBody
+	(*RequestBody)(nil),      // 0: application.RequestBody
+	(*ResponseBody)(nil),     // 1: application.ResponseBody
+	(*NameHolder)(nil),       // 2: application.NameHolder
+	(*DeletionResponse)(nil), // 3: application.DeletionResponse
+	(*LogRequest)(nil),       // 4: application.LogRequest
+	(*LogResponse)(nil),      // 5: application.LogResponse
+	(*UpNodePayload)(nil),    // 6: application.UpNodePayload
+	(*ContainerList)(nil),    // 7: application.ContainerList
 }
 var file_application_proto_depIdxs = []int32{
 	0, // 0: application.ApplicationFactory.Create:input_type -> application.RequestBody
@@ -478,13 +478,13 @@ var file_application_proto_depIdxs = []int32{
 	2, // 2: application.ApplicationFactory.Rebuild:input_type -> application.NameHolder
 	4, // 3: application.ApplicationFactory.FetchLogs:input_type -> application.LogRequest
 	2, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
-	6, // 5: application.ApplicationFactory.StartStoppedAppContainers:input_type -> application.DownNodeRequestBody
+	6, // 5: application.ApplicationFactory.StartContainers:input_type -> application.UpNodePayload
 	1, // 6: application.ApplicationFactory.Create:output_type -> application.ResponseBody
 	3, // 7: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
 	1, // 8: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
 	5, // 9: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
 	1, // 10: application.ApplicationFactory.Update:output_type -> application.ResponseBody
-	7, // 11: application.ApplicationFactory.StartStoppedAppContainers:output_type -> application.ContainerResponseBody
+	7, // 11: application.ApplicationFactory.StartContainers:output_type -> application.ContainerList
 	6, // [6:12] is the sub-list for method output_type
 	0, // [0:6] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

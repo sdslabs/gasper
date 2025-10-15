@@ -33,7 +33,7 @@ func GracefulUp(instanceURL string, appsOnNode []types.ApplicationConfig) (bool,
 		appNamesOnNode = append(appNamesOnNode, app.Name)
 	}
 
-	res, err := client.StartStoppedAppContainers(ctx, &pb.DownNodeRequestBody{
+	res, err := client.StartContainers(ctx, &pb.UpNodePayload{
 		InstanceURL: instanceURL,
 		Data:        appNamesOnNode,
 	})
