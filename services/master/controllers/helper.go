@@ -216,7 +216,7 @@ func deleteUser(c *gin.Context, userEmail string) {
 	})
 }
 
-func FetchAllApplicationsOnNode(hostIP string) ([]types.ApplicationConfig, error) {
+func AppsOnNode(hostIP string) ([]types.ApplicationConfig, error) {
 	apps := mongo.FetchAppInfo(types.M{mongo.HostIPKey: hostIP})
 	var appObjects []types.ApplicationConfig
 	for _, app := range apps {

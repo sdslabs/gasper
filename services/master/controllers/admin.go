@@ -141,25 +141,31 @@ func UpNode(c *gin.Context) {
 
 	var data types.InstanceBindings
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
 		return
 	}
 
 	instanceURL := data.Node
 	ip, _, err := net.SplitHostPort(instanceURL)
 	if err != nil {
-		utils.SendServerErrorResponse(c, err)
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
 		return
 	}
 	data.Server = ip
 
-	appsOnNode, err := FetchAllApplicationsOnNode(data.Server)
+	apps, err := AppsOnNode(data.Server)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	ans, err := factory.GracefulUp(instanceURL, appsOnNode)
+	ans, err := factory.GracefulUp(instanceURL, apps)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
