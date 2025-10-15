@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"net"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/gasper/configs"
+	"github.com/sdslabs/gasper/lib/factory"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/redis"
 	"github.com/sdslabs/gasper/lib/utils"
@@ -131,4 +134,37 @@ func GetNodesByName(c *gin.Context) {
 // DeleteUserByAdmin deletes the user from database
 func DeleteUserByAdmin(c *gin.Context) {
 	deleteUser(c, c.Param("user"))
+}
+
+func UpNode(c *gin.Context) {
+	res := gin.H{}
+
+	var data types.InstanceBindings
+	if err := c.ShouldBindJSON(&data); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	instanceURL := data.Node
+	ip, _, err := net.SplitHostPort(instanceURL)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+	data.Server = ip
+
+	appsOnNode, err := FetchAllApplicationsOnNode(data.Server)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	ans, err := factory.GracefulUp(instanceURL, appsOnNode)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	res["success"] = ans
+	c.JSON(200, res)
 }

@@ -7,9 +7,10 @@ import (
 
 const (
 	// Strings for ContainterHealth
-	Container_Healthy = "healthy"
+	Container_Healthy   = "healthy"
 	Container_Unhealthy = "unhealthy"
 )
+
 // InspectContainerState returns the state of the container using the containerID
 func InspectContainerState(containerID string) (*dockerTypes.ContainerState, error) {
 	ctx := context.Background()

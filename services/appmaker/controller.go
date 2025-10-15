@@ -253,6 +253,17 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 	}, nil
 }
 
+func (s *server) StartStoppedAppContainers(ctx context.Context, body *pb.DownNodeRequestBody) (*pb.ContainerResponseBody, error) {
+	appsOnNode := body.GetData()
+	docker.BulkContainerRestart(appsOnNode)
+
+	data, err := docker.ListContainers()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ContainerResponseBody{Data: data}, err
+}
+
 // NewService returns a new instance of the current microservice
 func NewService() *grpc.Server {
 	return factory.NewApplicationFactory(&server{})
