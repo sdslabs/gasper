@@ -253,7 +253,7 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 	}, nil
 }
 
-func (s *server) StartContainers(ctx context.Context, body *pb.UpNodePayload) (*pb.ContainerList, error) {
+func (s *server) FetchDownContainers(ctx context.Context, body *pb.UpNodePayload) (*pb.ContainerList, error) {
 	apps := body.GetData()
 
 	for _, app := range apps {

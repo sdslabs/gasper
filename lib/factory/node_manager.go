@@ -33,7 +33,7 @@ func GracefulUp(instanceURL string, apps []types.ApplicationConfig) (bool, error
 		appNames = append(appNames, app.Name)
 	}
 
-	res, err := client.StartContainers(ctx, &pb.UpNodePayload{
+	res, err := client.FetchDownContainers(ctx, &pb.UpNodePayload{
 		InstanceURL: instanceURL,
 		Data:        appNames,
 	})
