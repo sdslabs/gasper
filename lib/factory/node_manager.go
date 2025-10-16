@@ -11,7 +11,7 @@ import (
 )
 
 // GracefulUp starts all stopped application containers in the given worker node, and creates apps whose containers are not present
-func GracefulUp(instanceURL string, appsOnNode []types.ApplicationConfig) (bool, error) {
+func GracefulUp(instanceURL string, apps []types.ApplicationConfig) (bool, error) {
 	conn, err := grpc.Dial(
 		instanceURL,
 		grpc.WithInsecure(),
@@ -27,21 +27,21 @@ func GracefulUp(instanceURL string, appsOnNode []types.ApplicationConfig) (bool,
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
-	var appNamesOnNode []string
+	var appNames []string
 
-	for _, app := range appsOnNode {
-		appNamesOnNode = append(appNamesOnNode, app.Name)
+	for _, app := range apps {
+		appNames = append(appNames, app.Name)
 	}
 
 	res, err := client.StartContainers(ctx, &pb.UpNodePayload{
 		InstanceURL: instanceURL,
-		Data:        appNamesOnNode,
+		Data:        appNames,
 	})
 	if err != nil {
 		return false, err
 	}
 
-	for _, app := range appsOnNode {
+	for _, app := range apps {
 		if !utils.Contains(res.Data, app.Name) {
 			utils.LogInfo("APP", "Creating App %s on node %s", app.Name, instanceURL)
 			data, err := json.Marshal(app)

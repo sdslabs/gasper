@@ -138,9 +138,9 @@ func DeleteUserByAdmin(c *gin.Context) {
 
 func UpNode(c *gin.Context) {
 	res := gin.H{}
+	var instance types.InstanceBindings
 
-	var data types.InstanceBindings
-	if err := c.ShouldBindJSON(&data); err != nil {
+	if err := c.ShouldBindJSON(&instance); err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
 			"error":   err.Error(),
@@ -148,8 +148,7 @@ func UpNode(c *gin.Context) {
 		return
 	}
 
-	instanceURL := data.Node
-	ip, _, err := net.SplitHostPort(instanceURL)
+	ip, _, err := net.SplitHostPort(instance.Node)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
@@ -157,15 +156,29 @@ func UpNode(c *gin.Context) {
 		})
 		return
 	}
-	data.Server = ip
+	instance.Server = ip
 
-	apps, err := AppsOnNode(data.Server)
+	allInstances, err := redis.FetchServiceInstances(types.AppMaker)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	ans, err := factory.GracefulUp(instanceURL, apps)
+	if !utils.Contains(allInstances, instance.Node) {
+		c.JSON(404, gin.H{
+			"success": false,
+			"error":   "Invalid Node address, Unable to find Instance.",
+		})
+		return
+	}
+
+	apps, err := AppsOnNode(instance.Server)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	ans, err := factory.GracefulUp(instance.Node, apps)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return

@@ -223,9 +223,9 @@ func ValidateRegistration(c *gin.Context) {
 
 func ValidateUpNodeRequest(c *gin.Context) {
 	requestBody := getBodyFromContext(c)
-	instance := &types.InstanceBindings{}
+	node := &types.InstanceBindings{}
 
-	if err := json.Unmarshal(requestBody, instance); err != nil {
+	if err := json.Unmarshal(requestBody, node); err != nil {
 		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
 			"error":   err.Error(),
@@ -233,7 +233,7 @@ func ValidateUpNodeRequest(c *gin.Context) {
 		return
 	}
 
-	if result, err := validator.ValidateStruct(instance); !result {
+	if result, err := validator.ValidateStruct(node); !result {
 		c.AbortWithStatusJSON(400, gin.H{
 			"success": false,
 			"error":   err.Error(),
