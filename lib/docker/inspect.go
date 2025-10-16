@@ -9,7 +9,6 @@ const (
 	// Strings for ContainterHealth
 	Container_Healthy   = "healthy"
 	Container_Unhealthy = "unhealthy"
-	Container_Starting  = "starting"
 )
 
 // InspectContainerState returns the state of the container using the containerID

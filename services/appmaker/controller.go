@@ -261,7 +261,7 @@ func (s *server) FetchDownContainers(ctx context.Context, body *pb.UpNodePayload
 		if err != nil {
 			continue
 		}
-		if health == docker.Container_Unhealthy {
+		if health == docker.Container_Unhealthy || health == "" {
 			docker.DeleteContainer(app)
 		}
 	}
