@@ -254,14 +254,24 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 }
 
 func (s *server) StartContainers(ctx context.Context, body *pb.UpNodePayload) (*pb.ContainerList, error) {
-	appsOnNode := body.GetData()
-	docker.BulkContainerRestart(appsOnNode)
+	apps := body.GetData()
+
+	for _, app := range apps {
+		health, err := docker.InspectContainerHealth(app)
+		if err != nil {
+			continue
+		}
+		if health == docker.Container_Unhealthy {
+			docker.DeleteContainer(app)
+		}
+	}
 
 	data, err := docker.ListContainers()
 	if err != nil {
 		return nil, err
 	}
-	return &pb.ContainerList{Data: data}, err
+
+	return &pb.ContainerList{Data: data}, nil
 }
 
 // NewService returns a new instance of the current microservice

@@ -231,6 +231,7 @@ func AppsOnNode(hostIP string) ([]types.ApplicationConfig, error) {
 			utils.LogError("Unmarshalling Error", err)
 			return nil, err
 		}
+		appObject.DockerImage = ""
 		appObjects = append(appObjects, appObject)
 	}
 	return appObjects, nil
