@@ -167,7 +167,7 @@ func UpNode(c *gin.Context) {
 	if !utils.Contains(allInstances, instance.Node) {
 		c.JSON(404, gin.H{
 			"success": false,
-			"error":   "Invalid Node address, Unable to find Instance.",
+			"error":   "AppMaker Node not found.",
 		})
 		return
 	}
