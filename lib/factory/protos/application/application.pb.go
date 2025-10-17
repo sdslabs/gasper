@@ -440,14 +440,14 @@ const file_application_proto_rawDesc = "" +
 	"\vinstanceURL\x18\x01 \x01(\tR\vinstanceURL\x12\x12\n" +
 	"\x04data\x18\x02 \x03(\tR\x04data\"#\n" +
 	"\rContainerList\x12\x12\n" +
-	"\x04data\x18\x01 \x03(\tR\x04data2\xad\x03\n" +
+	"\x04data\x18\x01 \x03(\tR\x04data2\xb0\x03\n" +
 	"\x12ApplicationFactory\x12?\n" +
 	"\x06Create\x12\x18.application.RequestBody\x1a\x19.application.ResponseBody\"\x00\x12B\n" +
 	"\x06Delete\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00\x12?\n" +
 	"\aRebuild\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12@\n" +
 	"\tFetchLogs\x12\x17.application.LogRequest\x1a\x18.application.LogResponse\"\x00\x12>\n" +
-	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12O\n" +
-	"\x13FetchDownContainers\x12\x1a.application.UpNodePayload\x1a\x1a.application.ContainerList\"\x00B\x0fZ\r./applicationb\x06proto3"
+	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12R\n" +
+	"\x16FetchRunningContainers\x12\x1a.application.UpNodePayload\x1a\x1a.application.ContainerList\"\x00B\x0fZ\r./applicationb\x06proto3"
 
 var (
 	file_application_proto_rawDescOnce sync.Once
@@ -478,13 +478,13 @@ var file_application_proto_depIdxs = []int32{
 	2, // 2: application.ApplicationFactory.Rebuild:input_type -> application.NameHolder
 	4, // 3: application.ApplicationFactory.FetchLogs:input_type -> application.LogRequest
 	2, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
-	6, // 5: application.ApplicationFactory.FetchDownContainers:input_type -> application.UpNodePayload
+	6, // 5: application.ApplicationFactory.FetchRunningContainers:input_type -> application.UpNodePayload
 	1, // 6: application.ApplicationFactory.Create:output_type -> application.ResponseBody
 	3, // 7: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
 	1, // 8: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
 	5, // 9: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
 	1, // 10: application.ApplicationFactory.Update:output_type -> application.ResponseBody
-	7, // 11: application.ApplicationFactory.FetchDownContainers:output_type -> application.ContainerList
+	7, // 11: application.ApplicationFactory.FetchRunningContainers:output_type -> application.ContainerList
 	6, // [6:12] is the sub-list for method output_type
 	0, // [0:6] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

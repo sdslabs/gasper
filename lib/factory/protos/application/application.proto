@@ -10,7 +10,7 @@ service ApplicationFactory {
     rpc Rebuild (NameHolder) returns (ResponseBody) {}
     rpc FetchLogs (LogRequest) returns (LogResponse) {}
     rpc Update (NameHolder) returns (ResponseBody) {}
-    rpc FetchDownContainers (UpNodePayload) returns (ContainerList) {}
+    rpc FetchRunningContainers (UpNodePayload) returns (ContainerList) {}
 }
 
 message RequestBody {

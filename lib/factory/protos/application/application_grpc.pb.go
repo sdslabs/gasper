@@ -19,12 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ApplicationFactory_Create_FullMethodName              = "/application.ApplicationFactory/Create"
-	ApplicationFactory_Delete_FullMethodName              = "/application.ApplicationFactory/Delete"
-	ApplicationFactory_Rebuild_FullMethodName             = "/application.ApplicationFactory/Rebuild"
-	ApplicationFactory_FetchLogs_FullMethodName           = "/application.ApplicationFactory/FetchLogs"
-	ApplicationFactory_Update_FullMethodName              = "/application.ApplicationFactory/Update"
-	ApplicationFactory_FetchDownContainers_FullMethodName = "/application.ApplicationFactory/FetchDownContainers"
+	ApplicationFactory_Create_FullMethodName                 = "/application.ApplicationFactory/Create"
+	ApplicationFactory_Delete_FullMethodName                 = "/application.ApplicationFactory/Delete"
+	ApplicationFactory_Rebuild_FullMethodName                = "/application.ApplicationFactory/Rebuild"
+	ApplicationFactory_FetchLogs_FullMethodName              = "/application.ApplicationFactory/FetchLogs"
+	ApplicationFactory_Update_FullMethodName                 = "/application.ApplicationFactory/Update"
+	ApplicationFactory_FetchRunningContainers_FullMethodName = "/application.ApplicationFactory/FetchRunningContainers"
 )
 
 // ApplicationFactoryClient is the client API for ApplicationFactory service.
@@ -36,7 +36,7 @@ type ApplicationFactoryClient interface {
 	Rebuild(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
 	FetchLogs(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	Update(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
-	FetchDownContainers(ctx context.Context, in *UpNodePayload, opts ...grpc.CallOption) (*ContainerList, error)
+	FetchRunningContainers(ctx context.Context, in *UpNodePayload, opts ...grpc.CallOption) (*ContainerList, error)
 }
 
 type applicationFactoryClient struct {
@@ -97,10 +97,10 @@ func (c *applicationFactoryClient) Update(ctx context.Context, in *NameHolder, o
 	return out, nil
 }
 
-func (c *applicationFactoryClient) FetchDownContainers(ctx context.Context, in *UpNodePayload, opts ...grpc.CallOption) (*ContainerList, error) {
+func (c *applicationFactoryClient) FetchRunningContainers(ctx context.Context, in *UpNodePayload, opts ...grpc.CallOption) (*ContainerList, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ContainerList)
-	err := c.cc.Invoke(ctx, ApplicationFactory_FetchDownContainers_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ApplicationFactory_FetchRunningContainers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ type ApplicationFactoryServer interface {
 	Rebuild(context.Context, *NameHolder) (*ResponseBody, error)
 	FetchLogs(context.Context, *LogRequest) (*LogResponse, error)
 	Update(context.Context, *NameHolder) (*ResponseBody, error)
-	FetchDownContainers(context.Context, *UpNodePayload) (*ContainerList, error)
+	FetchRunningContainers(context.Context, *UpNodePayload) (*ContainerList, error)
 	mustEmbedUnimplementedApplicationFactoryServer()
 }
 
@@ -142,8 +142,8 @@ func (UnimplementedApplicationFactoryServer) FetchLogs(context.Context, *LogRequ
 func (UnimplementedApplicationFactoryServer) Update(context.Context, *NameHolder) (*ResponseBody, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedApplicationFactoryServer) FetchDownContainers(context.Context, *UpNodePayload) (*ContainerList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FetchDownContainers not implemented")
+func (UnimplementedApplicationFactoryServer) FetchRunningContainers(context.Context, *UpNodePayload) (*ContainerList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchRunningContainers not implemented")
 }
 func (UnimplementedApplicationFactoryServer) mustEmbedUnimplementedApplicationFactoryServer() {}
 func (UnimplementedApplicationFactoryServer) testEmbeddedByValue()                            {}
@@ -256,20 +256,20 @@ func _ApplicationFactory_Update_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApplicationFactory_FetchDownContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ApplicationFactory_FetchRunningContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpNodePayload)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApplicationFactoryServer).FetchDownContainers(ctx, in)
+		return srv.(ApplicationFactoryServer).FetchRunningContainers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ApplicationFactory_FetchDownContainers_FullMethodName,
+		FullMethod: ApplicationFactory_FetchRunningContainers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApplicationFactoryServer).FetchDownContainers(ctx, req.(*UpNodePayload))
+		return srv.(ApplicationFactoryServer).FetchRunningContainers(ctx, req.(*UpNodePayload))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -302,8 +302,8 @@ var ApplicationFactory_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApplicationFactory_Update_Handler,
 		},
 		{
-			MethodName: "FetchDownContainers",
-			Handler:    _ApplicationFactory_FetchDownContainers_Handler,
+			MethodName: "FetchRunningContainers",
+			Handler:    _ApplicationFactory_FetchRunningContainers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

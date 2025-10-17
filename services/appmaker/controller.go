@@ -253,15 +253,15 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 	}, nil
 }
 
-func (s *server) FetchDownContainers(ctx context.Context, body *pb.UpNodePayload) (*pb.ContainerList, error) {
+func (s *server) FetchRunningContainers(ctx context.Context, body *pb.UpNodePayload) (*pb.ContainerList, error) {
 	apps := body.GetData()
 
 	for _, app := range apps {
-		health, err := docker.InspectContainerHealth(app)
+		state, err := docker.InspectContainerState(app)
 		if err != nil {
 			continue
 		}
-		if health == docker.Container_Unhealthy || health == "" {
+		if !state.Running || state.Health.Status == docker.Container_Unhealthy {
 			docker.DeleteContainer(app)
 		}
 	}
