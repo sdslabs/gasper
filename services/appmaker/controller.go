@@ -261,8 +261,12 @@ func (s *server) FetchRunningContainers(ctx context.Context, body *pb.UpNodePayl
 		if err != nil {
 			continue
 		}
-		if !state.Running || state.Health.Status == docker.Container_Unhealthy {
-			docker.DeleteContainer(app)
+		if !state.Running {
+			docker.ContainerRestart(app)
+		} else {
+			if state.Health.Status == docker.Container_Unhealthy {
+				docker.DeleteContainer(app)
+			}
 		}
 	}
 
