@@ -85,6 +85,7 @@ func (s *server) Create(ctx context.Context, body *pb.RequestBody) (*pb.Response
 			return nil, types.NewResErr(500, "No free port available", err)
 		}
 		app.SetContainerPort(containerPort)
+		app.SetConfGenerator(pipeline[app.Language].confGenerator)
 
 		errList := api.CreateBasicApplication(app)
 		for _, err := range errList {
