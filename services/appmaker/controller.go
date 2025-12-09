@@ -224,7 +224,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.DeletionR
 	node, _ := redis.FetchAppNode(appName)
 	go redis.DecrementServiceLoad(ServiceName, node)
 	go redis.RemoveApp(appName)
-	go diskCleanup(appName)
+	diskCleanup(appName)
 
 	if configs.CloudflareConfig.PlugIn {
 		go cloudflare.DeleteApplicationRecord(appName)
@@ -251,6 +251,15 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 		Success: true,
 		Data:    data,
 	}, nil
+}
+
+// Removes app container and volumes. Does NOT remove from redis and mongo.
+func (s *server) RemoveContainer(ctx context.Context, body *pb.NameHolder) (*pb.DeletionResponse, error) {
+	appName := body.GetName()
+
+	diskCleanup(appName)
+
+	return &pb.DeletionResponse{Success: true}, nil
 }
 
 // NewService returns a new instance of the current microservice

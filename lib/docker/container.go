@@ -124,7 +124,8 @@ func StartContainer(containerID string) error {
 // StopContainer stops the container corresponding to given containerID
 func StopContainer(containerID string) error {
 	ctx := context.Background()
-	return cli.ContainerStop(ctx, containerID, nil)
+	timeout := 5 * time.Second
+	return cli.ContainerStop(ctx, containerID, &timeout)
 }
 
 // ListContainers lists all containers
