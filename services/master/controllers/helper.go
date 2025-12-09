@@ -216,7 +216,7 @@ func deleteUser(c *gin.Context, userEmail string) {
 	})
 }
 
-func AppsOnNode(hostIP string) ([]types.ApplicationConfig, error) {
+func appsOnNode(hostIP string) ([]types.ApplicationConfig, error) {
 	apps := mongo.FetchAppInfo(types.M{mongo.HostIPKey: hostIP})
 	var appObjects []types.ApplicationConfig
 	for _, app := range apps {
@@ -231,6 +231,7 @@ func AppsOnNode(hostIP string) ([]types.ApplicationConfig, error) {
 			utils.LogError("Unmarshalling Error", err)
 			return nil, err
 		}
+		appObject.DockerImage = ""
 		appObjects = append(appObjects, appObject)
 	}
 	return appObjects, nil

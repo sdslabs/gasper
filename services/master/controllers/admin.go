@@ -172,7 +172,7 @@ func UpNode(c *gin.Context) {
 		return
 	}
 
-	apps, err := AppsOnNode(instance.Server)
+	apps, err := appsOnNode(instance.Server)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
