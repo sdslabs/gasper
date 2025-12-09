@@ -33,16 +33,16 @@ func GracefulUp(instanceURL string, apps []types.ApplicationConfig) (bool, error
 		appNames = append(appNames, app.Name)
 	}
 
-	res, err := client.FetchRunningContainers(ctx, &pb.UpNodePayload{
-		InstanceURL: instanceURL,
-		Data:        appNames,
+	res, err := client.FetchRunningContainers(ctx, &pb.NodeInventory{
+		InstanceURL:   instanceURL,
+		ContainerList: appNames,
 	})
 	if err != nil {
 		return false, err
 	}
 
 	for _, app := range apps {
-		if !utils.Contains(res.Data, app.Name) {
+		if !utils.Contains(res.ContainerList, app.Name) {
 			utils.LogInfo("APP", "Creating App %s on node %s", app.Name, instanceURL)
 			data, err := json.Marshal(app)
 			if err != nil {

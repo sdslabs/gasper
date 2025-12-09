@@ -254,8 +254,8 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 	}, nil
 }
 
-func (s *server) FetchRunningContainers(ctx context.Context, body *pb.UpNodePayload) (*pb.ContainerList, error) {
-	apps := body.GetData()
+func (s *server) FetchRunningContainers(ctx context.Context, body *pb.NodeInventory) (*pb.NodeInventory, error) {
+	apps := body.GetContainerList()
 
 	for _, app := range apps {
 		state, err := docker.InspectContainerState(app)
@@ -276,7 +276,10 @@ func (s *server) FetchRunningContainers(ctx context.Context, body *pb.UpNodePayl
 		return nil, err
 	}
 
-	return &pb.ContainerList{Data: data}, nil
+	return &pb.NodeInventory{
+		InstanceURL:   body.InstanceURL,
+		ContainerList: data,
+	}, nil
 }
 
 // NewService returns a new instance of the current microservice

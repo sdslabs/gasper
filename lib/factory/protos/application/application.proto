@@ -10,7 +10,7 @@ service ApplicationFactory {
     rpc Rebuild (NameHolder) returns (ResponseBody) {}
     rpc FetchLogs (LogRequest) returns (LogResponse) {}
     rpc Update (NameHolder) returns (ResponseBody) {}
-    rpc FetchRunningContainers (UpNodePayload) returns (ContainerList) {}
+    rpc FetchRunningContainers (NodeInventory) returns (NodeInventory) {}
 }
 
 message RequestBody {
@@ -41,11 +41,7 @@ message LogResponse {
     repeated string data = 2;
 }
 
-message UpNodePayload {
+message NodeInventory {
     string instanceURL = 1;
-    repeated string data = 2;
-}
-
-message ContainerList {
-    repeated string data = 1;
+    repeated string containerList = 2;
 }
