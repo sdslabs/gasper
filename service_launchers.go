@@ -88,7 +88,7 @@ func startAppMakerService() error {
 		configs.ImageConfig.Ruby,
 		configs.ImageConfig.Rust,
 	}
-	docker.CheckAndPullImages(images...)
+		docker.CheckAndPullImages(images...)
 	return startGrpcServer(appmaker.NewService(), configs.ServiceConfig.AppMaker.Port)
 }
 
