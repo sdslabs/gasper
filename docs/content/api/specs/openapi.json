@@ -629,7 +629,7 @@
           }
         }
       },
-      "UpNode": {
+      "NodeIp": {
         "type": "object",
         "required": [
           "node"
@@ -5280,7 +5280,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/UpNode"
+                "$ref": "#/components/schemas/NodeIp"
               }
             }
           },

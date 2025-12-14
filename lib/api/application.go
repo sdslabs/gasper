@@ -62,12 +62,6 @@ func setupContainer(app types.Application, storedir string, setup chan types.Res
 		setup <- types.NewResErr(500, "container not started", err)
 		return
 	}
-	err = RunBuildAndStartCommands(app)
-	if err != nil {
-		setup <- types.NewResErr(500, "build and start commands fail", err)
-		return
-	}
-
 	setup <- nil
 }
 
