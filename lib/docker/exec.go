@@ -70,7 +70,7 @@ func ExecProcessWthStream(containerID string, command []string) (string, error) 
 		AttachStdin:  true,
 		AttachStderr: true,
 		AttachStdout: true,
-	}
+	}	
 	execProcess, err := cli.ContainerExecCreate(ctx, containerID, config)
 	if err != nil {
 		return "", err
@@ -102,4 +102,5 @@ func ExecProcessWthStream(containerID string, command []string) (string, error) 
 	}
 
 	return outputBuffer.String(), nil
-}
+}	
+	
