@@ -5274,7 +5274,7 @@
         "tags": [
           "admin"
         ],
-        "summary": "Gracefully start an appmaker node",
+        "summary": "Gracefully start any down containers on an appmaker node",
         "operationId": "upNode",
         "requestBody": {
           "content": {
