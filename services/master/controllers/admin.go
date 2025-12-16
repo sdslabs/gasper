@@ -136,6 +136,58 @@ func DeleteUserByAdmin(c *gin.Context) {
 	deleteUser(c, c.Param("user"))
 }
 
+func UpNode(c *gin.Context) {
+	res := gin.H{}
+	var instance types.InstanceBindings
+
+	if err := c.ShouldBindJSON(&instance); err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	ip, _, err := net.SplitHostPort(instance.Node)
+	if err != nil {
+		c.JSON(400, gin.H{
+			"success": false,
+			"error":   err.Error(),
+		})
+		return
+	}
+	instance.Server = ip
+
+	allInstances, err := redis.FetchServiceInstances(types.AppMaker)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	if !utils.Contains(allInstances, instance.Node) {
+		c.JSON(404, gin.H{
+			"success": false,
+			"error":   "AppMaker Node not found.",
+		})
+		return
+	}
+
+	apps, err := appsOnNode(instance.Server)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	ans, err := factory.GracefulUp(instance.Node, apps)
+	if err != nil {
+		utils.SendServerErrorResponse(c, err)
+		return
+	}
+
+	res["success"] = ans
+	c.JSON(200, res)
+}
+
 func DownNode(c *gin.Context) {
 	res := gin.H{}
 	var instance types.InstanceBindings

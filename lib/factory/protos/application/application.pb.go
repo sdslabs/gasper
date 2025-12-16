@@ -317,6 +317,58 @@ func (x *LogResponse) GetData() []string {
 	return nil
 }
 
+type NodeInventory struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	InstanceURL   string                 `protobuf:"bytes,1,opt,name=instanceURL,proto3" json:"instanceURL,omitempty"`
+	ContainerList []string               `protobuf:"bytes,2,rep,name=containerList,proto3" json:"containerList,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *NodeInventory) Reset() {
+	*x = NodeInventory{}
+	mi := &file_application_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *NodeInventory) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NodeInventory) ProtoMessage() {}
+
+func (x *NodeInventory) ProtoReflect() protoreflect.Message {
+	mi := &file_application_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NodeInventory.ProtoReflect.Descriptor instead.
+func (*NodeInventory) Descriptor() ([]byte, []int) {
+	return file_application_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *NodeInventory) GetInstanceURL() string {
+	if x != nil {
+		return x.InstanceURL
+	}
+	return ""
+}
+
+func (x *NodeInventory) GetContainerList() []string {
+	if x != nil {
+		return x.ContainerList
+	}
+	return nil
+}
+
 var File_application_proto protoreflect.FileDescriptor
 
 const file_application_proto_rawDesc = "" +
@@ -339,13 +391,17 @@ const file_application_proto_rawDesc = "" +
 	"\x04tail\x18\x02 \x01(\tR\x04tail\";\n" +
 	"\vLogResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x12\n" +
-	"\x04data\x18\x02 \x03(\tR\x04data2\xa9\x03\n" +
+	"\x04data\x18\x02 \x03(\tR\x04data\"W\n" +
+	"\rNodeInventory\x12 \n" +
+	"\vinstanceURL\x18\x01 \x01(\tR\vinstanceURL\x12$\n" +
+	"\rcontainerList\x18\x02 \x03(\tR\rcontainerList2\xfd\x03\n" +
 	"\x12ApplicationFactory\x12?\n" +
 	"\x06Create\x12\x18.application.RequestBody\x1a\x19.application.ResponseBody\"\x00\x12B\n" +
 	"\x06Delete\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00\x12?\n" +
 	"\aRebuild\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12@\n" +
 	"\tFetchLogs\x12\x17.application.LogRequest\x1a\x18.application.LogResponse\"\x00\x12>\n" +
-	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12K\n" +
+	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12R\n" +
+	"\x16FetchRunningContainers\x12\x1a.application.NodeInventory\x1a\x1a.application.NodeInventory\"\x00\x12K\n" +
 	"\x0fRemoveContainer\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00B\x0fZ\r./applicationb\x06proto3"
 
 var (
@@ -360,7 +416,7 @@ func file_application_proto_rawDescGZIP() []byte {
 	return file_application_proto_rawDescData
 }
 
-var file_application_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_application_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_application_proto_goTypes = []any{
 	(*RequestBody)(nil),      // 0: application.RequestBody
 	(*ResponseBody)(nil),     // 1: application.ResponseBody
@@ -368,6 +424,7 @@ var file_application_proto_goTypes = []any{
 	(*DeletionResponse)(nil), // 3: application.DeletionResponse
 	(*LogRequest)(nil),       // 4: application.LogRequest
 	(*LogResponse)(nil),      // 5: application.LogResponse
+	(*NodeInventory)(nil),    // 6: application.NodeInventory
 }
 var file_application_proto_depIdxs = []int32{
 	0, // 0: application.ApplicationFactory.Create:input_type -> application.RequestBody
@@ -375,15 +432,17 @@ var file_application_proto_depIdxs = []int32{
 	2, // 2: application.ApplicationFactory.Rebuild:input_type -> application.NameHolder
 	4, // 3: application.ApplicationFactory.FetchLogs:input_type -> application.LogRequest
 	2, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
-	2, // 5: application.ApplicationFactory.RemoveContainer:input_type -> application.NameHolder
-	1, // 6: application.ApplicationFactory.Create:output_type -> application.ResponseBody
-	3, // 7: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
-	1, // 8: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
-	5, // 9: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
-	1, // 10: application.ApplicationFactory.Update:output_type -> application.ResponseBody
-	3, // 11: application.ApplicationFactory.RemoveContainer:output_type -> application.DeletionResponse
-	6, // [6:12] is the sub-list for method output_type
-	0, // [0:6] is the sub-list for method input_type
+	6, // 5: application.ApplicationFactory.FetchRunningContainers:input_type -> application.NodeInventory
+	2, // 6: application.ApplicationFactory.RemoveContainer:input_type -> application.NameHolder
+	1, // 7: application.ApplicationFactory.Create:output_type -> application.ResponseBody
+	3, // 8: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
+	1, // 9: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
+	5, // 10: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
+	1, // 11: application.ApplicationFactory.Update:output_type -> application.ResponseBody
+	6, // 12: application.ApplicationFactory.FetchRunningContainers:output_type -> application.NodeInventory
+	3, // 13: application.ApplicationFactory.RemoveContainer:output_type -> application.DeletionResponse
+	7, // [7:14] is the sub-list for method output_type
+	0, // [0:7] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -400,7 +459,7 @@ func file_application_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_application_proto_rawDesc), len(file_application_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

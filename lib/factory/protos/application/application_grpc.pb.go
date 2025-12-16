@@ -19,12 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ApplicationFactory_Create_FullMethodName          = "/application.ApplicationFactory/Create"
-	ApplicationFactory_Delete_FullMethodName          = "/application.ApplicationFactory/Delete"
-	ApplicationFactory_Rebuild_FullMethodName         = "/application.ApplicationFactory/Rebuild"
-	ApplicationFactory_FetchLogs_FullMethodName       = "/application.ApplicationFactory/FetchLogs"
-	ApplicationFactory_Update_FullMethodName          = "/application.ApplicationFactory/Update"
-	ApplicationFactory_RemoveContainer_FullMethodName = "/application.ApplicationFactory/RemoveContainer"
+	ApplicationFactory_Create_FullMethodName                 = "/application.ApplicationFactory/Create"
+	ApplicationFactory_Delete_FullMethodName                 = "/application.ApplicationFactory/Delete"
+	ApplicationFactory_Rebuild_FullMethodName                = "/application.ApplicationFactory/Rebuild"
+	ApplicationFactory_FetchLogs_FullMethodName              = "/application.ApplicationFactory/FetchLogs"
+	ApplicationFactory_Update_FullMethodName                 = "/application.ApplicationFactory/Update"
+	ApplicationFactory_FetchRunningContainers_FullMethodName = "/application.ApplicationFactory/FetchRunningContainers"
+	ApplicationFactory_RemoveContainer_FullMethodName        = "/application.ApplicationFactory/RemoveContainer"
 )
 
 // ApplicationFactoryClient is the client API for ApplicationFactory service.
@@ -36,6 +37,7 @@ type ApplicationFactoryClient interface {
 	Rebuild(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
 	FetchLogs(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	Update(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
+	FetchRunningContainers(ctx context.Context, in *NodeInventory, opts ...grpc.CallOption) (*NodeInventory, error)
 	RemoveContainer(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*DeletionResponse, error)
 }
 
@@ -97,6 +99,16 @@ func (c *applicationFactoryClient) Update(ctx context.Context, in *NameHolder, o
 	return out, nil
 }
 
+func (c *applicationFactoryClient) FetchRunningContainers(ctx context.Context, in *NodeInventory, opts ...grpc.CallOption) (*NodeInventory, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(NodeInventory)
+	err := c.cc.Invoke(ctx, ApplicationFactory_FetchRunningContainers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *applicationFactoryClient) RemoveContainer(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*DeletionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeletionResponse)
@@ -116,6 +128,7 @@ type ApplicationFactoryServer interface {
 	Rebuild(context.Context, *NameHolder) (*ResponseBody, error)
 	FetchLogs(context.Context, *LogRequest) (*LogResponse, error)
 	Update(context.Context, *NameHolder) (*ResponseBody, error)
+	FetchRunningContainers(context.Context, *NodeInventory) (*NodeInventory, error)
 	RemoveContainer(context.Context, *NameHolder) (*DeletionResponse, error)
 	mustEmbedUnimplementedApplicationFactoryServer()
 }
@@ -141,6 +154,9 @@ func (UnimplementedApplicationFactoryServer) FetchLogs(context.Context, *LogRequ
 }
 func (UnimplementedApplicationFactoryServer) Update(context.Context, *NameHolder) (*ResponseBody, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedApplicationFactoryServer) FetchRunningContainers(context.Context, *NodeInventory) (*NodeInventory, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FetchRunningContainers not implemented")
 }
 func (UnimplementedApplicationFactoryServer) RemoveContainer(context.Context, *NameHolder) (*DeletionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveContainer not implemented")
@@ -256,6 +272,24 @@ func _ApplicationFactory_Update_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApplicationFactory_FetchRunningContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NodeInventory)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApplicationFactoryServer).FetchRunningContainers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApplicationFactory_FetchRunningContainers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApplicationFactoryServer).FetchRunningContainers(ctx, req.(*NodeInventory))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ApplicationFactory_RemoveContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NameHolder)
 	if err := dec(in); err != nil {
@@ -300,6 +334,10 @@ var ApplicationFactory_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _ApplicationFactory_Update_Handler,
+		},
+		{
+			MethodName: "FetchRunningContainers",
+			Handler:    _ApplicationFactory_FetchRunningContainers_Handler,
 		},
 		{
 			MethodName: "RemoveContainer",

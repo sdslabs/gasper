@@ -10,6 +10,7 @@ service ApplicationFactory {
     rpc Rebuild (NameHolder) returns (ResponseBody) {}
     rpc FetchLogs (LogRequest) returns (LogResponse) {}
     rpc Update (NameHolder) returns (ResponseBody) {}
+    rpc FetchRunningContainers (NodeInventory) returns (NodeInventory) {}
     rpc RemoveContainer (NameHolder) returns (DeletionResponse) {}
 }
 
@@ -39,4 +40,9 @@ message LogRequest {
 message LogResponse {
     bool success = 1;
     repeated string data = 2;
+}
+
+message NodeInventory {
+    string instanceURL = 1;
+    repeated string containerList = 2;
 }

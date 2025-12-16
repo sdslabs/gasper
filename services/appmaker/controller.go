@@ -253,6 +253,34 @@ func (s *server) FetchLogs(ctx context.Context, body *pb.LogRequest) (*pb.LogRes
 	}, nil
 }
 
+func (s *server) FetchRunningContainers(ctx context.Context, body *pb.NodeInventory) (*pb.NodeInventory, error) {
+	apps := body.GetContainerList()
+
+	for _, app := range apps {
+		state, err := docker.InspectContainerState(app)
+		if err != nil {
+			continue
+		}
+		if !state.Running {
+			docker.ContainerRestart(app)
+		} else {
+			if state.Health.Status == docker.Container_Unhealthy {
+				docker.DeleteContainer(app)
+			}
+		}
+	}
+
+	data, err := docker.ListContainers()
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.NodeInventory{
+		InstanceURL:   body.InstanceURL,
+		ContainerList: data,
+	}, nil
+}
+
 // Removes app container and volumes. Does NOT remove from redis and mongo.
 func (s *server) RemoveContainer(ctx context.Context, body *pb.NameHolder) (*pb.DeletionResponse, error) {
 	appName := body.GetName()
