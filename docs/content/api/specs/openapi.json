@@ -640,6 +640,24 @@
             "example":"IP:Port"
           }
         }
+      },
+      "DownNodePayload": {
+        "type": "object",
+        "required": [
+          "node"
+        ],
+        "properties": {
+          "node": {
+            "type": "string",
+            "example":"IP:Port"
+          },
+          "delete_volumes": {
+            "type":"boolean",
+            "description": "Whether to delete the docker volumes associated to the app containers",
+            "default" : false,
+            "example" : true
+          }
+        }
       }
     },
     "securitySchemes": {
@@ -5412,7 +5430,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NodeIp"
+                "$ref": "#/components/schemas/DownNodePayload"
               }
             }
           },

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/api"
@@ -265,7 +266,7 @@ func (s *server) FetchRunningContainers(ctx context.Context, body *pb.NodeInvent
 			docker.ContainerRestart(app)
 		} else {
 			if state.Health.Status == docker.Container_Unhealthy {
-				docker.DeleteContainer(app)
+				containerCleanup(app)
 			}
 		}
 	}
@@ -281,11 +282,24 @@ func (s *server) FetchRunningContainers(ctx context.Context, body *pb.NodeInvent
 	}, nil
 }
 
-// Removes app container and volumes. Does NOT remove from redis and mongo.
-func (s *server) RemoveContainer(ctx context.Context, body *pb.NameHolder) (*pb.DeletionResponse, error) {
-	appName := body.GetName()
+// Removes app containers (and volumes if specified). Does NOT remove from redis and mongo.
+func (s *server) RemoveContainers(ctx context.Context, body *pb.NodeInventory) (*pb.DeletionResponse, error) {
+	apps := body.GetContainerList()
+	deleteVol := body.GetDeleteVolume()
 
-	diskCleanup(appName)
+	var wg sync.WaitGroup
+	for _, app := range apps {
+		wg.Add(1)
+		go func(appName string) {
+			defer wg.Done()
+			if deleteVol {
+				diskCleanup(appName)
+			} else {
+				containerCleanup(appName)
+			}
+		}(app)
+	}
+	wg.Wait()
 
 	return &pb.DeletionResponse{Success: true}, nil
 }

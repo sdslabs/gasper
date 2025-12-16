@@ -25,7 +25,7 @@ const (
 	ApplicationFactory_FetchLogs_FullMethodName              = "/application.ApplicationFactory/FetchLogs"
 	ApplicationFactory_Update_FullMethodName                 = "/application.ApplicationFactory/Update"
 	ApplicationFactory_FetchRunningContainers_FullMethodName = "/application.ApplicationFactory/FetchRunningContainers"
-	ApplicationFactory_RemoveContainer_FullMethodName        = "/application.ApplicationFactory/RemoveContainer"
+	ApplicationFactory_RemoveContainers_FullMethodName       = "/application.ApplicationFactory/RemoveContainers"
 )
 
 // ApplicationFactoryClient is the client API for ApplicationFactory service.
@@ -38,7 +38,7 @@ type ApplicationFactoryClient interface {
 	FetchLogs(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	Update(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*ResponseBody, error)
 	FetchRunningContainers(ctx context.Context, in *NodeInventory, opts ...grpc.CallOption) (*NodeInventory, error)
-	RemoveContainer(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*DeletionResponse, error)
+	RemoveContainers(ctx context.Context, in *NodeInventory, opts ...grpc.CallOption) (*DeletionResponse, error)
 }
 
 type applicationFactoryClient struct {
@@ -109,10 +109,10 @@ func (c *applicationFactoryClient) FetchRunningContainers(ctx context.Context, i
 	return out, nil
 }
 
-func (c *applicationFactoryClient) RemoveContainer(ctx context.Context, in *NameHolder, opts ...grpc.CallOption) (*DeletionResponse, error) {
+func (c *applicationFactoryClient) RemoveContainers(ctx context.Context, in *NodeInventory, opts ...grpc.CallOption) (*DeletionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeletionResponse)
-	err := c.cc.Invoke(ctx, ApplicationFactory_RemoveContainer_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, ApplicationFactory_RemoveContainers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ type ApplicationFactoryServer interface {
 	FetchLogs(context.Context, *LogRequest) (*LogResponse, error)
 	Update(context.Context, *NameHolder) (*ResponseBody, error)
 	FetchRunningContainers(context.Context, *NodeInventory) (*NodeInventory, error)
-	RemoveContainer(context.Context, *NameHolder) (*DeletionResponse, error)
+	RemoveContainers(context.Context, *NodeInventory) (*DeletionResponse, error)
 	mustEmbedUnimplementedApplicationFactoryServer()
 }
 
@@ -158,8 +158,8 @@ func (UnimplementedApplicationFactoryServer) Update(context.Context, *NameHolder
 func (UnimplementedApplicationFactoryServer) FetchRunningContainers(context.Context, *NodeInventory) (*NodeInventory, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FetchRunningContainers not implemented")
 }
-func (UnimplementedApplicationFactoryServer) RemoveContainer(context.Context, *NameHolder) (*DeletionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveContainer not implemented")
+func (UnimplementedApplicationFactoryServer) RemoveContainers(context.Context, *NodeInventory) (*DeletionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveContainers not implemented")
 }
 func (UnimplementedApplicationFactoryServer) mustEmbedUnimplementedApplicationFactoryServer() {}
 func (UnimplementedApplicationFactoryServer) testEmbeddedByValue()                            {}
@@ -290,20 +290,20 @@ func _ApplicationFactory_FetchRunningContainers_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ApplicationFactory_RemoveContainer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NameHolder)
+func _ApplicationFactory_RemoveContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NodeInventory)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ApplicationFactoryServer).RemoveContainer(ctx, in)
+		return srv.(ApplicationFactoryServer).RemoveContainers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: ApplicationFactory_RemoveContainer_FullMethodName,
+		FullMethod: ApplicationFactory_RemoveContainers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApplicationFactoryServer).RemoveContainer(ctx, req.(*NameHolder))
+		return srv.(ApplicationFactoryServer).RemoveContainers(ctx, req.(*NodeInventory))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -340,8 +340,8 @@ var ApplicationFactory_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ApplicationFactory_FetchRunningContainers_Handler,
 		},
 		{
-			MethodName: "RemoveContainer",
-			Handler:    _ApplicationFactory_RemoveContainer_Handler,
+			MethodName: "RemoveContainers",
+			Handler:    _ApplicationFactory_RemoveContainers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

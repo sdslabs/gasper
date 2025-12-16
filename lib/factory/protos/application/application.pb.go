@@ -321,6 +321,7 @@ type NodeInventory struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	InstanceURL   string                 `protobuf:"bytes,1,opt,name=instanceURL,proto3" json:"instanceURL,omitempty"`
 	ContainerList []string               `protobuf:"bytes,2,rep,name=containerList,proto3" json:"containerList,omitempty"`
+	DeleteVolume  bool                   `protobuf:"varint,3,opt,name=deleteVolume,proto3" json:"deleteVolume,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -369,6 +370,13 @@ func (x *NodeInventory) GetContainerList() []string {
 	return nil
 }
 
+func (x *NodeInventory) GetDeleteVolume() bool {
+	if x != nil {
+		return x.DeleteVolume
+	}
+	return false
+}
+
 var File_application_proto protoreflect.FileDescriptor
 
 const file_application_proto_rawDesc = "" +
@@ -391,18 +399,19 @@ const file_application_proto_rawDesc = "" +
 	"\x04tail\x18\x02 \x01(\tR\x04tail\";\n" +
 	"\vLogResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x12\n" +
-	"\x04data\x18\x02 \x03(\tR\x04data\"W\n" +
+	"\x04data\x18\x02 \x03(\tR\x04data\"{\n" +
 	"\rNodeInventory\x12 \n" +
 	"\vinstanceURL\x18\x01 \x01(\tR\vinstanceURL\x12$\n" +
-	"\rcontainerList\x18\x02 \x03(\tR\rcontainerList2\xfd\x03\n" +
+	"\rcontainerList\x18\x02 \x03(\tR\rcontainerList\x12\"\n" +
+	"\fdeleteVolume\x18\x03 \x01(\bR\fdeleteVolume2\x81\x04\n" +
 	"\x12ApplicationFactory\x12?\n" +
 	"\x06Create\x12\x18.application.RequestBody\x1a\x19.application.ResponseBody\"\x00\x12B\n" +
 	"\x06Delete\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00\x12?\n" +
 	"\aRebuild\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12@\n" +
 	"\tFetchLogs\x12\x17.application.LogRequest\x1a\x18.application.LogResponse\"\x00\x12>\n" +
 	"\x06Update\x12\x17.application.NameHolder\x1a\x19.application.ResponseBody\"\x00\x12R\n" +
-	"\x16FetchRunningContainers\x12\x1a.application.NodeInventory\x1a\x1a.application.NodeInventory\"\x00\x12K\n" +
-	"\x0fRemoveContainer\x12\x17.application.NameHolder\x1a\x1d.application.DeletionResponse\"\x00B\x0fZ\r./applicationb\x06proto3"
+	"\x16FetchRunningContainers\x12\x1a.application.NodeInventory\x1a\x1a.application.NodeInventory\"\x00\x12O\n" +
+	"\x10RemoveContainers\x12\x1a.application.NodeInventory\x1a\x1d.application.DeletionResponse\"\x00B\x0fZ\r./applicationb\x06proto3"
 
 var (
 	file_application_proto_rawDescOnce sync.Once
@@ -433,14 +442,14 @@ var file_application_proto_depIdxs = []int32{
 	4, // 3: application.ApplicationFactory.FetchLogs:input_type -> application.LogRequest
 	2, // 4: application.ApplicationFactory.Update:input_type -> application.NameHolder
 	6, // 5: application.ApplicationFactory.FetchRunningContainers:input_type -> application.NodeInventory
-	2, // 6: application.ApplicationFactory.RemoveContainer:input_type -> application.NameHolder
+	6, // 6: application.ApplicationFactory.RemoveContainers:input_type -> application.NodeInventory
 	1, // 7: application.ApplicationFactory.Create:output_type -> application.ResponseBody
 	3, // 8: application.ApplicationFactory.Delete:output_type -> application.DeletionResponse
 	1, // 9: application.ApplicationFactory.Rebuild:output_type -> application.ResponseBody
 	5, // 10: application.ApplicationFactory.FetchLogs:output_type -> application.LogResponse
 	1, // 11: application.ApplicationFactory.Update:output_type -> application.ResponseBody
 	6, // 12: application.ApplicationFactory.FetchRunningContainers:output_type -> application.NodeInventory
-	3, // 13: application.ApplicationFactory.RemoveContainer:output_type -> application.DeletionResponse
+	3, // 13: application.ApplicationFactory.RemoveContainers:output_type -> application.DeletionResponse
 	7, // [7:14] is the sub-list for method output_type
 	0, // [0:7] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

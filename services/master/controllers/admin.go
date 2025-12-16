@@ -138,9 +138,9 @@ func DeleteUserByAdmin(c *gin.Context) {
 
 func UpNode(c *gin.Context) {
 	res := gin.H{}
-	var instance types.InstanceBindings
+	var req types.NodeRequest
 
-	if err := c.ShouldBindJSON(&instance); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
 			"error":   err.Error(),
@@ -148,7 +148,7 @@ func UpNode(c *gin.Context) {
 		return
 	}
 
-	ip, _, err := net.SplitHostPort(instance.Node)
+	nodeIp, _, err := net.SplitHostPort(req.Node)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
@@ -156,7 +156,6 @@ func UpNode(c *gin.Context) {
 		})
 		return
 	}
-	instance.Server = ip
 
 	allInstances, err := redis.FetchServiceInstances(types.AppMaker)
 	if err != nil {
@@ -164,7 +163,7 @@ func UpNode(c *gin.Context) {
 		return
 	}
 
-	if !utils.Contains(allInstances, instance.Node) {
+	if !utils.Contains(allInstances, req.Node) {
 		c.JSON(404, gin.H{
 			"success": false,
 			"error":   "AppMaker Node not found.",
@@ -172,13 +171,13 @@ func UpNode(c *gin.Context) {
 		return
 	}
 
-	apps, err := appsOnNode(instance.Server)
+	apps, err := appsOnNode(nodeIp)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	ans, err := factory.GracefulUp(instance.Node, apps)
+	ans, err := factory.GracefulUp(req.Node, apps)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
@@ -190,9 +189,9 @@ func UpNode(c *gin.Context) {
 
 func DownNode(c *gin.Context) {
 	res := gin.H{}
-	var instance types.InstanceBindings
+	var req types.NodeRequest
 
-	if err := c.ShouldBindJSON(&instance); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
 			"error":   err.Error(),
@@ -200,7 +199,7 @@ func DownNode(c *gin.Context) {
 		return
 	}
 
-	ip, _, err := net.SplitHostPort(instance.Node)
+	nodeIp, _, err := net.SplitHostPort(req.Node)
 	if err != nil {
 		c.JSON(400, gin.H{
 			"success": false,
@@ -208,7 +207,6 @@ func DownNode(c *gin.Context) {
 		})
 		return
 	}
-	instance.Server = ip
 
 	allInstances, err := redis.FetchServiceInstances(types.AppMaker)
 	if err != nil {
@@ -216,7 +214,7 @@ func DownNode(c *gin.Context) {
 		return
 	}
 
-	if !utils.Contains(allInstances, instance.Node) {
+	if !utils.Contains(allInstances, req.Node) {
 		c.JSON(404, gin.H{
 			"success": false,
 			"error":   "AppMaker Node not found.",
@@ -224,13 +222,13 @@ func DownNode(c *gin.Context) {
 		return
 	}
 
-	apps, err := appsOnNode(instance.Server)
+	apps, err := appsOnNode(nodeIp)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
 	}
 
-	ans, err := factory.GracefulDown(instance.Node, apps)
+	ans, err := factory.GracefulDown(req.Node, req.DeleteVolume, apps)
 	if err != nil {
 		utils.SendServerErrorResponse(c, err)
 		return
