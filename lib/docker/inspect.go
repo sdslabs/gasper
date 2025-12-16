@@ -2,14 +2,16 @@ package docker
 
 import (
 	dockerTypes "github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
 	"golang.org/x/net/context"
 )
 
 const (
 	// Strings for ContainterHealth
-	Container_Healthy = "healthy"
+	Container_Healthy   = "healthy"
 	Container_Unhealthy = "unhealthy"
 )
+
 // InspectContainerState returns the state of the container using the containerID
 func InspectContainerState(containerID string) (*dockerTypes.ContainerState, error) {
 	ctx := context.Background()
@@ -28,4 +30,16 @@ func InspectContainerHealth(containerID string) (string, error) {
 		return "", err
 	}
 	return health.State.Health.Status, nil
+}
+
+func VolumeExists(name string) bool {
+	ctx := context.Background()
+	_, err := cli.VolumeInspect(ctx, name)
+	if err != nil {
+		if client.IsErrNotFound(err) {
+			return false
+		}
+		return false
+	}
+	return true
 }
