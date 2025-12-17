@@ -11,6 +11,7 @@ service ApplicationFactory {
     rpc FetchLogs (LogRequest) returns (LogResponse) {}
     rpc Update (NameHolder) returns (ResponseBody) {}
     rpc FetchRunningContainers (NodeInventory) returns (NodeInventory) {}
+    rpc RemoveContainers (NodeInventory) returns (DeletionResponse) {}
 }
 
 message RequestBody {
@@ -44,4 +45,5 @@ message LogResponse {
 message NodeInventory {
     string instanceURL = 1;
     repeated string containerList = 2;
+    bool deleteVolume = 3;
 }

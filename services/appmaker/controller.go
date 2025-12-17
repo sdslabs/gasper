@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/api"
@@ -224,7 +225,7 @@ func (s *server) Delete(ctx context.Context, body *pb.NameHolder) (*pb.DeletionR
 	node, _ := redis.FetchAppNode(appName)
 	go redis.DecrementServiceLoad(ServiceName, node)
 	go redis.RemoveApp(appName)
-	go diskCleanup(appName)
+	diskCleanup(appName)
 
 	if configs.CloudflareConfig.PlugIn {
 		go cloudflare.DeleteApplicationRecord(appName)
@@ -265,7 +266,7 @@ func (s *server) FetchRunningContainers(ctx context.Context, body *pb.NodeInvent
 			docker.ContainerRestart(app)
 		} else {
 			if state.Health.Status == docker.Container_Unhealthy {
-				docker.DeleteContainer(app)
+				containerCleanup(app)
 			}
 		}
 	}
@@ -279,6 +280,28 @@ func (s *server) FetchRunningContainers(ctx context.Context, body *pb.NodeInvent
 		InstanceURL:   body.InstanceURL,
 		ContainerList: data,
 	}, nil
+}
+
+// Removes app containers (and volumes if specified). Does NOT remove from redis and mongo.
+func (s *server) RemoveContainers(ctx context.Context, body *pb.NodeInventory) (*pb.DeletionResponse, error) {
+	apps := body.GetContainerList()
+	deleteVol := body.GetDeleteVolume()
+
+	var wg sync.WaitGroup
+	for _, app := range apps {
+		wg.Add(1)
+		go func(appName string) {
+			defer wg.Done()
+			if deleteVol {
+				diskCleanup(appName)
+			} else {
+				containerCleanup(appName)
+			}
+		}(app)
+	}
+	wg.Wait()
+
+	return &pb.DeletionResponse{Success: true}, nil
 }
 
 // NewService returns a new instance of the current microservice

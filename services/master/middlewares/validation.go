@@ -221,9 +221,9 @@ func ValidateRegistration(c *gin.Context) {
 	c.Next()
 }
 
-func ValidateUpNodeRequest(c *gin.Context) {
+func ValidateNodeRequest(c *gin.Context) {
 	requestBody := getBodyFromContext(c)
-	node := &types.InstanceBindings{}
+	node := &types.NodeRequest{}
 
 	if err := json.Unmarshal(requestBody, node); err != nil {
 		c.AbortWithStatusJSON(400, gin.H{

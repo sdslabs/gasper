@@ -60,3 +60,37 @@ func GracefulUp(instanceURL string, apps []types.ApplicationConfig) (bool, error
 	}
 	return true, nil
 }
+
+func GracefulDown(instanceURL string, deleteVol bool, apps []types.ApplicationConfig) (bool, error) {
+	conn, err := grpc.Dial(
+		instanceURL,
+		grpc.WithInsecure(),
+		grpc.WithPerRPCCredentials(authCredentials),
+	)
+	if err != nil {
+		return false, err
+	}
+	defer conn.Close()
+
+	client := pb.NewApplicationFactoryClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	var appNames []string
+
+	for _, app := range apps {
+		appNames = append(appNames, app.Name)
+	}
+
+	_, err = client.RemoveContainers(ctx, &pb.NodeInventory{
+		InstanceURL:   instanceURL,
+		ContainerList: appNames,
+		DeleteVolume:  deleteVol,
+	})
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

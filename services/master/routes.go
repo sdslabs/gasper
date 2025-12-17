@@ -120,7 +120,8 @@ func NewService() http.Handler {
 		{
 			nodes.GET("", c.GetAllNodes)
 			nodes.GET("/:type", c.GetNodesByName)
-			nodes.POST("/up", m.ValidateUpNodeRequest, c.UpNode)
+			nodes.POST("/up", m.ValidateNodeRequest, c.UpNode)
+			nodes.POST("/down", m.ValidateNodeRequest, c.DownNode)
 		}
 	}
 
