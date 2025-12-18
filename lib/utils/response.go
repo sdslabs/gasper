@@ -20,3 +20,19 @@ func SendServerErrorResponse(c *gin.Context, err error) {
 		"error":   errMessage,
 	})
 }
+
+// SendBadRequestErrorResponse sends bad request error messages
+// to the client depending on development mode or production mode
+func SendBadRequestErrorResponse(c *gin.Context, err error) {
+	var errMessage string
+	if configs.GasperConfig.Debug {
+		errMessage = err.Error()
+	} else {
+		errMessage = "BAD_REQUEST"
+	}
+	LogError("Utils-Response-2", err)
+	c.AbortWithStatusJSON(400, gin.H{
+		"success": false,
+		"error":   errMessage,
+	})
+}

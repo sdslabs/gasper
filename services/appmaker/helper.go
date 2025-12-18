@@ -57,6 +57,7 @@ func FetchAllApplicationNames() []string {
 
 	apps := mongo.FetchDocs(mongo.InstanceCollection, types.M{
 		mongo.InstanceTypeKey: mongo.AppInstance,
+		mongo.HostIPKey:       utils.HostIP,
 	})
 	var appNames []string
 	for _, app := range apps {

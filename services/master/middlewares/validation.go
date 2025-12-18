@@ -67,10 +67,7 @@ func ValidateApplicationRequest(c *gin.Context) {
 	err := json.Unmarshal(requestBody, app)
 
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		utils.SendBadRequestErrorResponse(c, err)
 		return
 	}
 
@@ -135,10 +132,7 @@ func ValidateApplicationUpdateRequest(c *gin.Context) {
 
 	err := json.Unmarshal(requestBody, updatePayload)
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		utils.SendBadRequestErrorResponse(c, err)
 		return
 	}
 
@@ -160,10 +154,7 @@ func ValidateDatabaseRequest(c *gin.Context) {
 	err := json.Unmarshal(requestBody, db)
 
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		utils.SendBadRequestErrorResponse(c, err)
 		return
 	}
 
@@ -204,10 +195,7 @@ func ValidateRegistration(c *gin.Context) {
 	requestBody := getBodyFromContext(c)
 	user := &types.User{}
 	if err := json.Unmarshal(requestBody, user); err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		utils.SendBadRequestErrorResponse(c, err)
 		return
 	}
 
@@ -226,10 +214,7 @@ func ValidateNodeRequest(c *gin.Context) {
 	node := &types.NodeRequest{}
 
 	if err := json.Unmarshal(requestBody, node); err != nil {
-		c.AbortWithStatusJSON(400, gin.H{
-			"success": false,
-			"error":   err.Error(),
-		})
+		utils.SendBadRequestErrorResponse(c, err)
 		return
 	}
 
