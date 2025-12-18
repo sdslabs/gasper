@@ -5424,7 +5424,7 @@
         "tags": [
           "admin"
         ],
-        "summary": "Gracefully shut down an App Maker node.",
+        "summary": "Gracefully delete all containers of an appmaker node",
         "operationId": "downNode",
         "requestBody": {
           "content": {
