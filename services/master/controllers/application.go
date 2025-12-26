@@ -79,6 +79,7 @@ func BulkUpdateApps(c *gin.Context) {
 // UpdateAppByName updates the app getting name from url params
 func UpdateAppByName(c *gin.Context) {
 	appName := c.Param("app")
+	user := middlewares.ExtractClaims(c)
 	filter := types.M{
 		mongo.NameKey:         appName,
 		mongo.InstanceTypeKey: mongo.AppInstance,
@@ -107,11 +108,12 @@ func UpdateAppByName(c *gin.Context) {
 			"error":   err.Error(),
 		})
 	}
-	err = UpdateData(app, &data)
+	err = ValidateUpdateData(user.Email, &data)
 	if err != nil {
-		utils.SendServerErrorResponse(c, err)
+		utils.SendBadRequestErrorResponse(c, err)
 		return
 	}
+	UpdateData(app, &data)
 
 	err = mongo.UpdateInstance(filter, app)
 	if err != nil {

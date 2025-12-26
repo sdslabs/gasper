@@ -48,9 +48,11 @@ type GenericService struct {
 // AppMakerService is the default configuration for appmaker microservice
 type AppMakerService struct {
 	GenericService
-	MetricsInterval time.Duration `toml:"metrics_interval"`
-	HealthInterval  time.Duration `toml:"health_interval"`
-	AppLimit        int           `toml:"app_limit"`
+	MetricsInterval    time.Duration `toml:"metrics_interval"`
+	HealthInterval     time.Duration `toml:"health_interval"`
+	AppLimit           int           `toml:"app_limit"`
+	MaxContainerMemory float64       `toml:"max_container_memory"`
+	MaxContainerCPU    float64       `toml:"max_container_cpu"`
 }
 
 // MasterService is the default configuration for Master microservice
