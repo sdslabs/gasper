@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/gasper/configs"
 	"github.com/sdslabs/gasper/lib/mongo"
 	"github.com/sdslabs/gasper/lib/utils"
 	"github.com/sdslabs/gasper/services/master/middlewares"
@@ -45,8 +46,37 @@ func validateUpdatePayload(data types.M) error {
 	return nil
 }
 
+func ValidateUpdateData(owner string, data *types.UpdatePayload) error {
+
+	if data.Resources != nil {
+
+		user, err := mongo.FetchSingleUserWithoutPassword(owner)
+		if err != nil {
+			return errors.New("Error Fetching Owner of App")
+		}
+
+		if !user.IsAdmin() {
+			if data.Resources.Memory > configs.ServiceConfig.AppMaker.MaxContainerMemory {
+				return fmt.Errorf("memory limit cannot exceed %f", configs.ServiceConfig.AppMaker.MaxContainerMemory)
+			}
+			if data.Resources.CPU > configs.ServiceConfig.AppMaker.MaxContainerCPU {
+				return fmt.Errorf("cpu limit cannot exceed %f", configs.ServiceConfig.AppMaker.MaxContainerCPU)
+			}
+		}
+		ok, err := utils.ValidateCPUvalue(data.Resources.CPU)
+		if !ok && err != nil {
+			return err
+		}
+		ok, err = utils.ValidateRAMvalue(data.Resources.Memory)
+		if !ok && err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // UpdateData updates the data of an application using the update request payload
-func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
+func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) {
 	if data.Password != nil {
 		app.Password = *data.Password
 	}
@@ -72,22 +102,11 @@ func UpdateData(app *types.ApplicationConfig, data *types.UpdatePayload) error {
 			app.Context.Run = *data.Context.Run
 		}
 	}
-
 	if data.Resources != nil {
-		ok, err := utils.ValidateCPUvalue(data.Resources.CPU)
-		if ok && err == nil {
-			app.Resources.CPU = data.Resources.CPU
-		} else {
-			return err
-		}
-		ok, err = utils.ValidateRAMvalue(data.Resources.Memory)
-		if ok && err == nil {
-			app.Resources.Memory = data.Resources.Memory
-		} else {
-			return err
-		}
+		app.Resources.CPU = data.Resources.CPU
+		app.Resources.Memory = data.Resources.Memory
 	}
-	return nil
+
 }
 
 func fetchInstances(c *gin.Context, instance string) {
