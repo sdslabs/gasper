@@ -128,8 +128,9 @@ func UpdateContainer(app types.Application) types.ResponseError {
 
 	updateConfig := container.UpdateConfig{
 		Resources: container.Resources{
-			Memory:   app.GetMemoryLimit(), // 512 MB
-			NanoCPUs: app.GetCPULimit(),    // 0.25 CPU
+			NanoCPUs:   app.GetCPULimit(),    // 0.25 CPU
+			Memory:     app.GetMemoryLimit(), // 512 MB
+			MemorySwap: app.GetMemoryLimit(),
 		},
 	}
 

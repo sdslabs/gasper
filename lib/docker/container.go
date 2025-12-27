@@ -58,8 +58,9 @@ func CreateApplicationContainer(containerCfg types.ApplicationContainer) (string
 				HostPort: fmt.Sprintf("%d", containerCfg.ContainerPort)}},
 		},
 		Resources: container.Resources{
-			NanoCPUs: containerCfg.CPU,
-			Memory:   containerCfg.Memory,
+			NanoCPUs:   containerCfg.CPU,
+			Memory:     containerCfg.Memory,
+			MemorySwap: containerCfg.Memory,
 		},
 	}
 
