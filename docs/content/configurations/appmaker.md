@@ -23,6 +23,12 @@ health_interval = 300
 # Hard Limits the total number of app instances that can be deployed by an user
 # Set app_limit = -1 if no hard limit is to be imposed
 app_limit = 10
+
+# Specifies the maximum CPU allocation for a container created by a non admin user
+max_container_cpu = 0.25
+
+# Specifies the maximum memory allocation for a container created by a non admin user
+max_container_memory = 0.5
 ```
 
 !!!warning
